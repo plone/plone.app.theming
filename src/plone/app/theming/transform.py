@@ -67,6 +67,12 @@ class ThemeTransform(object):
         request = self.request
         DevelopmentMode = Globals.DevelopmentMode
         
+        # Look for off switch if we are in debug mode
+        if (DevelopmentMode and 
+            request.get('diazo.off', '').lower() in ('1', 'y', 'yes', 't', 'true')
+        ):
+            return None
+        
         # Find the host name
         base1 = request.get('BASE1')
         _, base1 = base1.split('://', 1)

@@ -82,6 +82,46 @@ class TestCase(unittest.TestCase):
         # The theme
         self.failUnless("This is the theme" in browser.contents)
     
+    def test_theme_enabled_query_string_off_switch(self):
+        app = self.layer['app']
+        portal = self.layer['portal']
+        
+        self.settings.enabled = True
+        import transaction; transaction.commit()
+        
+        browser = Browser(app)
+        browser.open(portal.absolute_url() + '?diazo.off=1')
+        
+        # Title - pulled in with rules.xml
+        self.failUnless(portal.title in browser.contents)
+        
+        # Elsewhere - not pulled in
+        self.failUnless("Accessibility" in browser.contents)
+        
+        # The theme
+        self.failIf("This is the theme" in browser.contents)
+    
+    def test_theme_enabled_query_string_off_switch_production_mode(self):
+        app = self.layer['app']
+        portal = self.layer['portal']
+        
+        Globals.DevelopmentMode = False
+        
+        self.settings.enabled = True
+        import transaction; transaction.commit()
+        
+        browser = Browser(app)
+        browser.open(portal.absolute_url() + '?diazo.off=1')
+        
+        # Title - pulled in with rules.xml
+        self.failUnless(portal.title in browser.contents)
+        
+        # Elsewhere - not pulled in
+        self.failIf("Accessibility" in browser.contents)
+        
+        # The theme
+        self.failUnless("This is the theme" in browser.contents)
+    
     def test_internal_resolver(self):
         compiler_parser = etree.XMLParser()
         compiler_parser.resolvers.add(InternalResolver())

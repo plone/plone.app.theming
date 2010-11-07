@@ -4,6 +4,10 @@ Changelog
 1.0b1 - Unreleased
 -------------------
 
+* Added theme off switch: Add a query string parameter ``diazo.off=1`` to a
+  request whilst Zope is in development mode to turn off the theme.
+  [optilude]
+
 * Removed 'theme' and alternative themes support: Themes should be referenced
   using the ``<theme />`` directive in the Diazo rules file.
   [optilude]

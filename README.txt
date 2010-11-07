@@ -128,10 +128,24 @@ In the "Diazo Theme" control panel, you can set the following options:
     the control panel or in the rules file, as this can have a performance
     impact. If you need to access external URLs, enable the "read network"
     setting.
+
+Development aids
+----------------
+
+Note that when Zope is in development mode (e.g. running in the foreground
+in a console with ``bin/instance fg``), the theme will be re-compiled on each
+request. In non-development mode, it is compiled once when first accessed, and
+then only re-compiled the control panel values are changed.
+
+Also, in development mode, it is possible to temporarily disable the theme
+by appending a query string parameter ``diazo.off=1``. For example::
     
-Note that when Zope is in debug mode, the theme will be re-compiled on
-each request. In non-debug mode, it is compiled once on startup, and then
-only if the control panel values are changed.
+    http://localhost:8080/Plone/some-page?diazo.off=1
+
+The parameter is ignored in non-development mode.
+
+Finally, note that a site accessed via the host name ``127.0.0.1`` will never
+be themed. By default, ``localhost`` *will* be themed, of course.
 
 Resources in Python packages
 ----------------------------
