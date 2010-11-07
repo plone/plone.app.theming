@@ -1,0 +1,55 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:gs="http://namespaces.zope.org/genericsetup"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="plone.app.theming">
+
+    <i18n:registerTranslations directory="locales"/>
+
+    <include package="plone.app.registry" />
+    <include package="plone.transformchain" />
+    <include package="five.globalrequest" />
+
+    <gs:registerProfile
+        name="default"
+        title="Diazo theme support"
+        description="Installs a control panel to allow on-the-fly theming with Diazo"
+        directory="profiles/default"
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        provides="Products.GenericSetup.interfaces.EXTENSION"
+        />
+    
+    <!-- Transform order 8850 - apply theme transform -->
+    <adapter
+        name="plone.app.theming.transform"
+        factory=".transform.ThemeTransform"
+        />
+
+    <subscriber
+        for=".interfaces.IThemeSettings
+              plone.registry.interfaces.IRecordModifiedEvent"
+        handler=".transform.invalidateCache"
+        />
+
+    <browser:page 
+        name="theming-controlpanel"
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        class=".browser.ThemeSettingsControlPanel"
+        permission="cmf.ManagePortal"
+        />
+    
+    <!-- Set X-Theme-Enabled header in the request if theming is enabled -->
+    <subscriber
+        for="Products.CMFCore.interfaces.ISiteRoot
+             zope.app.publication.interfaces.IBeforeTraverseEvent"
+        handler=".header.setHeader"
+        />
+    
+    <browser:resource
+        name="plone.app.theming.gif"
+        image="icon.gif"
+        />
+    
+</configure>

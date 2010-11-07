@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules xmlns="http://namespaces.plone.org/diazo" xmlns:css="http://namespaces.plone.org/diazo+css">
+
+    <theme href="python://plone.app.theming.tests/includes.html" />
+
+    <copy content='//*[@id="content"]/text()' css:theme='#alpha' href="/alpha" />
+    <copy content='//*[@id="content"]/text()' css:theme='#beta' href="./beta" />
+    
+</rules>

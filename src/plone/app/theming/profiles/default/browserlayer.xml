@@ -1,0 +1,6 @@
+<layers>
+    <layer
+        name="plone.app.theming"
+        interface="plone.app.theming.interfaces.IThemingLayer"
+        />
+</layers>

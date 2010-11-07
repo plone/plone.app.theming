@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<object
+    name="portal_controlpanel"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="plone.app.theming"
+    purge="False">
+    
+    <configlet
+        title="Diazo theme"
+        action_id="plone.app.theming"
+        appId="plone.app.theming" 
+        category="Plone"
+        condition_expr=""
+        url_expr="string:${portal_url}/@@theming-controlpanel"
+        icon_expr="string:${portal_url}/++resource++plone.app.theming.gif"
+        visible="True"
+        i18n:attributes="title">
+            <permission>Manage portal</permission>
+    </configlet>
+
+</object>
