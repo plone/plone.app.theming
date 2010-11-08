@@ -11,20 +11,7 @@ check out the `Diazo documentation <http://diazo.org>`_.
 Installation
 ============
 
-``plone.app.theming`` depends on:
-
-  * `Plone`_ 4.0 or later.
-  * `plone.transformchain`_ to hook the transformation into the publisher
-  * `plone.registry`_ and `plone.app.registry`_ to manage settings
-  * `plone.autoform`_, `plone.z3cform`_ and `plone.app.z3cform`_ to render the 
-    control panel
-  * `five.globalrequest`_ and `zope.globalrequest`_ for internal request
-    access
-  * `Diazo`_, the theming engine
-  * `lxml`_ to transform Plone's output into a themed page
-
-These will all be pulled in automatically if you are using zc.buildout and
-follow the installation instructions.
+``plone.app.theming`` works with Plone 4.0 or later.
 
 To install ``plone.app.theming`` into your Plone instance, locate the file
 ``buildout.cfg`` in the root of your Plone instance directory on the file
@@ -115,6 +102,9 @@ In the "Diazo Theme" control panel, you can set the following options:
     to enable "read network access" - see below). It can also be an absolute
     path, starting with a ``/``, in which case it will be resolved relative
     to the Plone site root, or a special ``python://`` URL - see below.
+    
+    The most common type of URL will be a relative path using the
+    ``++theme++`` traversal namespace. See below.
   
   Absolute prefix 
     If given, any relative URL in an ``<img />``, ``<link />``, ``<style />``
@@ -147,6 +137,53 @@ The parameter is ignored in non-development mode.
 Finally, note that a site accessed via the host name ``127.0.0.1`` will never
 be themed. By default, ``localhost`` *will* be themed, of course.
 
+Static resource directories and the ``++theme++`` traverser
+-----------------------------------------------------------
+
+This package integrates with `plone.resource`_ to enable the ``theme``
+resource type. This enables themes to be deployed on the filesystem using
+the global resource directory (if one is configured), in the ZODB inside the
+``theme`` directory of the ``portal_resources`` tool, or in packages that
+use the ``<plone:static />`` ZCML directive.
+
+For example:
+
+  * If you had configured a global resource directory inside your buildout
+    root called ``resources``, you could add a directory
+    ``resources/theme/mytheme``. If this contained a ``rules.xml`` file,
+    you could configure the rules path in the Diazo control panel to be
+    ``/++theme++mytheme/rules.xml``, and the absolute prefix to be
+    ``/++theme++mytheme``.
+
+  * If you had uploaded your theme to the ZMI inside
+    ``portal_resources/theme/mytheme`` and placed a ``rules.xml`` file here,
+    you could again configure the rules path in the Diazo control panel to be
+    ``/++theme++mytheme/rules.xml``, and the absolute prefix to be
+    ``/++theme++mytheme``.
+
+  * If you had a filesystem package ``my.theme`` you could create a
+    subdirectory of this package called ``static/`` containing the
+    ``rules.xml`` file then add the following to the ``configure.zcml``
+    file in the package root::
+    
+        <configure
+            xmlns:plone="http://namespaces.plone.org/plone"
+            xmlns="http://namespaces.zope.org/zope">
+            
+            ...
+            
+            <plone:static directory="static" type="theme" />
+            
+        </configure>
+    
+    With this, you could configure the Diazo control panel to use the rules
+    path ``/++theme++my.theme/rules.xml`` and the absolute prefix
+    ``/++theme++my.theme``. The theme name here is taken from the package
+    name where ``configure.zcml`` is found. To specify an alternative name,
+    use the ``name`` attribute to the ``<plone:static />`` directive.
+
+See the worked example below for a more detailed example.
+
 Resources in Python packages
 ----------------------------
 
@@ -162,6 +199,9 @@ file as::
     ``python://my.theme/static/rules.xml``
 
 This will be resolved to an absolute ``file://`` URL by ``plone.app.theming``.
+
+**Note:** In most cases, it will be easier to use the ``<plone:static />``
+directive as described above.
 
 Static files and CSS
 --------------------
@@ -179,18 +219,18 @@ Here, you have a few options:
  * Install the resources through a filesystem product.
 
 The latter is most the appropriate option if you are distributing your theme
-as a Python package. In this case, you can register a resource directory in
-ZCML like so::
+as a Python package. In this case, you can register a static resource
+directory in ZCML as outlined above::
 
     <configure
         xmlns="http://namespaces.zope.org/zope"
-        xmlns:browser="http://namespaces.zope.org/browser">
+        xmlns:plone="http://namespaces.plone.org/plone">
         
         ...
         
-        <browser:resourceDirectory
-            name="my.theme"
+        <plone:static
             directory="static"
+            type="theme"
             />
         
         ...
@@ -206,10 +246,10 @@ stylesheets, JavaScript files, or images that it needs (including those
 referenced from stylesheets), you should now be able to view your static
 theme by going to a URL like::
 
-    http://localhost:8080/Plone/++resource++my.theme/theme.html
+    http://localhost:8080/Plone/++theme++my.theme/theme.html
 
 You can now set the "Absolute prefix" configuration option to be
-'/++resource++my.theme'. ``plone.app.theming`` will then turn relative URLs
+'/++theme++my.theme'. ``plone.app.theming`` will then turn relative URLs
 into appropriate absolute URLs with this prefix.
 
 If you have put Apache, nginx or IIS in front of Zope, you may want to serve
@@ -252,10 +292,10 @@ URL references of the following form:
     background-image: url(../images/bg.jpg);
     
 If your stylesheet lives in a resource directory (e.g. it is registered in
-``portal_css`` with the id ``++resource++my.package/css/styles.css``), this
+``portal_css`` with the id ``++theme++my.theme/css/styles.css``), this
 will work fine so long as the registry (and Zope) is in debug mode. The
 relative URL will be resolved by the browser to
-``++resource++my.package/images/bg.jpg``.
+``++theme++my.theme/images/bg.jpg``.
 
 However, you may find that the relative URL breaks when the registry is put
 into production mode. This is because resource merging also changes the URL
@@ -481,11 +521,11 @@ Also create a file called ``registry.xml``, with the following contents::
         <!-- plone.app.theming settings -->
 
         <record interface="plone.app.theming.interfaces.IThemeSettings" field="rules">
-            <value>python://my.theme/static/rules.xml</value>
+            <value>/++theme++my.theme/rules.xml</value>
         </record>
     
         <record interface="plone.app.theming.interfaces.IThemeSettings" field="absolutePrefix">
-            <value>/++resource++my.theme</value>
+            <value>/++theme++my.theme</value>
         </record>
 
     </registry>
@@ -520,7 +560,7 @@ configure the ``portal_css`` tool::
      <stylesheet title="" authenticated="False" cacheable="True"
         compression="safe" conditionalcomment="" cookable="True" enabled="on"
         expression="request/HTTP_X_THEME_ENABLED | nothing"
-        id="++resource++my.theme/css/styles.css" media="" rel="stylesheet"
+        id="++theme++my.theme/css/styles.css" media="" rel="stylesheet"
         rendering="link"
         applyPrefix="True"
         />
@@ -548,7 +588,7 @@ themed site by using the following URLs:
   (normally shown in the title bar of your web browser) taken from Plone.
 * ``http://127.0.0.1:8080`` (presuming this is the port where Plone is
   running) for an unstyled Plone.
-* ``http://localhost:8080/++resource++my.theme/theme.html`` for the pristine
+* ``http://localhost:8080/++theme++my.theme/theme.html`` for the pristine
   theme. This is served as a static resource, almost as if it is being
   opened on the filesystem.
 
@@ -597,15 +637,5 @@ Other tips
 
 .. _Diazo: http://diazo.org
 .. _Plone: http://plone.org
-.. _plone.transformchain: http://pypi.python.org/pypi/plone.transformchain
-.. _repoze.zope2: http://pypi.python.org/pypi/repoze.zope2
-.. _plone.transformchain: http://pypi.python.org/pypi/plone.transformchain
-.. _plone.registry: http://pypi.python.org/pypi/plone.registry
-.. _plone.app.registry: http://pypi.python.org/pypi/plone.app.registry
-.. _plone.autoform: http://pypi.python.org/pypi/plone.autoform
-.. _plone.z3cform: http://pypi.python.org/pypi/plone.z3cform
-.. _plone.app.z3cform: http://pypi.python.org/pypi/plone.app.z3cform
-.. _lxml: http://pypi.python.org/pypi/lxml
-.. _five.globalrequest: http://pypi.python.org/pypi/five.globalrequest
-.. _zope.globalrequest: http://pypi.python.org/pypi/zope.globalrequest
+.. _plone.resource: http://pypi.python.org/pypi/plone.resource
 .. _the buildout manual: http://plone.org/documentation/manual/developer-manual/managing-projects-with-buildout
