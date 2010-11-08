@@ -81,6 +81,26 @@ class TestCase(unittest.TestCase):
         
         # The theme
         self.failUnless("This is the theme" in browser.contents)
+
+    def test_theme_enabled_resource_directory(self):
+        app = self.layer['app']
+        portal = self.layer['portal']
+        
+        self.settings.enabled = True
+        self.settings.rules = u'/++theme++plone.app.theming.tests/rules.xml'
+        import transaction; transaction.commit()
+        
+        browser = Browser(app)
+        browser.open(portal.absolute_url())
+        
+        # Title - pulled in with rules.xml
+        self.failUnless(portal.title in browser.contents)
+        
+        # Elsewhere - not pulled in
+        self.failIf("Accessibility" in browser.contents)
+        
+        # The theme
+        self.failUnless("This is the theme" in browser.contents)
     
     def test_theme_enabled_query_string_off_switch(self):
         app = self.layer['app']

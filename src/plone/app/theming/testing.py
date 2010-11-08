@@ -13,6 +13,14 @@ class Theming(PloneSandboxLayer):
         # load ZCML
         import plone.app.theming
         xmlconfig.file('configure.zcml', plone.app.theming, context=configurationContext)
+        
+        # Also register a test static resources directory
+        xmlconfig.string("""\
+<configure package="plone.app.theming.tests"
+    xmlns:plone="http://namespaces.plone.org/plone">
+    <plone:static directory="resources" type="theme" />
+</configure>
+""", context=configurationContext)
 
     def setUpPloneSite(self, portal):
         # install into the Plone site
