@@ -7,4 +7,4 @@ class ThemeTraverser(ResourceTraverser):
     things stored either on the filesystem or in the ZODB.
     """
     
-    name = u'theme'
+    name = 'theme'
