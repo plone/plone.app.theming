@@ -18,7 +18,7 @@ To install ``plone.app.theming`` into your Plone instance, locate the file
 system, and open it in a text editor. Locate the section that looks like
 this::
 
-    # extends = http://dist.plone.org/release/3.3/versions.cfg
+    # extends = http://dist.plone.org/release/4.0/versions.cfg
     extends = versions.cfg
     versions = versions
 
@@ -38,13 +38,11 @@ configuration so it looks like this::
 
 Note that the last part of the URL above is the Diazo version number. There
 may be a newer version by the time you read this, so check out the `overview
-page <http://good-py.appspot.com/release/plone.app.theming>`_ for the known
-good set.
+page <http://good-py.appspot.com/release/diazo>`_ for the known good set.
 
-What happens here is that the dependency list for ``plone.app.theming``
-specifies some new versions for you via the good-py URL. This way, you don't
-have to worry about getting the right versions, Buildout will handle it for
-you.
+What happens here is that the dependency list for ``diazo`` specifies some new
+versions for you via the good-py URL. This way, you don't have to worry about
+getting the right versions, Buildout will handle it for you.
 
 Next step is to add the actual ``plone.app.theming`` add-on to the "eggs"
 section of ``buildout.cfg``. Look for the section that looks like this::
@@ -91,10 +89,12 @@ install the "Diazo theme support" product. You should then notice a new
 Usage
 =====
 
-In the "Diazo Theme" control panel, you can set the following options:
+In the "Diazo Theme" control panel, you can turn the theming engine on or
+off, and select from a list of pre-registered themes (more on how to
+register your own themes shortly).
 
-  Enabled yes/no
-    Whether or not the transform is enabled.
+Alternatively, you can configure a theme yourself, under the "Advanced" tab.
+The options here are:
 
   Rules
     URL referencing the Diazo rules file. This file in turn references your
@@ -119,38 +119,29 @@ In the "Diazo Theme" control panel, you can set the following options:
     impact. If you need to access external URLs, enable the "read network"
     setting.
 
-Development aids
-----------------
-
-Note that when Zope is in development mode (e.g. running in the foreground
-in a console with ``bin/instance fg``), the theme will be re-compiled on each
-request. In non-development mode, it is compiled once when first accessed, and
-then only re-compiled the control panel values are changed.
-
-Also, in development mode, it is possible to temporarily disable the theme
-by appending a query string parameter ``diazo.off=1``. For example::
-    
-    http://localhost:8080/Plone/some-page?diazo.off=1
-
-The parameter is ignored in non-development mode.
-
-Finally, note that a site accessed via the host name ``127.0.0.1`` will never
-be themed. By default, ``localhost`` *will* be themed, of course.
-
 Static resource directories and the ``++theme++`` traverser
 -----------------------------------------------------------
 
 This package integrates with `plone.resource`_ to enable the ``theme``
-resource type. This enables themes to be deployed on the filesystem using
-the global resource directory (if one is configured), in the ZODB inside the
-``theme`` directory of the ``portal_resources`` tool, or in packages that
-use the ``<plone:static />`` ZCML directive.
+resource type. This enables themes to be deployed:
+
+  * On the filesystem using the global resource directory (if one is
+    configured);
+  * In the ZODB inside the ``theme`` directory of the
+    ``portal_resources`` tool; or
+  * In Python package that use the ``<plone:static />`` ZCML directive to
+    register their own resource directory
+
+Provided they contains a ``rules.xml`` file, themes in such directories will
+appear in the control panel.
 
 For example:
 
   * If you had configured a global resource directory inside your buildout
     root called ``resources``, you could add a directory
     ``resources/theme/mytheme``. If this contained a ``rules.xml`` file,
+    it would show up in the theme control panel as a pre-registered,
+    installable theme.
     you could configure the rules path in the Diazo control panel to be
     ``/++theme++mytheme/rules.xml``, and the absolute prefix to be
     ``/++theme++mytheme``.
@@ -181,8 +172,33 @@ For example:
     ``/++theme++my.theme``. The theme name here is taken from the package
     name where ``configure.zcml`` is found. To specify an alternative name,
     use the ``name`` attribute to the ``<plone:static />`` directive.
+    
+    See the worked example below for a more detailed example.
+    
+When themes are deployed in this way, they become available in the control
+panel, provided the resource directory contains a ``rules.xml`` file.
 
-See the worked example below for a more detailed example.
+If there is a ``manifest.cfg`` file inside the top level resource directory,
+this may contain a manifest giving information about the theme. This file
+may look like this::
+
+    [theme]
+    title = My theme
+    description = A test theme
+
+As shown here, the manifest file can be used to provide a more user friendly
+title and a longer description for the theme, for use in the control panel.
+Only the ``[theme]`` header is required - all other keys are optional.
+
+You can also set::
+
+    rules = myrules.xml
+    
+to use a different rule file name than ``rules.xml``, and::
+
+    prefix = /some/preifx
+
+to change the absolute path prefix (see above).
 
 Resources in Python packages
 ----------------------------
@@ -202,6 +218,24 @@ This will be resolved to an absolute ``file://`` URL by ``plone.app.theming``.
 
 **Note:** In most cases, it will be easier to use the ``<plone:static />``
 directive as described above.
+
+Development aids
+----------------
+
+Note that when Zope is in development mode (e.g. running in the foreground
+in a console with ``bin/instance fg``), the theme will be re-compiled on each
+request. In non-development mode, it is compiled once when first accessed, and
+then only re-compiled the control panel values are changed.
+
+Also, in development mode, it is possible to temporarily disable the theme
+by appending a query string parameter ``diazo.off=1``. For example::
+    
+    http://localhost:8080/Plone/some-page?diazo.off=1
+
+The parameter is ignored in non-development mode.
+
+Finally, note that a site accessed via the host name ``127.0.0.1`` will never
+be themed. By default, ``localhost`` *will* be themed, of course.
 
 Static files and CSS
 --------------------
@@ -494,6 +528,13 @@ document content, and left/right hand side columns.
 
 See below for some more useful rules.
 
+Finally, put a ``manifest.cfg`` file alongside ``rules.xml`` in the
+``static`` directory, containing::
+
+    [theme]
+    title = My theme
+    description = A demo theme from the plone.app.theming README
+
 6. Create the installation profile
 
 The generated code above for the ``<genericsetup:registerProfile />`` tag
@@ -586,8 +627,8 @@ themed site by using the following URLs:
   domain) for a styled Plone. If you used the sample rule above, this will
   look almost exactly like your theme, but with the ``<title />`` tag
   (normally shown in the title bar of your web browser) taken from Plone.
-* ``http://127.0.0.1:8080`` (presuming this is the port where Plone is
-  running) for an unstyled Plone.
+* ``http://localhost:8080?diazo.off=1`` (presuming this is the port where
+  Plone is running) for an unstyled Plone.
 * ``http://localhost:8080/++theme++my.theme/theme.html`` for the pristine
   theme. This is served as a static resource, almost as if it is being
   opened on the filesystem.
