@@ -72,7 +72,7 @@ class ThemingControlpanel(BrowserView):
     def getAvailableThemes(self):
         themes = []
         for directory in iterDirectoriesOfType('theme'):
-            if directory.isFile(RULE_FILENAME):
+            if directory.isFile(RULE_FILENAME) or directory.isFile(MANIFEST_FILENAME):
                 name = directory.__name__
                 title = name.capitalize().replace('-', ' ').replace('.', ' ')
                 description = None
@@ -92,9 +92,13 @@ class ThemingControlpanel(BrowserView):
                         
                         title = parser.get('theme', 'title')
                         description = parser.get('theme', 'description')
+                        
                         manifestRules = parser.get('theme', 'rules')
-                        if manifestRules is not None:
+                        if manifestRules:
                             rules = '/++theme++%s/%s' % (name, manifestRules,)
+                        elif not directory.isFile(RULE_FILENAME):
+                            # No rules file found
+                            continue
                         
                         absolutePrefix = parser.get('theme', 'prefix')
                     except:

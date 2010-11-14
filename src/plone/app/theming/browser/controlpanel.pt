@@ -84,6 +84,7 @@
                         tal:repeat="theme view/availableThemes"
                         tal:content="theme/title"
                         tal:attributes="value theme/id;
+                                        title theme/description;
                                         selected python:theme['id'] == selected and 'selected' or None"
                         />
                 </select>
