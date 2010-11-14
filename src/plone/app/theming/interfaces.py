@@ -4,6 +4,9 @@ from zope.i18nmessageid import MessageFactory
 
 _ = MessageFactory(u"plone")
 
+RULE_FILENAME = 'rules.xml'
+MANIFEST_FILENAME = 'manifest.cfg'
+
 class IThemeSettings(Interface):
     """Transformation settings
     """

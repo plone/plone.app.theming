@@ -83,6 +83,7 @@ class TestCase(unittest.TestCase):
         self.failUnless("This is the theme" in browser.contents)
 
     def test_theme_enabled_resource_directory(self):
+        
         app = self.layer['app']
         portal = self.layer['portal']
         

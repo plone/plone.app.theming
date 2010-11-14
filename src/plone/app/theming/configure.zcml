@@ -1,19 +1,23 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:gs="http://namespaces.zope.org/genericsetup"
-    xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:zcml="http://namespaces.zope.org/zcml"
     xmlns:i18n="http://namespaces.zope.org/i18n"
-    i18n_domain="plone.app.theming">
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="plone">
 
     <i18n:registerTranslations directory="locales"/>
 
     <include package="plone.resource" file="meta.zcml" />
     
+    <plone:static directory="tests/resources" type="theme" />
+    
     <include package="plone.resource" />
     <include package="five.globalrequest" />
     <include package="plone.transformchain" />
     <include package="plone.app.registry" />
+
+    <include package=".browser" />
     
     <gs:registerProfile
         name="default"
@@ -36,25 +40,13 @@
         handler=".transform.invalidateCache"
         />
 
-    <browser:page 
-        name="theming-controlpanel"
-        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-        class=".browser.ThemeSettingsControlPanel"
-        permission="cmf.ManagePortal"
-        />
-    
     <!-- Set X-Theme-Enabled header in the request if theming is enabled -->
     <subscriber
         for="Products.CMFCore.interfaces.ISiteRoot
              zope.app.publication.interfaces.IBeforeTraverseEvent"
         handler=".header.setHeader"
         />
-    
-    <browser:resource
-        name="plone.app.theming.gif"
-        image="icon.gif"
-        />
-        
+
     <!-- Resource traverser -->
     <adapter
         name="theme"
