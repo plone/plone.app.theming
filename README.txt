@@ -98,7 +98,7 @@ The options here are:
 
   Rules
     URL referencing the Diazo rules file. This file in turn references your
-    theme. The URL may be a filesystem or remove URL (in which case you want
+    theme. The URL may be a filesystem or remote URL (in which case you want
     to enable "read network access" - see below). It can also be an absolute
     path, starting with a ``/``, in which case it will be resolved relative
     to the Plone site root, or a special ``python://`` URL - see below.
