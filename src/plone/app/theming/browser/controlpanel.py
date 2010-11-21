@@ -1,16 +1,22 @@
 import logging
 import zipfile
-from ConfigParser import SafeConfigParser
 
 from zope.component import getUtility
 from zope.component import getMultiAdapter
 from zope.publisher.browser import BrowserView
 
 from plone.registry.interfaces import IRegistry
+
+from plone.resource.interfaces import IResourceDirectory
 from plone.resource.utils import iterDirectoriesOfType
 
-from plone.app.theming.interfaces import IThemeSettings, RULE_FILENAME, MANIFEST_FILENAME, _
-from plone.app.theming.utils import getOrCreatePersistentResourceDirectory, extractThemeInfo
+from plone.app.theming.interfaces import _
+from plone.app.theming.interfaces import IThemeSettings
+from plone.app.theming.interfaces import RULE_FILENAME, MANIFEST_FILENAME, THEME_RESOURCE_NAME
+
+from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
+from plone.app.theming.utils import extractThemeInfo
+from plone.app.theming.utils import getManifest
 
 from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
@@ -30,6 +36,8 @@ class ThemingControlpanel(BrowserView):
         processInputs(self.request)
         
         self.settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        
+        self.zodbThemes = self.getZODBThemes()
         
         self.selectedTheme = None
         self.availableThemes = []
@@ -119,7 +127,7 @@ class ThemingControlpanel(BrowserView):
                     
             if performImport:
                 themeContainer.importZip(themeZip)
-    
+        
                 if enableNewTheme:
                     self.settings.rules = u"/++theme++%s/%s" % (themeName, rulesFile,)
         
@@ -128,10 +136,19 @@ class ThemingControlpanel(BrowserView):
         
                     self.settings.absolutePrefix = absolutePrefix
                     self.settings.enabled = True
+        
+        if 'form.button.DeleteSelected' in form:
+            self.authorize()
+            submitted = True
             
+            toDelete = form.get('themes', [])
+            themeDirectory = getOrCreatePersistentResourceDirectory()
+            
+            for theme in toDelete:
+                del themeDirectory[theme]
+        
         if submitted and not self.errors:
-            self.redirect(_(u"Changes saved."))
-            return False
+            IStatusMessage(self.request).add(_(u"Changes saved"))
         elif submitted:
             IStatusMessage(self.request).add(_(u"There were errors"), 'error')
         
@@ -150,25 +167,26 @@ class ThemingControlpanel(BrowserView):
                 if directory.isFile(MANIFEST_FILENAME):
                     manifest = directory.openFile(MANIFEST_FILENAME)
                     try:
-                        parser = SafeConfigParser({
-                                'title': title,
-                                'description': description,
-                                'rules': None,
-                                'prefix': absolutePrefix,
-                            })
-                        parser.readfp(manifest)
                         
-                        title = parser.get('theme', 'title')
-                        description = parser.get('theme', 'description')
+                        manifestInfo = getManifest(manifest,
+                                title=title,
+                                description=description,
+                                rules=None,
+                                prefix=absolutePrefix,
+                            )
                         
-                        manifestRules = parser.get('theme', 'rules')
+                        title = manifestInfo['title']
+                        description = manifestInfo['description']
+                        absolutePrefix = manifestInfo['prefix']
+                        
+                        manifestRules = manifestInfo['rules']
+                        
                         if manifestRules:
                             rules = '/++theme++%s/%s' % (name, manifestRules,)
                         elif not directory.isFile(RULE_FILENAME):
                             # No rules file found
                             continue
                         
-                        absolutePrefix = parser.get('theme', 'prefix')
                     except:
                         logger.exception("Unable to read manifest for theme directory %s", name)
                     finally:
@@ -200,6 +218,48 @@ class ThemingControlpanel(BrowserView):
             if item['id'] == themeSelection:
                 return (item['rules'], item['absolutePrefix'],)
         return None, None
+    
+    def getZODBThemes(self):
+        themes = []
+        
+        persistentDirectory = getUtility(IResourceDirectory, name="persistent")
+        if THEME_RESOURCE_NAME not in persistentDirectory:
+            return themes
+        
+        themesDirectory = persistentDirectory[THEME_RESOURCE_NAME]
+        
+        for name in themesDirectory.listDirectory():
+            
+            themeDir = themesDirectory[name]
+            
+            if themeDir.isFile(RULE_FILENAME) or themeDir.isFile(MANIFEST_FILENAME):
+                
+                title = name.capitalize().replace('-', ' ').replace('.', ' ')
+                description = None
+                
+                if themeDir.isFile(MANIFEST_FILENAME):
+                    manifest = themeDir.openFile(MANIFEST_FILENAME)
+                    try:
+                        
+                        manifestInfo = getManifest(manifest,
+                                title=title,
+                                description=description,
+                            )
+                        
+                        title = manifestInfo['title']
+                        description = manifestInfo['description']
+                    except:
+                        logger.exception("Unable to read manifest for theme directory %s", name)
+                    finally:
+                        manifest.close()
+                
+                themes.append({
+                        'id': name,
+                        'title': title,
+                        'description': description,
+                    })
+        
+        return themes
     
     def authorize(self):
         authenticator = getMultiAdapter((self.context, self.request), name=u"authenticator")

@@ -114,6 +114,27 @@ def getOrCreatePersistentResourceDirectory():
     
     return persistentDirectory[THEME_RESOURCE_NAME]
 
+def getManifest(fp, **kw):
+    """Read the manifest from the given open file pointer. Returns a dict with
+    keys ``title``, ``description``, ``rules`` and ``prefix``. To set a
+    default value, pass the corresponding keyword argument.
+    """
+    
+    parser = SafeConfigParser({
+            'title': kw.get('title', None),
+            'description': kw.get('description', None),
+            'rules': kw.get('rules', None),
+            'prefix': kw.get('prefix', None),
+        })
+    parser.readfp(fp)
+    
+    return {
+        'title': parser.get('theme', 'title'),
+        'description': parser.get('theme', 'description'),
+        'rules': parser.get('theme', 'rules'),
+        'prefix': parser.get('theme', 'prefix'),
+    }
+
 def extractThemeInfo(zipfile):
     """Return a tuple (themeName, rulesFile, absolutePrefix), where themeName
     is the name of the theme and rulesFile is a relative path to the rules.xml
@@ -136,15 +157,26 @@ def extractThemeInfo(zipfile):
         if any(any(filter.match(n) for filter in FILTERS) for n in path.split('/')):
             continue
         
-        lastSegment = path.rstrip('/').split('/')[-1]
-        if path.endswith('/'):
+        pathSegments = path.rstrip('/').split('/')
+        lastSegment = pathSegments[-1]
+        
+        isDirectory = path.endswith('/')
+        
+        if isDirectory:
             if themeName is not None:
                 raise ValueError("More than one top level directory")
             
             themeName = lastSegment
             absolutePrefix = "/++theme++%s" % themeName
+        elif len(pathSegments) > 1:
+            
+            if themeName is not None and pathSegments[0] != themeName:
+                raise ValueError("More than one top level directory")
+            if themeName is None:
+                themeName = pathSegments[0]
+                absolutePrefix = "/++theme++%s" % themeName
         
-        elif themeName is not None:
+        if themeName is not None and not isDirectory:
             
             if not haveManifestRules and path == "%s/%s" % (themeName, RULE_FILENAME,):
                 rulesFile = RULE_FILENAME
@@ -152,17 +184,14 @@ def extractThemeInfo(zipfile):
             elif path == "%s/%s" % (themeName, MANIFEST_FILENAME,):
                 manifest = zipfile.open(member)
                 try:
-                    parser = SafeConfigParser({
-                            'rules': rulesFile,
-                            'prefix': absolutePrefix,
-                        })
-                    parser.readfp(manifest)
+                    manifestInfo = getManifest(manifest, rules=None, prefix=absolutePrefix)
                     
-                    rulesFile = parser.get('theme', 'rules')
-                    if rulesFile:
+                    manifestRules = manifestInfo['rules']
+                    absolutePrefix = manifestInfo['prefix']
+                    
+                    if manifestRules:
+                        rulesFile = manifestRules
                         haveManifestRules = True
-                    
-                    absolutePrefix = parser.get('theme', 'prefix')
                 finally:
                     manifest.close()
     

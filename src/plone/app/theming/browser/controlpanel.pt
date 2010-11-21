@@ -303,6 +303,68 @@
             
         </dd>
         
+        <tal:block condition="view/zodbThemes">
+            <dt id="fieldsetlegend-import">Manage themes</dt>
+            <dd id="fieldset-import">
+            
+                <p i18n:translate="description_manage">
+                   Use the form below to delete themes that have previously been
+                   uploaded. Click on a theme name to download it as a Zip
+                   archive.
+                </p>
+            
+                <form
+                    name="manage"
+                    method="post" 
+                    class="enableUnloadProtection"
+                    tal:attributes="action request/URL"
+                    tal:define="errors view/errors">
+                
+                    <table class="listing">
+                        <thead>
+                            <tr>
+                                <th />
+                                <th i18n:translate="heading_theme_title">Title</th>
+                                <th i18n:translate="heading_theme_description">Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr tal:repeat="theme view/zodbThemes">
+                                <td>
+                                    <input
+                                        type="checkbox"
+                                        name="themes:list"
+                                        tal:attributes="value theme/id"
+                                        />
+                                </td>
+                                <td>
+                                    <a  target="_new"
+                                        tal:attributes="href string:${context/absolute_url}/++theme++${theme/id}/@@download-zip"
+                                        tal:content="theme/title"
+                                        />
+                                </td>
+                                <td tal:content="theme/description" />
+                            </tr>
+                        </tbody>
+                    </table>
+                
+                    <div class="formControls">
+                        <input
+                            type="submit"
+                            name="form.button.DeleteSelected"
+                            class="destructive"
+                            value="Delete"
+                            i18n:attributes="value"
+                            />
+                    </div>
+                
+                    <input tal:replace="structure context/@@authenticator/authenticator" />
+            
+                </form>
+            
+            </dd>
+        </tal:block>
+        
     </dl>
 
 </div>
