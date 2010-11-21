@@ -1,20 +1,21 @@
 import logging
+import zipfile
 from ConfigParser import SafeConfigParser
 
 from zope.component import getUtility
+from zope.component import getMultiAdapter
 from zope.publisher.browser import BrowserView
 
 from plone.registry.interfaces import IRegistry
-
 from plone.resource.utils import iterDirectoriesOfType
 
-from plone.app.theming.interfaces import IThemeSettings
-from plone.app.theming.interfaces import RULE_FILENAME, MANIFEST_FILENAME
-from plone.app.theming.interfaces import _
+from plone.app.theming.interfaces import IThemeSettings, RULE_FILENAME, MANIFEST_FILENAME, _
+from plone.app.theming.utils import getOrCreatePersistentResourceDirectory, extractThemeInfo
 
-from Products.statusmessages.interfaces import IStatusMessage
-from Products.Five.browser.decode import processInputs
+from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.decode import processInputs
+from Products.statusmessages.interfaces import IStatusMessage
 
 logger = logging.getLogger('plone.app.theming')
 
@@ -35,6 +36,7 @@ class ThemingControlpanel(BrowserView):
         self.selectedTheme = None
         
         self.errors = {}
+        submitted = False
         
         form = self.request.form
         
@@ -45,27 +47,93 @@ class ThemingControlpanel(BrowserView):
         self.availableThemes = self.getAvailableThemes()
         self.selectedTheme = self.getSelectedTheme(self.availableThemes, self.settings.rules)
         
-        if 'form.button.Save' in form:
+        if 'form.button.BasicSave' in form:
+            self.authorize()
+            submitted = True
             
             self.settings.enabled = form.get('enabled', False)
+            themeSelection = form.get('selectedTheme', None)
+            
+            if themeSelection != "_other_":
+                rules, prefix = self.getRulesAndPrefix(self.availableThemes, themeSelection)
+                
+                self.settings.rules = rules
+                self.settings.absolutePrefix = prefix
+            
+        if 'form.button.AdvancedSave' in form:
+            self.authorize()
+            submitted = True
+            
             self.settings.readNetwork = form.get('readNetwork', False)
             
             rules = form.get('rules', None)
             prefix = form.get('absolutePrefix', None)
             
-            # If a theme was selected and it's not the one that was previously
-            # selected, let this override the advanced settings
-            themeSelection = form.get('selectedTheme', None)
-            if themeSelection:
-                if self.selectionChanged(self.availableThemes, themeSelection, self.settings.rules):
-                    rules, prefix = self.getRulesAndPrefix(self.availableThemes, themeSelection)
-            
             self.settings.rules = rules
             self.settings.absolutePrefix = prefix
+        
+        if 'form.button.Import' in form:
+            self.authorize()
+            submitted = True
             
-            if not self.errors:
-                self.redirect(_(u"Changes saved."))
-                return False
+            enableNewTheme = form.get('enableNewTheme', False)
+            replaceExisting = form.get('replaceExisting', False)
+            themeArchive = form.get('themeArchive', None)
+            
+            themeZip = None
+            performImport = False
+            
+            try:
+                themeZip = zipfile.ZipFile(themeArchive)
+            except (zipfile.BadZipfile, zipfile.LargeZipFile,):
+                logger.exception("Could not read zip file")
+                self.errors['themeArchive'] = _('error_invalid_zip', 
+                        default=u"The uploaded file is not a valid Zip archive"
+                    )
+            
+            if themeZip:
+                
+                themeName, rulesFile, absolutePrefix = None, None, None
+                
+                try:
+                    themeName, rulesFile, absolutePrefix = extractThemeInfo(themeZip)
+                except KeyError:
+                    self.errors['themeArchive'] = _('error_no_rules_file',
+                            u"The uploaded file does not contain a valid theme archive."
+                        )
+                else:
+                    
+                    themeContainer = getOrCreatePersistentResourceDirectory()
+                    themeExists = themeName in themeContainer
+                    
+                    if themeExists:
+                        if not replaceExisting:
+                            self.errors['themeArchive'] = _('error_already_installed',
+                                    u"This theme is already installed. Select 'Replace existing theme' and re-upload to replace it."
+                                )
+                        else:
+                            del themeContainer[themeName]
+                            performImport = True
+                    else:
+                        performImport = True
+                    
+            if performImport:
+                themeContainer.importZip(themeZip)
+    
+                if enableNewTheme:
+                    self.settings.rules = u"/++theme++%s/%s" % (themeName, rulesFile,)
+        
+                    if isinstance(absolutePrefix, str):
+                        absolutePrefix = absolutePrefix.decode('utf-8')
+        
+                    self.settings.absolutePrefix = absolutePrefix
+                    self.settings.enabled = True
+            
+        if submitted and not self.errors:
+            self.redirect(_(u"Changes saved."))
+            return False
+        elif submitted:
+            IStatusMessage(self.request).add(_(u"There were errors"), 'error')
         
         return True
     
@@ -127,17 +195,16 @@ class ThemingControlpanel(BrowserView):
                 return item['id']
         return False
     
-    def selectionChanged(self, themes, themeSelection, rules):
-        for item in themes:
-            if item['id'] == themeSelection:
-                return item['rules'] != rules
-        return False
-    
     def getRulesAndPrefix(self, themes, themeSelection):
         for item in themes:
             if item['id'] == themeSelection:
                 return (item['rules'], item['absolutePrefix'],)
         return None, None
+    
+    def authorize(self):
+        authenticator = getMultiAdapter((self.context, self.request), name=u"authenticator")
+        if not authenticator.verify():
+            raise Unauthorized
     
     def redirect(self, message):
         IStatusMessage(self.request).add(message)

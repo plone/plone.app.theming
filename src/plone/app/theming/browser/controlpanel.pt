@@ -26,166 +26,284 @@
         specifying a rules file.
     </p>
     
-    <form
-        name="settings"
-        method="post" 
-        class="enableFormTabbing enableUnloadProtection"
-        tal:attributes="action request/URL"
-        tal:define="errors view/errors">
-
-        <!-- Field set: global settings -->
-        <fieldset id="fieldset-basic-settings">
-            <legend
-                id="fieldsetlegend-basic-settings" 
-                i18n:translate="legend_basic_settings">Theme settings</legend>
+    <dl class="enableFormTabbing">
+        <dt id="fieldsetlegend-basic">Basic settings</dt>
+        <dd id="fieldset-basic">
             
-            <div class="discreet" i18n:translate="description_basic_settings">
+            <p i18n:translate="description_basic_settings">
                 To enable a theme registered with Plone, choose it from the
                 list below and make sure <em>Enable theme</em> is selected.
                 It is also possible to use themes that are not pre-registered
                 with Plone. Use the <em>Advanced</em> tab to configure a
                 theme manually.
-            </div>
+            </p>
             
-            <div
-                class="field"
-                tal:define="selected python:request.get('enabled', view.settings.enabled)">
-    
-                <input type="hidden" value="" name="enabled:boolean:default" />
-                <input type="checkbox" value="1" name="enabled:boolean" id="enabled"
-                    tal:attributes="checked python:'checked' if selected else None"
-                    />
-                <label for="enabled" i18n:translate="label_enabled">Enable theme</label>
-                <div class="formHelp" i18n:translate="help_enabled">
-                    If this option is disabled, no theme will be applied.
-                </div>
-    
-            </div>
+            <form
+                name="basic"
+                method="post" 
+                class="enableUnloadProtection"
+                tal:attributes="action request/URL"
+                tal:define="errors view/errors">
 
-            <div
-                class="field"
-                tal:define="selected python:request.get('selectedTheme', view.selectedTheme)">
+                <div
+                    class="field"
+                    tal:define="selected python:request.get('enabled', view.settings.enabled)">
 
-                <label for="selectedTheme" i18n:translate="label_selected_theme">Select a theme</label>
-                <div class="formHelp" i18n:translate="help_selected_theme">
-                    Select a theme from the list below to apply this theme.
-                </div>
-
-                <select size="1" id="selectedTheme" name="selectedTheme">
-                    <option
-                        value=""
-                        i18n:translate="label_please_select_theme">Please select</option>
-                    <option
-                        value=""
-                        tal:condition="python:not selected and view.settings.rules is not None"
-                        selected="selected"
-                        i18n:translate="label_other">Other (see advanced tab)</option>
-                    <option
-                        tal:repeat="theme view/availableThemes"
-                        tal:content="theme/title"
-                        tal:attributes="value theme/id;
-                                        title theme/description;
-                                        selected python:theme['id'] == selected and 'selected' or None"
+                    <input type="hidden" value="" name="enabled:boolean:default" />
+                    <input type="checkbox" value="1" name="enabled:boolean" id="enabled"
+                        tal:attributes="checked python:'checked' if selected else None"
                         />
-                </select>
-                
-            </div>
-        
-        </fieldset>
-        
-        <!-- Field set: advanced -->
-        <fieldset id="fieldset-advanced">
-            <legend
-                id="fieldsetlegend-advanced" 
-                i18n:translate="legend_advanced">Advanced</legend>
+                    <label for="enabled" i18n:translate="label_enabled">Enable theme</label>
+                    <div class="formHelp" i18n:translate="help_enabled">
+                        If this option is disabled, no theme will be applied.
+                    </div>
 
-            <div class="discreet" i18n:translate="description_advanced">
+                </div>
+
+                <div
+                    class="field"
+                    tal:define="selected python:request.get('selectedTheme', view.selectedTheme)">
+
+                    <label for="selectedTheme" i18n:translate="label_selected_theme">Select a theme</label>
+                    <div class="formHelp" i18n:translate="help_selected_theme">
+                        Select a theme from the list below to apply this theme.
+                    </div>
+
+                    <select size="1" id="selectedTheme" name="selectedTheme">
+                        <option
+                            value=""
+                            i18n:translate="label_please_select_theme">Please select</option>
+                        <option
+                            value="_other_"
+                            tal:condition="python:not selected and view.settings.rules is not None"
+                            selected="selected"
+                            i18n:translate="label_other">Other (see advanced tab)</option>
+                        <option
+                            tal:repeat="theme view/availableThemes"
+                            tal:content="theme/title"
+                            tal:attributes="value theme/id;
+                                            title theme/description;
+                                            selected python:theme['id'] == selected and 'selected' or None"
+                            />
+                    </select>
+            
+                </div>
+                
+                <div class="formControls">
+                    <input
+                        type="submit"
+                        name="form.button.BasicSave"
+                        class="context"
+                        value="Save"
+                        i18n:attributes="value" />
+
+                    <input
+                        type="submit"
+                        name="form.button.Cancel"
+                        class="context"
+                        value="Cancel"
+                        i18n:attributes="value" />
+                </div>
+                
+                <input tal:replace="structure context/@@authenticator/authenticator" />
+                
+            </form>
+            
+        </dd>
+        
+        <dt id="fieldsetlegend-advanced">Advanced settings</dt>
+        <dd id="fieldset-advanced">
+            
+            <p i18n:translate="description_advanced">
                Use the fields below to configure the Diazo rules file and
                absolute path prefix, or to enable reading a theme from a
                remote server.               
-            </div>
+            </p>
             
-            <div
-                tal:define="error errors/rules | nothing;
-                            rules python:request.get('rules', view.settings.rules)"
-                tal:attributes="class python:'field error' if error else 'field'">
+            <form
+                name="advanced"
+                method="post" 
+                class="enableUnloadProtection"
+                tal:attributes="action request/URL"
+                tal:define="errors view/errors">
                 
-                <label for="rules" i18n:translate="label_rules">Rules file</label>
-                <div class="formHelp" i18n:translate="help_rules">
-                    Enter a path or URL for the theme rules file.
+                <div
+                    tal:define="error errors/rules | nothing;
+                                rules python:request.get('rules', view.settings.rules)"
+                    tal:attributes="class python:'field error' if error else 'field'">
+                
+                    <label for="rules" i18n:translate="label_rules">Rules file</label>
+                    <div class="formHelp" i18n:translate="help_rules">
+                        Enter a path or URL for the theme rules file.
+                    </div>
+                
+                    <div tal:content="error" tal:condition="error" />
+                
+                    <input
+                        name="rules"
+                        id="rules"
+                        type="text"
+                        size="50"
+                        tal:attributes="value rules"
+                        />
+            
                 </div>
-                
-                <div tal:replace="error" tal:condition="error" />
-                
-                <input
-                    name="rules"
-                    id="rules"
-                    type="text"
-                    tal:attributes="value rules"
-                    />
             
-            </div>
-            
-            <div
-                tal:define="error errors/absolutePrefix | nothing;
-                            absolutePrefix python:request.get('absolutePrefix', view.settings.absolutePrefix)"
-                tal:attributes="class python:'field error' if error else 'field'">
+                <div
+                    tal:define="error errors/absolutePrefix | nothing;
+                                absolutePrefix python:request.get('absolutePrefix', view.settings.absolutePrefix)"
+                    tal:attributes="class python:'field error' if error else 'field'">
                 
-                <label for="absolutePrefix" i18n:translate="label_absolute_prefix">Absolute path prefix</label>
-                <div class="formHelp" i18n:translate="help_rules">
-                    If your theme uses relative paths for images, stylesheets
-                    or other resources, you can enter a prefix here to make
-                    sure these resources will work regardless of which page
-                    Plone is rendering.
+                    <label for="absolutePrefix" i18n:translate="label_absolute_prefix">Absolute path prefix</label>
+                    <div class="formHelp" i18n:translate="help_rules">
+                        If your theme uses relative paths for images, stylesheets
+                        or other resources, you can enter a prefix here to make
+                        sure these resources will work regardless of which page
+                        Plone is rendering.
+                    </div>
+                
+                    <div tal:content="error" tal:condition="error" />
+                
+                    <input
+                        name="absolutePrefix"
+                        id="absolutePrefix"
+                        type="text"
+                        size="50"
+                        tal:attributes="value absolutePrefix"
+                        />
+            
                 </div>
-                
-                <div tal:replace="error" tal:condition="error" />
-                
-                <input
-                    name="absolutePrefix"
-                    id="absolutePrefix"
-                    type="text"
-                    tal:attributes="value absolutePrefix"
-                    />
             
-            </div>
-            
-            <div
-                class="field"
-                tal:define="selected python:request.get('readNetwork', view.settings.readNetwork)">
+                <div
+                    class="field"
+                    tal:define="selected python:request.get('readNetwork', view.settings.readNetwork)">
     
-                <input type="hidden" value="" name="readNetwork:boolean:default" />
-                <input type="checkbox" value="1" name="readNetwork:boolean" id="readNetwork"
-                    tal:attributes="checked python:'readNetwork' if selected else None"
-                    />
-                <label for="readNetwork" i18n:translate="label_read_network">Read network</label>
-                <div class="formHelp" i18n:translate="help_read_network">
-                    Allow rules and themes to be read from remote servers.
-                </div>
+                    <input type="hidden" value="" name="readNetwork:boolean:default" />
+                    <input type="checkbox" value="1" name="readNetwork:boolean" id="readNetwork"
+                        tal:attributes="checked python:'readNetwork' if selected else None"
+                        />
+                    <label for="readNetwork" i18n:translate="label_read_network">Read network</label>
+                    <div class="formHelp" i18n:translate="help_read_network">
+                        Allow rules and themes to be read from remote servers.
+                    </div>
     
-            </div>
-        
-        </fieldset>
+                </div>
+                
+                
+                <div class="formControls">
+                    <input
+                        type="submit"
+                        name="form.button.AdvancedSave"
+                        class="context"
+                        value="Save"
+                        i18n:attributes="value" />
 
-        <div class="formControls">
-            <input
-                type="submit"
-                name="form.button.Save"
-                class="context"
-                value="Save"
-                i18n:attributes="value" />
-
-            <input
-                type="submit"
-                name="form.button.Cancel"
-                class="context"
-                value="Cancel"
-                i18n:attributes="value" />
-        </div>
+                    <input
+                        type="submit"
+                        name="form.button.Cancel"
+                        class="context"
+                        value="Cancel"
+                        i18n:attributes="value" />
+                </div>
+                
+                <input tal:replace="structure context/@@authenticator/authenticator" />
+                
+            </form>
+            
+        </dd>
         
-        <input tal:replace="structure context/@@authenticator/authenticator" />
+        <dt id="fieldsetlegend-import">Import theme</dt>
+        <dd id="fieldset-import">
+            
+            <p i18n:translate="description_import">
+               Use the form below to upload a Zip file containing a theme.
+            </p>
+            
+            <form
+                name="import"
+                method="post" 
+                enctype="multipart/form-data"
+                class="enableUnloadProtection"
+                tal:attributes="action request/URL"
+                tal:define="errors view/errors">
+                
+                <div
+                    class="field"
+                    tal:define="error errors/themeArchive | nothing"
+                    tal:attributes="class python:'field error' if error else 'field'">
+                    
+                    <label for="themeArchive" i18n:translate="label_theme_archive">Theme archive</label>
+                    
+                    <div class="formHelp" i18n:translate="help_theme_archive">
+                        Select a file to upload. This must be a Zip file with
+                        a single top level directory, which will be used as
+                        the theme identifier. This directory must contain a
+                        <code>rules.xml</code> file or a
+                        <code>manifest.cfg</code> file indicating an
+                        alternative Diazo rules file.
+                    </div>
+                    
+                    <div tal:content="error" tal:condition="error" />
+                    
+                    <input
+                        type="file"
+                        name="themeArchive"
+                        id="themeArchive"
+                        />
+                    
+                </div>
+                
+                <div
+                    class="field"
+                    tal:define="selected python:request.get('enableNewTheme', True)">
+                    <input type="hidden" value="" name="enableNewTheme:boolean:default" />
+                    <input type="checkbox" value="1" name="enableNewTheme:boolean" id="enableNewTheme"
+                        tal:attributes="checked python:'enableNewTheme' if selected else None"
+                        />
+                    <label for="enableNewTheme" i18n:translate="label_enable_new_theme">Immediately enable new theme</label>
+                    <div class="formHelp" i18n:translate="help_enable_new_theme">
+                        Select this option to enable the newly uploaded theme
+                        immediately.
+                    </div>
+                </div>
+                
+                <div
+                    class="field"
+                    tal:define="selected python:request.get('replaceExisting', True)">
+                    <input type="hidden" value="" name="replaceExisting:boolean:default" />
+                    <input type="checkbox" value="1" name="replaceExisting:boolean" id="replaceExisting"
+                        tal:attributes="checked python:'replaceExisting' if selected else None"
+                        />
+                    <label for="replaceExisting" i18n:translate="label_replace_existing">Replace existing theme</label>
+                    <div class="formHelp" i18n:translate="help_replace_existing">
+                        Select this option to replace any existing theme that
+                        may have been uploaded previously.
+                    </div>
+                </div>
+                
+                <div class="formControls">
+                    <input
+                        type="submit"
+                        name="form.button.Import"
+                        class="context"
+                        value="Import"
+                        i18n:attributes="value" />
+                    
+                    <input
+                        type="submit"
+                        name="form.button.Cancel"
+                        class="context"
+                        value="Cancel"
+                        i18n:attributes="value" />
+                </div>
+                
+                <input tal:replace="structure context/@@authenticator/authenticator" />
+            
+            </form>
+            
+        </dd>
         
-    </form>
+    </dl>
 
 </div>
 

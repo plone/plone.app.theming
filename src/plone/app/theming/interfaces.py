@@ -4,6 +4,7 @@ from zope.i18nmessageid import MessageFactory
 
 _ = MessageFactory(u"plone")
 
+THEME_RESOURCE_NAME = 'theme'
 RULE_FILENAME = 'rules.xml'
 MANIFEST_FILENAME = 'manifest.cfg'
 
