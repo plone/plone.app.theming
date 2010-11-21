@@ -93,7 +93,11 @@ In the "Diazo Theme" control panel, you can turn the theming engine on or
 off, and select from a list of pre-registered themes (more on how to
 register your own themes shortly).
 
-Alternatively, you can configure a theme yourself, under the "Advanced" tab.
+You can also upload a theme packaged as a ZIP archive from the control panel,
+under the "Import" tab. See below for more information about how to create
+a valid theme archive.
+
+Alternatively, you can configure a theme manually, under the "Advanced" tab.
 The options here are:
 
   Rules
@@ -119,8 +123,35 @@ The options here are:
     impact. If you need to access external URLs, enable the "read network"
     setting.
 
-Static resource directories and the ``++theme++`` traverser
------------------------------------------------------------
+ZIP file format
+---------------
+
+A theme packaged for import as a ZIP archive must adhere to the following
+rules:
+
+  * The ZIP file must contain a single top level directory. This will be
+    used as the theme id. Only one theme with a given id may exist in any
+    given Plone site, though you are given the option to replace an existing
+    theme on import if you upload an archive with a theme that already exists.
+  * Inside this top level directory, there should be a ``rules.xml`` file with
+    the Diazo rules. Any other resources, such as the theme HTML file or
+    static resources, will normally also live in this directory or any
+    subdirectories you wish to create inside it.
+  * Optionally, you can add a ``manifest.cfg`` with a theme title and
+    description for the theme. If you want to use a different absolute path
+    prefix or rules file, you can also specify this in ``manifest.cfg``. See
+    the next section for an example.
+
+The easiest way to create a compliant ZIP file is usually to start with a
+standalone theme built as a static web page in a top level directory,
+referencing its resources (images, stylesheets, JavaScript files, etc) using
+relative URLs. Then, place a ``rules.xml`` file in this same top level
+directory, containing the relevant Diazo directives. Finally, create a ZIP
+archive of the top level directory using the compression features built into
+your operating system or a program such as 7Zip for Windows.
+
+Traversing to themes
+--------------------
 
 This package integrates with `plone.resource`_ to enable the ``theme``
 resource type. This enables themes to be deployed:
@@ -128,7 +159,8 @@ resource type. This enables themes to be deployed:
   * On the filesystem using the global resource directory (if one is
     configured);
   * In the ZODB inside the ``theme`` directory of the
-    ``portal_resources`` tool; or
+    ``portal_resources`` tool (perhaps initially imported via a ZIP archive
+    as described above); or
   * In Python package that use the ``<plone:static />`` ZCML directive to
     register their own resource directory
 

@@ -4,6 +4,9 @@ Changelog
 1.0b1 - Unreleased
 -------------------
 
+* Added support for uploading themes as Zip archives.
+  [optilude]
+
 * Added theme off switch: Add a query string parameter ``diazo.off=1`` to a
   request whilst Zope is in development mode to turn off the theme.
   [optilude]
