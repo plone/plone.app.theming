@@ -162,19 +162,18 @@ def extractThemeInfo(zipfile):
         
         isDirectory = path.endswith('/')
         
-        if isDirectory:
+        if pathSegments[0] != themeName:
+            
             if themeName is not None:
                 raise ValueError("More than one top level directory")
             
-            themeName = lastSegment
-            absolutePrefix = "/++theme++%s" % themeName
-        elif len(pathSegments) > 1:
-            
-            if themeName is not None and pathSegments[0] != themeName:
-                raise ValueError("More than one top level directory")
-            if themeName is None:
-                themeName = pathSegments[0]
-                absolutePrefix = "/++theme++%s" % themeName
+            else:
+                if isDirectory:
+                    themeName = lastSegment
+                    absolutePrefix = "/++theme++%s" % themeName
+                elif len(pathSegments) > 1:
+                    themeName = pathSegments[0]
+                    absolutePrefix = "/++theme++%s" % themeName
         
         if themeName is not None and not isDirectory:
             

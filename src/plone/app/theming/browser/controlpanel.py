@@ -105,7 +105,8 @@ class ThemingControlpanel(BrowserView):
                 
                 try:
                     themeName, rulesFile, absolutePrefix = extractThemeInfo(themeZip)
-                except KeyError:
+                except (ValueError, KeyError,), e:
+                    logger.warn(str(e))
                     self.errors['themeArchive'] = _('error_no_rules_file',
                             u"The uploaded file does not contain a valid theme archive."
                         )

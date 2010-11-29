@@ -145,3 +145,19 @@ class TestUnit(unittest.TestCase):
         
         f.close()
     
+    def test_extractThemeInfo_with_subdirectories(self):
+        import zipfile
+        import os.path
+        from plone.app.theming.utils import extractThemeInfo
+        
+        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'subdirectories.zip'))
+        z = zipfile.ZipFile(f)
+        
+        theme, rules, prefix = extractThemeInfo(z)
+        
+        self.assertEqual(theme, 'subdirectories')
+        self.assertEqual(rules, 'rules.xml')
+        self.assertEqual(prefix, '/++theme++subdirectories')
+        
+        f.close()
+    
