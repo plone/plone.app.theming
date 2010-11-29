@@ -454,6 +454,7 @@ need to add the ``browser`` namespace, as shown.
         xmlns:browser="http://namespaces.zope.org/browser"
         xmlns:i18n="http://namespaces.zope.org/i18n"
         xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+        xmlns:plone="http://namespaces.plone.org/plone"
         i18n_domain="my.theme">
 
         <genericsetup:registerProfile
@@ -464,8 +465,8 @@ need to add the ``browser`` namespace, as shown.
             provides="Products.GenericSetup.interfaces.EXTENSION"
             />
 
-        <browser:resourceDirectory
-            name="my.theme"
+        <plone:static
+            type="theme"
             directory="static"
             />
   
