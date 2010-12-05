@@ -709,6 +709,58 @@ Other tips
 * Run Zope in debug mode whilst developing so that you don't need to restart
   to see changes to theme, rules or, resources.
 
+Migrating from collective.xdv
+=============================
+
+``plone.app.theme`` has evolved from the ``collective.xdv`` package.
+Similarly, Diazo is an evolution of ``xdv``.
+
+Migrating XDV rules to Diazo rules
+----------------------------------
+
+The Diazo ``rules.xml`` syntax is very similar to the XDV one.
+
+However, you need to update the XML namespaces. Where in XDV you would have::
+
+    <rules
+        xmlns="http://namespaces.plone.org/xdv"
+        xmlns:css="http://namespaces.plone.org/xdv+css">
+    
+        ...
+    
+    </rules>
+
+you should now use::
+
+    <rules
+        xmlns="http://namespaces.plone.org/diazo"
+        xmlns:css="http://namespaces.plone.org/diazo+css">
+    
+        ...
+    
+    </rules>
+
+Plone integration changes
+-------------------------
+
+If you have installed a theme using ``collective.xdv``, and you wish to
+migrate to ``plone.app.theming``, you should use the following steps.
+
+1. Start up your Plone site, go to the ``portal_quickinstaller`` tool in
+   the ZMI and uninstall the XDV theme integration package.
+
+2. Stop your Plone site, and remove ``collective.xdv`` from your buildout,
+   by removing any references in ``buildout.cfg`` (or a file it extends),
+   and any references in an ``install_requires`` line in a ``setup.py`` file
+   you control.
+
+3. Install ``plone.app.theming`` as described above, adjusting your theme
+   package as required.
+
+You will notice that ``plone.app.theming`` exposes fewer options than
+``collective.xdv``. This is mainly because the relevant features have moved
+into ``Diazo`` itself and can be configured in the ``rules.xml`` file.
+
 .. _Diazo: http://diazo.org
 .. _Plone: http://plone.org
 .. _plone.resource: http://pypi.python.org/pypi/plone.resource
