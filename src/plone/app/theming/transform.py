@@ -79,7 +79,9 @@ class ThemeTransform(object):
         host = base1.lower()
         
         # Make sure it's always possible to see an unstyled page
-        if host == '127.0.0.1' or host == '127.0.0.1:%s' % request.get('SERVER_PORT'):
+        if (DevelopmentMode and
+            (host == '127.0.0.1' or host == '127.0.0.1:%s' % request.get('SERVER_PORT'))
+        ):
             return None
         
         # Obtain settings. Do nothing if not found
