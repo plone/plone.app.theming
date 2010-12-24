@@ -34,7 +34,7 @@ setup(name='plone.app.theming',
           'plone.resource',
           'repoze.xmliter',
           'five.globalrequest',
-          'Plone',
+          'Products.CMFPlone',
       ],
       extras_require={
         'test': ['plone.app.testing'],

@@ -4,6 +4,9 @@ Changelog
 1.0b1 - Unreleased
 -------------------
 
+* Depend on ``Products.CMFPlone`` instead of ``Plone``.
+  [elro]
+
 * Added support for uploading themes as Zip archives.
   [optilude]
 
