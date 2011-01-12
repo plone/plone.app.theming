@@ -228,7 +228,7 @@ You can also set::
     
 to use a different rule file name than ``rules.xml``, and::
 
-    prefix = /some/preifx
+    prefix = /some/prefix
 
 to change the absolute path prefix (see above).
 
