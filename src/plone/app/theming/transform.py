@@ -85,16 +85,8 @@ class ThemeTransform(object):
             return None
         
         # Obtain settings. Do nothing if not found
-        
-        registry = queryUtility(IRegistry)
-        if registry is None:
-            return None
-        
-        try:
-            settings = registry.forInterface(IThemeSettings)
-        except KeyError:
-            return None
-        
+        settings = self.getSettings()
+
         if settings is None:
             return None
         
@@ -170,7 +162,18 @@ class ThemeTransform(object):
         
         return transform
     
-    
+    def getSettings(self):
+        registry = queryUtility(IRegistry)
+        if registry is None:
+            return None
+        
+        try:
+            settings = registry.forInterface(IThemeSettings)
+        except KeyError:
+            return None
+
+        return settings
+
     def parseTree(self, result):
         contentType = self.request.response.getHeader('Content-Type')
         if contentType is None or not contentType.startswith('text/html'):
