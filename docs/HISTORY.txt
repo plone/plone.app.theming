@@ -4,6 +4,10 @@ Changelog
 1.0b1 - Unreleased
 -------------------
 
+* Use plone.subrequest 1.6 features to work with IStreamIterator from
+  plone.resource.
+  [elro]
+
 * Depend on ``Products.CMFPlone`` instead of ``Plone``.
   [elro]
 

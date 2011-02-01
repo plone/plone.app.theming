@@ -74,7 +74,7 @@ class InternalResolver(etree.Resolver):
         response = subrequest(system_url, root=portal)
         if response.status != 200:
             return None
-        result = response.body or response.stdout.getvalue()
+        result = response.getBody()
         return self.resolve_string(result, context)
 
 
