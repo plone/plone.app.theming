@@ -7,16 +7,18 @@ from zope.publisher.browser import BrowserView
 
 from plone.registry.interfaces import IRegistry
 
-from plone.resource.interfaces import IResourceDirectory
-from plone.resource.utils import iterDirectoriesOfType
+from plone.resource.manifest import MANIFEST_FILENAME
+from plone.resource.manifest import getZODBResources
+from plone.resource.manifest import getAllResources
 
 from plone.app.theming.interfaces import _
 from plone.app.theming.interfaces import IThemeSettings
-from plone.app.theming.interfaces import RULE_FILENAME, MANIFEST_FILENAME, THEME_RESOURCE_NAME
+from plone.app.theming.interfaces import RULE_FILENAME
+from plone.app.theming.interfaces import THEME_RESOURCE_NAME
+from plone.app.theming.interfaces import MANIFEST_FORMAT
 
 from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
 from plone.app.theming.utils import extractThemeInfo
-from plone.app.theming.utils import getManifest
 
 from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
@@ -24,6 +26,9 @@ from Products.Five.browser.decode import processInputs
 from Products.statusmessages.interfaces import IStatusMessage
 
 logger = logging.getLogger('plone.app.theming')
+
+def isValidThemeDirectory(directory):
+    return directory.isFile(MANIFEST_FILENAME) or directory.isFile(RULE_FILENAME)
 
 class ThemingControlpanel(BrowserView):
     
@@ -156,57 +161,37 @@ class ThemingControlpanel(BrowserView):
         return True
     
     def getAvailableThemes(self):
+        
+        resources = getAllResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
         themes = []
-        for directory in iterDirectoriesOfType('theme'):
-            if directory.isFile(RULE_FILENAME) or directory.isFile(MANIFEST_FILENAME):
-                name = directory.__name__
-                title = name.capitalize().replace('-', ' ').replace('.', ' ')
-                description = None
-                rules = u"/++theme++%s/%s" % (name, RULE_FILENAME,)
-                absolutePrefix = u"/++theme++%s" % name
-                
-                if directory.isFile(MANIFEST_FILENAME):
-                    manifest = directory.openFile(MANIFEST_FILENAME)
-                    try:
-                        
-                        manifestInfo = getManifest(manifest,
-                                title=title,
-                                description=description,
-                                rules=None,
-                                prefix=absolutePrefix,
-                            )
-                        
-                        title = manifestInfo['title']
-                        description = manifestInfo['description']
-                        absolutePrefix = manifestInfo['prefix']
-                        
-                        manifestRules = manifestInfo['rules']
-                        
-                        if manifestRules:
-                            rules = '/++theme++%s/%s' % (name, manifestRules,)
-                        elif not directory.isFile(RULE_FILENAME):
-                            # No rules file found
-                            continue
-                        
-                    except:
-                        logger.exception("Unable to read manifest for theme directory %s", name)
-                    finally:
-                        manifest.close()
-                
-                if isinstance(rules, str):
-                    rules = rules.decode('utf-8')
-                if isinstance(absolutePrefix, str):
-                    absolutePrefix = absolutePrefix.decode('utf-8')
-                
-                themes.append({
+        for name, manifest in resources.items():
+            title = name.capitalize().replace('-', ' ').replace('.', ' ')
+            description = None
+            rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
+            prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
+            
+            if manifest is not None:
+                title       = manifest['title'] or title
+                description = manifest['description'] or description
+                rules       = manifest['rules'] or rules
+                prefix      = manifest['prefix'] or prefix
+            
+            if isinstance(rules, str):
+                rules = rules.decode('utf-8')
+            if isinstance(prefix, str):
+                prefix = prefix.decode('utf-8')
+            
+            themes.append({
                     'id': name,
                     'title': title,
                     'description': description,
                     'rules': rules,
-                    'absolutePrefix': absolutePrefix,
+                    'absolutePrefix': prefix,
                 })
-                
+        
+        themes.sort(key=lambda x: x['title'])
         return themes
+
     
     def getSelectedTheme(self, themes, rules):
         for item in themes:
@@ -221,45 +206,24 @@ class ThemingControlpanel(BrowserView):
         return None, None
     
     def getZODBThemes(self):
+        
+        resources = getZODBResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
         themes = []
-        
-        persistentDirectory = getUtility(IResourceDirectory, name="persistent")
-        if THEME_RESOURCE_NAME not in persistentDirectory:
-            return themes
-        
-        themesDirectory = persistentDirectory[THEME_RESOURCE_NAME]
-        
-        for name in themesDirectory.listDirectory():
+        for name, manifest in resources.items():
+            title = name.capitalize().replace('-', ' ').replace('.', ' ')
+            description = None
             
-            themeDir = themesDirectory[name]
+            if manifest is not None:
+                title       = manifest['title'] or title
+                description = manifest['description'] or description
             
-            if themeDir.isFile(RULE_FILENAME) or themeDir.isFile(MANIFEST_FILENAME):
-                
-                title = name.capitalize().replace('-', ' ').replace('.', ' ')
-                description = None
-                
-                if themeDir.isFile(MANIFEST_FILENAME):
-                    manifest = themeDir.openFile(MANIFEST_FILENAME)
-                    try:
-                        
-                        manifestInfo = getManifest(manifest,
-                                title=title,
-                                description=description,
-                            )
-                        
-                        title = manifestInfo['title']
-                        description = manifestInfo['description']
-                    except:
-                        logger.exception("Unable to read manifest for theme directory %s", name)
-                    finally:
-                        manifest.close()
-                
-                themes.append({
-                        'id': name,
-                        'title': title,
-                        'description': description,
-                    })
+            themes.append({
+                    'id': name,
+                    'title': title,
+                    'description': description,
+                })
         
+        themes.sort(key=lambda x: x['title'])
         return themes
     
     def authorize(self):

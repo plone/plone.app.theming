@@ -2,11 +2,16 @@ from zope.interface import Interface
 from zope import schema
 from zope.i18nmessageid import MessageFactory
 
+from plone.resource.manifest import ManifestFormat
+
 _ = MessageFactory(u"plone")
 
 THEME_RESOURCE_NAME = 'theme'
 RULE_FILENAME = 'rules.xml'
-MANIFEST_FILENAME = 'manifest.cfg'
+
+MANIFEST_FORMAT = ManifestFormat(THEME_RESOURCE_NAME,
+        keys=['title', 'description', 'rules', 'prefix'],
+    )
 
 class IThemeSettings(Interface):
     """Transformation settings

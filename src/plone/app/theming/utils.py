@@ -1,7 +1,5 @@
 import pkg_resources
 
-from ConfigParser import SafeConfigParser
-
 from lxml import etree
 
 from zope.site.hooks import getSite
@@ -11,10 +9,10 @@ from zope.globalrequest import getRequest
 from plone.subrequest import subrequest
 
 from plone.resource.interfaces import IResourceDirectory
-from plone.resource.directory import FILTERS
+from plone.resource import manifest
 
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
-from plone.app.theming.interfaces import MANIFEST_FILENAME
+from plone.app.theming.interfaces import MANIFEST_FORMAT
 from plone.app.theming.interfaces import RULE_FILENAME
 
 from Products.CMFCore.utils import getToolByName
@@ -114,27 +112,6 @@ def getOrCreatePersistentResourceDirectory():
     
     return persistentDirectory[THEME_RESOURCE_NAME]
 
-def getManifest(fp, **kw):
-    """Read the manifest from the given open file pointer. Returns a dict with
-    keys ``title``, ``description``, ``rules`` and ``prefix``. To set a
-    default value, pass the corresponding keyword argument.
-    """
-    
-    parser = SafeConfigParser({
-            'title': kw.get('title', None),
-            'description': kw.get('description', None),
-            'rules': kw.get('rules', None),
-            'prefix': kw.get('prefix', None),
-        })
-    parser.readfp(fp)
-    
-    return {
-        'title': parser.get('theme', 'title'),
-        'description': parser.get('theme', 'description'),
-        'rules': parser.get('theme', 'rules'),
-        'prefix': parser.get('theme', 'prefix'),
-    }
-
 def extractThemeInfo(zipfile):
     """Return a tuple (themeName, rulesFile, absolutePrefix), where themeName
     is the name of the theme and rulesFile is a relative path to the rules.xml
@@ -144,57 +121,21 @@ def extractThemeInfo(zipfile):
     top level directory or the rules file cannot be found.
     """
     
-    themeName = None
+    resourceName, manifestDict = manifest.extractManifestFromZipFile(zipfile, MANIFEST_FORMAT)
+    
     rulesFile = None
-    absolutePrefix = None
+    absolutePrefix = '/++%s++%s' % (THEME_RESOURCE_NAME, resourceName)
     
-    haveManifestRules = False
+    if manifestDict is not None:    
+        rulesFile = manifestDict['rules']
+        absolutePrefix = manifestDict['prefix'] or absolutePrefix
     
-    for name in zipfile.namelist():
-        member = zipfile.getinfo(name)
-        path = member.filename.lstrip('/')
+    if not rulesFile:
+        rulesFile = RULE_FILENAME
         
-        if any(any(filter.match(n) for filter in FILTERS) for n in path.split('/')):
-            continue
-        
-        pathSegments = path.rstrip('/').split('/')
-        lastSegment = pathSegments[-1]
-        
-        isDirectory = path.endswith('/')
-        
-        if pathSegments[0] != themeName:
-            
-            if themeName is not None:
-                raise ValueError("More than one top level directory")
-            
-            else:
-                if isDirectory:
-                    themeName = lastSegment
-                    absolutePrefix = "/++theme++%s" % themeName
-                elif len(pathSegments) > 1:
-                    themeName = pathSegments[0]
-                    absolutePrefix = "/++theme++%s" % themeName
-        
-        if themeName is not None and not isDirectory:
-            
-            if not haveManifestRules and path == "%s/%s" % (themeName, RULE_FILENAME,):
-                rulesFile = RULE_FILENAME
-            
-            elif path == "%s/%s" % (themeName, MANIFEST_FILENAME,):
-                manifest = zipfile.open(member)
-                try:
-                    manifestInfo = getManifest(manifest, rules=None, prefix=absolutePrefix)
-                    
-                    manifestRules = manifestInfo['rules']
-                    absolutePrefix = manifestInfo['prefix']
-                    
-                    if manifestRules:
-                        rulesFile = manifestRules
-                        haveManifestRules = True
-                finally:
-                    manifest.close()
+        try:
+            zipfile.getinfo("%s/%s" % (resourceName, rulesFile,))
+        except KeyError:
+            raise ValueError("Could not find theme name and rules file")
     
-    if rulesFile is None:
-        raise ValueError("Could not find theme name and rules file")
-    
-    return themeName, rulesFile, absolutePrefix
+    return (resourceName, rulesFile, absolutePrefix)
