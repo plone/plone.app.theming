@@ -232,6 +232,16 @@ to use a different rule file name than ``rules.xml``, and::
 
 to change the absolute path prefix (see above).
 
+Note that when you set ``rules`` and ``prefix``, these are absolute URLs or
+file paths. To reference the theme directory you can use the following
+format::
+
+    rules = /++theme++my.theme/myrules.xml
+
+The default is to use ``/++theme++<theme name>/rules.xml`` for the rules and
+``/++theme++<theme name>`` as the absolute path prefix, which is probably
+the right approach for most self-contained themes.
+
 Resources in Python packages
 ----------------------------
 
