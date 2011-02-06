@@ -3,7 +3,7 @@ import unittest2 as unittest
 from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
 from plone.testing.z2 import Browser
 
-from plone.app.testing import setRoles, TEST_USER_NAME
+from plone.app.testing import setRoles, TEST_USER_ID
 
 import Globals
 import os.path
@@ -441,9 +441,9 @@ class TestCase(unittest.TestCase):
         app = self.layer['app']
         portal = self.layer['portal']
         
-        setRoles(portal, TEST_USER_NAME, ('Manager',))
+        setRoles(portal, TEST_USER_ID, ('Manager',))
         portal.invokeFactory('Folder', 'news', title=u"News")
-        setRoles(portal, TEST_USER_NAME, ('Member',))
+        setRoles(portal, TEST_USER_ID, ('Member',))
         
         self.settings.enabled = True
         
@@ -540,7 +540,7 @@ class TestCase(unittest.TestCase):
         app = self.layer['app']
         portal = self.layer['portal']
         
-        setRoles(portal, TEST_USER_NAME, ('Manager',))
+        setRoles(portal, TEST_USER_ID, ('Manager',))
         
         one = open(os.path.join(os.path.split(__file__)[0], 'one.html'))
         two = open(os.path.join(os.path.split(__file__)[0], 'two.html'))
