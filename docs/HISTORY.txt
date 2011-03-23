@@ -4,6 +4,10 @@ Changelog
 1.0b1 - Unreleased
 -------------------
 
+* Pass diazo.* form variables. This automatic functionality should be replaced
+  with something more explicit based on tal expressions before 1.0 final.
+  [elro]
+
 * Use plone.subrequest 1.6 features to work with IStreamIterator from
   plone.resource.
   [elro]

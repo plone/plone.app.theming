@@ -17,6 +17,8 @@ from plone.transformchain.interfaces import ITransform
 from plone.app.theming.interfaces import IThemeSettings, IThemingLayer
 from plone.app.theming.utils import expandAbsolutePrefix, PythonResolver, InternalResolver, NetworkResolver
 
+strparam = etree.XSLT.strparam
+
 LOGGER = logging.getLogger('plone.app.theming')
 
 class _Cache(object):
@@ -217,7 +219,20 @@ class ThemeTransform(object):
         _, base1 = base1.split('://', 1)
         host = base1.lower()
         
-        transformed = transform(result.tree, host='"%s"' % host, path='"%s"' % path)
+        # XXX This should be more explicit, something like a tal:define list in the config
+        params = dict(host=strparam(host), path=strparam(path))
+        for key, value in self.request.form.iteritems():
+            if key.startswith('diazo.'):
+                if isinstance(value, basestring):
+                    value = strparam(value)
+                elif isinstance(value, bool):
+                    value = 'true()' if value else 'false()'
+                elif isinstance(value, (int, long, float)):
+                    value = repr(value)
+                else:
+                    continue
+                params[key] = value
+        transformed = transform(result.tree, **params)
         if transformed is None:
             return None
         
