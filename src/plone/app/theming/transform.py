@@ -1,5 +1,6 @@
 import logging
 import Globals
+from urlparse import urlsplit
 
 from lxml import etree
 from diazo.compiler import compile_theme
@@ -209,18 +210,20 @@ class ThemeTransform(object):
             return None
         
         # Find real or virtual path - PATH_INFO has VHM elements in it
-        actualURL = self.request.get('ACTUAL_URL')
-        
-        siteURL = getSite().absolute_url()
-        path = actualURL[len(siteURL):]
-        
+        actualURL = self.request.get('ACTUAL_URL', '')
         # Find the host name
-        base1 = self.request.get('BASE1')
-        _, base1 = base1.split('://', 1)
-        host = base1.lower()
+        base = self.request.get('BASE1', '')
+        path = actualURL[len(base):]
+        parts = urlsplit(base.lower())
         
         # XXX This should be more explicit, something like a tal:define list in the config
-        params = dict(host=strparam(host), path=strparam(path))
+        params = dict(
+            base=strparam(base),
+            path=strparam(path),
+            scheme=strparam(parts.scheme),
+            host=strparam(parts.netloc),
+            ajax_load=strparam(self.request.get('ajax_load', ''))
+            )
         for key, value in self.request.form.iteritems():
             if key.startswith('diazo.'):
                 if isinstance(value, basestring):
