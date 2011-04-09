@@ -4,6 +4,7 @@ from urlparse import urlsplit
 
 from lxml import etree
 from diazo.compiler import compile_theme
+from diazo.utils import quote_param
 
 from repoze.xmliter.utils import getHTMLSerializer
 
@@ -17,8 +18,6 @@ from plone.transformchain.interfaces import ITransform
 
 from plone.app.theming.interfaces import IThemeSettings, IThemingLayer
 from plone.app.theming.utils import expandAbsolutePrefix, PythonResolver, InternalResolver, NetworkResolver
-
-strparam = etree.XSLT.strparam
 
 LOGGER = logging.getLogger('plone.app.theming')
 
@@ -218,23 +217,18 @@ class ThemeTransform(object):
         
         # XXX This should be more explicit, something like a tal:define list in the config
         params = dict(
-            base=strparam(base),
-            path=strparam(path),
-            scheme=strparam(parts.scheme),
-            host=strparam(parts.netloc),
-            ajax_load=strparam(self.request.get('ajax_load', ''))
+            base=quote_param(base),
+            path=quote_param(path),
+            scheme=quote_param(parts.scheme),
+            host=quote_param(parts.netloc),
+            ajax_load=quote_param(self.request.get('ajax_load', ''))
             )
         for key, value in self.request.form.iteritems():
             if key.startswith('diazo.'):
-                if isinstance(value, basestring):
-                    value = strparam(value)
-                elif isinstance(value, bool):
-                    value = 'true()' if value else 'false()'
-                elif isinstance(value, (int, long, float)):
-                    value = repr(value)
-                else:
+                try:
+                    params[key] = quote_param(value)
+                except TypeError:
                     continue
-                params[key] = value
         transformed = transform(result.tree, **params)
         if transformed is None:
             return None
