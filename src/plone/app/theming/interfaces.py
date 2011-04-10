@@ -51,6 +51,36 @@ class IThemeSettings(Interface):
             required=True,
             default=False,
         )
+    
+    hostnameBlacklist = schema.List(
+            title=_('hostname_blacklist', u"Unthemed host names"),
+            description=_('hostname_blacklist_description',
+                u"If there are hostnames that you do not want to be themed, "
+                u"you can list them here. This is useful during theme "
+                u"development, so that you can compare the themed and unthemed "
+                u"sites. In some cases, you may also want to provided an "
+                u"unthemed host alias for content administrators to be able "
+                u"to use 'plain' Plone."),
+            value_type=schema.TextLine(),
+            required=False,
+            default=[u"127.0.0.1"],
+        )
+    
+    parameterExpressions = schema.Dict(
+            title=_('parameter_expressions', u"Parameter expressions"),
+            description=_('parameter_expressions_description',
+                u"You can define parameters here, which will be passed to "
+                u"the compiled theme. In your rules file, you can refer "
+                u"to a parameter by $name. Parameters are defined using "
+                u"TALES expressions, which should evaluate to a string, "
+                u"a number, a boolean or None. Available variables are "
+                u"`context`, `request`, `portal`, `portal_state`,  and "
+                u"`context_state`."),
+            key_type=schema.ASCIILine(),
+            value_type=schema.ASCIILine(),
+            required=False,
+            default={'ajax_load': "python:'ajax_load' in request.form"},
+        )
 
 class IThemingLayer(Interface):
     """Browser layer used to indicate that plone.app.theming is installed

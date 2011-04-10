@@ -4,6 +4,7 @@ from lxml import etree
 
 from zope.site.hooks import getSite
 from zope.component import getUtility
+from zope.component import queryMultiAdapter
 from zope.globalrequest import getRequest
 
 from plone.subrequest import subrequest
@@ -15,7 +16,9 @@ from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.interfaces import MANIFEST_FORMAT
 from plone.app.theming.interfaces import RULE_FILENAME
 
+from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
+from Products.PageTemplates.Expressions import getEngine
 
 class NetworkResolver(etree.Resolver):
     """Resolver for network urls
@@ -88,6 +91,15 @@ def getPortal():
         return None
     return portal_url.getPortalObject()
 
+def findContext(published):
+    """Find the context from a published resource (usually a view)/
+    """
+    
+    parent = getattr(published, '__parent__', None)
+    if parent is None:
+        parent = aq_parent(published)
+    return parent
+
 def expandAbsolutePrefix(prefix):
     """Prepend the Plone site URL to the prefix if it starts with /
     """
@@ -139,3 +151,30 @@ def extractThemeInfo(zipfile):
             raise ValueError("Could not find theme name and rules file")
     
     return (resourceName, rulesFile, absolutePrefix)
+
+def createExpressionContext(context, request):
+    """Create an expression context suitable for evaluating parameter
+    expressions.
+    """
+    
+    portal = getPortal()
+    
+    contextState = queryMultiAdapter((context, request), name=u"plone_context_state")
+    portalState = queryMultiAdapter((portal, request), name=u"plone_portal_state")
+    
+    data = {
+        'context': context,
+        'request': request,
+        'portal': portal,
+        'context_state': contextState,
+        'portal_state': portalState,
+        'nothing': None,
+    }
+    
+    return getEngine().getContext(data)
+
+def compileExpression(text):
+    """Compile the given expression. The returned value is suitable for
+    caching in a volatile attribute
+    """
+    return getEngine().compile(text.strip())

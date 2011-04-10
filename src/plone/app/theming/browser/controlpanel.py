@@ -82,8 +82,25 @@ class ThemingControlpanel(BrowserView):
             rules = form.get('rules', None)
             prefix = form.get('absolutePrefix', None)
             
-            self.settings.rules = rules
-            self.settings.absolutePrefix = prefix
+            hostnameBlacklist = form.get('hostnameBlacklist', [])
+            
+            parameterExpressions = {}
+            parameterExpressionsList = form.get('parameterExpressions', [])
+            
+            for line in parameterExpressionsList:
+                try:
+                    name, expression = line.split(' ', 1)
+                    parameterExpressions[str(name.strip())] = str(expression.strip())
+                except ValueError:
+                    self.errors['parameterExpressions'] = _('error_invalid_parameter_expressions', 
+                        default=u"Please ensure you enter one expression per line, in the format <name> <expression>."
+                    )
+            
+            if not self.errors:            
+                self.settings.rules = rules
+                self.settings.absolutePrefix = prefix
+                self.settings.hostnameBlacklist = hostnameBlacklist
+                self.settings.parameterExpressions = parameterExpressions
         
         if 'form.button.Import' in form:
             self.authorize()

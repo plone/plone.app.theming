@@ -189,6 +189,70 @@
     
                 </div>
                 
+                <div
+                    tal:define="error errors/hostnameBlacklist | nothing;
+                                hostnameBlacklist view/settings/hostnameBlacklist | python:[];
+                                hostnameBlacklist python:request.get('hostnameBlacklist', hostnameBlacklist)"
+                    tal:attributes="class python:'field error' if error else 'field'">
+                
+                    <label for="hostnameBlacklist" i18n:translate="label_hostname_blacklist">Hostname blacklist</label>
+                    <div class="formHelp" i18n:translate="help_hostname_blacklist">
+                        If there are hostnames that you do not want to be
+                        themed, you can list them here, one per line. This is
+                        useful during theme development, so that you can
+                        compare the themed and unthemed sites. In some cases,
+                        you may also want to provided an unthemed host alias
+                        for content administrators to be able to use 'plain'
+                        Plone.
+                    </div>
+                
+                    <div tal:content="error" tal:condition="error" />
+                
+                    <textarea
+                        name="hostnameBlacklist:lines"
+                        id="hostnameBlacklist"
+                        rows="5"
+                        cols="50"
+                        tal:content="python:'\n'.join(hostnameBlacklist)"
+                        ></textarea>
+            
+                </div>
+                
+                <div
+                    tal:define="error errors/parameterExpressions | nothing;
+                                parameterExpressions view/settings/parameterExpressions | python:{};
+                                parameterExpressions python:['%s %s' % (k,v) for k,v in parameterExpressions.items()];
+                                parameterExpressions python:request.get('parameterExpressions', parameterExpressions)"
+                    tal:attributes="class python:'field error' if error else 'field'">
+                    
+                    <label for="parameterExpressions" i18n:translate="label_parameter_expressions">Parameter expressions</label>
+                    <div class="formHelp" i18n:translate="help_parameter_expressions">
+                        You can define parameters that will be passed
+                        to the compiled theme here. In your rules file, you can
+                        refer to a parameter by <code>$name</code>. Parameters
+                        are defined using TALES expressions, which should
+                        evaluate to a string, a number, a boolean or None.
+                        Available variables are <code>context</code>,
+                        <code>request</code>, <code>portal</code>,
+                        <code>portal_state</code>, and
+                        <code>context_state</code>. Define one variable
+                        per line, with a space between the variable name and
+                        the expression.
+                        Please to the documentation for more details.
+                    </div>
+                    
+                    <div tal:content="error" tal:condition="error" />
+                
+                    <textarea
+                        name="parameterExpressions:lines"
+                        id="parameterExpressions"
+                        rows="8"
+                        cols="50"
+                        tal:content="python:'\n'.join(parameterExpressions)"
+                        ></textarea>
+            
+                </div>
+                
                 
                 <div class="formControls">
                     <input

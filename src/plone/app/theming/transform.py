@@ -17,7 +17,16 @@ from plone.registry.interfaces import IRegistry
 from plone.transformchain.interfaces import ITransform
 
 from plone.app.theming.interfaces import IThemeSettings, IThemingLayer
-from plone.app.theming.utils import expandAbsolutePrefix, PythonResolver, InternalResolver, NetworkResolver
+from plone.app.theming.utils import expandAbsolutePrefix
+
+from plone.app.theming.utils import PythonResolver
+from plone.app.theming.utils import InternalResolver
+from plone.app.theming.utils import NetworkResolver
+
+from plone.app.theming.utils import findContext
+from plone.app.theming.utils import compileExpression
+from plone.app.theming.utils import createExpressionContext
+
 
 LOGGER = logging.getLogger('plone.app.theming')
 
@@ -27,17 +36,24 @@ class _Cache(object):
     
     def __init__(self):
         self.transform = None
+        self.expressions = {}
     
     def updateTransform(self, transform):
         self.transform = transform
+    
+    def updateExpressions(self, expressions):
+        self.expressions = expressions
 
-def getCache(settings, key):
+def getCache(settings):
     # We need a persistent object to hang a _v_ attribute off for caching.
     
     registry = settings.__registry__
     caches = getattr(registry, '_v_plone_app_theming_caches', None)
     if caches is None:
         caches = registry._v_plone_app_theming_caches = {}
+    
+    key = getSite().absolute_url()
+    
     cache = caches.get(key)
     if cache is None:
         cache = caches[key] = _Cache()
@@ -75,17 +91,6 @@ class ThemeTransform(object):
         ):
             return None
         
-        # Find the host name
-        base1 = request.get('BASE1')
-        _, base1 = base1.split('://', 1)
-        host = base1.lower()
-        
-        # Make sure it's always possible to see an unstyled page
-        if (DevelopmentMode and
-            (host == '127.0.0.1' or host == '127.0.0.1:%s' % request.get('SERVER_PORT'))
-        ):
-            return None
-        
         # Obtain settings. Do nothing if not found
         settings = self.getSettings()
 
@@ -94,16 +99,23 @@ class ThemeTransform(object):
         
         if not settings.enabled:
             return None
-        
+
         rules = settings.rules
         if not rules:
             return None
         
-        try:
-            key = getSite().absolute_url()
-        except AttributeError:
-            return None
-        cache = getCache(settings, key)
+        # Check the hostname blacklist
+        
+        base1 = request.get('BASE1')
+        _, base1 = base1.split('://', 1)
+        host = base1.lower()
+        serverPort = request.get('SERVER_PORT')
+        
+        for hostname in settings.hostnameBlacklist or ():
+            if host == hostname or host == "%s:%s" % (hostname, serverPort):
+                return None
+        
+        cache = getCache(settings)
         
         # Apply theme
         transform = None
@@ -118,6 +130,9 @@ class ThemeTransform(object):
             
             if absolutePrefix:
                 absolutePrefix = expandAbsolutePrefix(absolutePrefix)
+            
+            parameterExpressions = settings.parameterExpressions
+            xslParams = dict([(k, '') for k,v in parameterExpressions.items()])
             
             internalResolver = InternalResolver()
             pythonResolver = PythonResolver()
@@ -150,6 +165,7 @@ class ThemeTransform(object):
                     read_network=readNetwork,
                     access_control=accessControl,
                     update=False,
+                    xsl_params=xslParams,
                 )
             
             if not compiledTheme:
@@ -210,25 +226,47 @@ class ThemeTransform(object):
         
         # Find real or virtual path - PATH_INFO has VHM elements in it
         actualURL = self.request.get('ACTUAL_URL', '')
+        
         # Find the host name
         base = self.request.get('BASE1', '')
         path = actualURL[len(base):]
         parts = urlsplit(base.lower())
         
-        # XXX This should be more explicit, something like a tal:define list in the config
         params = dict(
-            base=quote_param(base),
-            path=quote_param(path),
-            scheme=quote_param(parts.scheme),
-            host=quote_param(parts.netloc),
-            ajax_load=quote_param(self.request.get('ajax_load', ''))
+                base=quote_param(base),
+                path=quote_param(path),
+                scheme=quote_param(parts.scheme),
+                host=quote_param(parts.netloc),
             )
-        for key, value in self.request.form.iteritems():
-            if key.startswith('diazo.'):
-                try:
-                    params[key] = quote_param(value)
-                except TypeError:
-                    continue
+        
+        # Add expression-based parameters
+        
+        context = findContext(self.published)
+        if context is not None:
+            settings = self.getSettings()
+            parameterExpressions = settings.parameterExpressions or {}
+            if parameterExpressions:
+                cache = getCache(settings)
+                DevelopmentMode = Globals.DevelopmentMode
+            
+                # Compile and cache expressions
+                expressions = None
+                if not DevelopmentMode:
+                    expressions = cache.expressions
+                
+                if expressions is None:
+                    expressions = {}
+                    for name, expressionText in parameterExpressions.items():
+                        expressions[name] = compileExpression(expressionText)
+                    
+                    if not DevelopmentMode:
+                        cache.updateExpressions(expressions)
+                
+                # Execute all expressions
+                expressionContext = createExpressionContext(context, self.request)
+                for name, expression in expressions.items():
+                    params[name] = quote_param(expression(expressionContext))
+        
         transformed = transform(result.tree, **params)
         if transformed is None:
             return None
