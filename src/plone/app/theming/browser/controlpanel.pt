@@ -221,7 +221,7 @@
                 <div
                     tal:define="error errors/parameterExpressions | nothing;
                                 parameterExpressions view/settings/parameterExpressions | python:{};
-                                parameterExpressions python:['%s %s' % (k,v) for k,v in parameterExpressions.items()];
+                                parameterExpressions python:['%s = %s' % (k,v) for k,v in parameterExpressions.items()];
                                 parameterExpressions python:request.get('parameterExpressions', parameterExpressions)"
                     tal:attributes="class python:'field error' if error else 'field'">
                     
@@ -236,9 +236,7 @@
                         <code>request</code>, <code>portal</code>,
                         <code>portal_state</code>, and
                         <code>context_state</code>. Define one variable
-                        per line, with a space between the variable name and
-                        the expression.
-                        Please to the documentation for more details.
+                        per line, in the format <code>name = expression</code>.
                     </div>
                     
                     <div tal:content="error" tal:condition="error" />

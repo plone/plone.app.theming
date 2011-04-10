@@ -11,6 +11,7 @@ RULE_FILENAME = 'rules.xml'
 
 MANIFEST_FORMAT = ManifestFormat(THEME_RESOURCE_NAME,
         keys=['title', 'description', 'rules', 'prefix'],
+        parameterSections=['parameters'],
     )
 
 class IThemeSettings(Interface):
@@ -79,7 +80,7 @@ class IThemeSettings(Interface):
             key_type=schema.ASCIILine(),
             value_type=schema.ASCIILine(),
             required=False,
-            default={'ajax_load': "python:'ajax_load' in request.form"},
+            default={},
         )
 
 class IThemingLayer(Interface):

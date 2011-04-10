@@ -68,10 +68,11 @@ class ThemingControlpanel(BrowserView):
             themeSelection = form.get('selectedTheme', None)
             
             if themeSelection != "_other_":
-                rules, prefix = self.getRulesAndPrefix(self.availableThemes, themeSelection)
+                themeData = self.getThemeData(self.availableThemes, themeSelection)
                 
-                self.settings.rules = rules
-                self.settings.absolutePrefix = prefix
+                self.settings.rules = themeData['rules']
+                self.settings.absolutePrefix = themeData['absolutePrefix']
+                self.settings.parameterExpressions = themeData['parameterExpressions']
             
         if 'form.button.AdvancedSave' in form:
             self.authorize()
@@ -89,11 +90,11 @@ class ThemingControlpanel(BrowserView):
             
             for line in parameterExpressionsList:
                 try:
-                    name, expression = line.split(' ', 1)
+                    name, expression = line.split('=', 1)
                     parameterExpressions[str(name.strip())] = str(expression.strip())
                 except ValueError:
                     self.errors['parameterExpressions'] = _('error_invalid_parameter_expressions', 
-                        default=u"Please ensure you enter one expression per line, in the format <name> <expression>."
+                        default=u"Please ensure you enter one expression per line, in the format <name> = <expression>."
                     )
             
             if not self.errors:            
@@ -182,16 +183,18 @@ class ThemingControlpanel(BrowserView):
         resources = getAllResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
         themes = []
         for name, manifest in resources.items():
-            title = name.capitalize().replace('-', ' ').replace('.', ' ')
+            title       = name.capitalize().replace('-', ' ').replace('.', ' ')
             description = None
-            rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
-            prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
+            rules       = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
+            prefix      = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
+            params      = {}
             
             if manifest is not None:
                 title       = manifest['title'] or title
                 description = manifest['description'] or description
                 rules       = manifest['rules'] or rules
                 prefix      = manifest['prefix'] or prefix
+                params      = manifest['parameters'] or params
             
             if isinstance(rules, str):
                 rules = rules.decode('utf-8')
@@ -204,6 +207,7 @@ class ThemingControlpanel(BrowserView):
                     'description': description,
                     'rules': rules,
                     'absolutePrefix': prefix,
+                    'parameterExpressions': params,
                 })
         
         themes.sort(key=lambda x: x['title'])
@@ -216,11 +220,11 @@ class ThemingControlpanel(BrowserView):
                 return item['id']
         return False
     
-    def getRulesAndPrefix(self, themes, themeSelection):
+    def getThemeData(self, themes, themeSelection):
         for item in themes:
             if item['id'] == themeSelection:
-                return (item['rules'], item['absolutePrefix'],)
-        return None, None
+                return item
+        return None
     
     def getZODBThemes(self):
         
