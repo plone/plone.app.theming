@@ -71,8 +71,6 @@ You will see output similar to this::
 
     Getting distribution for 'plone.app.theming==1.0b1'.
     Got plone.app.theming 1.0b1.
-    Getting distribution for 'plone.app.registry'.
-    Got plone.app.registry 1.0b2.
     ...
 
 If everything went according to plan, you now have ``plone.app.theming``
@@ -123,6 +121,20 @@ The options here are:
     impact. If you need to access external URLs, enable the "read network"
     setting.
 
+  Unthemed host names
+    You can list hostnames here that will never be themed. By default, this
+    list contains ``127.0.0.1``, which means that if you access your Plone
+    site using that IP address (as opposed to ``localhost`` or some other
+    domain name), you will see an unthemed site. This is useful for theme
+    development, or scenarios where you want your content authors to be able
+    to access a "plain" Plone site.
+
+  Parameter expressions
+    Some themes will use parameters in their rules files. Available parameters
+    can be set up here, using TALES expressions. Each parameter should be
+    entered on its own line, in the form ``<parameter name> = <expression>``.
+    More on expressions below.
+
 ZIP file format
 ---------------
 
@@ -150,8 +162,8 @@ directory, containing the relevant Diazo directives. Finally, create a ZIP
 archive of the top level directory using the compression features built into
 your operating system or a program such as 7Zip for Windows.
 
-Traversing to themes
---------------------
+Themes in resources directories
+-------------------------------
 
 This package integrates with `plone.resource`_ to enable the ``theme``
 resource type. This enables themes to be deployed:
@@ -261,6 +273,95 @@ This will be resolved to an absolute ``file://`` URL by ``plone.app.theming``.
 **Note:** In most cases, it will be easier to use the ``<plone:static />``
 directive as described above.
 
+Theme parameters
+----------------
+
+It is possible to pass arbitrary parameters to your theme, which can be
+referenced as variables in XPath expressions.
+
+For example, you could have a parameter ``mode`` that could be set to the
+string ``live`` or ``test``. In your rules, you could do something like this
+to insert a warning when you are on the test server::
+
+    <before css:theme-children="body" if="$mode = 'test'">
+        <span class="warning">Warning: This is the test server</span>
+    </before>
+
+You could even use the parameter value directly, e.g.::
+
+    <before css:theme-children="body">
+        <span class="info">This is the <xsl:value-of select="$mode" /> server</span>
+    </before>
+    
+See the `Diazo documentation`_ for more details about rules that support
+``if`` parameters and inline HTML and XSL.
+
+The following parameters are always available when using
+``plone.app.theming``:
+
+  ``scheme``
+    The scheme portion of the inbound URL, usually ``http`` or ``https``.
+  ``host``
+    The hostname in the inbound URL.
+  ``path``
+    The path segment of the inbound URL. This will not include any virtual
+    hosting tokens, i.e. it is the path the end user sees.
+  ``base``
+    The Zope base url (the ``BASE1`` request variable).
+
+You can add additional parameters through the control panel, using TALES
+expressions. Parameters are listed on the *Advanced* tab, one per line, in
+the form ``<name> = <expression>``.
+
+For example, if you want to avoid theming any pages that are loaded by Plone's
+overlays, you can make use of the ``ajax_load`` request parameter that they
+set. Your rules file might include::
+
+    <notheme if="$ajax_load" />
+
+To add this parameter as well as the ``mode`` parameter outlined earlier, you
+could add the following in the control panel::
+
+    ajax_load = python: 'ajax_load' in request.form
+    mode = string: test
+
+The right hand side is a TALES expression. It *must* evaluate to a string,
+integer, float, boolean or ``None``: lists, dicts and objects are not
+supported. ``python:``, ``string:`` and path expressions work as they do
+in page templates.
+
+The following variables are available:
+
+  ``context``
+    The context of the current request, usually a content object.
+  ``request``
+    The current request.
+  ``portal``
+    The portal root object.
+  ``context_state``
+    The ``@@plone_context_state`` view, from which you can look up additional
+    values such as the context's URL or default view.
+  ``portal_state``
+    The ``@@plone_portal_state`` view, form which you can look up additional
+    values such as the navigation root URL or whether or not the current
+    user is logged in.
+
+See ``plone.app.layout`` for details about the ``@@plone_context_state`` and
+``@@plone_portal_state`` views.
+
+Theme parameters are really integral to a theme, and will therefore be set
+based on a theme's manifest when a theme is imported from a Zip file or
+enabled from a resource directory. This is done using the
+``[theme:parameters]`` section in the manifest file. For example::
+
+    [theme]
+    title = My theme
+    description = A test theme
+    
+    [theme:parameters]
+    ajax_load = python: 'ajax_load' in request.form
+    mode = string: test
+
 Development aids
 ----------------
 
@@ -275,9 +376,6 @@ by appending a query string parameter ``diazo.off=1``. For example::
     http://localhost:8080/Plone/some-page?diazo.off=1
 
 The parameter is ignored in non-development mode.
-
-Finally, note that a site accessed via the host name ``127.0.0.1`` will never
-be themed. By default, ``localhost`` *will* be themed, of course.
 
 Static files and CSS
 --------------------

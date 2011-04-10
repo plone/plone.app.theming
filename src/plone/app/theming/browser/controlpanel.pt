@@ -195,7 +195,7 @@
                                 hostnameBlacklist python:request.get('hostnameBlacklist', hostnameBlacklist)"
                     tal:attributes="class python:'field error' if error else 'field'">
                 
-                    <label for="hostnameBlacklist" i18n:translate="label_hostname_blacklist">Hostname blacklist</label>
+                    <label for="hostnameBlacklist" i18n:translate="label_hostname_blacklist">Unthemed host names</label>
                     <div class="formHelp" i18n:translate="help_hostname_blacklist">
                         If there are hostnames that you do not want to be
                         themed, you can list them here, one per line. This is
