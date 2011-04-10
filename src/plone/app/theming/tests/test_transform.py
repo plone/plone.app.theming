@@ -36,6 +36,11 @@ class TestCase(unittest.TestCase):
         
         self.settings.enabled = False
         self.settings.rules = u'python://plone.app.theming/tests/rules.xml'
+        self.settings.parameterExpressions = {
+                'stringParam': 'string:string param value',
+                'boolParam': 'python:False',
+                'requestParam': 'request/useother | string:off'
+            }
         
         import transaction; transaction.commit()
     
@@ -55,13 +60,13 @@ class TestCase(unittest.TestCase):
         browser.open(portal.absolute_url())
         
         # Title - pulled in with rules.xml
-        self.failUnless(portal.title in browser.contents)
+        self.assertTrue(portal.title in browser.contents)
         
         # Elsewhere - not pulled in
-        self.failUnless("Accessibility" in browser.contents)
+        self.assertTrue("Accessibility" in browser.contents)
         
         # The theme
-        self.failIf("This is the theme" in browser.contents)
+        self.assertFalse("This is the theme" in browser.contents)
     
     def test_theme_enabled(self):
         app = self.layer['app']
@@ -74,13 +79,13 @@ class TestCase(unittest.TestCase):
         browser.open(portal.absolute_url())
         
         # Title - pulled in with rules.xml
-        self.failUnless(portal.title in browser.contents)
+        self.assertTrue(portal.title in browser.contents)
         
         # Elsewhere - not pulled in
-        self.failIf("Accessibility" in browser.contents)
+        self.assertFalse("Accessibility" in browser.contents)
         
         # The theme
-        self.failUnless("This is the theme" in browser.contents)
+        self.assertTrue("This is the theme" in browser.contents)
 
     def test_theme_enabled_resource_directory(self):
         
@@ -95,13 +100,13 @@ class TestCase(unittest.TestCase):
         browser.open(portal.absolute_url())
         
         # Title - pulled in with rules.xml
-        self.failUnless(portal.title in browser.contents)
+        self.assertTrue(portal.title in browser.contents)
         
         # Elsewhere - not pulled in
-        self.failIf("Accessibility" in browser.contents)
+        self.assertFalse("Accessibility" in browser.contents)
         
         # The theme
-        self.failUnless("This is the theme" in browser.contents)
+        self.assertTrue("This is the theme" in browser.contents)
     
     def test_theme_enabled_query_string_off_switch(self):
         app = self.layer['app']
@@ -114,13 +119,13 @@ class TestCase(unittest.TestCase):
         browser.open(portal.absolute_url() + '?diazo.off=1')
         
         # Title - pulled in with rules.xml
-        self.failUnless(portal.title in browser.contents)
+        self.assertTrue(portal.title in browser.contents)
         
         # Elsewhere - not pulled in
-        self.failUnless("Accessibility" in browser.contents)
+        self.assertTrue("Accessibility" in browser.contents)
         
         # The theme
-        self.failIf("This is the theme" in browser.contents)
+        self.assertFalse("This is the theme" in browser.contents)
     
     def test_theme_enabled_query_string_off_switch_production_mode(self):
         app = self.layer['app']
@@ -135,13 +140,13 @@ class TestCase(unittest.TestCase):
         browser.open(portal.absolute_url() + '?diazo.off=1')
         
         # Title - pulled in with rules.xml
-        self.failUnless(portal.title in browser.contents)
+        self.assertTrue(portal.title in browser.contents)
         
         # Elsewhere - not pulled in
-        self.failIf("Accessibility" in browser.contents)
+        self.assertFalse("Accessibility" in browser.contents)
         
         # The theme
-        self.failUnless("This is the theme" in browser.contents)
+        self.assertTrue("This is the theme" in browser.contents)
     
     def test_internal_resolver(self):
         compiler_parser = etree.XMLParser()
@@ -178,13 +183,13 @@ class TestCase(unittest.TestCase):
         browser.open(portal.absolute_url())
 
         # Title - pulled in with rules.xml
-        self.failUnless(portal.title in browser.contents)
+        self.assertTrue(portal.title in browser.contents)
         
         # Elsewhere - not pulled in
-        self.failIf("Accessibility" in browser.contents)
+        self.assertFalse("Accessibility" in browser.contents)
         
         # The theme
-        self.failUnless("This is the theme" in browser.contents)
+        self.assertTrue("This is the theme" in browser.contents)
 
     def test_theme_stored_in_plone_site_works_with_virtual_host(self):
         app = self.layer['app']
@@ -216,13 +221,13 @@ class TestCase(unittest.TestCase):
         browser.open(vhostURL)
         
         # Title - pulled in with rules.xml
-        self.failUnless(portal.title in browser.contents)
+        self.assertTrue(portal.title in browser.contents)
         
         # Elsewhere - not pulled in
-        self.failIf("Accessibility" in browser.contents)
+        self.assertFalse("Accessibility" in browser.contents)
         
         # The theme
-        self.failUnless("This is the theme" in browser.contents) 
+        self.assertTrue("This is the theme" in browser.contents) 
 
     def test_absolutePrefix_disabled(self):
         app = self.layer['app']
@@ -236,7 +241,7 @@ class TestCase(unittest.TestCase):
         browser = Browser(app)
         browser.open(portal.absolute_url())
         
-        self.failUnless('<img src="relative.jpg" />' in browser.contents)
+        self.assertTrue('<img src="relative.jpg" />' in browser.contents)
     
     def test_absolutePrefix_enabled_uri(self):
         app = self.layer['app']
@@ -250,8 +255,8 @@ class TestCase(unittest.TestCase):
         browser = Browser(app)
         browser.open(portal.absolute_url())
         
-        self.failIf('<img src="relative.jpg" />' in browser.contents)
-        self.failUnless('<img src="http://example.com/relative.jpg" />' in browser.contents)
+        self.assertFalse('<img src="relative.jpg" />' in browser.contents)
+        self.assertTrue('<img src="http://example.com/relative.jpg" />' in browser.contents)
     
     def test_absolutePrefix_enabled_path(self):
         app = self.layer['app']
@@ -265,8 +270,8 @@ class TestCase(unittest.TestCase):
         browser = Browser(app)
         browser.open(portal.absolute_url())
         
-        self.failIf('<img src="relative.jpg" />' in browser.contents)
-        self.failUnless('<img src="/plone/foo/relative.jpg" />' in browser.contents)
+        self.assertFalse('<img src="relative.jpg" />' in browser.contents)
+        self.assertTrue('<img src="/plone/foo/relative.jpg" />' in browser.contents)
     
     def test_absolutePrefix_enabled_path_vhosting(self):
         app = self.layer['app']
@@ -291,8 +296,8 @@ class TestCase(unittest.TestCase):
         browser = Browser(app)
         browser.open(vhostURL)
         
-        self.failIf('<img src="relative.jpg" />' in browser.contents)
-        self.failUnless('<img src="/fizz/buzz/fizzbuzz/foo/relative.jpg" />' in browser.contents)    
+        self.assertFalse('<img src="relative.jpg" />' in browser.contents)
+        self.assertTrue('<img src="/fizz/buzz/fizzbuzz/foo/relative.jpg" />' in browser.contents)    
     
     def test_theme_installed_invalid_config(self):
         app = self.layer['app']
@@ -307,13 +312,13 @@ class TestCase(unittest.TestCase):
         browser.open(portal.absolute_url())
         
         # Title - pulled in with rules.xml
-        self.failUnless(portal.title in browser.contents)
+        self.assertTrue(portal.title in browser.contents)
         
         # Elsewhere - not pulled in
-        self.failUnless("Accessibility" in browser.contents)
+        self.assertTrue("Accessibility" in browser.contents)
         
         # The theme
-        self.failIf("This is the theme" in browser.contents)
+        self.assertFalse("This is the theme" in browser.contents)
     
     def test_non_html_content(self):
         app = self.layer['app']
@@ -326,7 +331,7 @@ class TestCase(unittest.TestCase):
         browser = Browser(app)
         browser.open(portal.absolute_url() + '/document_icon.gif')
         # The theme
-        self.failIf("This is the theme" in browser.contents)
+        self.assertFalse("This is the theme" in browser.contents)
 
     # XXX: This relies on a _v_ attribute; the test is too brittle
     # 
@@ -352,13 +357,13 @@ class TestCase(unittest.TestCase):
     #     browser.open(portal.absolute_url())
     #     
     #     # Title - pulled in with rules.xml
-    #     self.failUnless(portal.title in browser.contents)
+    #     self.assertTrue(portal.title in browser.contents)
     #     
     #     # Elsewhere - not pulled in
-    #     self.failIf("Accessibility" in browser.contents)
+    #     self.assertFalse("Accessibility" in browser.contents)
     #     
     #     # The theme
-    #     self.failUnless("This is the other theme" in browser.contents)
+    #     self.assertTrue("This is the other theme" in browser.contents)
     #     
     #     # Now invalide the cache by touching the settings utility
     #     
@@ -370,13 +375,13 @@ class TestCase(unittest.TestCase):
     #     browser.open(portal.absolute_url())
     #     
     #     # Title - pulled in with rules.xml
-    #     self.failUnless(portal.title in browser.contents)
+    #     self.assertTrue(portal.title in browser.contents)
     #     
     #     # Elsewhere - not pulled in
-    #     self.failIf("Accessibility" in browser.contents)
+    #     self.assertFalse("Accessibility" in browser.contents)
     #     
     #     # The theme
-    #     self.failUnless("This is the theme" in browser.contents)
+    #     self.assertTrue("This is the theme" in browser.contents)
 
     def test_resource_condition(self):
         app = self.layer['app']
@@ -413,13 +418,13 @@ class TestCase(unittest.TestCase):
         browser = Browser(app)
         browser.open(portal.absolute_url())
         
-        self.failUnless(thirdLastResource.getId() in browser.contents)
-        self.failIf(secondToLastResource.getId() in browser.contents)
-        self.failUnless(lastResource.getId() in browser.contents)
+        self.assertTrue(thirdLastResource.getId() in browser.contents)
+        self.assertFalse(secondToLastResource.getId() in browser.contents)
+        self.assertTrue(lastResource.getId() in browser.contents)
         
-        self.failUnless(portal.title in browser.contents)
-        self.failUnless("Accessibility" in browser.contents)
-        self.failIf("This is the theme" in browser.contents)
+        self.assertTrue(portal.title in browser.contents)
+        self.assertTrue("Accessibility" in browser.contents)
+        self.assertFalse("This is the theme" in browser.contents)
         
         # Now enable the theme and try again
         self.settings.enabled = True
@@ -429,13 +434,13 @@ class TestCase(unittest.TestCase):
         browser = Browser(app)
         browser.open(portal.absolute_url())
         
-        self.failUnless(thirdLastResource.getId() in browser.contents)
-        self.failUnless(secondToLastResource.getId() in browser.contents)
-        self.failIf(lastResource.getId() in browser.contents)
+        self.assertTrue(thirdLastResource.getId() in browser.contents)
+        self.assertTrue(secondToLastResource.getId() in browser.contents)
+        self.assertFalse(lastResource.getId() in browser.contents)
         
-        self.failUnless(portal.title in browser.contents)
-        self.failIf("Accessibility" in browser.contents)
-        self.failUnless("This is the theme" in browser.contents)
+        self.assertTrue(portal.title in browser.contents)
+        self.assertFalse("Accessibility" in browser.contents)
+        self.assertTrue("This is the theme" in browser.contents)
         
     def test_theme_different_path(self):
         app = self.layer['app']
@@ -453,24 +458,63 @@ class TestCase(unittest.TestCase):
         browser.open(portal.absolute_url())
         
         # Title - pulled in with rules.xml
-        self.failUnless(portal.title in browser.contents)
+        self.assertTrue(portal.title in browser.contents)
         
         # Elsewhere - not pulled in
-        self.failIf("Accessibility" in browser.contents)
+        self.assertFalse("Accessibility" in browser.contents)
         
         # The theme
-        self.failUnless("This is the theme" in browser.contents)
+        self.assertTrue("This is the theme" in browser.contents)
         
         browser.open(portal['news'].absolute_url())
         
         # Title - pulled in with rules.xml
-        self.failUnless("News" in browser.contents)
+        self.assertTrue("News" in browser.contents)
         
         # Elsewhere - not pulled in
-        self.failIf("Accessibility" in browser.contents)
+        self.assertFalse("Accessibility" in browser.contents)
         
         # The theme
-        self.failUnless("This is the other theme" in browser.contents)
+        self.assertTrue("This is the other theme" in browser.contents)
+    
+    def test_theme_params(self):
+        app = self.layer['app']
+        portal = self.layer['portal']
+        
+        self.settings.enabled = True
+        self.settings.rules = u'python://plone.app.theming/tests/paramrules.xml'
+        self.settings.parameterExpressions = {
+                'stringParam': 'string:string param value',
+                'boolParam': 'python:False',
+                'requestParam': 'request/someParam | string:off'
+            }
+        
+        import transaction; transaction.commit()
+        
+        browser = Browser(app)
+        browser.open(portal.absolute_url())
+        
+        # Title - pulled in with rules.xml
+        self.assertTrue(portal.title in browser.contents)
+        
+        # Elsewhere - not pulled in
+        self.assertFalse("Accessibility" in browser.contents)
+        
+        # The theme
+        self.assertTrue("This is the theme" in browser.contents)
+        
+        # Value of string param
+        self.assertTrue('string param value' in browser.contents)
+        
+        # Would be here if bool param was false
+        self.assertFalse('<script>bool param on</script>' in browser.contents)
+        
+        # Not present in this request
+        self.assertFalse('<script>request param on</script>' in browser.contents)
+    
+        # ... but present with the request param on
+        browser.open(portal.absolute_url() + '?someParam=on')
+        self.assertTrue('<script>request param on</script>' in browser.contents)
     
     def test_theme_for_404(self):
         app = self.layer['app']
@@ -489,7 +533,7 @@ class TestCase(unittest.TestCase):
         self.assertEquals(error.code, 404)
         
         # The theme
-        self.failUnless("This is the theme" in browser.contents)
+        self.assertTrue("This is the theme" in browser.contents)
 
     def test_resource_condition_404(self):
         app = self.layer['app']
@@ -530,11 +574,11 @@ class TestCase(unittest.TestCase):
             error = e
         self.assertEquals(error.code, 404)
         
-        self.failUnless(thirdLastResource.getId() in browser.contents)
-        self.failUnless(secondToLastResource.getId() in browser.contents)
-        self.failIf(lastResource.getId() in browser.contents)
+        self.assertTrue(thirdLastResource.getId() in browser.contents)
+        self.assertTrue(secondToLastResource.getId() in browser.contents)
+        self.assertFalse(lastResource.getId() in browser.contents)
         
-        self.failUnless("This is the theme" in browser.contents)
+        self.assertTrue("This is the theme" in browser.contents)
     
     def test_includes(self):
         app = self.layer['app']
@@ -571,12 +615,12 @@ class TestCase(unittest.TestCase):
         # relative to current directory)
         
         browser.open(portal.absolute_url())
-        self.failUnless('<div id="alpha">Number one</div>' in browser.contents)
-        self.failUnless('<div id="beta">Number two</div>' in browser.contents)
+        self.assertTrue('<div id="alpha">Number one</div>' in browser.contents)
+        self.assertTrue('<div id="beta">Number two</div>' in browser.contents)
         
         # In the subfolder, we've reversed alpha and beta. We should now get
         # 'one' twice, since we still get alpha from the site root.
         
         browser.open(portal['subfolder'].absolute_url())
-        self.failUnless('<div id="alpha">Number one</div>' in browser.contents)
-        self.failUnless('<div id="beta">Number one</div>' in browser.contents)
+        self.assertTrue('<div id="alpha">Number one</div>' in browser.contents)
+        self.assertTrue('<div id="beta">Number one</div>' in browser.contents)

@@ -10,5 +10,15 @@
     <replace content='/html/head/title' theme='/html/head/title' />
     <replace content='//h1[class=documentFirstHeading]' theme='/html/body/h1' />
     <after content='/html/head/link' theme-children='/html/head' />
-
+    
+    <after theme-children="/html/head">
+        <script><xsl:value-of select="$stringParam" /></script>
+    </after>
+    <after theme-children="/html/head" if="$boolParam">
+        <script>bool param on</script>
+    </after>
+    <after theme-children="/html/head" if="$requestParam = 'on'">
+        <script>request param on</script>
+    </after>
+    
 </rules>
