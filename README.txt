@@ -505,7 +505,8 @@ you just want to test::
     <?xml version="1.0" encoding="UTF-8"?>
     <rules
         xmlns="http://namespaces.plone.org/diazo"
-        xmlns:css="http://namespaces.plone.org/diazo+css">
+        xmlns:css="http://namespaces.plone.org/diazo+css"
+        xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
         <!-- The default theme, used for standard Plone web pages -->
         <theme href="theme.html" css:if-content="#visual-portal-wrapper" />
@@ -515,12 +516,12 @@ you just want to test::
             
             <!-- Add meta tags -->
             <drop theme="/html/head/meta" />
-            <append content="/html/head/meta" theme="/html/head" />
+            <after content="/html/head/meta" theme-children="/html/head" />
     
             <!-- Copy style, script and link tags in the order they appear in the content -->
-            <append
+            <after
                 content="/html/head/style | /html/head/script | /html/head/link"
-                theme="/html/head"
+                theme-children="/html/head"
                 />
     
             <drop theme="/html/head/style" />
@@ -529,30 +530,29 @@ you just want to test::
 
             <!-- Copy over the id/class attributes on the body tag.
                  This is important for per-section styling -->
-            <prepend content="/html/body/@class" theme="/html/body" />
-            <prepend content="/html/body/@id"    theme="/html/body" />
-            <prepend content="/html/body/@dir"   theme="/html/body" />
+            <merge attributes="class" css:content="body" css:theme="body" />
+            <copy attributes="id dir" css:content="body" css:theme="body" />
 
             <!-- Logo (link target) -->
-            <prepend content='//*[@id="portal-logo"]/@href' css:theme="#logo" />
+            <replace attributes="href" css:content='#portal-logo' css:theme="#logo" />
             
             <!-- Site actions -->
-            <copy css:content="#portal-siteactions li" css:theme="#actions" />
+            <replace css:content="#portal-siteactions li" css:theme-children="#actions" />
 
             <!-- Global navigation -->
-            <copy css:content='#portal-globalnav li' css:theme='#global-navigation' />
+            <replace css:content='#portal-globalnav li' css:theme-children='#global-navigation' />
 
             <!-- Breadcrumbs -->
-            <copy css:content='#portal-breadcrumbs > *' css:theme='#breadcrumbs' />
+            <replace css:content-children='#portal-breadcrumbs' css:theme-children='#breadcrumbs' />
 
             <!-- Document Content -->
-            <copy css:content="#content > *" css:theme="#document-content" />
+            <replace css:content-children="#content" css:theme-children="#document-content" />
             <before css:content="#edit-bar" css:theme="#document-content" />
             <before css:content=".portalMessage" css:theme="#document-content" />
 
             <!-- Columns -->
-            <copy css:content="#portal-column-one > *" css:theme="#column-one" />
-            <copy css:content="#portal-column-two > *" css:theme="#column-two" />
+            <replace css:content-children="#portal-column-one > *" css:theme-children="#column-one" />
+            <replace css:content-children="#portal-column-two > *" css:theme-children="#column-two" />
             
         </rules>
 
@@ -681,13 +681,15 @@ Common rules
 
 To copy the page title::
 
-    <!-- Head: title -->
-    <replace theme="/html/head/title" content="/html/head/title" />
+    <replace css:theme="title" css:content="title" />
 
 To copy the ``<base />`` tag (necessary for Plone's links to work)::
 
-    <!-- Base tag -->
-    <replace theme="/html/head/base" content="/html/head/base" />
+    <replace css:theme="base" css:content="base" />
+
+If there is no ``<base />`` tag in the theme, you can do:
+
+    <before css:theme-children="head" css:content="base" />
 
 To drop all styles and JavaScript resources from the theme and copy them
 from Plone's ``portal_css`` tool instead::
@@ -708,7 +710,7 @@ To copy the class of the ``<body />`` tag (necessary for certain Plone
 JavaScript functions and styles to work properly)::
 
     <!-- Body -->
-    <prepend theme="/html/body" content="/html/body/attribute::class" />    
+    <merge attributes="class" css:theme="body" css:content="body" />
 
 Other tips
 ==========
@@ -734,7 +736,8 @@ However, you need to update the XML namespaces. Where in XDV you would have::
 
     <rules
         xmlns="http://namespaces.plone.org/xdv"
-        xmlns:css="http://namespaces.plone.org/xdv+css">
+        xmlns:css="http://namespaces.plone.org/xdv+css"
+        xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     
         ...
     
@@ -744,11 +747,25 @@ you should now use::
 
     <rules
         xmlns="http://namespaces.plone.org/diazo"
-        xmlns:css="http://namespaces.plone.org/diazo+css">
+        xmlns:css="http://namespaces.plone.org/diazo+css"
+        xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     
         ...
     
     </rules>
+
+In addition, some rules have been changed to simplify the rule set:
+
+* ``<copy />`` should only used for copying attributes. For the use case
+  that ``<copy />`` used to cover, use ``<replace />`` with ``theme-children``
+  instead.
+* ``<prepend />`` has similarly been replaced by ``<before />`` with
+  ``theme-children``.
+* ``<append />`` has similarly been replaced by ``<after />`` with
+  ``theme-children``.
+
+Please see the `Diazo`_ documentation for more details about the available
+rules, including new rules only available in Diazo.
 
 Plone integration changes
 -------------------------
