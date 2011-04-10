@@ -353,9 +353,9 @@ styles from Plone. For example, you could add the following rules::
     <drop theme="/html/head/style" />
     
     <!-- Pull in Plone CSS -->
-    <append theme="/html/head" content="/html/head/link | /html/head/style" />
+    <after theme-children="/html/head" content="/html/head/link | /html/head/style" />
 
-The use of an "or" expression for the content in the ``<append />`` rule means
+The use of an "or" expression for the content in the ``after />`` rule means
 that the precise ordering is maintained.
 
 For an example of how to register stylesheets upon product installation using
@@ -387,7 +387,7 @@ Controlling Plone's default CSS
 -------------------------------
 
 It is sometimes useful to show some of Plone's CSS in the styled site. You
-can achieve this by using an Diazo ``<append />`` rule or similar to copy the
+can achieve this by using an Diazo ``after />`` rule or similar to copy the
 CSS from Plone's generated ``<head />`` into the theme. You can use the
 portal_css tool to turn off the style sheets you do not want.
 
@@ -699,12 +699,12 @@ from Plone's ``portal_css`` tool instead::
     <drop theme="/html/head/style" />
     
     <!-- Pull in Plone CSS -->
-    <append theme="/html/head" content="/html/head/link | /html/head/style" />
+    <after theme-children="/html/head" content="/html/head/link | /html/head/style" />
 
 To copy Plone's JavaScript resources::
 
     <!-- Pull in Plone CSS -->
-    <append theme="/html/head" content="/html/head/script" />
+    <after theme-children="/html/head" content="/html/head/script" />
 
 To copy the class of the ``<body />`` tag (necessary for certain Plone
 JavaScript functions and styles to work properly)::

@@ -3,7 +3,7 @@
 
     <theme href="python://plone.app.theming.tests/includes.html" />
 
-    <copy content='//*[@id="content"]/text()' css:theme='#alpha' href="/alpha" />
-    <copy content='//*[@id="content"]/text()' css:theme='#beta' href="./beta" />
+    <replace content='//*[@id="content"]/text()' css:theme-children='#alpha' href="/alpha" />
+    <replace content='//*[@id="content"]/text()' css:theme-children='#beta' href="./beta" />
     
 </rules>

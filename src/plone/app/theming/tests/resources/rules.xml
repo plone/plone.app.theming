@@ -6,6 +6,6 @@
     
     <replace content='/html/head/title' theme='/html/head/title' />
     <replace content='//h1[class=documentFirstHeading]' theme='/html/body/h1' />
-    <append content='/html/head/link' theme='/html/head' />
+    <after content='/html/head/link' theme-children='/html/head' />
     
 </rules>
