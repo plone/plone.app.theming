@@ -124,10 +124,10 @@ class ThemingControlpanel(BrowserView):
             
             if themeZip:
                 
-                themeName, rulesFile, absolutePrefix = None, None, None
+                themeName, rulesFile, absolutePrefix, manifest = None, None, None, None
                 
                 try:
-                    themeName, rulesFile, absolutePrefix = extractThemeInfo(themeZip)
+                    themeName, rulesFile, absolutePrefix, manifest = extractThemeInfo(themeZip)
                 except (ValueError, KeyError,), e:
                     logger.warn(str(e))
                     self.errors['themeArchive'] = _('error_no_rules_file',
@@ -160,6 +160,7 @@ class ThemingControlpanel(BrowserView):
         
                     self.settings.absolutePrefix = absolutePrefix
                     self.settings.enabled = True
+                    self.settings.parameterExpressions = manifest.get('parameters', {})
         
         if 'form.button.DeleteSelected' in form:
             self.authorize()

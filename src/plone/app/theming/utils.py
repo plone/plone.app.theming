@@ -125,9 +125,10 @@ def getOrCreatePersistentResourceDirectory():
     return persistentDirectory[THEME_RESOURCE_NAME]
 
 def extractThemeInfo(zipfile):
-    """Return a tuple (themeName, rulesFile, absolutePrefix), where themeName
-    is the name of the theme and rulesFile is a relative path to the rules.xml
-    file.
+    """Return a tuple (themeName, rulesFile, absolutePrefix, manifest), where
+    themeName is the name of the theme, rulesFile is a relative path to the
+    rules XML file, absolutePrefix is the absolute prefix to use, and
+    manifest is the full manifest or an empty dict.
     
     Will throw a ValueError if the theme directory does not contain a single
     top level directory or the rules file cannot be found.
@@ -150,7 +151,7 @@ def extractThemeInfo(zipfile):
         except KeyError:
             raise ValueError("Could not find theme name and rules file")
     
-    return (resourceName, rulesFile, absolutePrefix)
+    return (resourceName, rulesFile, absolutePrefix, manifestDict or {})
 
 def createExpressionContext(context, request):
     """Create an expression context suitable for evaluating parameter

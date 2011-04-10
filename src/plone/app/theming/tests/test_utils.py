@@ -33,11 +33,12 @@ class TestUnit(unittest.TestCase):
         f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'default_rules.zip'))
         z = zipfile.ZipFile(f)
         
-        theme, rules, prefix = extractThemeInfo(z)
+        theme, rules, prefix, manifest = extractThemeInfo(z)
         
         self.assertEqual(theme, 'default_rules')
         self.assertEqual(rules, 'rules.xml')
         self.assertEqual(prefix, '/++theme++default_rules')
+        self.assertEqual(manifest, {})
         
         f.close()
     
@@ -49,11 +50,12 @@ class TestUnit(unittest.TestCase):
         f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_rules.zip'))
         z = zipfile.ZipFile(f)
         
-        theme, rules, prefix = extractThemeInfo(z)
+        theme, rules, prefix, manifest = extractThemeInfo(z)
         
         self.assertEqual(theme, 'manifest_rules')
         self.assertEqual(rules, 'other.xml')
         self.assertEqual(prefix, '/++theme++manifest_rules')
+        self.assertEqual(manifest,  {'rules': 'other.xml', 'prefix': None, 'description': None, 'parameters': {}, 'title': 'Test theme'})
         
         f.close()
     
@@ -65,11 +67,12 @@ class TestUnit(unittest.TestCase):
         f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_prefix.zip'))
         z = zipfile.ZipFile(f)
         
-        theme, rules, prefix = extractThemeInfo(z)
+        theme, rules, prefix, manifest = extractThemeInfo(z)
         
         self.assertEqual(theme, 'manifest_prefix')
         self.assertEqual(rules, 'rules.xml')
         self.assertEqual(prefix, '/foo')
+        self.assertEqual(manifest,  {'rules': None, 'prefix': '/foo', 'description': None, 'parameters': {}, 'title': 'Test theme'})
         
         f.close()
     
@@ -81,11 +84,12 @@ class TestUnit(unittest.TestCase):
         f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_default_rules.zip'))
         z = zipfile.ZipFile(f)
         
-        theme, rules, prefix = extractThemeInfo(z)
+        theme, rules, prefix, manifest = extractThemeInfo(z)
         
         self.assertEqual(theme, 'manifest_default_rules')
         self.assertEqual(rules, 'rules.xml')
         self.assertEqual(prefix, '/++theme++manifest_default_rules')
+        self.assertEqual(manifest,  {'rules': None, 'prefix': None, 'description': None, 'parameters': {}, 'title': 'Test theme'})
         
         f.close()
     
@@ -97,11 +101,12 @@ class TestUnit(unittest.TestCase):
         f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_default_rules_override.zip'))
         z = zipfile.ZipFile(f)
         
-        theme, rules, prefix = extractThemeInfo(z)
+        theme, rules, prefix, manifest = extractThemeInfo(z)
         
         self.assertEqual(theme, 'manifest_default_rules_override')
         self.assertEqual(rules, 'other.xml')
         self.assertEqual(prefix, '/++theme++manifest_default_rules_override')
+        self.assertEqual(manifest,  {'rules': 'other.xml', 'prefix': None, 'description': None, 'parameters': {}, 'title': 'Test theme'})
         
         f.close()
     
@@ -137,11 +142,12 @@ class TestUnit(unittest.TestCase):
         f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'ignores_dotfiles_resource_forks.zip'))
         z = zipfile.ZipFile(f)
         
-        theme, rules, prefix = extractThemeInfo(z)
+        theme, rules, prefix, manifest = extractThemeInfo(z)
         
         self.assertEqual(theme, 'default_rules')
         self.assertEqual(rules, 'rules.xml')
         self.assertEqual(prefix, '/++theme++default_rules')
+        self.assertEqual(manifest,  {})
         
         f.close()
     
@@ -153,11 +159,12 @@ class TestUnit(unittest.TestCase):
         f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'subdirectories.zip'))
         z = zipfile.ZipFile(f)
         
-        theme, rules, prefix = extractThemeInfo(z)
+        theme, rules, prefix, manifest = extractThemeInfo(z)
         
         self.assertEqual(theme, 'subdirectories')
         self.assertEqual(rules, 'rules.xml')
         self.assertEqual(prefix, '/++theme++subdirectories')
+        self.assertEqual(manifest,  {})
         
         f.close()
     
