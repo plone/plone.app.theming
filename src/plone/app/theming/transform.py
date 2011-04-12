@@ -225,14 +225,15 @@ class ThemeTransform(object):
             return None
         
         # Find real or virtual path - PATH_INFO has VHM elements in it
-        actualURL = self.request.get('ACTUAL_URL', '')
+        url = self.request.get('ACTUAL_URL', '')
         
         # Find the host name
         base = self.request.get('BASE1', '')
-        path = actualURL[len(base):]
+        path = url[len(base):]
         parts = urlsplit(base.lower())
         
         params = dict(
+                url=strparam(url),
                 base=quote_param(base),
                 path=quote_param(path),
                 scheme=quote_param(parts.scheme),
