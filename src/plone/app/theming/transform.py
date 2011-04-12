@@ -233,7 +233,7 @@ class ThemeTransform(object):
         parts = urlsplit(base.lower())
         
         params = dict(
-                url=strparam(url),
+                url=quote_param(url),
                 base=quote_param(base),
                 path=quote_param(path),
                 scheme=quote_param(parts.scheme),
