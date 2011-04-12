@@ -131,8 +131,8 @@ class ThemeTransform(object):
             if absolutePrefix:
                 absolutePrefix = expandAbsolutePrefix(absolutePrefix)
             
-            parameterExpressions = settings.parameterExpressions
-            xslParams = dict([(k, '') for k,v in parameterExpressions.items()])
+            params = set(settings.parameterExpressions.keys() + ['url', 'base', 'path', 'scheme', 'host'])
+            xslParams = dict((k, '') for k in params)
             
             internalResolver = InternalResolver()
             pythonResolver = PythonResolver()
