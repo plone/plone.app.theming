@@ -36,7 +36,7 @@ class _Cache(object):
     
     def __init__(self):
         self.transform = None
-        self.expressions = {}
+        self.expressions = None
     
     def updateTransform(self, transform):
         self.transform = transform
