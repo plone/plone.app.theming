@@ -14,6 +14,40 @@ MANIFEST_FORMAT = ManifestFormat(THEME_RESOURCE_NAME,
         parameterSections=['parameters'],
     )
 
+class ITheme(Interface):
+    """A theme, loaded from a resource directory
+    """
+    
+    __name__ = schema.TextLine(
+            title=_(u"Name"),
+        )
+    
+    rules = schema.TextLine(
+            title=_(u"Path to rules"),
+        )
+    
+    title = schema.TextLine(
+            title=_(u"Title"),
+            required=False,
+        )
+    
+    description = schema.TextLine(
+            title=_(u"Description"),
+            required=False,
+        )
+    
+    absolutePrefix = schema.TextLine(
+            title=_(u"Absolute prefix"),
+            required=False,
+        )
+    
+    parameterExpressions = schema.Dict(
+            title=_(u"Parameter expressions"), 
+            key_type=schema.TextLine(),
+            value_type=schema.TextLine(),
+            required=False,
+        )
+
 class IThemeSettings(Interface):
     """Transformation settings
     """

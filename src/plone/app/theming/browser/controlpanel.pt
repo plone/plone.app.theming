@@ -81,9 +81,9 @@
                         <option
                             tal:repeat="theme view/availableThemes"
                             tal:content="theme/title"
-                            tal:attributes="value theme/id;
+                            tal:attributes="value theme/__name__;
                                             title theme/description;
-                                            selected python:theme['id'] == selected and 'selected' or None"
+                                            selected python:theme.__name__ == selected and 'selected' or None"
                             />
                     </select>
             
@@ -220,7 +220,7 @@
                 
                 <div
                     tal:define="error errors/parameterExpressions | nothing;
-                                parameterExpressions view/settings/parameterExpressions | python:{};
+                                parameterExpressions python:view.settings.parameterExpressions or {};
                                 parameterExpressions python:['%s = %s' % (k,v) for k,v in parameterExpressions.items()];
                                 parameterExpressions python:request.get('parameterExpressions', parameterExpressions)"
                     tal:attributes="class python:'field error' if error else 'field'">

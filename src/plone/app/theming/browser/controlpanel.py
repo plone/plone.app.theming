@@ -7,18 +7,14 @@ from zope.publisher.browser import BrowserView
 
 from plone.registry.interfaces import IRegistry
 
-from plone.resource.manifest import MANIFEST_FILENAME
-from plone.resource.manifest import getZODBResources
-from plone.resource.manifest import getAllResources
-
 from plone.app.theming.interfaces import _
 from plone.app.theming.interfaces import IThemeSettings
-from plone.app.theming.interfaces import RULE_FILENAME
-from plone.app.theming.interfaces import THEME_RESOURCE_NAME
-from plone.app.theming.interfaces import MANIFEST_FORMAT
 
-from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
 from plone.app.theming.utils import extractThemeInfo
+from plone.app.theming.utils import getZODBThemes
+from plone.app.theming.utils import getAvailableThemes
+from plone.app.theming.utils import applyTheme
+from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
 
 from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
@@ -26,9 +22,6 @@ from Products.Five.browser.decode import processInputs
 from Products.statusmessages.interfaces import IStatusMessage
 
 logger = logging.getLogger('plone.app.theming')
-
-def isValidThemeDirectory(directory):
-    return directory.isFile(MANIFEST_FILENAME) or directory.isFile(RULE_FILENAME)
 
 class ThemingControlpanel(BrowserView):
     
@@ -42,11 +35,10 @@ class ThemingControlpanel(BrowserView):
         
         self.settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
         
-        self.zodbThemes = self.getZODBThemes()
+        self.zodbThemes = getZODBThemes()
         
         self.selectedTheme = None
         self.availableThemes = []
-        self.selectedTheme = None
         
         self.errors = {}
         submitted = False
@@ -57,7 +49,7 @@ class ThemingControlpanel(BrowserView):
             self.redirect(_(u"Changes canceled."))
             return False
         
-        self.availableThemes = self.getAvailableThemes()
+        self.availableThemes = getAvailableThemes()
         self.selectedTheme = self.getSelectedTheme(self.availableThemes, self.settings.rules)
         
         if 'form.button.BasicSave' in form:
@@ -69,10 +61,7 @@ class ThemingControlpanel(BrowserView):
             
             if themeSelection != "_other_":
                 themeData = self.getThemeData(self.availableThemes, themeSelection)
-                
-                self.settings.rules = themeData['rules']
-                self.settings.absolutePrefix = themeData['absolutePrefix']
-                self.settings.parameterExpressions = themeData['parameterExpressions']
+                applyTheme(themeData)
             
         if 'form.button.AdvancedSave' in form:
             self.authorize()
@@ -97,11 +86,12 @@ class ThemingControlpanel(BrowserView):
                         default=u"Please ensure you enter one expression per line, in the format <name> = <expression>."
                     )
             
-            if not self.errors:            
+            if not self.errors:
+                
                 self.settings.rules = rules
                 self.settings.absolutePrefix = prefix
-                self.settings.hostnameBlacklist = hostnameBlacklist
                 self.settings.parameterExpressions = parameterExpressions
+                self.settings.hostnameBlacklist = hostnameBlacklist
         
         if 'form.button.Import' in form:
             self.authorize()
@@ -124,10 +114,8 @@ class ThemingControlpanel(BrowserView):
             
             if themeZip:
                 
-                themeName, rulesFile, absolutePrefix, manifest = None, None, None, None
-                
                 try:
-                    themeName, rulesFile, absolutePrefix, manifest = extractThemeInfo(themeZip)
+                    themeData = extractThemeInfo(themeZip)
                 except (ValueError, KeyError,), e:
                     logger.warn(str(e))
                     self.errors['themeArchive'] = _('error_no_rules_file',
@@ -136,7 +124,7 @@ class ThemingControlpanel(BrowserView):
                 else:
                     
                     themeContainer = getOrCreatePersistentResourceDirectory()
-                    themeExists = themeName in themeContainer
+                    themeExists = themeData.__name__ in themeContainer
                     
                     if themeExists:
                         if not replaceExisting:
@@ -144,23 +132,17 @@ class ThemingControlpanel(BrowserView):
                                     u"This theme is already installed. Select 'Replace existing theme' and re-upload to replace it."
                                 )
                         else:
-                            del themeContainer[themeName]
+                            del themeContainer[themeData.__name__]
                             performImport = True
                     else:
                         performImport = True
                     
             if performImport:
                 themeContainer.importZip(themeZip)
-        
+                
                 if enableNewTheme:
-                    self.settings.rules = u"/++theme++%s/%s" % (themeName, rulesFile,)
-        
-                    if isinstance(absolutePrefix, str):
-                        absolutePrefix = absolutePrefix.decode('utf-8')
-        
-                    self.settings.absolutePrefix = absolutePrefix
+                    applyTheme(themeData)
                     self.settings.enabled = True
-                    self.settings.parameterExpressions = manifest.get('parameters', {})
         
         if 'form.button.DeleteSelected' in form:
             self.authorize()
@@ -179,74 +161,17 @@ class ThemingControlpanel(BrowserView):
         
         return True
     
-    def getAvailableThemes(self):
-        
-        resources = getAllResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
-        themes = []
-        for name, manifest in resources.items():
-            title       = name.capitalize().replace('-', ' ').replace('.', ' ')
-            description = None
-            rules       = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
-            prefix      = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
-            params      = {}
-            
-            if manifest is not None:
-                title       = manifest['title'] or title
-                description = manifest['description'] or description
-                rules       = manifest['rules'] or rules
-                prefix      = manifest['prefix'] or prefix
-                params      = manifest['parameters'] or params
-            
-            if isinstance(rules, str):
-                rules = rules.decode('utf-8')
-            if isinstance(prefix, str):
-                prefix = prefix.decode('utf-8')
-            
-            themes.append({
-                    'id': name,
-                    'title': title,
-                    'description': description,
-                    'rules': rules,
-                    'absolutePrefix': prefix,
-                    'parameterExpressions': params,
-                })
-        
-        themes.sort(key=lambda x: x['title'])
-        return themes
-
-    
     def getSelectedTheme(self, themes, rules):
         for item in themes:
-            if item['rules'] == rules:
-                return item['id']
+            if item.rules == rules:
+                return item.__name__
         return False
     
     def getThemeData(self, themes, themeSelection):
         for item in themes:
-            if item['id'] == themeSelection:
+            if item.__name__ == themeSelection:
                 return item
         return None
-    
-    def getZODBThemes(self):
-        
-        resources = getZODBResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
-        themes = []
-        for name, manifest in resources.items():
-            title = name.capitalize().replace('-', ' ').replace('.', ' ')
-            description = None
-            
-            if manifest is not None:
-                title       = manifest['title'] or title
-                description = manifest['description'] or description
-            
-            themes.append({
-                    'id': name,
-                    'title': title,
-                    'description': description,
-                })
-        
-        themes.sort(key=lambda x: x['title'])
-        return themes
     
     def authorize(self):
         authenticator = getMultiAdapter((self.context, self.request), name=u"authenticator")

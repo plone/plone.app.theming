@@ -4,9 +4,16 @@ Changelog
 1.0b1 - Unreleased
 -------------------
 
-* Pass diazo.* form variables. This automatic functionality should be replaced
-  with something more explicit based on tal expressions before 1.0 final.
-  [elro]
+* Add ``theme.xml`` import step (see README).
+  [optilude]
+
+* Add support for ``[theme:parameters]`` section in ``manifest.cfg``, which
+  can be used to set parameters and the corresponding TALES expressions to
+  calculate them.
+  [optilude]
+
+* Add support for parameter expressions based on TALES expressions
+  [optilude]
 
 * Use plone.subrequest 1.6 features to work with IStreamIterator from
   plone.resource.

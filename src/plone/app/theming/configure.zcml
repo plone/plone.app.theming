@@ -17,6 +17,7 @@
     <include package="plone.app.registry" />
 
     <include package=".browser" />
+    <include package=".exportimport" />
     
     <gs:registerProfile
         name="default"

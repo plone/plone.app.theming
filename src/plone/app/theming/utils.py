@@ -10,11 +10,20 @@ from zope.globalrequest import getRequest
 from plone.subrequest import subrequest
 
 from plone.resource.interfaces import IResourceDirectory
-from plone.resource import manifest
+
+from plone.resource.manifest import extractManifestFromZipFile
+from plone.resource.manifest import getAllResources
+from plone.resource.manifest import getZODBResources
+from plone.resource.manifest import MANIFEST_FILENAME
+
+from plone.registry.interfaces import IRegistry
 
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.interfaces import MANIFEST_FORMAT
 from plone.app.theming.interfaces import RULE_FILENAME
+from plone.app.theming.interfaces import IThemeSettings
+
+from plone.app.theming.theme import Theme
 
 from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
@@ -124,35 +133,6 @@ def getOrCreatePersistentResourceDirectory():
     
     return persistentDirectory[THEME_RESOURCE_NAME]
 
-def extractThemeInfo(zipfile):
-    """Return a tuple (themeName, rulesFile, absolutePrefix, manifest), where
-    themeName is the name of the theme, rulesFile is a relative path to the
-    rules XML file, absolutePrefix is the absolute prefix to use, and
-    manifest is the full manifest or an empty dict.
-    
-    Will throw a ValueError if the theme directory does not contain a single
-    top level directory or the rules file cannot be found.
-    """
-    
-    resourceName, manifestDict = manifest.extractManifestFromZipFile(zipfile, MANIFEST_FORMAT)
-    
-    rulesFile = None
-    absolutePrefix = '/++%s++%s' % (THEME_RESOURCE_NAME, resourceName)
-    
-    if manifestDict is not None:    
-        rulesFile = manifestDict['rules']
-        absolutePrefix = manifestDict['prefix'] or absolutePrefix
-    
-    if not rulesFile:
-        rulesFile = RULE_FILENAME
-        
-        try:
-            zipfile.getinfo("%s/%s" % (resourceName, rulesFile,))
-        except KeyError:
-            raise ValueError("Could not find theme name and rules file")
-    
-    return (resourceName, rulesFile, absolutePrefix, manifestDict or {})
-
 def createExpressionContext(context, request):
     """Create an expression context suitable for evaluating parameter
     expressions.
@@ -179,3 +159,137 @@ def compileExpression(text):
     caching in a volatile attribute
     """
     return getEngine().compile(text.strip())
+
+def isValidThemeDirectory(directory):
+    """Determine if the given plone.resource directory is a valid theme
+    directory
+    """
+    return directory.isFile(MANIFEST_FILENAME) or directory.isFile(RULE_FILENAME)
+
+def extractThemeInfo(zipfile):
+    """Return an ITheme based on the information in the given zipfile.
+    
+    Will throw a ValueError if the theme directory does not contain a single
+    top level directory or the rules file cannot be found.
+    """
+    
+    resourceName, manifestDict = extractManifestFromZipFile(zipfile, MANIFEST_FORMAT)
+    
+    rulesFile = None
+    absolutePrefix = '/++%s++%s' % (THEME_RESOURCE_NAME, resourceName)
+    title = None
+    description = None
+    parameters = {}
+    
+    if manifestDict is not None:    
+        rulesFile = manifestDict.get('rules', rulesFile)
+        absolutePrefix = manifestDict['prefix'] or absolutePrefix
+        title = manifestDict.get('title', None)
+        description = manifestDict.get('title', None)
+        parameters = manifestDict.get('parameters', {})
+    
+    if not rulesFile:
+        rulesFile = RULE_FILENAME
+        
+        try:
+            zipfile.getinfo("%s/%s" % (resourceName, rulesFile,))
+        except KeyError:
+            raise ValueError("Could not find theme name and rules file")
+    
+    return Theme(resourceName, rulesFile,
+            title=title,
+            description=description,
+            absolutePrefix=absolutePrefix,
+            parameterExpressions=parameters
+        )
+
+def getAvailableThemes():
+    """Get a list of all ITheme's available in resource directories.
+    """
+    
+    resources = getAllResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
+    themes = []
+    for name, manifest in resources.items():
+        title       = name.capitalize().replace('-', ' ').replace('.', ' ')
+        description = None
+        rules       = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
+        prefix      = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
+        params      = {}
+        
+        if manifest is not None:
+            title       = manifest['title'] or title
+            description = manifest['description'] or description
+            rules       = manifest['rules'] or rules
+            prefix      = manifest['prefix'] or prefix
+            params      = manifest['parameters'] or params
+        
+        if isinstance(rules, str):
+            rules = rules.decode('utf-8')
+        if isinstance(prefix, str):
+            prefix = prefix.decode('utf-8')
+        
+        themes.append(Theme(name, rules,
+                    title=title,
+                    description=description,
+                    absolutePrefix=prefix,
+                    parameterExpressions=params,
+                )
+            )
+    
+    themes.sort(key=lambda x: x.title)
+    return themes
+
+def getZODBThemes():
+    """Get a list of ITheme's stored in the ZODB.
+    """
+        
+    resources = getZODBResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
+    themes = []
+    for name, manifest in resources.items():
+        title = name.capitalize().replace('-', ' ').replace('.', ' ')
+        description = None
+        rules       = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
+        prefix      = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
+        params      = {}
+        
+        if manifest is not None:
+            title       = manifest['title'] or title
+            description = manifest['description'] or description
+            rules       = manifest['rules'] or rules
+            prefix      = manifest['prefix'] or prefix
+            params      = manifest['parameters'] or params
+        
+        themes.append(Theme(name, rules,
+                    title=title,
+                    description=description,
+                    absolutePrefix=prefix,
+                    parameterExpressions=params,
+                )
+            )
+    
+    themes.sort(key=lambda x: x.title)
+    return themes
+
+def applyTheme(theme):
+    """Apply an ITheme
+    """
+    
+    settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+    
+    if theme is None:
+        
+        settings.rules = None
+        settings.absolutePrefix = None
+        settings.parameterExpressions = {}
+        
+    else:
+    
+        if isinstance(theme.rules, str):
+            theme.rules = theme.rules.decode('utf-8')
+    
+        if isinstance(theme.absolutePrefix, str):
+            theme.absolutePrefix = theme.absolutePrefix.decode('utf-8')
+    
+        settings.rules = theme.rules
+        settings.absolutePrefix = theme.absolutePrefix
+        settings.parameterExpressions = theme.parameterExpressions

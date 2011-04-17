@@ -11,14 +11,14 @@ check out the `Diazo documentation <http://diazo.org>`_.
 Installation
 ============
 
-``plone.app.theming`` works with Plone 4.0 or later.
+``plone.app.theming`` works with Plone 4.1 or later.
 
 To install ``plone.app.theming`` into your Plone instance, locate the file
 ``buildout.cfg`` in the root of your Plone instance directory on the file
 system, and open it in a text editor. Locate the section that looks like
 this::
 
-    # extends = http://dist.plone.org/release/4.0/versions.cfg
+    # extends = http://dist.plone.org/release/4.1/versions.cfg
     extends = versions.cfg
     versions = versions
 
@@ -33,16 +33,18 @@ configuration so it looks like this::
 
     extends =
         versions.cfg
-        http://good-py.appspot.com/release/diazo/1.0b1
+        http://good-py.appspot.com/release/plone.app.theming/1.0b1
     versions = versions
 
 Note that the last part of the URL above is the Diazo version number. There
 may be a newer version by the time you read this, so check out the `overview
-page <http://good-py.appspot.com/release/diazo>`_ for the known good set.
+page <http://good-py.appspot.com/release/plone.app.theming>`_ for the known
+good set.
 
-What happens here is that the dependency list for ``diazo`` specifies some new
-versions for you via the good-py URL. This way, you don't have to worry about
-getting the right versions, Buildout will handle it for you.
+What happens here is that the dependency list for ``plone.app.theming``
+specifies some new versions for you via the good-py URL. This way, you don't
+have to worry about getting the right versions, Buildout will handle it for
+you.
 
 Next step is to add the actual ``plone.app.theming`` add-on to the "eggs"
 section of ``buildout.cfg``. Look for the section that looks like this::
@@ -98,7 +100,7 @@ a valid theme archive.
 Alternatively, you can configure a theme manually, under the "Advanced" tab.
 The options here are:
 
-  Rules
+Rules
     URL referencing the Diazo rules file. This file in turn references your
     theme. The URL may be a filesystem or remote URL (in which case you want
     to enable "read network access" - see below). It can also be an absolute
@@ -108,20 +110,20 @@ The options here are:
     The most common type of URL will be a relative path using the
     ``++theme++`` traversal namespace. See below.
   
-  Absolute prefix 
+Absolute prefix 
     If given, any relative URL in an ``<img />``, ``<link />``, ``<style />``
     or ``<script />`` in the theme HTML file will be prefixed by this URL
     snippet when the theme is compiled. This makes it easier to develop theme
     HTML/CSS on the file system using relative paths that still work on any
     URL on the server.
     
-  Read network
+Read network
     By default, Diazo will not attempt to resolve external URLs referenced in
     the control panel or in the rules file, as this can have a performance
     impact. If you need to access external URLs, enable the "read network"
     setting.
 
-  Unthemed host names
+Unthemed host names
     You can list hostnames here that will never be themed. By default, this
     list contains ``127.0.0.1``, which means that if you access your Plone
     site using that IP address (as opposed to ``localhost`` or some other
@@ -129,14 +131,19 @@ The options here are:
     development, or scenarios where you want your content authors to be able
     to access a "plain" Plone site.
 
-  Parameter expressions
+Parameter expressions
     Some themes will use parameters in their rules files. Available parameters
     can be set up here, using TALES expressions. Each parameter should be
     entered on its own line, in the form ``<parameter name> = <expression>``.
     More on expressions below.
 
+Packaging themes
+----------------
+
+There are several ways to package and distribute themes:
+
 ZIP file format
----------------
+~~~~~~~~~~~~~~~
 
 A theme packaged for import as a ZIP archive must adhere to the following
 rules:
@@ -163,7 +170,7 @@ archive of the top level directory using the compression features built into
 your operating system or a program such as 7Zip for Windows.
 
 Themes in resources directories
--------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This package integrates with `plone.resource`_ to enable the ``theme``
 resource type. This enables themes to be deployed:
@@ -255,7 +262,7 @@ The default is to use ``/++theme++<theme name>/rules.xml`` for the rules and
 the right approach for most self-contained themes.
 
 Resources in Python packages
-----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When specifying rules or referenced resources (such as the theme), you can use
 a special ``python://`` URI scheme to specify a path relative to the
@@ -299,14 +306,14 @@ See the `Diazo documentation`_ for more details about rules that support
 The following parameters are always available when using
 ``plone.app.theming``:
 
-  ``scheme``
+``scheme``
     The scheme portion of the inbound URL, usually ``http`` or ``https``.
-  ``host``
+``host``
     The hostname in the inbound URL.
-  ``path``
+``path``
     The path segment of the inbound URL. This will not include any virtual
     hosting tokens, i.e. it is the path the end user sees.
-  ``base``
+``base``
     The Zope base url (the ``BASE1`` request variable).
 
 You can add additional parameters through the control panel, using TALES
@@ -357,13 +364,13 @@ enabled from a resource directory. This is done using the
     [theme]
     title = My theme
     description = A test theme
-    
+
     [theme:parameters]
     ajax_load = python: 'ajax_load' in request.form
     mode = string: test
 
-Development aids
-----------------
+Temporarily disabling the theme
+-------------------------------
 
 Note that when Zope is in development mode (e.g. running in the foreground
 in a console with ``bin/instance fg``), the theme will be re-compiled on each
@@ -430,7 +437,7 @@ If you have put Apache, nginx or IIS in front of Zope, you may want to serve
 the static resources from the web server directly instead.
 
 Using portal_css to manage your CSS
------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Plone's "resource registries", including the ``portal_css`` tool, can be used
 to manage CSS stylesheets. This offers several advantages over simply linking
@@ -482,7 +489,7 @@ installing your CSS resource using ``cssregistry.xml``. There is a
 corresponding flag in the ``portal_css`` user interface.
 
 Controlling Plone's default CSS
--------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 It is sometimes useful to show some of Plone's CSS in the styled site. You
 can achieve this by using an Diazo ``after />`` rule or similar to copy the
@@ -510,6 +517,28 @@ Use::
     not: request/HTTP_X_THEME_ENABLED | nothing
     
 to 'hide' a style sheet from the themed site.
+
+GenericSetup syntax for enabling a theme
+----------------------------------------
+
+To enable the theme upon installation of a GenericSetup extension profile,
+you can use the ``theme.xml`` import step.
+
+Place a file like this in the profile directory – usually ``profiles/default``
+inside a package that registers a GenericSetup extension profile::
+
+    <theme>
+        <name>my.theme</name>
+        <enabled>true</enabled>
+    </theme>
+
+The ``<name />`` element is used to give the name of the theme to enable. The
+``<enabled />`` element is used to enable or disable theming, and may contain
+either ``true`` or ``false``. Both are optional.
+
+Note that this is an import step only. The actual state is stored in the
+``portal_registry`` tool provided by ``plone.app.registry``. Upon export (and
+in a base profile), it can be found in the profile in ``registry.xml``.
 
 A worked example
 =================
@@ -696,33 +725,16 @@ In this directory, add a file called ``metadata.xml`` containing::
 This will install plone.app.theming into Plone when my.theme is installed via
 the add-on control panel later.
 
-Also create a file called ``registry.xml``, with the following contents::
+Also create a file called ``theme.xml``, with the following contents::
 
-    <registry>
-    
-        <!-- plone.app.theming settings -->
+    <theme>
+        <name>my.theme</name>
+        <enabled>true</enabled>
+    </theme>
 
-        <record interface="plone.app.theming.interfaces.IThemeSettings" field="rules">
-            <value>/++theme++my.theme/rules.xml</value>
-        </record>
-    
-        <record interface="plone.app.theming.interfaces.IThemeSettings" field="absolutePrefix">
-            <value>/++theme++my.theme</value>
-        </record>
-
-    </registry>
-
-Replace ``my.theme`` with your own package name, and ``rules.xml`` and
-``theme.html`` as appropriate.
+Replace ``my.theme`` with your own package name.
 
 This file configures the settings behind the Diazo control panel.
-
-Hint: If you have played with the control panel and want to export your
-settings, you can create a snapshot in the ``portal_setup`` tool in the ZMI.
-Examine the ``registry.xml`` file this creates, and pick out the records that
-relate to ``plone.app.theming``. You should strip out the ``<field />`` tags
-in the export, so that you are left with ``<record />`` and ``<value />`` tags
-as shown above.
 
 Also, add a ``cssregistry.xml`` in the ``profiles/default`` directory to
 configure the ``portal_css`` tool::

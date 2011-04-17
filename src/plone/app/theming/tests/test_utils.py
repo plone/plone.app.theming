@@ -2,7 +2,7 @@ import unittest2 as unittest
 
 from plone.app.theming.testing import THEMING_INTEGRATION_TESTING
 
-class TestIntegraiton(unittest.TestCase):
+class TestIntegration(unittest.TestCase):
     
     layer = THEMING_INTEGRATION_TESTING
     
@@ -23,6 +23,85 @@ class TestIntegraiton(unittest.TestCase):
         d = getOrCreatePersistentResourceDirectory()
         self.assertEqual(d.__name__, "theme")
 
+    def test_getAvailableThemes(self):
+        from plone.app.theming.utils import getAvailableThemes
+        
+        themes = getAvailableThemes()
+        
+        self.assertEqual(len(themes), 1)
+        self.assertEqual(themes[0].__name__, 'plone.app.theming.tests')
+        self.assertEqual(themes[0].title, 'Test theme')
+        self.assertEqual(themes[0].description, 'A theme for testing')
+        self.assertEqual(themes[0].rules, '/++theme++plone.app.theming.tests/rules.xml')
+        self.assertEqual(themes[0].absolutePrefix, '/++theme++plone.app.theming.tests')
+        self.assertEqual(themes[0].parameterExpressions, {'foo': 'bar'})
+    
+    def test_getZODBThemes(self):
+        import zipfile
+        import os.path
+        from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
+        from plone.app.theming.utils import getZODBThemes
+        
+        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'default_rules.zip'))
+        
+        z = zipfile.ZipFile(f)
+        
+        themeContainer = getOrCreatePersistentResourceDirectory()
+        themeContainer.importZip(z)
+        
+        zodbThemes = getZODBThemes()
+        
+        self.assertEqual(len(zodbThemes), 1)
+        
+        self.assertEqual(zodbThemes[0].__name__, 'default_rules')
+        self.assertEqual(zodbThemes[0].rules, '/++theme++default_rules/rules.xml')
+        self.assertEqual(zodbThemes[0].absolutePrefix, '/++theme++default_rules')
+        
+        f.close()
+    
+    def test_applyTheme(self):
+        from zope.component import getUtility
+        
+        from plone.registry.interfaces import IRegistry
+        
+        from plone.app.theming.interfaces import IThemeSettings
+        from plone.app.theming.utils import getAvailableThemes
+        from plone.app.theming.utils import applyTheme
+        
+        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        
+        theme = None
+        for t in getAvailableThemes():
+            theme = t
+            break
+        
+        self.assertEqual(settings.rules, None)
+        applyTheme(theme)
+        
+        self.assertEqual(settings.rules, theme.rules)
+        self.assertEqual(settings.absolutePrefix, theme.absolutePrefix)
+        self.assertEqual(settings.parameterExpressions, theme.parameterExpressions)
+
+    def test_applyTheme_None(self):
+        from zope.component import getUtility
+        
+        from plone.registry.interfaces import IRegistry
+        
+        from plone.app.theming.interfaces import IThemeSettings
+        from plone.app.theming.utils import applyTheme
+        
+        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        
+        settings.rules = u"/++theme++foo/rules.xml"
+        settings.absolutePrefix = u"/++theme++foo"
+        settings.parameterExpressions = {}
+        
+        applyTheme(None)
+        
+        self.assertEqual(settings.rules, None)
+        self.assertEqual(settings.absolutePrefix, None)
+        self.assertEqual(settings.parameterExpressions, {})
+
 class TestUnit(unittest.TestCase):
 
     def test_extractThemeInfo_default_rules(self):
@@ -33,12 +112,11 @@ class TestUnit(unittest.TestCase):
         f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'default_rules.zip'))
         z = zipfile.ZipFile(f)
         
-        theme, rules, prefix, manifest = extractThemeInfo(z)
+        theme = extractThemeInfo(z)
         
-        self.assertEqual(theme, 'default_rules')
-        self.assertEqual(rules, 'rules.xml')
-        self.assertEqual(prefix, '/++theme++default_rules')
-        self.assertEqual(manifest, {})
+        self.assertEqual(theme.__name__, 'default_rules')
+        self.assertEqual(theme.rules, 'rules.xml')
+        self.assertEqual(theme.absolutePrefix, '/++theme++default_rules')
         
         f.close()
     
@@ -50,12 +128,12 @@ class TestUnit(unittest.TestCase):
         f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_rules.zip'))
         z = zipfile.ZipFile(f)
         
-        theme, rules, prefix, manifest = extractThemeInfo(z)
+        theme = extractThemeInfo(z)
         
-        self.assertEqual(theme, 'manifest_rules')
-        self.assertEqual(rules, 'other.xml')
-        self.assertEqual(prefix, '/++theme++manifest_rules')
-        self.assertEqual(manifest,  {'rules': 'other.xml', 'prefix': None, 'description': None, 'parameters': {}, 'title': 'Test theme'})
+        self.assertEqual(theme.__name__, 'manifest_rules')
+        self.assertEqual(theme.rules, 'other.xml')
+        self.assertEqual(theme.absolutePrefix, '/++theme++manifest_rules')
+        self.assertEqual(theme.title, 'Test theme')
         
         f.close()
     
@@ -67,12 +145,12 @@ class TestUnit(unittest.TestCase):
         f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_prefix.zip'))
         z = zipfile.ZipFile(f)
         
-        theme, rules, prefix, manifest = extractThemeInfo(z)
+        theme = extractThemeInfo(z)
         
-        self.assertEqual(theme, 'manifest_prefix')
-        self.assertEqual(rules, 'rules.xml')
-        self.assertEqual(prefix, '/foo')
-        self.assertEqual(manifest,  {'rules': None, 'prefix': '/foo', 'description': None, 'parameters': {}, 'title': 'Test theme'})
+        self.assertEqual(theme.__name__, 'manifest_prefix')
+        self.assertEqual(theme.rules, 'rules.xml')
+        self.assertEqual(theme.absolutePrefix, '/foo')
+        self.assertEqual(theme.title,  'Test theme')
         
         f.close()
     
@@ -84,12 +162,12 @@ class TestUnit(unittest.TestCase):
         f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_default_rules.zip'))
         z = zipfile.ZipFile(f)
         
-        theme, rules, prefix, manifest = extractThemeInfo(z)
+        theme = extractThemeInfo(z)
         
-        self.assertEqual(theme, 'manifest_default_rules')
-        self.assertEqual(rules, 'rules.xml')
-        self.assertEqual(prefix, '/++theme++manifest_default_rules')
-        self.assertEqual(manifest,  {'rules': None, 'prefix': None, 'description': None, 'parameters': {}, 'title': 'Test theme'})
+        self.assertEqual(theme.__name__, 'manifest_default_rules')
+        self.assertEqual(theme.rules, 'rules.xml')
+        self.assertEqual(theme.absolutePrefix, '/++theme++manifest_default_rules')
+        self.assertEqual(theme.title,  'Test theme')
         
         f.close()
     
@@ -101,12 +179,12 @@ class TestUnit(unittest.TestCase):
         f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_default_rules_override.zip'))
         z = zipfile.ZipFile(f)
         
-        theme, rules, prefix, manifest = extractThemeInfo(z)
+        theme = extractThemeInfo(z)
         
-        self.assertEqual(theme, 'manifest_default_rules_override')
-        self.assertEqual(rules, 'other.xml')
-        self.assertEqual(prefix, '/++theme++manifest_default_rules_override')
-        self.assertEqual(manifest,  {'rules': 'other.xml', 'prefix': None, 'description': None, 'parameters': {}, 'title': 'Test theme'})
+        self.assertEqual(theme.__name__, 'manifest_default_rules_override')
+        self.assertEqual(theme.rules, 'other.xml')
+        self.assertEqual(theme.absolutePrefix, '/++theme++manifest_default_rules_override')
+        self.assertEqual(theme.title,  'Test theme')
         
         f.close()
     
@@ -142,12 +220,11 @@ class TestUnit(unittest.TestCase):
         f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'ignores_dotfiles_resource_forks.zip'))
         z = zipfile.ZipFile(f)
         
-        theme, rules, prefix, manifest = extractThemeInfo(z)
+        theme = extractThemeInfo(z)
         
-        self.assertEqual(theme, 'default_rules')
-        self.assertEqual(rules, 'rules.xml')
-        self.assertEqual(prefix, '/++theme++default_rules')
-        self.assertEqual(manifest,  {})
+        self.assertEqual(theme.__name__, 'default_rules')
+        self.assertEqual(theme.rules, 'rules.xml')
+        self.assertEqual(theme.absolutePrefix, '/++theme++default_rules')
         
         f.close()
     
@@ -159,12 +236,10 @@ class TestUnit(unittest.TestCase):
         f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'subdirectories.zip'))
         z = zipfile.ZipFile(f)
         
-        theme, rules, prefix, manifest = extractThemeInfo(z)
+        theme = extractThemeInfo(z)
         
-        self.assertEqual(theme, 'subdirectories')
-        self.assertEqual(rules, 'rules.xml')
-        self.assertEqual(prefix, '/++theme++subdirectories')
-        self.assertEqual(manifest,  {})
+        self.assertEqual(theme.__name__, 'subdirectories')
+        self.assertEqual(theme.rules, 'rules.xml')
+        self.assertEqual(theme.absolutePrefix, '/++theme++subdirectories')
         
         f.close()
-    
