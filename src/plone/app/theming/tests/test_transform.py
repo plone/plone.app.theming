@@ -644,5 +644,5 @@ class TestCase(unittest.TestCase):
         
         # JS pulled in with rules
         self.assertTrue(
-            '''<script type="text/javscript">/* A JS file */\n</script>'''
+            '''<script type="text/javascript">/* A JS file */\n</script>'''
             in browser.contents)
