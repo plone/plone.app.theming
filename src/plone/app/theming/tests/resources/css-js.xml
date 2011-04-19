@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rules xmlns="http://namespaces.plone.org/diazo" xmlns:css="http://namespaces.plone.org/diazo+css">
 
-    <theme href="python://plone.app.theming.tests/includes.html" />
-
-    <replace content='//*[@id="content"]/text()' css:theme-children='#alpha' href="/alpha" />
-    <replace content='//*[@id="content"]/text()' css:theme-children='#beta' href="./beta" />
+    <theme href="theme.html" />
 
     <after theme-children='/html/head' content='/html/body/style' href='/++theme++plone.app.theming.tests/resource.css' />
     <after theme-children='/html/head' content='/html/body/script' href='/++theme++plone.app.theming.tests/resource.js' />

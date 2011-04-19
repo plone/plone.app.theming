@@ -624,3 +624,25 @@ class TestCase(unittest.TestCase):
         browser.open(portal['subfolder'].absolute_url())
         self.assertTrue('<div id="alpha">Number one</div>' in browser.contents)
         self.assertTrue('<div id="beta">Number one</div>' in browser.contents)
+
+    def test_css_js_includes(self):
+        
+        app = self.layer['app']
+        portal = self.layer['portal']
+        
+        self.settings.enabled = True
+        self.settings.rules = u'/++theme++plone.app.theming.tests/css-js.xml'
+        import transaction; transaction.commit()
+        
+        browser = Browser(app)
+        browser.open(portal.absolute_url())
+        
+        # CSS - pulled in with rules
+        self.assertTrue(
+            '''<style type="text/css">/* A CSS file */\n</style>'''
+            in browser.contents)
+        
+        # JS pulled in with rules
+        self.assertTrue(
+            '''<script type="text/javscript">/* A JS file */\n</script>'''
+            in browser.contents)

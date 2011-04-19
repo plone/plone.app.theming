@@ -1,6 +1,7 @@
 import pkg_resources
 
 from lxml import etree
+from urlparse import parse_qsl
 
 from zope.site.hooks import getSite
 from zope.component import getUtility
@@ -80,12 +81,32 @@ class InternalResolver(etree.Resolver):
         portal = getPortal()
         if portal is None:
             return None
-
+        
         response = subrequest(system_url, root=portal)
         if response.status != 200:
             return None
         result = response.getBody()
-        return self.resolve_string(result, context)
+        content_type = response.headers.get('content-type')
+        encoding = None
+        if content_type is not None and ';' in content_type:
+            content_type, encoding = content_type.split(';', 1)
+        
+        parts = []
+        if content_type in ('text/javascript', 'application/x-javascript'):
+            parts = [
+                '<html><body><script type="text/javascript">',
+                result,
+                '</script></body></html>',
+                ]
+        elif content_type == 'text/css':
+            parts = [
+                '<html><body><style type="text/css">',
+                result,
+                '</style></body></html>',
+                ]
+        else:
+            parts = result
+        return self.resolve_string(''.join(parts), context)
 
 
 def getPortal():

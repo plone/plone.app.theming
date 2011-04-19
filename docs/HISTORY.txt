@@ -4,6 +4,10 @@ Changelog
 1.0b1 - Unreleased
 -------------------
 
+* Wrap internal subrequests for css or js in style or script tags to
+  facilitate inline includes.
+  [elro]
+
 * Add ``theme.xml`` import step (see README).
   [optilude]
 
