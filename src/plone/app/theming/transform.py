@@ -164,7 +164,7 @@ class ThemeTransform(object):
                     compiler_parser=compilerParser,
                     read_network=readNetwork,
                     access_control=accessControl,
-                    update=False,
+                    update=True,
                     xsl_params=xslParams,
                 )
             
