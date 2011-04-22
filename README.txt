@@ -632,7 +632,7 @@ you just want to test::
     <?xml version="1.0" encoding="UTF-8"?>
     <rules
         xmlns="http://namespaces.plone.org/diazo"
-        xmlns:css="http://namespaces.plone.org/diazo+css"
+        xmlns:css="http://namespaces.plone.org/diazo/css"
         xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
         <!-- The default theme, used for standard Plone web pages -->
@@ -840,9 +840,9 @@ Similarly, Diazo is an evolution of ``xdv``.
 Migrating XDV rules to Diazo rules
 ----------------------------------
 
-The Diazo ``rules.xml`` syntax is very similar to the XDV one.
-
-However, you need to update the XML namespaces. Where in XDV you would have::
+The Diazo ``rules.xml`` syntax is very similar to the XDV one, and your XDV
+rules should continue to work unchanged, as their namespace will be updated
+automatically. Where in XDV you would have::
 
     <rules
         xmlns="http://namespaces.plone.org/xdv"
@@ -857,7 +857,7 @@ you should now use::
 
     <rules
         xmlns="http://namespaces.plone.org/diazo"
-        xmlns:css="http://namespaces.plone.org/diazo+css"
+        xmlns:css="http://namespaces.plone.org/diazo/css"
         xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     
         ...
