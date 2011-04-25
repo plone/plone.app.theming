@@ -39,7 +39,7 @@ setup(name='plone.app.theming',
       extras_require={
         'test': ['plone.app.testing', 'z3c.jbot', 'zope.dottedname'],
         'overrides': ['z3c.jbot', 'zope.dottedname',],
-        'schema': ['plone.alterego', 'zope.dottedname',],
+        'schema': ['zope.dottedname',],
       },
       entry_points="""
       [z3c.autoinclude.plugin]
