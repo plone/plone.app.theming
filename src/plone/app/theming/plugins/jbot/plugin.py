@@ -45,7 +45,7 @@ class JbotPlugin(object):
                 manager = z3c.jbot.metaconfigure.handler(path, layer)
                 self.registered[theme] = manager
     
-    def onCreation(self, theme, settings, dependenciesSettings):
+    def onCreated(self, theme, settings, dependenciesSettings):
         pass
     
     def onEnabled(self, theme, settings, dependenciesSettings):

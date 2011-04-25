@@ -22,7 +22,7 @@ class BrowserLayerPlugin(object):
         layer = InterfaceClass(theme, (Interface,), __module__=schemata.__name__)
         setattr(schemata, theme, layer)
     
-    def onCreation(self, theme, settings, dependenciesSettings):
+    def onCreated(self, theme, settings, dependenciesSettings):
         pass
     
     def onEnabled(self, theme, settings, dependenciesSettings):

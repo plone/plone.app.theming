@@ -88,6 +88,9 @@ class ThemingControlpanel(BrowserView):
             
             if not self.errors:
                 
+                # TODO: Trigger onDisabled() on plugins if theme was active
+                # previously and rules were changed
+                
                 self.settings.rules = rules
                 self.settings.absolutePrefix = prefix
                 self.settings.parameterExpressions = parameterExpressions
@@ -139,6 +142,8 @@ class ThemingControlpanel(BrowserView):
                     
             if performImport:
                 themeContainer.importZip(themeZip)
+                
+                # TODO: Trigger onCreated() on plugins if state was changed
                 
                 if enableNewTheme:
                     applyTheme(themeData)

@@ -152,7 +152,7 @@ class IThemePlugin(Interface):
         not applicable for through-the-web/zip-file imported themes!
         """
     
-    def onCreation(theme, settings, dependenciesSettings):
+    def onCreated(theme, settings, dependenciesSettings):
         """Called when the theme is created through the web (or imported
         from a zip file)
         """

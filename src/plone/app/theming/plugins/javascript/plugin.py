@@ -9,7 +9,7 @@ class JavascriptPlugin(object):
     def onDiscovery(self, theme, settings, dependenciesSettings):
         pass
     
-    def onCreation(self, theme, settings, dependenciesSettings):
+    def onCreated(self, theme, settings, dependenciesSettings):
         pass
     
     def onEnabled(self, theme, settings, dependenciesSettings):
