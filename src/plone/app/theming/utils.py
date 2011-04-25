@@ -1,10 +1,11 @@
+import Globals
 import pkg_resources
 
 from lxml import etree
-from urlparse import parse_qsl
 
 from zope.site.hooks import getSite
 from zope.component import getUtility
+from zope.component import queryUtility
 from zope.component import queryMultiAdapter
 from zope.globalrequest import getRequest
 
@@ -291,6 +292,58 @@ def getZODBThemes():
     themes.sort(key=lambda x: x.title)
     return themes
 
+# TODO: We probably want to store the selected theme name instead of
+# doing this heuristic
+def getCurrentTheme():
+    """
+    """
+    settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+    if not settings.rules:
+        return None
+    
+    for theme in getAvailableThemes():
+        if theme.rules == settings.rules:
+            return theme.__name__
+    
+    return None
+
+def isThemeEnabled(request, settings=None):
+    """Determine if a theme is enabled for the given request
+    """
+    
+    # Resolve DevelopmentMode late (i.e. not on import time) since it may
+    # be set during import or test setup time
+    DevelopmentMode = Globals.DevelopmentMode
+    
+    if (DevelopmentMode and 
+        request.get('diazo.off', '').lower() in ('1', 'y', 'yes', 't', 'true')
+    ):
+        return False
+    
+    if settings is None:
+        registry = queryUtility(IRegistry)
+        if registry is None:
+            return False
+    
+        try:
+            settings = registry.forInterface(IThemeSettings)
+        except KeyError:
+            return False
+    
+    if not settings.enabled:
+        return False
+    
+    base1 = request.get('BASE1')
+    _, base1 = base1.split('://', 1)
+    host = base1.lower()
+    serverPort = request.get('SERVER_PORT')
+        
+    for hostname in settings.hostnameBlacklist or ():
+        if host == hostname or host == "%s:%s" % (hostname, serverPort):
+            return False
+    
+    return True
+
 def applyTheme(theme):
     """Apply an ITheme
     """
@@ -303,6 +356,8 @@ def applyTheme(theme):
         settings.absolutePrefix = None
         settings.parameterExpressions = {}
         
+        # TODO: Trigger onDisabled() on plugins if state was changed
+        
     else:
     
         if isinstance(theme.rules, str):
@@ -314,3 +369,5 @@ def applyTheme(theme):
         settings.rules = theme.rules
         settings.absolutePrefix = theme.absolutePrefix
         settings.parameterExpressions = theme.parameterExpressions
+        
+        # TODO: Trigger onEnabled() on plugins if state was changed

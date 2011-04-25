@@ -165,7 +165,7 @@ class ThemingControlpanel(BrowserView):
         for item in themes:
             if item.rules == rules:
                 return item.__name__
-        return False
+        return None
     
     def getThemeData(self, themes, themeSelection):
         for item in themes:

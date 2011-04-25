@@ -37,7 +37,9 @@ setup(name='plone.app.theming',
           'Products.CMFPlone',
       ],
       extras_require={
-        'test': ['plone.app.testing'],
+        'test': ['plone.app.testing', 'z3c.jbot', 'zope.dottedname'],
+        'jbot': ['z3c.jbot', 'zope.dottedname',],
+        'schema': ['plone.alterego', 'zope.dottedname',],
       },
       entry_points="""
       [z3c.autoinclude.plugin]

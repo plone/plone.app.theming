@@ -1,5 +1,6 @@
 import logging
 import Globals
+
 from urlparse import urlsplit
 
 from lxml import etree
@@ -26,6 +27,7 @@ from plone.app.theming.utils import NetworkResolver
 from plone.app.theming.utils import findContext
 from plone.app.theming.utils import compileExpression
 from plone.app.theming.utils import createExpressionContext
+from plone.app.theming.utils import isThemeEnabled
 
 
 LOGGER = logging.getLogger('plone.app.theming')
@@ -85,35 +87,14 @@ class ThemeTransform(object):
         request = self.request
         DevelopmentMode = Globals.DevelopmentMode
         
-        # Look for off switch if we are in debug mode
-        if (DevelopmentMode and 
-            request.get('diazo.off', '').lower() in ('1', 'y', 'yes', 't', 'true')
-        ):
-            return None
-        
         # Obtain settings. Do nothing if not found
         settings = self.getSettings()
-
+        
         if settings is None:
             return None
         
-        if not settings.enabled:
+        if not isThemeEnabled(request, settings):
             return None
-
-        rules = settings.rules
-        if not rules:
-            return None
-        
-        # Check the hostname blacklist
-        
-        base1 = request.get('BASE1')
-        _, base1 = base1.split('://', 1)
-        host = base1.lower()
-        serverPort = request.get('SERVER_PORT')
-        
-        for hostname in settings.hostnameBlacklist or ():
-            if host == hostname or host == "%s:%s" % (hostname, serverPort):
-                return None
         
         cache = getCache(settings)
         
@@ -124,6 +105,7 @@ class ThemeTransform(object):
             transform = cache.transform
         
         if transform is None:
+            rules = settings.rules
             absolutePrefix = settings.absolutePrefix or None
             readNetwork = settings.readNetwork
             accessControl = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=readNetwork, write_network=False)

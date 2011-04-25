@@ -120,3 +120,55 @@ class IThemeSettings(Interface):
 class IThemingLayer(Interface):
     """Browser layer used to indicate that plone.app.theming is installed
     """
+
+class IThemePlugin(Interface):
+    """Register a named utility providing this interface to create a theme
+    plugin.
+    
+    The various lifecycle methods will be called with the relevant theme
+    name and a dictionary called ``settings`` which reflects any settings for
+    this plugin stored in the theme's manifest.
+    
+    Plugin settings are found in a section called ``[theme:pluginname]``.
+    
+    Plugins may have dependencies. Dependent plugins are invoked after their
+    dependencies. The settings of dependencies are passed to lifecycle methods
+    in the variable ``dependencySetings``, which is a dictionary of
+    dictionaries. The keys are plugin names, and the values equivalent to
+    the ``settings`` variable for the corresponding plugin.
+    
+    If a given plugin can't be the found, an exception will be thrown during
+    activation.
+    """
+    
+    dependencies = schema.Tuple(
+            title=_(u"Dependencies"),
+            description=_(u"Plugins on which this plugin depends"),
+            value_type=schema.ASCIILine(),
+        )
+    
+    def onDiscovery(theme, settings, dependenciesSettings):
+        """Called when the theme is discovered at startup time. This is
+        not applicable for through-the-web/zip-file imported themes!
+        """
+    
+    def onCreation(theme, settings, dependenciesSettings):
+        """Called when the theme is created through the web (or imported
+        from a zip file)
+        """
+    
+    def onEnabled(theme, settings, dependenciesSettings):
+        """Called when the theme is enabled through the control panel, either
+        because the global "enabled" flag was switched, or because the theme
+        was changed.
+        """
+    
+    def onDisabled(theme, settings, dependenciesSettings):
+        """Called when the given theme is disabled through the control panel,
+        either because the global "enabled" flag was switched, or because the
+        theme was changed.
+        """
+    
+    def onRequest(request, theme, settings, dependenciesSettings):
+        """Called upon traversal into the site when a theme is enabled
+        """
