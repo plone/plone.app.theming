@@ -8,7 +8,7 @@
     
     <utility
         factory=".plugin.JbotPlugin"
-        name="jbot"
+        name="overrides"
         />
     
 </configure>
