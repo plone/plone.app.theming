@@ -53,19 +53,22 @@ class OverridesPlugin(object):
             directoryName = settings['directory']
         
         if res.isDirectory(directoryName):
-            layerName = "%s.%s" % (schemata.__name__, theme,)
+            
+            layer = getattr(schemata, theme, None)
+            
             if 'layer' in settings:
                 layerName = settings['layer']
             
-            try:
-                layer = resolve(layerName)
-            except (ImportError, AttributeError,):
-                logger.warn("Could not import %s" % layer)
-            else:
-                path = os.path.join(res.directory, directoryName)
-                
-                manager = z3c.jbot.metaconfigure.handler(path, layer)
-                self.registered[theme] = manager
+                try:
+                    layer = resolve(layerName)
+                except (ImportError, AttributeError,):
+                    logger.warn("Could not import %s" % layerName)
+                    return
+            
+            path = os.path.join(res.directory, directoryName)
+            
+            manager = z3c.jbot.metaconfigure.handler(path, layer)
+            self.registered[theme] = manager
     
     def onCreated(self, theme, settings, dependenciesSettings):
         pass

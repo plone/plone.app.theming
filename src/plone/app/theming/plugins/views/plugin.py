@@ -87,78 +87,77 @@ class ViewsPlugin(object):
         if res.isDirectory(directoryName):
             viewsDir = res[directoryName]
             
-            layerName = "%s.%s" % (schemata.__name__, theme,)
+            layer = getattr(schemata, theme, None)
+            
             if 'layer' in settings:
                 layerName = settings['layer']
             
-            layer = None
+                try:
+                    layer = resolve(layerName)
+                except (ImportError, AttributeError,):
+                    logger.warn("Could not import %s" % layerName)
+                    return
             
-            try:
-                layer = resolve(layerName)
-            except (ImportError, AttributeError,):
-                logger.warn("Could not import %s" % layer)
-            else:
-                
-                viewConfig = SafeConfigParser()
-                
-                if viewsDir.isFile(VIEW_CONFIG_FILENAME):
-                    fp = viewsDir.openFile(VIEW_CONFIG_FILENAME)
+            viewConfig = SafeConfigParser()
+            
+            if viewsDir.isFile(VIEW_CONFIG_FILENAME):
+                fp = viewsDir.openFile(VIEW_CONFIG_FILENAME)
+                try:
+                    viewConfig.readfp(fp)
+                finally:
                     try:
-                        viewConfig.readfp(fp)
-                    finally:
-                        try:
-                            fp.close()
-                        except AttributeError:
-                            pass
+                        fp.close()
+                    except AttributeError:
+                        pass
+            
+            views = []
+            configurationMachine = ConfigurationMachine()
+            path = viewsDir.directory
+            
+            for filename in os.listdir(path):
+                if not filename.lower().endswith(EXTENSION):
+                    continue
                 
-                views = []
-                configurationMachine = ConfigurationMachine()
-                path = viewsDir.directory
+                name = viewName = filename[:-3]
+                permission = 'zope2.View'
+                for_ = Interface
+                class_ = None
+                template = os.path.join(path, filename)
                 
-                for filename in os.listdir(path):
-                    if not filename.lower().endswith(EXTENSION):
-                        continue
+                # Read override options from views.cfg if applicable
+                if viewConfig.has_section(name):
                     
-                    name = viewName = filename[:-3]
-                    permission = 'zope2.View'
-                    for_ = Interface
-                    class_ = None
-                    template = os.path.join(path, filename)
+                    if viewConfig.has_option(name, 'name'):
+                        viewName = viewConfig.get(name, 'name')
                     
-                    # Read override options from views.cfg if applicable
-                    if viewConfig.has_section(name):
-                        
-                        if viewConfig.has_option(name, 'name'):
-                            viewName = viewConfig.get(name, 'name')
-                        
-                        if viewConfig.has_option(name, 'permission'):
-                            permission = viewConfig.get(name, 'permission')
-                        
-                        if viewConfig.has_option(name, 'for'):
-                            forStr = viewConfig.get(name, 'for')
-                            if forStr != "*":
-                                for_ = resolve(forStr)
-                        
-                        if viewConfig.has_option(name, 'class'):
-                            class_ = resolve(viewConfig.get(name, 'class'))
+                    if viewConfig.has_option(name, 'permission'):
+                        permission = viewConfig.get(name, 'permission')
                     
-                    Products.Five.browser.metaconfigure.page(
-                            configurationMachine,
-                            name=viewName,
-                            permission=permission,
-                            for_=for_,
-                            layer=layer,
-                            template=template,
-                            class_=class_,
-                        )
+                    if viewConfig.has_option(name, 'for'):
+                        forStr = viewConfig.get(name, 'for')
+                        if forStr != "*":
+                            for_ = resolve(forStr)
                     
-                    views.append(name)
+                    if viewConfig.has_option(name, 'class'):
+                        class_ = resolve(viewConfig.get(name, 'class'))
                 
-                if len(views) > 0:
-                    configurationMachine.execute_actions()
+                Products.Five.browser.metaconfigure.page(
+                        configurationMachine,
+                        name=viewName,
+                        permission=permission,
+                        for_=for_,
+                        layer=layer,
+                        template=template,
+                        class_=class_,
+                    )
                 
-                self.registered[theme] = views
-    
+                views.append(name)
+            
+            if len(views) > 0:
+                configurationMachine.execute_actions()
+            
+            self.registered[theme] = views
+
     def onCreated(self, theme, settings, dependenciesSettings):
         pass
     
