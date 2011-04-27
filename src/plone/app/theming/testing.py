@@ -21,6 +21,10 @@ class Theming(PloneSandboxLayer):
     <plone:static directory="resources" type="theme" />
 </configure>
 """, context=configurationContext)
+    
+        # Run the startup hook
+        from plone.app.theming.plugins.hooks import onStartup
+        onStartup(None)
 
     def setUpPloneSite(self, portal):
         # install into the Plone site
