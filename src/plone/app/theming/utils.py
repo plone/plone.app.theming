@@ -12,7 +12,7 @@ from zope.globalrequest import getRequest
 from plone.subrequest import subrequest
 
 from plone.resource.interfaces import IResourceDirectory
-
+from plone.resource.utils import queryResourceDirectory
 from plone.resource.manifest import extractManifestFromZipFile
 from plone.resource.manifest import getAllResources
 from plone.resource.manifest import getZODBResources
@@ -26,6 +26,8 @@ from plone.app.theming.interfaces import RULE_FILENAME
 from plone.app.theming.interfaces import IThemeSettings
 
 from plone.app.theming.theme import Theme
+from plone.app.theming.plugins.utils import getPlugins
+from plone.app.theming.plugins.utils import getPluginSettings
 
 from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
@@ -292,15 +294,18 @@ def getZODBThemes():
     themes.sort(key=lambda x: x.title)
     return themes
 
-# TODO: We probably want to store the selected theme name instead of
-# doing this heuristic
 def getCurrentTheme():
-    """
+    """Get the name of the currently enabled theme
     """
     settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
     if not settings.rules:
         return None
     
+    if settings.currentTheme:
+        return settings.currentTheme
+    
+    # BBB: If currentTheme isn't set, look for a theme with a rules file
+    # matching that of the current theme
     for theme in getAvailableThemes():
         if theme.rules == settings.rules:
             return theme.__name__
@@ -325,12 +330,9 @@ def isThemeEnabled(request, settings=None):
         if registry is None:
             return False
     
-        try:
-            settings = registry.forInterface(IThemeSettings)
-        except KeyError:
-            return False
+        settings = registry.forInterface(IThemeSettings, False)
     
-    if not settings.enabled:
+    if not settings.enabled or not settings.rules:
         return False
     
     base1 = request.get('BASE1')
@@ -350,13 +352,27 @@ def applyTheme(theme):
     
     settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
     
+    plugins = None
+    themeDirectory = None
+    pluginSettings = None
+    currentTheme = getCurrentTheme()
+    
+    if currentTheme is not None:
+        themeDirectory = queryResourceDirectory(THEME_RESOURCE_NAME, theme)
+        if themeDirectory is not None:
+            plugins = getPlugins()
+            pluginSettings = getPluginSettings(themeDirectory, plugins)
+    
     if theme is None:
         
+        settings.currentTheme = None
         settings.rules = None
         settings.absolutePrefix = None
         settings.parameterExpressions = {}
         
-        # TODO: Trigger onDisabled() on plugins if state was changed
+        if pluginSettings is not None:
+            for plugin in plugins:
+                plugin.onDisabled(currentTheme, pluginSettings[currentTheme], pluginSettings)
         
     else:
     
@@ -365,9 +381,16 @@ def applyTheme(theme):
     
         if isinstance(theme.absolutePrefix, str):
             theme.absolutePrefix = theme.absolutePrefix.decode('utf-8')
-    
+        
+        if isinstance(theme.__name__, str):
+            theme.__name__ = theme.__name__.decode('utf-8')
+        
+        settings.currentTheme = theme.__name__
         settings.rules = theme.rules
         settings.absolutePrefix = theme.absolutePrefix
         settings.parameterExpressions = theme.parameterExpressions
         
-        # TODO: Trigger onEnabled() on plugins if state was changed
+        if pluginSettings is not None:
+            for plugin in plugins:
+                plugin.onDisabled(currentTheme, pluginSettings[currentTheme], pluginSettings)
+                plugin.onEnabled(theme, pluginSettings[theme], pluginSettings)

@@ -22,8 +22,12 @@
         />
     
     <include
+        package=".views"
+        />
+    
+    <include
         zcml:condition="installed z3c.jbot"
-        package=".jbot"
+        package=".overrides"
         />
     
 </configure>

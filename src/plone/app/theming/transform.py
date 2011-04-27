@@ -168,12 +168,12 @@ class ThemeTransform(object):
             return None
         
         try:
-            settings = registry.forInterface(IThemeSettings)
+            settings = registry.forInterface(IThemeSettings, False)
         except KeyError:
             return None
-
+        
         return settings
-
+    
     def parseTree(self, result):
         contentType = self.request.response.getHeader('Content-Type')
         if contentType is None or not contentType.startswith('text/html'):

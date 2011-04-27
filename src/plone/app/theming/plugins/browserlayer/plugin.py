@@ -14,6 +14,21 @@ from plone.app.theming.plugins.browserlayer import schemata
 logger = logging.getLogger(__name__)
 
 class BrowserLayerPlugin(object):
+    """This plugin dynamically creates a browser layer marker interface for
+    this theme and applies it to the request when the theme is enabled.
+    
+    Name: ``plone.app.theming.plugins.browserlayer.schemata.<theme>``.
+    
+    Additional layers to apply may be listed in the manifest::
+    
+        [theme:browserlayer]
+        layer1 = my.package.interfaces.ISomeLayer
+        layer2 = my.package.interfaces.ISomeOtherLayer
+    
+    The left hand side (layer1, layer2 above) must be unique, but otherwise
+    doesn't matter.
+    """
+    
     implements(IThemePlugin)
     
     dependencies = ()

@@ -6,6 +6,14 @@ from plone.resource.manifest import MANIFEST_FILENAME
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.interfaces import IThemePlugin
 
+from plone.memoize.ram import cache
+
+def pluginsCacheKey(fun):
+    return len(list(getUtilitiesFor(IThemePlugin)))
+
+def pluginSettingsCacheKey(fun, themeDirectory, plugins=None):
+    return themeDirectory.__name__, len(plugins)
+
 def sortDependencies(plugins):
     """Topological sort
     """
@@ -34,7 +42,7 @@ def sortDependencies(plugins):
     if waiting:
         raise ValueError("Could not resolve dependencies for: %s" % waiting)
 
-# TODO: Cache
+@cache(pluginsCacheKey)
 def getPlugins():
     """Get all registered plugins topologically sorted
     """
@@ -46,7 +54,7 @@ def getPlugins():
     
     return list(sortDependencies(plugins))
 
-# TODO: Cache
+@cache(pluginSettingsCacheKey)
 def getPluginSettings(themeDirectory, plugins=None):
     """Given an IResourceDirectory for a theme, return the settings for the
     given list of plugins (or all plugins, if not given) provided as a list

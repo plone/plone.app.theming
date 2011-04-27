@@ -14,7 +14,29 @@ from plone.app.theming.plugins.browserlayer import schemata
 
 logger = logging.getLogger(__name__)
 
-class JbotPlugin(object):
+class OverridesPlugin(object):
+    """This plugin automatically registers a ``z3c.jbot`` style template
+    overrides directory for the theme.
+    
+    By default, it looks for a directory ``overrides`` in the theme directory,
+    and registers that with ``z3c.jbot`` using the default browser layer
+    created by the ``browserlayer`` plugin.
+    
+    This directory can then contain template overrides using ``z3c.jbot``
+    naming conventions, e.g. ``my.package.browser.some_template.pt`` will
+    override the file ``some_template.pt`` in ``my.package.browser`` when
+    the theme is in effect.
+    
+    The directory and layer can be overriden in the manifest if required::
+        
+        [theme:overrides]
+        directory = template-overrides
+        layer = my.package.interfaces.ISomeLayer
+    
+    The directory name is relative to the theme directory. The layer interface
+    must already exist.
+    """
+    
     implements(IThemePlugin)
     
     dependencies = ('browserlayer',)

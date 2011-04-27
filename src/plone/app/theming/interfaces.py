@@ -63,6 +63,14 @@ class IThemeSettings(Interface):
             default=False,
         )
     
+    currentTheme = schema.TextLine(
+            title=_('current_theme', u"Current theme"),
+            description=_('current_theme_description',
+                          u"The name of the current theme, i.e. the one "
+                          u"applied most recently."),
+            required=True,
+        )
+    
     rules = schema.TextLine(
             title=_('rules_file', u"Rules file"),
             description=_('rules_file_path',

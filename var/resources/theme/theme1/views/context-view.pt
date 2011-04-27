@@ -1,0 +1,6 @@
+<html>
+<body>
+    <h1>Context view</h1>
+    <div tal:content="context/Title | nothing">title here</div>
+</body>
+</html>
