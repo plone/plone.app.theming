@@ -50,7 +50,7 @@ class ViewsPlugin(object):
     These defaults can be overridden by placing a file ``views.cfg`` in the
     ``views`` directory. This should contain one section per template, where
     the section name is the template name minus the ``.pt`` extension. The
-    value options in each section are:
+    valid options in each section are:
     
     * ``name``, to change the view name
     * ``permission``, to give a different permission name
