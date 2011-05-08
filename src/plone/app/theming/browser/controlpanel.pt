@@ -396,12 +396,12 @@
                                     <input
                                         type="checkbox"
                                         name="themes:list"
-                                        tal:attributes="value theme/id"
+                                        tal:attributes="value theme/__name__"
                                         />
                                 </td>
                                 <td>
                                     <a  target="_new"
-                                        tal:attributes="href string:${context/absolute_url}/++theme++${theme/id}/@@download-zip"
+                                        tal:attributes="href string:${context/absolute_url}/++theme++${theme/__name__}/@@download-zip"
                                         tal:content="theme/title"
                                         />
                                 </td>
