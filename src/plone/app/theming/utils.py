@@ -1,4 +1,5 @@
 import pkg_resources
+import re
 
 from lxml import etree
 from urlparse import parse_qsl
@@ -90,23 +91,27 @@ class InternalResolver(etree.Resolver):
         encoding = None
         if content_type is not None and ';' in content_type:
             content_type, encoding = content_type.split(';', 1)
+        if encoding is None:
+            encoding = 'utf-8'
+        else:
+            # e.g. charset=utf-8
+            encoding = encoding.split('=', 1)[1].strip()
+        result = result.decode(encoding).encode('ascii', 'xmlcharrefreplace')
         
-        parts = []
         if content_type in ('text/javascript', 'application/x-javascript'):
-            parts = [
+            result = ''.join([
                 '<html><body><script type="text/javascript">',
                 result,
                 '</script></body></html>',
-                ]
+                ])
         elif content_type == 'text/css':
-            parts = [
+            result = ''.join([
                 '<html><body><style type="text/css">',
                 result,
                 '</style></body></html>',
-                ]
-        else:
-            parts = result
-        return self.resolve_string(''.join(parts), context)
+                ])
+
+        return self.resolve_string(result, context)
 
 
 def getPortal():

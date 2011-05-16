@@ -4,6 +4,9 @@ Changelog
 1.0b2 - unreleased
 ------------------
 
+* Encode internally resolved documents to support non-ascii characters
+  correctly.
+  [elro]
 
 1.0b1 - 2011-04-22
 ------------------

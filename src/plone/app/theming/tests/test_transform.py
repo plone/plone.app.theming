@@ -646,3 +646,19 @@ class TestCase(unittest.TestCase):
         self.assertTrue(
             '''<script type="text/javascript">/* A JS file */\n</script>'''
             in browser.contents)
+
+    def test_non_ascii_includes(self):
+        
+        app = self.layer['app']
+        portal = self.layer['portal']
+        
+        self.settings.enabled = True
+        self.settings.rules = u'/++theme++plone.app.theming.tests/nonascii.xml'
+        import transaction; transaction.commit()
+        
+        browser = Browser(app)
+        browser.open(portal.absolute_url())
+        
+        self.assertTrue(
+            '''<div>N\xc3\xbamero uno</div>'''
+            in browser.contents)
