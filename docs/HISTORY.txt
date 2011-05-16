@@ -1,12 +1,15 @@
 Changelog
 =========
 
-1.0b2 - unreleased
+1.0b2 - 2011-05-16
 ------------------
 
 * Encode internally resolved documents to support non-ascii characters
   correctly.
   [elro]
+
+* Fix control panel to use theme name not id.
+  [optilude]
 
 1.0b1 - 2011-04-22
 ------------------
