@@ -866,7 +866,7 @@ you should now use::
 
 In addition, some rules have been changed to simplify the rule set:
 
-* ``<copy />`` should only used for copying attributes. For the use case
+* ``<copy />`` should only be used for copying attributes. For the use case
   that ``<copy />`` used to cover, use ``<replace />`` with ``theme-children``
   instead.
 * ``<prepend />`` has similarly been replaced by ``<before />`` with
