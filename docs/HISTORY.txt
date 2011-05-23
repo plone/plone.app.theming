@@ -4,6 +4,9 @@ Changelog
 1.0b3 - unreleased
 ------------------
 
+* Show theme name along with title in drop down.
+  [elro]
+
 1.0b2 - 2011-05-16
 ------------------
 
