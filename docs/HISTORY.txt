@@ -4,6 +4,9 @@ Changelog
 1.0b4 - unreleased
 ------------------
 
+* Make "Replace existing theme" checkbox default to off.
+  [elro]
+
 * Fix control panel to correctly display a newly uploaded theme.
   [elro]
 

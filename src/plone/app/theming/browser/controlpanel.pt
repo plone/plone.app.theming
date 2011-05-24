@@ -331,9 +331,9 @@
                 
                 <div
                     class="field"
-                    tal:define="selected python:request.get('replaceExisting', True)">
+                    tal:define="selected python:request.get('replaceExisting', False)">
                     <input type="hidden" value="" name="replaceExisting:boolean:default" />
-                    <input type="checkbox" value="1" name="replaceExisting:boolean" id="replaceExisting"
+                    <input type="checkbox" value="" name="replaceExisting:boolean" id="replaceExisting"
                         tal:attributes="checked python:'replaceExisting' if selected else None"
                         />
                     <label for="replaceExisting" i18n:translate="label_replace_existing">Replace existing theme</label>
