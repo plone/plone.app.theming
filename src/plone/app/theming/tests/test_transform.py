@@ -147,7 +147,23 @@ class TestCase(unittest.TestCase):
         
         # The theme
         self.assertTrue("This is the theme" in browser.contents)
-    
+
+    def test_theme_enabled_header_off(self):
+        app = self.layer['app']
+        portal = self.layer['portal']
+        
+        self.settings.enabled = True
+        import transaction; transaction.commit()
+        
+        browser = Browser(app)
+        browser.open(portal.absolute_url() + '/@@header-disabled')
+        
+        self.assertTrue("Theme disabled" in browser.contents)
+        
+        # The theme
+        self.assertFalse("This is the theme" in browser.contents)
+
+
     def test_internal_resolver(self):
         compiler_parser = etree.XMLParser()
         compiler_parser.resolvers.add(InternalResolver())

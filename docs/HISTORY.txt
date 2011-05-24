@@ -4,6 +4,9 @@ Changelog
 1.0b4 - unreleased
 ------------------
 
+* Add support for ``X-Theme-Disabled`` response header.
+  [elro]
+
 * Make "Replace existing theme" checkbox default to off.
   [elro]
 

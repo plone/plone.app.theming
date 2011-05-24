@@ -384,6 +384,18 @@ by appending a query string parameter ``diazo.off=1``. For example::
 
 The parameter is ignored in non-development mode.
 
+Disabling the theme for a particular view, script or template
+-------------------------------------------------------------
+
+To disable theming for a particular view, script or template set the
+``X-Theme-Disabled`` header. ::
+
+    request.response.setHeader('X-Theme-Disabled', 'True')
+
+Or directly from a template::
+
+    tal:define="dummy python:request.response.setHeader('X-Theme-Disabled', 'True')"
+
 Static files and CSS
 --------------------
 

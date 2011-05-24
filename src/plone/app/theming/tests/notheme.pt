@@ -1,0 +1,6 @@
+<html tal:define="dummy python:request.response.setHeader('x-theme-disabled', 'True')">
+<head><title>No theme</title></head>
+<body>
+    <h1>Theme disabled</h1>
+</body>
+</html>

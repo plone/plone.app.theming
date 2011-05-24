@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone">
+
+    <include package="plone.app.theming"/>
+
+    <plone:static directory="resources" type="theme" />
+
+    <browser:page
+        for="*"
+        name="header-disabled"
+        template="notheme.pt"
+        permission="zope.Public"
+        />
+
+</configure>
