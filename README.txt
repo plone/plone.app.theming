@@ -841,8 +841,8 @@ Migrating XDV rules to Diazo rules
 ----------------------------------
 
 The Diazo ``rules.xml`` syntax is very similar to the XDV one, and your XDV
-rules should continue to work unchanged, as their namespace will be updated
-automatically. Where in XDV you would have::
+rules should continue to work unchanged once the namespace is updated. Where
+in XDV you would have::
 
     <rules
         xmlns="http://namespaces.plone.org/xdv"
