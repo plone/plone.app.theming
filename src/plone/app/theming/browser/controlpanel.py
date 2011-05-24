@@ -30,27 +30,22 @@ class ThemingControlpanel(BrowserView):
             return self.index()
         return ''
     
+    def _setup(self):
+        self.settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        self.zodbThemes = getZODBThemes()
+        self.availableThemes = getAvailableThemes()
+        self.selectedTheme = self.getSelectedTheme(self.availableThemes, self.settings.rules)
+    
     def update(self):
         processInputs(self.request)
-        
-        self.settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
-        
-        self.zodbThemes = getZODBThemes()
-        
-        self.selectedTheme = None
-        self.availableThemes = []
-        
+        self._setup()
         self.errors = {}
         submitted = False
-        
         form = self.request.form
         
         if 'form.button.Cancel' in form:
             self.redirect(_(u"Changes canceled."))
             return False
-        
-        self.availableThemes = getAvailableThemes()
-        self.selectedTheme = self.getSelectedTheme(self.availableThemes, self.settings.rules)
         
         if 'form.button.BasicSave' in form:
             self.authorize()
@@ -155,6 +150,7 @@ class ThemingControlpanel(BrowserView):
                 del themeDirectory[theme]
         
         if submitted and not self.errors:
+            self._setup()
             IStatusMessage(self.request).add(_(u"Changes saved"))
         elif submitted:
             IStatusMessage(self.request).add(_(u"There were errors"), 'error')

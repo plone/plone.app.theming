@@ -4,6 +4,9 @@ Changelog
 1.0b4 - unreleased
 ------------------
 
+* Fix control panel to correctly display a newly uploaded theme.
+  [elro]
+
 * Fix zip import to work correctly when no manifest is supplied.
   [elro]
 
