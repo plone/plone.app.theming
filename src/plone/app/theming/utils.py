@@ -214,13 +214,12 @@ def extractThemeInfo(zipfile):
         description = manifestDict.get('title', None)
         parameters = manifestDict.get('parameters', {})
     
-    if not rulesFile:
-        rulesFile = RULE_FILENAME
-        
+    if not rulesFile:        
         try:
-            zipfile.getinfo("%s/%s" % (resourceName, rulesFile,))
+            zipfile.getinfo("%s/%s" % (resourceName, RULE_FILENAME,))
         except KeyError:
             raise ValueError("Could not find theme name and rules file")
+        rulesFile = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, resourceName, RULE_FILENAME,)
     
     return Theme(resourceName, rulesFile,
             title=title,

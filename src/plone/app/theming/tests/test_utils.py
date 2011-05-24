@@ -115,7 +115,7 @@ class TestUnit(unittest.TestCase):
         theme = extractThemeInfo(z)
         
         self.assertEqual(theme.__name__, 'default_rules')
-        self.assertEqual(theme.rules, 'rules.xml')
+        self.assertEqual(theme.rules, u'/++theme++default_rules/rules.xml')
         self.assertEqual(theme.absolutePrefix, '/++theme++default_rules')
         
         f.close()
@@ -148,7 +148,7 @@ class TestUnit(unittest.TestCase):
         theme = extractThemeInfo(z)
         
         self.assertEqual(theme.__name__, 'manifest_prefix')
-        self.assertEqual(theme.rules, 'rules.xml')
+        self.assertEqual(theme.rules, u'/++theme++manifest_prefix/rules.xml')
         self.assertEqual(theme.absolutePrefix, '/foo')
         self.assertEqual(theme.title,  'Test theme')
         
@@ -165,7 +165,7 @@ class TestUnit(unittest.TestCase):
         theme = extractThemeInfo(z)
         
         self.assertEqual(theme.__name__, 'manifest_default_rules')
-        self.assertEqual(theme.rules, 'rules.xml')
+        self.assertEqual(theme.rules, u'/++theme++manifest_default_rules/rules.xml')
         self.assertEqual(theme.absolutePrefix, '/++theme++manifest_default_rules')
         self.assertEqual(theme.title,  'Test theme')
         
@@ -223,7 +223,7 @@ class TestUnit(unittest.TestCase):
         theme = extractThemeInfo(z)
         
         self.assertEqual(theme.__name__, 'default_rules')
-        self.assertEqual(theme.rules, 'rules.xml')
+        self.assertEqual(theme.rules, u'/++theme++default_rules/rules.xml')
         self.assertEqual(theme.absolutePrefix, '/++theme++default_rules')
         
         f.close()
@@ -239,7 +239,7 @@ class TestUnit(unittest.TestCase):
         theme = extractThemeInfo(z)
         
         self.assertEqual(theme.__name__, 'subdirectories')
-        self.assertEqual(theme.rules, 'rules.xml')
+        self.assertEqual(theme.rules, u'/++theme++subdirectories/rules.xml')
         self.assertEqual(theme.absolutePrefix, '/++theme++subdirectories')
         
         f.close()
