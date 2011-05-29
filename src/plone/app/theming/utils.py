@@ -1,6 +1,5 @@
 import Globals
 import pkg_resources
-import re
 
 from lxml import etree
 
@@ -324,6 +323,11 @@ def isThemeEnabled(request, settings=None):
     # be set during import or test setup time
     DevelopmentMode = Globals.DevelopmentMode
     
+    # Disable theming if the response sets a header
+    if request.response.getHeader('X-Theme-Disabled'):
+        return False
+    
+    # Check for diazo.off request parameter
     if (DevelopmentMode and 
         request.get('diazo.off', '').lower() in ('1', 'y', 'yes', 't', 'true')
     ):

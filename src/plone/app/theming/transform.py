@@ -87,16 +87,6 @@ class ThemeTransform(object):
         request = self.request
         DevelopmentMode = Globals.DevelopmentMode
         
-        # Disable theming if the response sets a header
-        if request.response.getHeader('X-Theme-Disabled'):
-            return None
-        
-        # Look for off switch if we are in debug mode
-        if (DevelopmentMode and 
-            request.get('diazo.off', '').lower() in ('1', 'y', 'yes', 't', 'true')
-        ):
-            return None
-        
         # Obtain settings. Do nothing if not found
         settings = self.getSettings()
         
