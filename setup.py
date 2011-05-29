@@ -35,9 +35,11 @@ setup(name='plone.app.theming',
           'repoze.xmliter',
           'five.globalrequest',
           'Products.CMFPlone',
+          'zope.dottedname',
+          'z3c.jbot',
       ],
       extras_require={
-        'test': ['plone.app.testing'],
+        'test': ['plone.app.testing', 'z3c.jbot', 'zope.dottedname'],
       },
       entry_points="""
       [z3c.autoinclude.plugin]

@@ -18,6 +18,7 @@
 
     <include package=".browser" />
     <include package=".exportimport" />
+    <include package=".plugins" />
     
     <gs:registerProfile
         name="default"

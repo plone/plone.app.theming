@@ -1,0 +1,7 @@
+<html>
+<body>
+    <h1>Class view</h1>
+    <div tal:content="context/Title | nothing">title here</div>
+    <div tal:content="view/current_base_url">base url here</div>
+</body>
+</html>

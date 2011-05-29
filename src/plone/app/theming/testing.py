@@ -13,6 +13,10 @@ class Theming(PloneSandboxLayer):
         # load ZCML
         import plone.app.theming.tests
         xmlconfig.file('configure.zcml', plone.app.theming.tests, context=configurationContext)
+    
+        # Run the startup hook
+        from plone.app.theming.plugins.hooks import onStartup
+        onStartup(None)
 
     def setUpPloneSite(self, portal):
         # install into the Plone site

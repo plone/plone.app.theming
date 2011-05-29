@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.0b5
+-----
+
+* Add support for registering new views from Zope Page Templates and 
+  overriding existing templates. See README for more details.
+  [optilude]
+
 1.0b4 - 2011-05-24
 ------------------
 

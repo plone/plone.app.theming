@@ -5,16 +5,22 @@ from zope.component import getUtility
 from zope.component import getMultiAdapter
 from zope.publisher.browser import BrowserView
 
+from plone.resource.utils import queryResourceDirectory
+
 from plone.registry.interfaces import IRegistry
 
 from plone.app.theming.interfaces import _
 from plone.app.theming.interfaces import IThemeSettings
+from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 
 from plone.app.theming.utils import extractThemeInfo
 from plone.app.theming.utils import getZODBThemes
 from plone.app.theming.utils import getAvailableThemes
 from plone.app.theming.utils import applyTheme
 from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
+
+from plone.app.theming.plugins.utils import getPluginSettings
+from plone.app.theming.plugins.utils import getPlugins
 
 from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
@@ -83,6 +89,12 @@ class ThemingControlpanel(BrowserView):
             
             if not self.errors:
                 
+                # Trigger onDisabled() on plugins if theme was active
+                # previously and rules were changed
+                
+                if self.settings.rules != rules:
+                    applyTheme(None)
+                
                 self.settings.rules = rules
                 self.settings.absolutePrefix = prefix
                 self.settings.parameterExpressions = parameterExpressions
@@ -135,6 +147,14 @@ class ThemingControlpanel(BrowserView):
             if performImport:
                 themeContainer.importZip(themeZip)
                 
+                themeDirectory = queryResourceDirectory(THEME_RESOURCE_NAME, themeData.__name__)
+                if themeDirectory is not None:
+                    plugins = getPlugins()
+                    pluginSettings = getPluginSettings(themeDirectory, plugins)
+                    if pluginSettings is not None:
+                        for plugin in plugins:
+                            plugin.onCreated(themeData.__name__, pluginSettings[themeData.__name__], pluginSettings)
+                
                 if enableNewTheme:
                     applyTheme(themeData)
                     self.settings.enabled = True
@@ -161,7 +181,7 @@ class ThemingControlpanel(BrowserView):
         for item in themes:
             if item.rules == rules:
                 return item.__name__
-        return False
+        return None
     
     def getThemeData(self, themes, themeSelection):
         for item in themes:

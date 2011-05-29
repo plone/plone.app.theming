@@ -1,0 +1,12 @@
+<div id="portal-colophon"
+     metal:define-macro="colophon"
+     i18n:domain="plone">
+<metal:slot define-slot="colophon" />
+<div class="colophonWrapper">
+<ul>
+  <li>
+    Powered by Diazo
+  </li>
+</ul>
+</div>
+</div>

@@ -1,7 +1,4 @@
-from zope.component import queryUtility
-from plone.registry.interfaces import IRegistry
-
-from plone.app.theming.interfaces import IThemeSettings
+from plone.app.theming.utils import isThemeEnabled
 
 def setHeader(object, event):
     """Set a header X-Theme-Enabled in the request if theming is enabled.
@@ -12,17 +9,5 @@ def setHeader(object, event):
     
     request = event.request
     
-    registry = queryUtility(IRegistry)
-    if registry is None:
-        return
-    
-    settings = None
-    try:
-        settings = registry.forInterface(IThemeSettings)
-    except KeyError:
-        return
-    
-    if not settings.enabled:
-        return
-    
-    request.environ['HTTP_X_THEME_ENABLED'] = True
+    if isThemeEnabled(request):
+        request.environ['HTTP_X_THEME_ENABLED'] = True

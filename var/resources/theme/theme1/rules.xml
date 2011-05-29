@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    
+    <rules css:if-content="#visual-portal-wrapper">
+        
+        <theme href="theme.html" />
+        <theme href="othertheme.html" if-path="news"/>
+    
+        <replace css:content='html head title' css:theme='html head title' />
+        <replace css:content='h1.documentFirstHeading' css:theme='#pageTitle' if="not($ajax_load)" />
+        <after content='/html/head/link' theme-children='/html/head' />
+    
+        <replace css:content="#portal-colophon" css:theme="#footer" />
+    
+        <replace css:theme="p">
+            The value of frobble is <xsl:value-of select="$frobble" />
+        </replace>
+    
+    </rules>
+    
+</rules>

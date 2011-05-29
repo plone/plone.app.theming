@@ -1,18 +1,19 @@
+import Globals
 import pkg_resources
 import re
 
 from lxml import etree
-from urlparse import parse_qsl
 
 from zope.site.hooks import getSite
 from zope.component import getUtility
+from zope.component import queryUtility
 from zope.component import queryMultiAdapter
 from zope.globalrequest import getRequest
 
 from plone.subrequest import subrequest
 
 from plone.resource.interfaces import IResourceDirectory
-
+from plone.resource.utils import queryResourceDirectory
 from plone.resource.manifest import extractManifestFromZipFile
 from plone.resource.manifest import getAllResources
 from plone.resource.manifest import getZODBResources
@@ -26,6 +27,8 @@ from plone.app.theming.interfaces import RULE_FILENAME
 from plone.app.theming.interfaces import IThemeSettings
 
 from plone.app.theming.theme import Theme
+from plone.app.theming.plugins.utils import getPlugins
+from plone.app.theming.plugins.utils import getPluginSettings
 
 from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
@@ -295,17 +298,85 @@ def getZODBThemes():
     themes.sort(key=lambda x: x.title)
     return themes
 
+def getCurrentTheme():
+    """Get the name of the currently enabled theme
+    """
+    settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+    if not settings.rules:
+        return None
+    
+    if settings.currentTheme:
+        return settings.currentTheme
+    
+    # BBB: If currentTheme isn't set, look for a theme with a rules file
+    # matching that of the current theme
+    for theme in getAvailableThemes():
+        if theme.rules == settings.rules:
+            return theme.__name__
+    
+    return None
+
+def isThemeEnabled(request, settings=None):
+    """Determine if a theme is enabled for the given request
+    """
+    
+    # Resolve DevelopmentMode late (i.e. not on import time) since it may
+    # be set during import or test setup time
+    DevelopmentMode = Globals.DevelopmentMode
+    
+    if (DevelopmentMode and 
+        request.get('diazo.off', '').lower() in ('1', 'y', 'yes', 't', 'true')
+    ):
+        return False
+    
+    if settings is None:
+        registry = queryUtility(IRegistry)
+        if registry is None:
+            return False
+    
+        settings = registry.forInterface(IThemeSettings, False)
+    
+    if not settings.enabled or not settings.rules:
+        return False
+    
+    base1 = request.get('BASE1')
+    _, base1 = base1.split('://', 1)
+    host = base1.lower()
+    serverPort = request.get('SERVER_PORT')
+        
+    for hostname in settings.hostnameBlacklist or ():
+        if host == hostname or host == "%s:%s" % (hostname, serverPort):
+            return False
+    
+    return True
+
 def applyTheme(theme):
     """Apply an ITheme
     """
     
     settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
     
+    plugins = None
+    themeDirectory = None
+    pluginSettings = None
+    currentTheme = getCurrentTheme()
+    
+    if currentTheme is not None:
+        themeDirectory = queryResourceDirectory(THEME_RESOURCE_NAME, theme)
+        if themeDirectory is not None:
+            plugins = getPlugins()
+            pluginSettings = getPluginSettings(themeDirectory, plugins)
+    
     if theme is None:
         
+        settings.currentTheme = None
         settings.rules = None
         settings.absolutePrefix = None
         settings.parameterExpressions = {}
+        
+        if pluginSettings is not None:
+            for plugin in plugins:
+                plugin.onDisabled(currentTheme, pluginSettings[currentTheme], pluginSettings)
         
     else:
     
@@ -314,7 +385,16 @@ def applyTheme(theme):
     
         if isinstance(theme.absolutePrefix, str):
             theme.absolutePrefix = theme.absolutePrefix.decode('utf-8')
-    
+        
+        if isinstance(theme.__name__, str):
+            theme.__name__ = theme.__name__.decode('utf-8')
+        
+        settings.currentTheme = theme.__name__
         settings.rules = theme.rules
         settings.absolutePrefix = theme.absolutePrefix
         settings.parameterExpressions = theme.parameterExpressions
+        
+        if pluginSettings is not None:
+            for plugin in plugins:
+                plugin.onDisabled(currentTheme, pluginSettings[currentTheme], pluginSettings)
+                plugin.onEnabled(theme, pluginSettings[theme], pluginSettings)
