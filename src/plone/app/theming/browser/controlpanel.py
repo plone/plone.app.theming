@@ -41,6 +41,9 @@ class ThemingControlpanel(BrowserView):
         self.zodbThemes = getZODBThemes()
         self.availableThemes = getAvailableThemes()
         self.selectedTheme = self.getSelectedTheme(self.availableThemes, self.settings.rules)
+        
+        # Set response header to make sure control panel is never themed
+        self.request.response.setHeader('X-Theme-Disabled', '1')
     
     def update(self):
         processInputs(self.request)

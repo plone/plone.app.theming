@@ -4,6 +4,10 @@ Changelog
 1.0b5
 -----
 
+* Make sure the control panel is never themed, by setting the X-Theme-Disabled
+  response header.
+  [optilude]
+
 * Add support for registering new views from Zope Page Templates and 
   overriding existing templates. See README for more details.
   [optilude]

@@ -26,6 +26,13 @@
         specifying a rules file.
     </p>
     
+    <dl class="portalMessage info">
+        <dt>info</dt>
+        <dd i18n:translate="description_notheme_controlpanel">
+            Please note that this control panel page will never be themed.
+        </dd>
+    </dl>
+    
     <dl class="enableFormTabbing">
         <dt id="fieldsetlegend-basic">Basic settings</dt>
         <dd id="fieldset-basic">
