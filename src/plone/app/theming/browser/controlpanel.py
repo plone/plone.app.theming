@@ -155,8 +155,8 @@ class ThemingControlpanel(BrowserView):
                     plugins = getPlugins()
                     pluginSettings = getPluginSettings(themeDirectory, plugins)
                     if pluginSettings is not None:
-                        for plugin in plugins:
-                            plugin.onCreated(themeData.__name__, pluginSettings[themeData.__name__], pluginSettings)
+                        for name, plugin in plugins:
+                            plugin.onCreated(themeData.__name__, pluginSettings[name], pluginSettings)
                 
                 if enableNewTheme:
                     applyTheme(themeData)

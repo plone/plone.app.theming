@@ -4,6 +4,9 @@ Changelog
 1.0b6 - unreleased
 ------------------
 
+* Fix zip import (plugin initialization was broken.)
+  [elro]
+
 1.0b5 - 2011-05-29
 ------------------
 
