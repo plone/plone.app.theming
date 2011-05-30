@@ -592,7 +592,7 @@ modify this as required.
   changes are reflected on the fly, but you will need to restart Zope to
   pick up new templates.
 
-The overrides directory name be changed in the theme's ``manifest.cfg`` file
+The overrides directory name can be changed in the theme's ``manifest.cfg`` file
 if required::
         
         [theme:overrides]
@@ -673,7 +673,7 @@ All options are optional, as is the ``views.cfg`` file itself.
   changes are reflected on the fly, but you will need to restart Zope to
   pick up new templates.
 
-The views directory name be changed in the theme's ``manifest.cfg`` file
+The views directory name can be changed in the theme's ``manifest.cfg`` file
 if required::
         
         [theme:views]
