@@ -385,7 +385,8 @@ def applyTheme(theme):
     currentTheme = getCurrentTheme()
 
     if currentTheme is not None:
-        themeDirectory = queryResourceDirectory(THEME_RESOURCE_NAME, theme)
+        themeDirectory = queryResourceDirectory(
+            THEME_RESOURCE_NAME, currentTheme)
         if themeDirectory is not None:
             plugins = getPlugins()
             pluginSettings = getPluginSettings(themeDirectory, plugins)
