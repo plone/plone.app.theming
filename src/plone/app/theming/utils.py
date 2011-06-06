@@ -33,12 +33,14 @@ from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
 from Products.PageTemplates.Expressions import getEngine
 
+
 class NetworkResolver(etree.Resolver):
     """Resolver for network urls
     """
     def resolve(self, system_url, public_id, context):
         if '://' in system_url and system_url != 'file:///__diazo__':
             return self.resolve_filename(system_url, context)
+
 
 class PythonResolver(etree.Resolver):
     """Resolver for python:// paths
@@ -128,6 +130,7 @@ def getPortal():
         return None
     return portal_url.getPortalObject()
 
+
 def findContext(published):
     """Find the context from a published resource (usually a view)/
     """
@@ -136,6 +139,7 @@ def findContext(published):
     if parent is None:
         parent = aq_parent(published)
     return parent
+
 
 def expandAbsolutePrefix(prefix):
     """Prepend the Plone site URL to the prefix if it starts with /
@@ -150,6 +154,7 @@ def expandAbsolutePrefix(prefix):
         path = path[:-1]
     return path + prefix
 
+
 def getOrCreatePersistentResourceDirectory():
     """Obtain the 'theme' persistent resource directory, creating it if
     necessary.
@@ -161,6 +166,7 @@ def getOrCreatePersistentResourceDirectory():
 
     return persistentDirectory[THEME_RESOURCE_NAME]
 
+
 def createExpressionContext(context, request):
     """Create an expression context suitable for evaluating parameter
     expressions.
@@ -168,8 +174,10 @@ def createExpressionContext(context, request):
 
     portal = getPortal()
 
-    contextState = queryMultiAdapter((context, request), name=u"plone_context_state")
-    portalState = queryMultiAdapter((portal, request), name=u"plone_portal_state")
+    contextState = queryMultiAdapter(
+        (context, request), name=u"plone_context_state")
+    portalState = queryMultiAdapter(
+        (portal, request), name=u"plone_portal_state")
 
     data = {
         'context': context,
@@ -182,17 +190,21 @@ def createExpressionContext(context, request):
 
     return getEngine().getContext(data)
 
+
 def compileExpression(text):
     """Compile the given expression. The returned value is suitable for
     caching in a volatile attribute
     """
     return getEngine().compile(text.strip())
 
+
 def isValidThemeDirectory(directory):
     """Determine if the given plone.resource directory is a valid theme
     directory
     """
-    return directory.isFile(MANIFEST_FILENAME) or directory.isFile(RULE_FILENAME)
+    return directory.isFile(MANIFEST_FILENAME) or \
+           directory.isFile(RULE_FILENAME)
+
 
 def extractThemeInfo(zipfile):
     """Return an ITheme based on the information in the given zipfile.
@@ -201,7 +213,8 @@ def extractThemeInfo(zipfile):
     top level directory or the rules file cannot be found.
     """
 
-    resourceName, manifestDict = extractManifestFromZipFile(zipfile, MANIFEST_FORMAT)
+    resourceName, manifestDict = extractManifestFromZipFile(
+        zipfile, MANIFEST_FORMAT)
 
     rulesFile = None
     absolutePrefix = '/++%s++%s' % (THEME_RESOURCE_NAME, resourceName)
@@ -221,7 +234,8 @@ def extractThemeInfo(zipfile):
             zipfile.getinfo("%s/%s" % (resourceName, RULE_FILENAME,))
         except KeyError:
             raise ValueError("Could not find theme name and rules file")
-        rulesFile = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, resourceName, RULE_FILENAME,)
+        rulesFile = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, resourceName,
+                                       RULE_FILENAME,)
 
     return Theme(resourceName, rulesFile,
             title=title,
@@ -230,6 +244,7 @@ def extractThemeInfo(zipfile):
             parameterExpressions=parameters
         )
 
+
 def getAvailableThemes():
     """Get a list of all ITheme's available in resource directories.
     """
@@ -237,18 +252,18 @@ def getAvailableThemes():
     resources = getAllResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
     themes = []
     for name, manifest in resources.items():
-        title       = name.capitalize().replace('-', ' ').replace('.', ' ')
+        title = name.capitalize().replace('-', ' ').replace('.', ' ')
         description = None
-        rules       = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
-        prefix      = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
-        params      = {}
+        rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
+        prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
+        params = {}
 
         if manifest is not None:
-            title       = manifest['title'] or title
+            title = manifest['title'] or title
             description = manifest['description'] or description
-            rules       = manifest['rules'] or rules
-            prefix      = manifest['prefix'] or prefix
-            params      = manifest['parameters'] or params
+            rules = manifest['rules'] or rules
+            prefix = manifest['prefix'] or prefix
+            params = manifest['parameters'] or params
 
         if isinstance(rules, str):
             rules = rules.decode('utf-8')
@@ -266,6 +281,7 @@ def getAvailableThemes():
     themes.sort(key=lambda x: x.title)
     return themes
 
+
 def getZODBThemes():
     """Get a list of ITheme's stored in the ZODB.
     """
@@ -275,27 +291,28 @@ def getZODBThemes():
     for name, manifest in resources.items():
         title = name.capitalize().replace('-', ' ').replace('.', ' ')
         description = None
-        rules       = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
-        prefix      = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
-        params      = {}
+        rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
+        prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
+        params = {}
 
         if manifest is not None:
-            title       = manifest['title'] or title
+            title = manifest['title'] or title
             description = manifest['description'] or description
-            rules       = manifest['rules'] or rules
-            prefix      = manifest['prefix'] or prefix
-            params      = manifest['parameters'] or params
+            rules = manifest['rules'] or rules
+            prefix = manifest['prefix'] or prefix
+            params = manifest['parameters'] or params
 
         themes.append(Theme(name, rules,
-                    title=title,
-                    description=description,
-                    absolutePrefix=prefix,
-                    parameterExpressions=params,
-                )
+                            title=title,
+                            description=description,
+                            absolutePrefix=prefix,
+                            parameterExpressions=params,
+                            )
             )
 
     themes.sort(key=lambda x: x.title)
     return themes
+
 
 def getCurrentTheme():
     """Get the name of the currently enabled theme
@@ -314,6 +331,7 @@ def getCurrentTheme():
             return theme.__name__
 
     return None
+
 
 def isThemeEnabled(request, settings=None):
     """Determine if a theme is enabled for the given request
@@ -354,6 +372,7 @@ def isThemeEnabled(request, settings=None):
 
     return True
 
+
 def applyTheme(theme):
     """Apply an ITheme
     """
@@ -380,7 +399,8 @@ def applyTheme(theme):
 
         if pluginSettings is not None:
             for plugin in plugins:
-                plugin.onDisabled(currentTheme, pluginSettings[currentTheme], pluginSettings)
+                plugin.onDisabled(currentTheme, pluginSettings[currentTheme],
+                                  pluginSettings)
 
     else:
 
@@ -400,5 +420,6 @@ def applyTheme(theme):
 
         if pluginSettings is not None:
             for plugin in plugins:
-                plugin.onDisabled(currentTheme, pluginSettings[currentTheme], pluginSettings)
+                plugin.onDisabled(currentTheme, pluginSettings[currentTheme],
+                                  pluginSettings)
                 plugin.onEnabled(theme, pluginSettings[theme], pluginSettings)
