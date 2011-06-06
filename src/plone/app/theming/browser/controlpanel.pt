@@ -25,18 +25,18 @@
         select a pre-registered theme, or configure a theme directly by
         specifying a rules file.
     </p>
-    
+
     <dl class="portalMessage info">
         <dt>info</dt>
         <dd i18n:translate="description_notheme_controlpanel">
             Please note that this control panel page will never be themed.
         </dd>
     </dl>
-    
+
     <dl class="enableFormTabbing">
         <dt id="fieldsetlegend-basic">Basic settings</dt>
         <dd id="fieldset-basic">
-            
+
             <p i18n:translate="description_basic_settings">
                 To enable a theme registered with Plone, choose it from the
                 list below and make sure <em>Enable theme</em> is selected.
@@ -44,10 +44,10 @@
                 with Plone. Use the <em>Advanced</em> tab to configure a
                 theme manually.
             </p>
-            
+
             <form
                 name="basic"
-                method="post" 
+                method="post"
                 class="enableUnloadProtection"
                 tal:attributes="action request/URL"
                 tal:define="errors view/errors">
@@ -93,9 +93,9 @@
                                             selected python:theme.__name__ == selected and 'selected' or None"
                             />
                     </select>
-            
+
                 </div>
-                
+
                 <div class="formControls">
                     <input
                         type="submit"
@@ -111,41 +111,41 @@
                         value="Cancel"
                         i18n:attributes="value" />
                 </div>
-                
+
                 <input tal:replace="structure context/@@authenticator/authenticator" />
-                
+
             </form>
-            
+
         </dd>
-        
+
         <dt id="fieldsetlegend-advanced">Advanced settings</dt>
         <dd id="fieldset-advanced">
-            
+
             <p i18n:translate="description_advanced">
                Use the fields below to configure the Diazo rules file and
                absolute path prefix, or to enable reading a theme from a
-               remote server.               
+               remote server.
             </p>
-            
+
             <form
                 name="advanced"
-                method="post" 
+                method="post"
                 class="enableUnloadProtection"
                 tal:attributes="action request/URL"
                 tal:define="errors view/errors">
-                
+
                 <div
                     tal:define="error errors/rules | nothing;
                                 rules python:request.get('rules', view.settings.rules)"
                     tal:attributes="class python:'field error' if error else 'field'">
-                
+
                     <label for="rules" i18n:translate="label_rules">Rules file</label>
                     <div class="formHelp" i18n:translate="help_rules">
                         Enter a path or URL for the theme rules file.
                     </div>
-                
+
                     <div tal:content="error" tal:condition="error" />
-                
+
                     <input
                         name="rules"
                         id="rules"
@@ -153,14 +153,14 @@
                         size="50"
                         tal:attributes="value rules"
                         />
-            
+
                 </div>
-            
+
                 <div
                     tal:define="error errors/absolutePrefix | nothing;
                                 absolutePrefix python:request.get('absolutePrefix', view.settings.absolutePrefix)"
                     tal:attributes="class python:'field error' if error else 'field'">
-                
+
                     <label for="absolutePrefix" i18n:translate="label_absolute_prefix">Absolute path prefix</label>
                     <div class="formHelp" i18n:translate="help_rules">
                         If your theme uses relative paths for images, stylesheets
@@ -168,9 +168,9 @@
                         sure these resources will work regardless of which page
                         Plone is rendering.
                     </div>
-                
+
                     <div tal:content="error" tal:condition="error" />
-                
+
                     <input
                         name="absolutePrefix"
                         id="absolutePrefix"
@@ -178,13 +178,13 @@
                         size="50"
                         tal:attributes="value absolutePrefix"
                         />
-            
+
                 </div>
-            
+
                 <div
                     class="field"
                     tal:define="selected python:request.get('readNetwork', view.settings.readNetwork)">
-    
+
                     <input type="hidden" value="" name="readNetwork:boolean:default" />
                     <input type="checkbox" value="1" name="readNetwork:boolean" id="readNetwork"
                         tal:attributes="checked python:'readNetwork' if selected else None"
@@ -193,15 +193,15 @@
                     <div class="formHelp" i18n:translate="help_read_network">
                         Allow rules and themes to be read from remote servers.
                     </div>
-    
+
                 </div>
-                
+
                 <div
                     tal:define="error errors/hostnameBlacklist | nothing;
                                 hostnameBlacklist view/settings/hostnameBlacklist | python:[];
                                 hostnameBlacklist python:request.get('hostnameBlacklist', hostnameBlacklist)"
                     tal:attributes="class python:'field error' if error else 'field'">
-                
+
                     <label for="hostnameBlacklist" i18n:translate="label_hostname_blacklist">Unthemed host names</label>
                     <div class="formHelp" i18n:translate="help_hostname_blacklist">
                         If there are hostnames that you do not want to be
@@ -212,9 +212,9 @@
                         for content administrators to be able to use 'plain'
                         Plone.
                     </div>
-                
+
                     <div tal:content="error" tal:condition="error" />
-                
+
                     <textarea
                         name="hostnameBlacklist:lines"
                         id="hostnameBlacklist"
@@ -222,16 +222,16 @@
                         cols="50"
                         tal:content="python:'\n'.join(hostnameBlacklist)"
                         ></textarea>
-            
+
                 </div>
-                
+
                 <div
                     tal:define="error errors/parameterExpressions | nothing;
                                 parameterExpressions python:view.settings.parameterExpressions or {};
                                 parameterExpressions python:['%s = %s' % (k,v) for k,v in parameterExpressions.items()];
                                 parameterExpressions python:request.get('parameterExpressions', parameterExpressions)"
                     tal:attributes="class python:'field error' if error else 'field'">
-                    
+
                     <label for="parameterExpressions" i18n:translate="label_parameter_expressions">Parameter expressions</label>
                     <div class="formHelp" i18n:translate="help_parameter_expressions">
                         You can define parameters that will be passed
@@ -245,9 +245,9 @@
                         <code>context_state</code>. Define one variable
                         per line, in the format <code>name = expression</code>.
                     </div>
-                    
+
                     <div tal:content="error" tal:condition="error" />
-                
+
                     <textarea
                         name="parameterExpressions:lines"
                         id="parameterExpressions"
@@ -255,10 +255,10 @@
                         cols="50"
                         tal:content="python:'\n'.join(parameterExpressions)"
                         ></textarea>
-            
+
                 </div>
-                
-                
+
+
                 <div class="formControls">
                     <input
                         type="submit"
@@ -274,35 +274,35 @@
                         value="Cancel"
                         i18n:attributes="value" />
                 </div>
-                
+
                 <input tal:replace="structure context/@@authenticator/authenticator" />
-                
+
             </form>
-            
+
         </dd>
-        
+
         <dt id="fieldsetlegend-import">Import theme</dt>
         <dd id="fieldset-import">
-            
+
             <p i18n:translate="description_import">
                Use the form below to upload a Zip file containing a theme.
             </p>
-            
+
             <form
                 name="import"
-                method="post" 
+                method="post"
                 enctype="multipart/form-data"
                 class="enableUnloadProtection"
                 tal:attributes="action request/URL"
                 tal:define="errors view/errors">
-                
+
                 <div
                     class="field"
                     tal:define="error errors/themeArchive | nothing"
                     tal:attributes="class python:'field error' if error else 'field'">
-                    
+
                     <label for="themeArchive" i18n:translate="label_theme_archive">Theme archive</label>
-                    
+
                     <div class="formHelp" i18n:translate="help_theme_archive">
                         Select a file to upload. This must be a Zip file with
                         a single top level directory, which will be used as
@@ -311,17 +311,17 @@
                         <code>manifest.cfg</code> file indicating an
                         alternative Diazo rules file.
                     </div>
-                    
+
                     <div tal:content="error" tal:condition="error" />
-                    
+
                     <input
                         type="file"
                         name="themeArchive"
                         id="themeArchive"
                         />
-                    
+
                 </div>
-                
+
                 <div
                     class="field"
                     tal:define="selected python:request.get('enableNewTheme', True)">
@@ -335,7 +335,7 @@
                         immediately.
                     </div>
                 </div>
-                
+
                 <div
                     class="field"
                     tal:define="selected python:request.get('replaceExisting', False)">
@@ -349,7 +349,7 @@
                         may have been uploaded previously.
                     </div>
                 </div>
-                
+
                 <div class="formControls">
                     <input
                         type="submit"
@@ -357,7 +357,7 @@
                         class="context"
                         value="Import"
                         i18n:attributes="value" />
-                    
+
                     <input
                         type="submit"
                         name="form.button.Cancel"
@@ -365,30 +365,30 @@
                         value="Cancel"
                         i18n:attributes="value" />
                 </div>
-                
+
                 <input tal:replace="structure context/@@authenticator/authenticator" />
-            
+
             </form>
-            
+
         </dd>
-        
+
         <tal:block condition="view/zodbThemes">
             <dt id="fieldsetlegend-import">Manage themes</dt>
             <dd id="fieldset-import">
-            
+
                 <p i18n:translate="description_manage">
                    Use the form below to delete themes that have previously been
                    uploaded. Click on a theme name to download it as a Zip
                    archive.
                 </p>
-            
+
                 <form
                     name="manage"
-                    method="post" 
+                    method="post"
                     class="enableUnloadProtection"
                     tal:attributes="action request/URL"
                     tal:define="errors view/errors">
-                
+
                     <table class="listing">
                         <thead>
                             <tr>
@@ -416,7 +416,7 @@
                             </tr>
                         </tbody>
                     </table>
-                
+
                     <div class="formControls">
                         <input
                             type="submit"
@@ -426,14 +426,14 @@
                             i18n:attributes="value"
                             />
                     </div>
-                
+
                     <input tal:replace="structure context/@@authenticator/authenticator" />
-            
+
                 </form>
-            
+
             </dd>
         </tal:block>
-        
+
     </dl>
 
 </div>

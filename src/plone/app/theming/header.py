@@ -6,8 +6,8 @@ def setHeader(object, event):
     This is useful for checking in things like the portal_css/portal_javascripts
     registries.
     """
-    
+
     request = event.request
-    
+
     if isThemeEnabled(request):
         request.environ['HTTP_X_THEME_ENABLED'] = True

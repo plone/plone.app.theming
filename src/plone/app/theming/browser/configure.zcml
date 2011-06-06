@@ -9,7 +9,7 @@
         image="icon.gif"
         />
 
-    <browser:page 
+    <browser:page
         name="theming-controlpanel"
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         class=".controlpanel.ThemingControlpanel"

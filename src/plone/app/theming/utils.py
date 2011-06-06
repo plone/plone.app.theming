@@ -43,7 +43,7 @@ class NetworkResolver(etree.Resolver):
 class PythonResolver(etree.Resolver):
     """Resolver for python:// paths
     """
-    
+
     def resolve(self, system_url, public_id, context):
         if not system_url.lower().startswith('python://'):
             return None
@@ -53,7 +53,7 @@ class PythonResolver(etree.Resolver):
 
 def resolvePythonURL(url):
     """Resolve the python resource url to it's path
-    
+
     This can resolve python://dotted.package.name/file/path URLs to paths.
     """
     assert url.lower().startswith('python://')
@@ -67,24 +67,24 @@ class InternalResolver(etree.Resolver):
     If the path starts with a /, it will be resolved relative to the Plone
     site navigation root.
     """
-    
+
     def resolve(self, system_url, public_id, context):
         request = getRequest()
         if request is None:
             return None
-        
+
         # Ignore URLs with a scheme
         if '://' in system_url:
             return None
-        
+
         # Ignore the special 'diazo:' resolvers
         if system_url.startswith('diazo:'):
             return None
-        
+
         portal = getPortal()
         if portal is None:
             return None
-        
+
         response = subrequest(system_url, root=portal)
         if response.status != 200:
             return None
@@ -99,7 +99,7 @@ class InternalResolver(etree.Resolver):
             # e.g. charset=utf-8
             encoding = encoding.split('=', 1)[1].strip()
         result = result.decode(encoding).encode('ascii', 'xmlcharrefreplace')
-        
+
         if content_type in ('text/javascript', 'application/x-javascript'):
             result = ''.join([
                 '<html><body><script type="text/javascript">',
@@ -131,7 +131,7 @@ def getPortal():
 def findContext(published):
     """Find the context from a published resource (usually a view)/
     """
-    
+
     parent = getattr(published, '__parent__', None)
     if parent is None:
         parent = aq_parent(published)
@@ -154,23 +154,23 @@ def getOrCreatePersistentResourceDirectory():
     """Obtain the 'theme' persistent resource directory, creating it if
     necessary.
     """
-    
+
     persistentDirectory = getUtility(IResourceDirectory, name="persistent")
     if THEME_RESOURCE_NAME not in persistentDirectory:
         persistentDirectory.makeDirectory(THEME_RESOURCE_NAME)
-    
+
     return persistentDirectory[THEME_RESOURCE_NAME]
 
 def createExpressionContext(context, request):
     """Create an expression context suitable for evaluating parameter
     expressions.
     """
-    
+
     portal = getPortal()
-    
+
     contextState = queryMultiAdapter((context, request), name=u"plone_context_state")
     portalState = queryMultiAdapter((portal, request), name=u"plone_portal_state")
-    
+
     data = {
         'context': context,
         'request': request,
@@ -179,7 +179,7 @@ def createExpressionContext(context, request):
         'portal_state': portalState,
         'nothing': None,
     }
-    
+
     return getEngine().getContext(data)
 
 def compileExpression(text):
@@ -196,33 +196,33 @@ def isValidThemeDirectory(directory):
 
 def extractThemeInfo(zipfile):
     """Return an ITheme based on the information in the given zipfile.
-    
+
     Will throw a ValueError if the theme directory does not contain a single
     top level directory or the rules file cannot be found.
     """
-    
+
     resourceName, manifestDict = extractManifestFromZipFile(zipfile, MANIFEST_FORMAT)
-    
+
     rulesFile = None
     absolutePrefix = '/++%s++%s' % (THEME_RESOURCE_NAME, resourceName)
     title = None
     description = None
     parameters = {}
-    
-    if manifestDict is not None:    
+
+    if manifestDict is not None:
         rulesFile = manifestDict.get('rules', rulesFile)
         absolutePrefix = manifestDict['prefix'] or absolutePrefix
         title = manifestDict.get('title', None)
         description = manifestDict.get('title', None)
         parameters = manifestDict.get('parameters', {})
-    
-    if not rulesFile:        
+
+    if not rulesFile:
         try:
             zipfile.getinfo("%s/%s" % (resourceName, RULE_FILENAME,))
         except KeyError:
             raise ValueError("Could not find theme name and rules file")
         rulesFile = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, resourceName, RULE_FILENAME,)
-    
+
     return Theme(resourceName, rulesFile,
             title=title,
             description=description,
@@ -233,7 +233,7 @@ def extractThemeInfo(zipfile):
 def getAvailableThemes():
     """Get a list of all ITheme's available in resource directories.
     """
-    
+
     resources = getAllResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
     themes = []
     for name, manifest in resources.items():
@@ -242,19 +242,19 @@ def getAvailableThemes():
         rules       = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
         prefix      = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
         params      = {}
-        
+
         if manifest is not None:
             title       = manifest['title'] or title
             description = manifest['description'] or description
             rules       = manifest['rules'] or rules
             prefix      = manifest['prefix'] or prefix
             params      = manifest['parameters'] or params
-        
+
         if isinstance(rules, str):
             rules = rules.decode('utf-8')
         if isinstance(prefix, str):
             prefix = prefix.decode('utf-8')
-        
+
         themes.append(Theme(name, rules,
                     title=title,
                     description=description,
@@ -262,14 +262,14 @@ def getAvailableThemes():
                     parameterExpressions=params,
                 )
             )
-    
+
     themes.sort(key=lambda x: x.title)
     return themes
 
 def getZODBThemes():
     """Get a list of ITheme's stored in the ZODB.
     """
-        
+
     resources = getZODBResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
     themes = []
     for name, manifest in resources.items():
@@ -278,14 +278,14 @@ def getZODBThemes():
         rules       = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
         prefix      = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
         params      = {}
-        
+
         if manifest is not None:
             title       = manifest['title'] or title
             description = manifest['description'] or description
             rules       = manifest['rules'] or rules
             prefix      = manifest['prefix'] or prefix
             params      = manifest['parameters'] or params
-        
+
         themes.append(Theme(name, rules,
                     title=title,
                     description=description,
@@ -293,7 +293,7 @@ def getZODBThemes():
                     parameterExpressions=params,
                 )
             )
-    
+
     themes.sort(key=lambda x: x.title)
     return themes
 
@@ -303,101 +303,101 @@ def getCurrentTheme():
     settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
     if not settings.rules:
         return None
-    
+
     if settings.currentTheme:
         return settings.currentTheme
-    
+
     # BBB: If currentTheme isn't set, look for a theme with a rules file
     # matching that of the current theme
     for theme in getAvailableThemes():
         if theme.rules == settings.rules:
             return theme.__name__
-    
+
     return None
 
 def isThemeEnabled(request, settings=None):
     """Determine if a theme is enabled for the given request
     """
-    
+
     # Resolve DevelopmentMode late (i.e. not on import time) since it may
     # be set during import or test setup time
     DevelopmentMode = Globals.DevelopmentMode
-    
+
     # Disable theming if the response sets a header
     if request.response.getHeader('X-Theme-Disabled'):
         return False
-    
+
     # Check for diazo.off request parameter
-    if (DevelopmentMode and 
+    if (DevelopmentMode and
         request.get('diazo.off', '').lower() in ('1', 'y', 'yes', 't', 'true')
     ):
         return False
-    
+
     if settings is None:
         registry = queryUtility(IRegistry)
         if registry is None:
             return False
-    
+
         settings = registry.forInterface(IThemeSettings, False)
-    
+
     if not settings.enabled or not settings.rules:
         return False
-    
+
     base1 = request.get('BASE1')
     _, base1 = base1.split('://', 1)
     host = base1.lower()
     serverPort = request.get('SERVER_PORT')
-        
+
     for hostname in settings.hostnameBlacklist or ():
         if host == hostname or host == "%s:%s" % (hostname, serverPort):
             return False
-    
+
     return True
 
 def applyTheme(theme):
     """Apply an ITheme
     """
-    
+
     settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
-    
+
     plugins = None
     themeDirectory = None
     pluginSettings = None
     currentTheme = getCurrentTheme()
-    
+
     if currentTheme is not None:
         themeDirectory = queryResourceDirectory(THEME_RESOURCE_NAME, theme)
         if themeDirectory is not None:
             plugins = getPlugins()
             pluginSettings = getPluginSettings(themeDirectory, plugins)
-    
+
     if theme is None:
-        
+
         settings.currentTheme = None
         settings.rules = None
         settings.absolutePrefix = None
         settings.parameterExpressions = {}
-        
+
         if pluginSettings is not None:
             for plugin in plugins:
                 plugin.onDisabled(currentTheme, pluginSettings[currentTheme], pluginSettings)
-        
+
     else:
-    
+
         if isinstance(theme.rules, str):
             theme.rules = theme.rules.decode('utf-8')
-    
+
         if isinstance(theme.absolutePrefix, str):
             theme.absolutePrefix = theme.absolutePrefix.decode('utf-8')
-        
+
         if isinstance(theme.__name__, str):
             theme.__name__ = theme.__name__.decode('utf-8')
-        
+
         settings.currentTheme = theme.__name__
         settings.rules = theme.rules
         settings.absolutePrefix = theme.absolutePrefix
         settings.parameterExpressions = theme.parameterExpressions
-        
+
         if pluginSettings is not None:
             for plugin in plugins:
                 plugin.onDisabled(currentTheme, pluginSettings[currentTheme], pluginSettings)

@@ -10,7 +10,7 @@
 -->
 
     <include package="plone.resource" file="meta.zcml" />
-    
+
     <include package="plone.resource" />
     <include package="five.globalrequest" />
     <include package="plone.transformchain" />
@@ -19,7 +19,7 @@
     <include package=".browser" />
     <include package=".exportimport" />
     <include package=".plugins" />
-    
+
     <gs:registerProfile
         name="default"
         title="Diazo theme support"
@@ -28,7 +28,7 @@
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
-    
+
     <!-- Transform order 8850 - apply theme transform -->
     <adapter
         name="plone.app.theming.transform"
@@ -55,5 +55,5 @@
         provides="zope.traversing.interfaces.ITraversable"
         factory=".traversal.ThemeTraverser"
         />
-        
+
 </configure>
