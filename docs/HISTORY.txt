@@ -4,6 +4,9 @@ Changelog
 1.0b6 - unreleased
 ------------------
 
+* Fixed plugin initialization when applying a theme.
+  [maurits]
+
 * Query the resource directory using the 'currentTheme' name instead
   of the Theme object (updating the control panel was broken).
   [maurits]

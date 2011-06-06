@@ -399,8 +399,8 @@ def applyTheme(theme):
         settings.parameterExpressions = {}
 
         if pluginSettings is not None:
-            for plugin in plugins:
-                plugin.onDisabled(currentTheme, pluginSettings[currentTheme],
+            for name, plugin in plugins:
+                plugin.onDisabled(currentTheme, pluginSettings[name],
                                   pluginSettings)
 
     else:
@@ -420,7 +420,7 @@ def applyTheme(theme):
         settings.parameterExpressions = theme.parameterExpressions
 
         if pluginSettings is not None:
-            for plugin in plugins:
-                plugin.onDisabled(currentTheme, pluginSettings[currentTheme],
+            for name, plugin in plugins:
+                plugin.onDisabled(currentTheme, pluginSettings[name],
                                   pluginSettings)
-                plugin.onEnabled(theme, pluginSettings[theme], pluginSettings)
+                plugin.onEnabled(theme, pluginSettings[name], pluginSettings)
