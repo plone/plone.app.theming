@@ -11,7 +11,8 @@ class Theme(object):
             title=None,
             description=None,
             absolutePrefix=None,
-            parameterExpressions=None
+            parameterExpressions=None,
+            doctype=None,
     ):
 
         self.__name__ = name
@@ -20,3 +21,4 @@ class Theme(object):
         self.description = description
         self.absolutePrefix = absolutePrefix
         self.parameterExpressions = parameterExpressions
+        self.doctype = doctype

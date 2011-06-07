@@ -227,6 +227,8 @@ class ThemeTransform(object):
         context = findContext(self.published)
         if context is not None:
             settings = self.getSettings()
+            if settings.doctype:
+                result.doctype = settings.doctype
             parameterExpressions = settings.parameterExpressions or {}
             if parameterExpressions:
                 cache = getCache(settings)

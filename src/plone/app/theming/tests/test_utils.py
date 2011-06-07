@@ -34,7 +34,8 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(themes[0].description, 'A theme for testing')
         self.assertEqual(themes[0].rules, '/++theme++plone.app.theming.tests/rules.xml')
         self.assertEqual(themes[0].absolutePrefix, '/++theme++plone.app.theming.tests')
-        self.assertEqual(themes[0].parameterExpressions, {'foo': 'bar'})
+        self.assertEqual(themes[0].parameterExpressions, {'foo': "python:request.get('bar')"})
+        self.assertEqual(themes[0].doctype, "<!DOCTYPE html>")
 
     def test_getZODBThemes(self):
         import zipfile
@@ -81,6 +82,7 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(settings.rules, theme.rules)
         self.assertEqual(settings.absolutePrefix, theme.absolutePrefix)
         self.assertEqual(settings.parameterExpressions, theme.parameterExpressions)
+        self.assertEqual(settings.doctype, theme.doctype)
 
     def test_applyTheme_None(self):
         from zope.component import getUtility

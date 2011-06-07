@@ -221,6 +221,7 @@ def extractThemeInfo(zipfile):
     title = None
     description = None
     parameters = {}
+    doctype = ""
 
     if manifestDict is not None:
         rulesFile = manifestDict.get('rules', rulesFile)
@@ -228,6 +229,7 @@ def extractThemeInfo(zipfile):
         title = manifestDict.get('title', None)
         description = manifestDict.get('title', None)
         parameters = manifestDict.get('parameters', {})
+        doctype = manifestDict.get('doctype', "")
 
     if not rulesFile:
         try:
@@ -241,7 +243,8 @@ def extractThemeInfo(zipfile):
             title=title,
             description=description,
             absolutePrefix=absolutePrefix,
-            parameterExpressions=parameters
+            parameterExpressions=parameters,
+            doctype=doctype,
         )
 
 
@@ -257,6 +260,7 @@ def getAvailableThemes():
         rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
         prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
         params = {}
+        doctype = ""
 
         if manifest is not None:
             title = manifest['title'] or title
@@ -264,6 +268,7 @@ def getAvailableThemes():
             rules = manifest['rules'] or rules
             prefix = manifest['prefix'] or prefix
             params = manifest['parameters'] or params
+            doctype = manifest['doctype'] or doctype
 
         if isinstance(rules, str):
             rules = rules.decode('utf-8')
@@ -275,6 +280,7 @@ def getAvailableThemes():
                     description=description,
                     absolutePrefix=prefix,
                     parameterExpressions=params,
+                    doctype=doctype,
                 )
             )
 
@@ -294,6 +300,7 @@ def getZODBThemes():
         rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
         prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
         params = {}
+        doctype = ""
 
         if manifest is not None:
             title = manifest['title'] or title
@@ -301,12 +308,14 @@ def getZODBThemes():
             rules = manifest['rules'] or rules
             prefix = manifest['prefix'] or prefix
             params = manifest['parameters'] or params
+            doctype = manifest['doctype'] or doctype
 
         themes.append(Theme(name, rules,
                             title=title,
                             description=description,
                             absolutePrefix=prefix,
                             parameterExpressions=params,
+                            doctype=doctype,
                             )
             )
 
@@ -397,6 +406,7 @@ def applyTheme(theme):
         settings.rules = None
         settings.absolutePrefix = None
         settings.parameterExpressions = {}
+        settings.doctype = ""
 
         if pluginSettings is not None:
             for name, plugin in plugins:
@@ -418,6 +428,7 @@ def applyTheme(theme):
         settings.rules = theme.rules
         settings.absolutePrefix = theme.absolutePrefix
         settings.parameterExpressions = theme.parameterExpressions
+        settings.doctype = theme.doctype
 
         if pluginSettings is not None:
             for name, plugin in plugins:

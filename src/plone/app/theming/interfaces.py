@@ -10,7 +10,7 @@ THEME_RESOURCE_NAME = 'theme'
 RULE_FILENAME = 'rules.xml'
 
 MANIFEST_FORMAT = ManifestFormat(THEME_RESOURCE_NAME,
-        keys=['title', 'description', 'rules', 'prefix'],
+        keys=['title', 'description', 'rules', 'prefix', 'doctype'],
         parameterSections=['parameters'],
     )
 
@@ -46,6 +46,12 @@ class ITheme(Interface):
             key_type=schema.TextLine(),
             value_type=schema.TextLine(),
             required=False,
+        )
+
+    doctype = schema.ASCIILine(
+            title=_(u"Doctype"),
+            required=False,
+            default="",
         )
 
 class IThemeSettings(Interface):
@@ -124,6 +130,18 @@ class IThemeSettings(Interface):
             required=False,
             default={},
         )
+
+    doctype = schema.ASCIILine(
+            title=_('doctype', u"Doctype"),
+            description=_('doctype_description',
+                u'You can specify a Doctype string which will be set on the '
+                u'output, for example "<!DOCTYPE html>". '
+                u'If left blank the default XHTML 1.0 transistional Doctype '
+                u'is used.'),
+            required=False,
+            default="",
+        )
+
 
 class IThemingLayer(Interface):
     """Browser layer used to indicate that plone.app.theming is installed

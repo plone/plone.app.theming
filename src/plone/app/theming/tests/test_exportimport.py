@@ -30,7 +30,7 @@ class TestExportImport(unittest.TestCase):
 
         self.assertEqual(settings.rules, '/++theme++plone.app.theming.tests/rules.xml')
         self.assertEqual(settings.absolutePrefix, '/++theme++plone.app.theming.tests')
-        self.assertEqual(settings.parameterExpressions, {'foo': 'bar'})
+        self.assertEqual(settings.parameterExpressions, {'foo': "python:request.get('bar')"})
 
     def test_import_no_file(self):
         from zope.component import getUtility
