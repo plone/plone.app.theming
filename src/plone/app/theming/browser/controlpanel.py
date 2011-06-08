@@ -75,6 +75,7 @@ class ThemingControlpanel(BrowserView):
 
             rules = form.get('rules', None)
             prefix = form.get('absolutePrefix', None)
+            doctype = str(form.get('doctype', ""))
 
             hostnameBlacklist = form.get('hostnameBlacklist', [])
 
@@ -102,6 +103,7 @@ class ThemingControlpanel(BrowserView):
                 self.settings.absolutePrefix = prefix
                 self.settings.parameterExpressions = parameterExpressions
                 self.settings.hostnameBlacklist = hostnameBlacklist
+                self.settings.doctype = doctype
 
         if 'form.button.Import' in form:
             self.authorize()

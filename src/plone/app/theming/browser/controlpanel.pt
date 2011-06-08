@@ -162,7 +162,7 @@
                     tal:attributes="class python:'field error' if error else 'field'">
 
                     <label for="absolutePrefix" i18n:translate="label_absolute_prefix">Absolute path prefix</label>
-                    <div class="formHelp" i18n:translate="help_rules">
+                    <div class="formHelp" i18n:translate="help_absolute_prefix">
                         If your theme uses relative paths for images, stylesheets
                         or other resources, you can enter a prefix here to make
                         sure these resources will work regardless of which page
@@ -177,6 +177,31 @@
                         type="text"
                         size="50"
                         tal:attributes="value absolutePrefix"
+                        />
+
+                </div>
+
+                <div
+                    tal:define="error errors/doctype | nothing;
+                                doctype python:request.get('doctype', view.settings.doctype)"
+                    tal:attributes="class python:'field error' if error else 'field'">
+
+                    <label for="doctype" i18n:translate="label_doctype">Doctype</label>
+                    <div class="formHelp" i18n:translate="help_doctype">
+                        You can specify a Doctype string which will be set on
+                        the output, for example "<!DOCTYPE html>". If left
+                        blank the default XHTML 1.0 transistional Doctype or
+                        that set in the Diazo theme is used.
+                    </div>
+
+                    <div tal:content="error" tal:condition="error" />
+
+                    <input
+                        name="doctype"
+                        id="doctype"
+                        type="text"
+                        size="50"
+                        tal:attributes="value doctype"
                         />
 
                 </div>
