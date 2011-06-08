@@ -29,6 +29,15 @@
         provides="Products.GenericSetup.interfaces.EXTENSION"
         />
 
+    <gs:upgradeStep
+        title="Update registry"
+        source="*"
+        destination="1000"
+        handler=".upgrade.update_registry"
+        sortkey="1"
+        profile="plone.app.theming:default"
+        />
+
     <!-- Transform order 8850 - apply theme transform -->
     <adapter
         name="plone.app.theming.transform"

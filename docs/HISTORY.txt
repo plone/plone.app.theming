@@ -4,6 +4,9 @@ Changelog
 1.0b6 - unreleased
 ------------------
 
+* Upgrade step to update plone.app.registry configuration.
+  [elro]
+
 * Fixed plugin initialization when applying a theme.
   [maurits]
 
