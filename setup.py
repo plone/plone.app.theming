@@ -31,15 +31,13 @@ setup(name='plone.app.theming',
           'plone.app.registry>=1.0a2',
           'plone.subrequest',
           'plone.transformchain',
-          'plone.resource',
+          'plone.resource>=1.0b5',
           'repoze.xmliter>=0.3',
           'five.globalrequest',
           'Products.CMFPlone',
-          'zope.dottedname',
-          'z3c.jbot',
       ],
       extras_require={
-        'test': ['plone.app.testing', 'z3c.jbot', 'zope.dottedname'],
+        'test': ['plone.app.testing'],
       },
       entry_points="""
       [z3c.autoinclude.plugin]

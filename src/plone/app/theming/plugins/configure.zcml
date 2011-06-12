@@ -15,19 +15,4 @@
         handler=".hooks.onStartup"
         />
 
-    <!-- Register plugins if applicable -->
-
-    <include
-        package=".browserlayer"
-        />
-
-    <include
-        package=".views"
-        />
-
-    <include
-        zcml:condition="installed z3c.jbot"
-        package=".overrides"
-        />
-
 </configure>
