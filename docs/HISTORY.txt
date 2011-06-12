@@ -1,8 +1,15 @@
 Changelog
 =========
 
-1.0b8 - unreleased
+1.0b7 - 2011-06-12
 ------------------
+
+* Moved the *views* and *overrides* plugins out into a separate package
+  ``plone.app.themingplugins``. If you want to use those features, you need
+  to install that package in your buildout. Themes attempting to register
+  views or overrides in environments where ``plone.app.themingplugins`` is not
+  installed will install, but views and overrides will not take effect.
+  [optilude]
 
 1.0b6 - 2011-06-08
 ------------------
