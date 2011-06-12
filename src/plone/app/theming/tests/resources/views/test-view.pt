@@ -1,9 +1,0 @@
-<html>
-<head>
-    <title>Test view</title>
-</head>
-<body>
-    <h1>Test view</h1>
-    <div tal:content="context/Title | nothing">title here</div>
-</body>
-</html>
