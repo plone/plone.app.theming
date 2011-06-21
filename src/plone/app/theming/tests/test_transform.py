@@ -419,18 +419,21 @@ class TestCase(unittest.TestCase):
         thirdLastResource.setExpression('')
         thirdLastResource.setRendering('link')
         thirdLastResource.setEnabled(True)
+        thirdLastResource.setConditionalcomment('')
 
         # only show in theme
         secondToLastResource = portal_css.resources[-2]
         secondToLastResource.setExpression('request/HTTP_X_THEME_ENABLED | nothing')
         secondToLastResource.setRendering('link')
         secondToLastResource.setEnabled(True)
+        secondToLastResource.setConditionalcomment('')
 
         # only show when theme is disabled
         lastResource = portal_css.resources[-1]
         lastResource.setExpression('not:request/HTTP_X_THEME_ENABLED | nothing')
         lastResource.setRendering('link')
         lastResource.setEnabled(True)
+        lastResource.setConditionalcomment('')
 
         portal_css.cookResources()
 
@@ -571,18 +574,24 @@ class TestCase(unittest.TestCase):
         thirdLastResource.setExpression('')
         thirdLastResource.setRendering('link')
         thirdLastResource.setEnabled(True)
+        thirdLastResource.setConditionalcomment('')
+        
 
         # only show in theme
         secondToLastResource = portal_css.resources[-2]
         secondToLastResource.setExpression('request/HTTP_X_THEME_ENABLED | nothing')
         secondToLastResource.setRendering('link')
         secondToLastResource.setEnabled(True)
+        secondToLastResource.setConditionalcomment('')
+        
 
         # only show when theme is disabled
         lastResource = portal_css.resources[-1]
         lastResource.setExpression('not:request/HTTP_X_THEME_ENABLED | nothing')
         lastResource.setRendering('link')
         lastResource.setEnabled(True)
+        lastResource.setConditionalcomment('')
+        
 
         portal_css.cookResources()
 
