@@ -229,6 +229,8 @@ class ThemeTransform(object):
             settings = self.getSettings()
             if settings.doctype:
                 result.doctype = settings.doctype
+                if not result.doctype.endswith('\n'):
+                    result.doctype += '\n'
             parameterExpressions = settings.parameterExpressions or {}
             if parameterExpressions:
                 cache = getCache(settings)
