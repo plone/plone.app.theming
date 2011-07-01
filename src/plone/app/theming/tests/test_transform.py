@@ -21,6 +21,8 @@ from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.utils import applyTheme, getAvailableThemes
 from plone.app.theming.utils import InternalResolver, PythonResolver, resolvePythonURL
 
+import re
+
 from diazo.compiler import compile_theme
 
 from Products.CMFCore.utils import getToolByName
@@ -114,7 +116,7 @@ class TestCase(unittest.TestCase):
         self.assertTrue("This is the theme" in browser.contents)
 
         # Doctype
-        self.assertTrue(browser.contents.startswith("<!DOCTYPE html>\n<html"))
+        self.assertTrue(re.match("<!DOCTYPE html>\s+<html",browser.contents))
 
     def test_theme_enabled_query_string_off_switch(self):
         app = self.layer['app']
