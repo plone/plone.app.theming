@@ -20,5 +20,8 @@
     <after theme-children="/html/head" if="$requestParam = 'on'">
         <script>request param on</script>
     </after>
+    <after theme-children="/html/head">
+        <script id="contextParam"><xsl:value-of select="$contextParam" /></script>
+    </after>
 
 </rules>

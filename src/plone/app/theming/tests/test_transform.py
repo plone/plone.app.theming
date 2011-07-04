@@ -42,7 +42,8 @@ class TestCase(unittest.TestCase):
         self.settings.parameterExpressions = {
                 'stringParam': 'string:string param value',
                 'boolParam': 'python:False',
-                'requestParam': 'request/useother | string:off'
+                'contextParam' : 'context/absolute_url | string:no context',
+                'requestParam': 'request/useother | string:off',
             }
 
         import transaction; transaction.commit()
@@ -515,7 +516,8 @@ class TestCase(unittest.TestCase):
         self.settings.parameterExpressions = {
                 'stringParam': 'string:string param value',
                 'boolParam': 'python:False',
-                'requestParam': 'request/someParam | string:off'
+                'contextParam' : 'context/absolute_url | string:no context',
+                'requestParam': 'request/someParam | string:off',
             }
 
         import transaction; transaction.commit()
@@ -541,6 +543,9 @@ class TestCase(unittest.TestCase):
         # Not present in this request
         self.assertFalse('<script>request param on</script>' in browser.contents)
 
+        # Context was available for parameter expressions
+        self.assertTrue('<script id="contextParam">http://nohost/plone</script>' in browser.contents)
+
         # ... but present with the request param on
         browser.open(portal.absolute_url() + '?someParam=on')
         self.assertTrue('<script>request param on</script>' in browser.contents)
@@ -563,6 +568,50 @@ class TestCase(unittest.TestCase):
 
         # The theme
         self.assertTrue("This is the theme" in browser.contents)
+
+    def test_theme_params_on_404(self):
+        app = self.layer['app']
+        portal = self.layer['portal']
+
+        self.settings.enabled = True
+        self.settings.rules = u'python://plone.app.theming/tests/paramrules.xml'
+        self.settings.parameterExpressions = {
+                'stringParam': 'string:string param value',
+                'boolParam': 'python:False',
+                'contextParam' : 'context/absolute_url | string:no context',
+                'requestParam': 'request/someParam | string:off',
+            }
+
+        import transaction; transaction.commit()
+
+        browser = Browser(app)
+        error = None
+        try:
+            browser.open('%s/404_page' % portal.absolute_url())
+        except HTTPError, e:
+            error = e
+        self.assertEquals(error.code, 404)
+
+        # Title - pulled in with rules.xml
+        self.assertTrue(portal.title in browser.contents)
+
+        # Elsewhere - not pulled in
+        self.assertFalse("Accessibility" in browser.contents)
+
+        # The theme
+        self.assertTrue("This is the theme" in browser.contents)
+
+        # Value of string param
+        self.assertTrue('string param value' in browser.contents)
+
+        # Would be here if bool param was false
+        self.assertFalse('<script>bool param on</script>' in browser.contents)
+
+        # Not present in this request
+        self.assertFalse('<script>request param on</script>' in browser.contents)
+
+        # Context wasn't available for parameter expressions
+        self.assertTrue('<script id="contextParam">no context</script>' in browser.contents)
 
     def test_resource_condition_404(self):
         app = self.layer['app']

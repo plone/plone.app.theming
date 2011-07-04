@@ -224,35 +224,34 @@ class ThemeTransform(object):
 
         # Add expression-based parameters
 
-        context = findContext(self.published)
-        if context is not None:
-            settings = self.getSettings()
-            if settings.doctype:
-                result.doctype = settings.doctype
-                if not result.doctype.endswith('\n'):
-                    result.doctype += '\n'
-            parameterExpressions = settings.parameterExpressions or {}
-            if parameterExpressions:
-                cache = getCache(settings)
-                DevelopmentMode = Globals.DevelopmentMode
+        settings = self.getSettings()
+        if settings.doctype:
+            result.doctype = settings.doctype
+            if not result.doctype.endswith('\n'):
+                result.doctype += '\n'
+        parameterExpressions = settings.parameterExpressions or {}
+        if parameterExpressions:
+            cache = getCache(settings)
+            DevelopmentMode = Globals.DevelopmentMode
 
-                # Compile and cache expressions
-                expressions = None
+            # Compile and cache expressions
+            expressions = None
+            if not DevelopmentMode:
+                expressions = cache.expressions
+
+            if expressions is None:
+                expressions = {}
+                for name, expressionText in parameterExpressions.items():
+                    expressions[name] = compileExpression(expressionText)
+
                 if not DevelopmentMode:
-                    expressions = cache.expressions
+                    cache.updateExpressions(expressions)
 
-                if expressions is None:
-                    expressions = {}
-                    for name, expressionText in parameterExpressions.items():
-                        expressions[name] = compileExpression(expressionText)
-
-                    if not DevelopmentMode:
-                        cache.updateExpressions(expressions)
-
-                # Execute all expressions
-                expressionContext = createExpressionContext(context, self.request)
-                for name, expression in expressions.items():
-                    params[name] = quote_param(expression(expressionContext))
+            # Execute all expressions
+            context = findContext(self.published)
+            expressionContext = createExpressionContext(context, self.request)
+            for name, expression in expressions.items():
+                params[name] = quote_param(expression(expressionContext))
 
         transformed = transform(result.tree, **params)
         if transformed is None:
