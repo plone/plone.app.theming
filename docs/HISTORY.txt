@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0b8 - unreleased
+1.0b8 - 2011-07-04
 ------------------
 
 * Evaluate theme parameters regardless of whether there is a valid context or
