@@ -4,6 +4,9 @@ Changelog
 1.0b9 - unreleased
 ------------------
 
+* Patch App.Management.Navigation to disable theming of ZMI pages.
+  [elro]
+
 1.0b8 - 2011-07-04
 ------------------
 

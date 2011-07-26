@@ -28,7 +28,10 @@ from plone.app.theming.utils import findContext
 from plone.app.theming.utils import compileExpression
 from plone.app.theming.utils import createExpressionContext
 from plone.app.theming.utils import isThemeEnabled
+from plone.app.theming.zmi import patch_zmi
 
+# Disable theming of ZMI
+patch_zmi()
 
 LOGGER = logging.getLogger('plone.app.theming')
 
