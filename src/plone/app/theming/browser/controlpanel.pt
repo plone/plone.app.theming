@@ -420,6 +420,7 @@
                                 <th />
                                 <th i18n:translate="heading_theme_title">Title</th>
                                 <th i18n:translate="heading_theme_description">Description</th>
+                                <th i18n:translate="heading_theme_action">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -438,6 +439,14 @@
                                         />
                                 </td>
                                 <td tal:content="theme/description" />
+                                <td>
+                                    <a  target="_new"
+                                        tal:attributes="href string:${context/absolute_url}/++theme++${theme/__name__}/@@download-zip"
+                                        >Download</a>
+                                    |
+                                    <a  tal:attributes="href string:${context/absolute_url}/++theme++${theme/__name__}/@@theming-controlpanel-editor"
+                                        >Edit</a>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

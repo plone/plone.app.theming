@@ -8,12 +8,25 @@
         name="plone.app.theming.gif"
         image="icon.gif"
         />
+    
+    <browser:resourceDirectory
+        name="plone.app.theming.editor"
+        directory="editor"
+        />
 
     <browser:page
         name="theming-controlpanel"
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         class=".controlpanel.ThemingControlpanel"
         template="controlpanel.pt"
+        permission="cmf.ManagePortal"
+        />
+    
+    <browser:page
+        name="theming-controlpanel-editor"
+        for="plone.resource.interfaces.IResourceDirectory"
+        class=".editor.ThemeEditor"
+        template="editor.pt"
         permission="cmf.ManagePortal"
         />
 

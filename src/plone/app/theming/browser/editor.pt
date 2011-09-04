@@ -1,0 +1,232 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    lang="en"
+    metal:use-macro="context/prefs_main_template/macros/master"
+    i18n:domain="plone">
+
+<head>
+<metal:block fill-slot="top_slot">
+
+<tal:defines define="dummy python:request.set('disable_border',1);
+                     disable_column_one python:request.set('disable_plone.leftcolumn',0);
+                     disable_column_two python:request.set('disable_plone.rightcolumn',1);"/>
+
+<!-- ACE editor -->
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace.js"
+    ></script>
+
+<!-- Theme -->
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/theme-textmate.js"
+    ></script>
+
+<!-- Syntax highlighting -->
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/mode-html.js"
+    ></script>
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/mode-css.js"
+    ></script>
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/mode-javascript.js"
+    ></script>
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/mode-xml.js"
+    ></script>
+
+
+<!-- Styling for this page -->
+<link
+    rel="stylesheet"
+    type="text/css"
+    tal:attributes="href string:${context/absolute_url}/++resource++plone.app.theming.editor/editor.css"
+    />
+
+<script type="text/javascript" tal:content="view/jsVariables"></script>
+
+<script type="text/javascript">
+    
+    jQuery(function($) {
+        
+        $(document).ready(function() {
+            
+            var editor;
+            var currentPath;
+
+            function initEditor(mode, data) {
+                editor = ace.edit("editor");
+                editor.setTheme("ace/theme/textmate");
+                editor.getSession().setTabSize(4);
+                editor.getSession().setUseSoftTabs(true);
+                editor.getSession().setUseWrapMode(false);
+                editor.getSession().setMode(mode);
+                editor.setShowPrintMargin(false);
+
+                editor.getSession().setValue(data);
+                editor.navigateTo(0, 0);
+            }
+
+            function saveEditor() {
+                // Save the value of the editor
+                if(currentPath != undefined && editor != undefined) {
+                    var textareaName = "edited-file-" + currentPath;
+                    var textarea = $("textarea#" + textareaName.replace('.', '\\.'));
+
+                    if(textarea.length > 0) {
+                        $(textarea).text(editor.getSession().getValue());
+                    }
+                }
+            }
+
+            $("#file-selector").val("");
+
+            var HTMLMode = require("ace/mode/html").Mode;
+            var CSSMode  = require("ace/mode/css").Mode;
+            var XMLMode  = require("ace/mode/xml").Mode;
+            var JSMode   = require("ace/mode/javascript").Mode;
+            var TextMode = require("ace/mode/text").Mode;
+
+            var extensionModes = {
+                css: new CSSMode(),
+                js: new JSMode(),
+                htm: new HTMLMode(),
+                html: new HTMLMode(),
+                xml: new XMLMode()
+            };
+            var defaultMode = new TextMode();
+
+            $("#file-selector").change(function() {
+                
+                var option = $(":selected", this);
+                var path = $(option).attr('data-path');
+                var extension = $(option).attr('data-extension');
+
+                if(path == undefined) {
+                    return false;
+                }
+
+                // Remove 'please select' placeholder after we've selected something once
+                $("#file-please-select").remove();
+
+                var mode = defaultMode;
+                if (extension in extensionModes) {
+                    mode = extensionModes[extension];
+                }
+
+                saveEditor();
+
+                // Find out if we've loaded this file already
+                var textareaName = "edited-file-" + path;
+                var textarea = $("textarea#" + textareaName.replace('.', '\\.'));
+
+                if(textarea.length > 0) {
+                    data = $(textarea).text();
+                    initEditor(mode, data);
+                } else {
+
+                    // If not, load data from server
+                    $.get(
+                        BASE_URL,
+                        {ajax_load: '1', fetch: path},
+                        function(data) {
+                            $(option).append("*");
+                            $("#file-contents").append(
+                                "<" + "textarea id='" + textareaName + "' name='" +
+                                           textareaName + "'>" + data + "<" + "/textarea>");
+                            initEditor(mode, data);
+                        });
+                }
+                
+                currentPath = path;
+
+                return false;
+            });
+
+            // Save the currently open editor on submit
+            $("#editor-form").submit(function() {
+                saveEditor();
+            });
+            
+        });
+
+    });
+
+</script>
+
+</metal:block>
+</head>
+
+<body>
+<div metal:fill-slot="prefs_configlet_main">
+
+    <h1 class="documentFirstHeading"
+        i18n:translate="heading_edit_theme">Edit theme: 
+        <span i18n:name="name" tal:content="view/title">name</span></h1>
+
+    <p i18n:translate="help_edit_typeview">
+        Use the editor below to edit your type view. When you are done,
+        click Save. Note that only CSS, JavaScript, HTML, manifest and
+        XML files are editable.
+    </p>
+
+    <form id="editor-form" method="post" tal:attributes="action request/URL">
+        
+        <div class="field">
+            <label for="editor">Edit file</label>
+            <select size="1" name="file-selector" id="file-selector">
+                <option id="file-please-select" value="">Please select...</option>
+                <option
+                    tal:repeat="f view/editableFiles"
+                    tal:attributes="value f/path;
+                                    data-path f/path;
+                                    data-extension f/extension"
+                    tal:content="f/path"
+                    />
+            </select>
+        </div>
+
+        <pre id="editor"></pre>
+
+        <div id="file-contents" class="hiddenStructure">
+            <!-- Files being edited -->
+        </div>
+
+        <div class="formControls">
+            <input
+                type="submit"
+                name="form.button.Save"
+                class="context"
+                value="Save"
+                i18n:attributes="value"
+                />
+            <input
+                type="submit"
+                name="form.button.Cancel"
+                class="standalone"
+                value="Cancel"
+                i18n:attributes="value"
+                />
+        </div>
+
+        <input tal:replace="structure context/@@authenticator/authenticator" />
+
+    </form>
+
+</div>
+</body>
+</html>
