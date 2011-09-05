@@ -1,4 +1,6 @@
 import Globals
+
+import os.path
 import pkg_resources
 
 from lxml import etree
@@ -17,8 +19,11 @@ from plone.resource.manifest import extractManifestFromZipFile
 from plone.resource.manifest import getAllResources
 from plone.resource.manifest import getZODBResources
 from plone.resource.manifest import MANIFEST_FILENAME
+from plone.resource.directory import FILTERS
 
 from plone.registry.interfaces import IRegistry
+
+from plone.i18n.normalizer.interfaces import IURLNormalizer
 
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.interfaces import MANIFEST_FORMAT
@@ -435,3 +440,39 @@ def applyTheme(theme):
                 plugin.onDisabled(currentTheme, pluginSettings[name],
                                   pluginSettings)
                 plugin.onEnabled(theme, pluginSettings[name], pluginSettings)
+
+def createThemeFromTemplate(title, description):
+    """Create a new theme from the given title and description based on
+    the template directory in this package
+    """
+
+    themeName = getUtility(IURLNormalizer).normalize(title)
+    if isinstance(themeName, unicode):
+        themeName = themeName.encode('utf-8')
+    
+    resources = getOrCreatePersistentResourceDirectory()
+    if themeName in resources:
+        idx = 1
+        while "%s-%d" % (themeName, idx,) in resources:
+            idx += 1
+        themeName = "%s-%d" % (themeName, idx,)
+    
+    resources.makeDirectory(themeName)
+    resourceDirectory = resources[themeName]
+
+    # Write manifest
+    manifest = u"""\
+[theme]
+title = %s
+description = %s
+""" % (title, description,)
+    
+    resourceDirectory.writeFile(MANIFEST_FILENAME, manifest.encode('utf-8'))
+    
+    # Copy files from the template directory
+    for filename in pkg_resources.resource_listdir('plone.app.theming', 'template'):
+        if not any(filter.match(filename) for filter in FILTERS):
+            with pkg_resources.resource_stream('plone.app.theming', os.path.join('template', filename)) as file:
+                resourceDirectory.writeFile(filename, file)
+    
+    return themeName

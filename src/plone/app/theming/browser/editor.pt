@@ -177,6 +177,13 @@
     <h1 class="documentFirstHeading"
         i18n:translate="heading_edit_theme">Edit theme: 
         <span i18n:name="name" tal:content="view/title">name</span></h1>
+    
+    <a href=""
+        class="link-parent"
+        tal:attributes="href string:${portal_url}/@@theming-controlpanel"
+        i18n:translate="label_up_to_theming_contorlpanel">
+            Up to Diazo theme control panel
+    </a>
 
     <p i18n:translate="help_edit_typeview">
         Use the editor below to edit your type view. When you are done,

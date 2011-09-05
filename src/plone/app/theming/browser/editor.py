@@ -62,19 +62,19 @@ class ThemeEditor(BrowserView):
                     edited[key[12:]] = form[key]
             self.saveFiles(edited)
 
-            self.redirect(_(u"Changes saved"))
-            return False
+            IStatusMessage(self.request).add(_(u"Changes saved"))
+        
         elif 'form.button.Cancel' in form:
             self.redirect(_(u"Edit cancelled"))
             return False
-        else:
-            # We're not processing the form - do the more expensive setup
+        
+        # We're not processing the form - do the more expensive setup
 
-            if MANIFEST_FILENAME in self.resourceDirectory:
-                self.manifest = getManifest(self.resourceDirectory.openFile(MANIFEST_FILENAME), MANIFEST_FORMAT)
-                self.title = self.manifest.get('title') or self.title
-            
-            self.editableFiles = self.findEditableFiles(self.resourceDirectory)
+        if MANIFEST_FILENAME in self.resourceDirectory:
+            self.manifest = getManifest(self.resourceDirectory.openFile(MANIFEST_FILENAME), MANIFEST_FORMAT)
+            self.title = self.manifest.get('title') or self.title
+        
+        self.editableFiles = self.findEditableFiles(self.resourceDirectory)
 
         return True
     
