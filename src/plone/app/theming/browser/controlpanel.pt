@@ -397,76 +397,135 @@
 
         </dd>
 
-        <tal:block condition="view/zodbThemes">
-            <dt id="fieldsetlegend-import">Manage themes</dt>
-            <dd id="fieldset-import">
+        
+        <dt id="fieldsetlegend-import">Manage themes</dt>
+        <dd id="fieldset-import">
+
+            <form
+                name="manage"
+                method="post"
+                class="enableUnloadProtection"
+                tal:attributes="action request/URL"
+                tal:define="errors view/errors"
+                tal:condition="view/zodbThemes">
 
                 <p i18n:translate="description_manage">
-                   Use the form below to delete themes that have previously been
-                   uploaded. Click on a theme name to download it as a Zip
-                   archive.
+                   Use the table below to delete themes that have previously been
+                   uploaded or created. You can download a Zip archive of any theme,
+                   edit the files that make up a theme, or delete a theme.
                 </p>
 
-                <form
-                    name="manage"
-                    method="post"
-                    class="enableUnloadProtection"
-                    tal:attributes="action request/URL"
-                    tal:define="errors view/errors">
+                <table class="listing">
+                    <thead>
+                        <tr>
+                            <th />
+                            <th i18n:translate="heading_theme_title">Title</th>
+                            <th i18n:translate="heading_theme_description">Description</th>
+                            <th i18n:translate="heading_theme_action">Actions   </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr tal:repeat="theme view/zodbThemes">
+                            <td>
+                                <input
+                                    type="checkbox"
+                                    name="themes:list"
+                                    tal:attributes="value theme/__name__"
+                                    />
+                            </td>
+                            <td>
+                                <a  target="_new"
+                                    tal:attributes="href string:${context/absolute_url}/++theme++${theme/__name__}/@@download-zip"
+                                    tal:content="string:${theme/title} (${theme/__name__})"
+                                    />
+                            </td>
+                            <td tal:content="theme/description" />
+                            <td>
+                                <a  target="_new"
+                                    tal:attributes="href string:${context/absolute_url}/++theme++${theme/__name__}/@@download-zip"
+                                    i18n:translate="option_theme_download"
+                                    >Download</a>
+                                |
+                                <a  tal:attributes="href string:${context/absolute_url}/++theme++${theme/__name__}/@@theming-controlpanel-editor"
+                                    i18n:translate="option_theme_edit"
+                                    >Edit</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                    <table class="listing">
-                        <thead>
-                            <tr>
-                                <th />
-                                <th i18n:translate="heading_theme_title">Title</th>
-                                <th i18n:translate="heading_theme_description">Description</th>
-                                <th i18n:translate="heading_theme_action">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr tal:repeat="theme view/zodbThemes">
-                                <td>
-                                    <input
-                                        type="checkbox"
-                                        name="themes:list"
-                                        tal:attributes="value theme/__name__"
-                                        />
-                                </td>
-                                <td>
-                                    <a  target="_new"
-                                        tal:attributes="href string:${context/absolute_url}/++theme++${theme/__name__}/@@download-zip"
-                                        tal:content="string:${theme/title} (${theme/__name__})"
-                                        />
-                                </td>
-                                <td tal:content="theme/description" />
-                                <td>
-                                    <a  target="_new"
-                                        tal:attributes="href string:${context/absolute_url}/++theme++${theme/__name__}/@@download-zip"
-                                        >Download</a>
-                                    |
-                                    <a  tal:attributes="href string:${context/absolute_url}/++theme++${theme/__name__}/@@theming-controlpanel-editor"
-                                        >Edit</a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="formControls">
+                    <input
+                        type="submit"
+                        name="form.button.DeleteSelected"
+                        class="destructive"
+                        value="Delete"
+                        i18n:attributes="value"
+                        />
+                </div>
 
-                    <div class="formControls">
-                        <input
-                            type="submit"
-                            name="form.button.DeleteSelected"
-                            class="destructive"
-                            value="Delete"
-                            i18n:attributes="value"
-                            />
+                <input tal:replace="structure context/@@authenticator/authenticator" />
+
+            </form>
+
+            <form
+                name="manage"
+                method="post"
+                tal:define="errors view/errors"
+                tal:attributes="action request/URL">
+
+                <h3 i18n:translate="heading_theme_create">Create new theme</h3>
+
+                <p i18n:translate="description_new_theme">
+                    Use the form below to create a new theme from scratch.
+                </p>
+
+                <div
+                    tal:define="error errors/title | nothing"
+                    tal:attributes="class python:'field error' if error else 'field'">
+
+                    <label for="title" i18n:translate="label_new_theme_title">Title</label>
+                    <div class="formHelp" i18n:translate="help_new_theme_title">
+                        Enter a short, descriptive title for your theme
                     </div>
 
-                    <input tal:replace="structure context/@@authenticator/authenticator" />
+                    <div tal:content="error" tal:condition="error" />
 
-                </form>
+                    <input
+                        type="text"
+                        name="title"
+                        id="title"
+                        tal:attributes="value request/title | nothing"
+                        />
+                </div>
 
-            </dd>
-        </tal:block>
+                <div class="field">
+                    <label for="description" i18n:translate="label_new_theme_description">Description</label>
+                    <div class="formHelp" i18n:translate="help_new_theme_description">
+                        You may also provide a longer description for your theme.
+                    </div>
+                    <textarea
+                        name="description"
+                        id="description"
+                        tal:content="request/description | nothing"></textarea>
+                </div>
+
+
+                <div class="formControls">
+                    <input
+                        type="submit"
+                        name="form.button.CreateTheme"
+                        class="standalone"
+                        value="Create"
+                        i18n:attributes="value"
+                        />
+                </div>
+
+                <input tal:replace="structure context/@@authenticator/authenticator" />
+
+            </form>
+
+        </dd>
 
     </dl>
 

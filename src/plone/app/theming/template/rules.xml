@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    
+    <rules css:if-content="#visual-portal-wrapper">
+        
+        <theme href="theme.html" />
+    
+        <replace css:content='html head title' css:theme='html head title' />
+        <after content='/html/head/link' theme-children='/html/head' />
+        
+        <replace css:content="#content" css:theme="#content" />
+        <replace css:content="#portal-colophon" css:theme="#footer" />
+    
+    </rules>
+    
+</rules>
