@@ -17,36 +17,36 @@
 <script
     type="text/javascript"
     charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace.js"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/ace.js"
     ></script>
 
 <!-- Theme -->
 <script
     type="text/javascript"
     charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/theme-textmate.js"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/theme-textmate.js"
     ></script>
 
 <!-- Syntax highlighting -->
 <script
     type="text/javascript"
     charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/mode-html.js"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-html.js"
     ></script>
 <script
     type="text/javascript"
     charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/mode-css.js"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-css.js"
     ></script>
 <script
     type="text/javascript"
     charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/mode-javascript.js"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-javascript.js"
     ></script>
 <script
     type="text/javascript"
     charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/mode-xml.js"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-xml.js"
     ></script>
 
 
@@ -67,6 +67,19 @@
             
             var editor;
             var currentPath;
+            var currentDirty;
+
+            function markOnChange() {
+                if(!currentDirty) {
+                    var textareaName = "edited-file-" + currentPath;
+                    var textarea = $("textarea#" + textareaName.replace('.', '\\.'));
+                    if(!$(textarea).hasClass('dirty')) {
+                        $("#file-selector option:selected").append("*");
+                        $(textarea).addClass('dirty');
+                    }
+                    currentDirty = true;
+                }
+            }
 
             function initEditor(mode, data) {
                 editor = ace.edit("editor");
@@ -79,6 +92,9 @@
 
                 editor.getSession().setValue(data);
                 editor.navigateTo(0, 0);
+
+                editor.getSession().on('change', markOnChange);
+                currentDirty = false;
             }
 
             function saveEditor() {
@@ -89,6 +105,7 @@
 
                     if(textarea.length > 0) {
                         $(textarea).text(editor.getSession().getValue());
+                        $(textarea).addClass('dirty');
                     }
                 }
             }
@@ -144,7 +161,6 @@
                         BASE_URL,
                         {ajax_load: '1', fetch: path},
                         function(data) {
-                            $(option).append("*");
                             $("#file-contents").append(
                                 "<" + "textarea id='" + textareaName + "' name='" +
                                            textareaName + "'>" + data + "<" + "/textarea>");
@@ -157,9 +173,18 @@
                 return false;
             });
 
-            // Save the currently open editor on submit
+            if(CURRENT_SELECTION != '') {
+                $("#file-selector").val(CURRENT_SELECTION);
+                $("#file-selector").change();
+            }
+
+            
             $("#editor-form").submit(function() {
+                // Save the currently open editor on submit
                 saveEditor();
+
+                // Kill anything that's not dirty - no need to process server-side
+                $("#file-contents textarea:not(.dirty)").remove();
             });
             
         });

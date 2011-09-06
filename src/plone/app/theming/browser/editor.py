@@ -48,7 +48,10 @@ class ThemeEditor(BrowserView):
         self.manifest = None
         self.editableFiles = []
 
-        self.jsVariables="var BASE_URL='%s';" % self.request['URL'];
+        self.jsVariables="var BASE_URL='%s'; var CURRENT_SELECTION='%s';" % (
+                self.request['URL'],
+                self.request.get('file-selector') or '',
+            );
     
     def update(self):
         form = self.request.form
