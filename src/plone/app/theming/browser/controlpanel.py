@@ -74,6 +74,7 @@ class ThemingControlpanel(BrowserView):
             
             IStatusMessage(self.request).add(_(u"Changes saved"))
             self._setup()
+            return True
 
         if 'form.button.AdvancedSave' in form:
             self.authorize()
@@ -114,6 +115,7 @@ class ThemingControlpanel(BrowserView):
 
                 IStatusMessage(self.request).add(_(u"Changes saved"))
                 self._setup()
+                return True
             
             else:
                 
@@ -182,6 +184,7 @@ class ThemingControlpanel(BrowserView):
             if not self.errors:
                 IStatusMessage(self.request).add(_(u"Changes saved"))
                 self._setup()
+                return True
             else:
                 IStatusMessage(self.request).add(_(u"There were errors"), "error")
                 self.redirectToFieldset('import')
