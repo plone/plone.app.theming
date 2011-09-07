@@ -209,6 +209,22 @@ class ThemingControlpanel(BrowserView):
             if item.__name__ == themeSelection:
                 return item
         return None
+    
+    def themeList(self):
+        themes = []
+        zodbNames = [t.__name__ for t in self.zodbThemes]
+
+        for theme in self.availableThemes:
+            themes.append({
+                'name': theme.__name__,
+                'title': theme.title,
+                'description': theme.description,
+                'editable': theme.__name__ in zodbNames,
+            })
+        
+        themes.sort(key=lambda x:x['title'])
+
+        return themes
 
     def authorize(self):
         authenticator = getMultiAdapter((self.context, self.request), name=u"authenticator")

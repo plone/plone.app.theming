@@ -457,8 +457,8 @@
 
         </dd>
         
-        <dt id="fieldsetlegend-manage" tal:condition="view/zodbThemes">Manage themes</dt>
-        <dd id="fieldset-manage" tal:condition="view/zodbThemes">
+        <dt id="fieldsetlegend-manage" tal:condition="view/availableThemes">Manage themes</dt>
+        <dd id="fieldset-manage" tal:condition="view/availableThemes">
 
             <form
                 name="manage"
@@ -468,9 +468,10 @@
                 tal:define="errors view/errors">
 
                 <p i18n:translate="description_manage">
-                   Use the table below to delete themes that have previously been
-                   uploaded or created. You can download a Zip archive of any theme,
-                   edit the files that make up a theme, or delete a theme.
+                   You can use the table below to manage themes that have been
+                   uploaded or created through the web. Themes loaded from the
+                   filesystem are shown as well, but cannot be edited or deleted
+                   here.
                 </p>
 
                 <table class="listing">
@@ -483,25 +484,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr tal:repeat="theme view/zodbThemes">
+                        <tr tal:repeat="theme view/themeList">
                             <td>
                                 <input
+                                    tal:condition="theme/editable"
                                     type="checkbox"
                                     name="themes:list"
-                                    tal:attributes="value theme/__name__"
+                                    tal:attributes="value theme/name"
                                     />
                             </td>
-                            <td tal:content="string:${theme/title} (${theme/__name__})" />
+                            <td tal:content="string:${theme/title} (${theme/name})" />
                             <td tal:content="theme/description" />
                             <td>
                                 <a  target="_new"
-                                    tal:attributes="href string:${context/absolute_url}/++theme++${theme/__name__}/@@download-zip"
+                                    tal:attributes="href string:${context/absolute_url}/++theme++${theme/name}/@@download-zip"
                                     i18n:translate="option_theme_download"
                                     >Download</a>
-                                |
-                                <a  tal:attributes="href string:${context/absolute_url}/++theme++${theme/__name__}/@@theming-controlpanel-editor"
-                                    i18n:translate="option_theme_edit"
-                                    >Edit</a>
+                                <tal:block condition="theme/editable">
+                                    |
+                                    <a  tal:attributes="href string:${context/absolute_url}/++theme++${theme/name}/@@theming-controlpanel-editor"
+                                        i18n:translate="option_theme_edit"
+                                        >Edit</a>
+                                </tal:block>
                             </td>
                         </tr>
                     </tbody>
@@ -512,7 +516,7 @@
                         type="submit"
                         name="form.button.DeleteSelected"
                         class="destructive"
-                        value="Delete"
+                        value="Delete selected"
                         i18n:attributes="value"
                         />
                 </div>
