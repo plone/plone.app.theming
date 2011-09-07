@@ -397,10 +397,10 @@
 
         </dd>
 
-        <dt id="fieldsetlegend-create" >Create theme</dt>
+        <dt id="fieldsetlegend-create">Create theme</dt>
         <dd id="fieldset-create">
 
-<form
+        <form
                 name="create"
                 method="post"
                 tal:define="errors view/errors"
@@ -438,6 +438,36 @@
                         name="description"
                         id="description"
                         tal:content="request/description | nothing"></textarea>
+                </div>
+                
+                <div class="field">
+                    <label for="baseOn" i18n:translate="label_new_theme_base_on">Base on</label>
+                    <div class="formHelp" i18n:translate="help_new_theme_base_on">
+                        Choose an existing theme to base your theme on.
+                    </div>
+                    <select size="1" name="baseOn" id="baseOn" tal:define="selected request/baseOn | string:template">
+                        <option
+                            tal:repeat="theme view/themeList"
+                            tal:attributes="value theme/name;
+                                            title theme/description;
+                                            selected python:theme['name'] == selected and 'selected' or None"
+                            tal:content="string:${theme/title} (${theme/name})"
+                            />
+                    </select>
+                </div>
+
+                <div
+                    class="field"
+                    tal:define="selected python:request.get('enableImmediately', True)">
+                    <input type="hidden" value="" name="enableImmediately:boolean:default" />
+                    <input type="checkbox" value="1" name="enableImmediately:boolean" id="enableImmediately"
+                        tal:attributes="checked python:'enableImmediately' if selected else None"
+                        />
+                    <label for="enableImmediately" i18n:translate="label_enable_immediately">Immediately enable new theme</label>
+                    <div class="formHelp" i18n:translate="help_enable_immediately">
+                        Select this option to enable the newly created theme
+                        immediately.
+                    </div>
                 </div>
 
 

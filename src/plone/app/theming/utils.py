@@ -1,7 +1,7 @@
 import Globals
 
-import os.path
-import pkg_resources
+from StringIO import StringIO
+from ConfigParser import SafeConfigParser
 
 from lxml import etree
 
@@ -15,11 +15,11 @@ from plone.subrequest import subrequest
 
 from plone.resource.interfaces import IResourceDirectory
 from plone.resource.utils import queryResourceDirectory
+from plone.resource.utils import cloneResourceDirectory
 from plone.resource.manifest import extractManifestFromZipFile
 from plone.resource.manifest import getAllResources
 from plone.resource.manifest import getZODBResources
 from plone.resource.manifest import MANIFEST_FILENAME
-from plone.resource.directory import FILTERS
 
 from plone.registry.interfaces import IRegistry
 
@@ -441,10 +441,14 @@ def applyTheme(theme):
                                   pluginSettings)
                 plugin.onEnabled(theme, pluginSettings[name], pluginSettings)
 
-def createThemeFromTemplate(title, description):
+def createThemeFromTemplate(title, description, baseOn='template'):
     """Create a new theme from the given title and description based on
-    the template directory in this package
+    another theme resource directory
     """
+
+    source = queryResourceDirectory(THEME_RESOURCE_NAME, baseOn)
+    if source is None:
+        raise KeyError("Theme %s not found" % baseOn)
 
     themeName = getUtility(IURLNormalizer).normalize(title)
     if isinstance(themeName, unicode):
@@ -458,21 +462,29 @@ def createThemeFromTemplate(title, description):
         themeName = "%s-%d" % (themeName, idx,)
     
     resources.makeDirectory(themeName)
-    resourceDirectory = resources[themeName]
+    target = resources[themeName]
 
-    # Write manifest
-    manifest = u"""\
-[theme]
-title = %s
-description = %s
-""" % (title, description,)
+    cloneResourceDirectory(source, target)
     
-    resourceDirectory.writeFile(MANIFEST_FILENAME, manifest.encode('utf-8'))
+    # TODO: Preserve rest of manifest from source
+
+    manifest = SafeConfigParser()
+
+    if MANIFEST_FILENAME in target:
+        fp = target.openFile(MANIFEST_FILENAME)
+        try:
+            manifest.readfp(fp)
+        finally:
+            fp.close()
     
-    # Copy files from the template directory
-    for filename in pkg_resources.resource_listdir('plone.app.theming', 'template'):
-        if not any(filter.match(filename) for filter in FILTERS):
-            with pkg_resources.resource_stream('plone.app.theming', os.path.join('template', filename)) as file:
-                resourceDirectory.writeFile(filename, file)
+    if not manifest.has_section('theme'):
+        manifest.add_section('theme')
+    
+    manifest.set('theme', 'title', title)
+    manifest.set('theme', 'description', description)
+
+    manifestContents = StringIO()
+    manifest.write(manifestContents)
+    target.writeFile(MANIFEST_FILENAME, manifestContents)
     
     return themeName

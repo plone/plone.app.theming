@@ -6,8 +6,10 @@ from zope.component import getMultiAdapter
 from zope.publisher.browser import BrowserView
 
 from plone.resource.utils import queryResourceDirectory
-
 from plone.registry.interfaces import IRegistry
+
+from plone.memoize.instance import memoize
+
 from plone.app.theming.interfaces import _
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
@@ -49,27 +51,32 @@ class ThemingControlpanel(BrowserView):
         processInputs(self.request)
         self._setup()
         self.errors = {}
-        submitted = False
         form = self.request.form
 
         if 'form.button.Cancel' in form:
-            self.redirect(_(u"Changes canceled."))
+            
+            IStatusMessage(self.request).add(_(u"Changes cancelled"))
+
+            portalUrl = getToolByName(self.context, 'portal_url')()
+            self.request.response.redirect("%s/plone_control_panel" % portalUrl)
+            
             return False
 
         if 'form.button.BasicSave' in form:
             self.authorize()
-            submitted = True
-
+            
             self.settings.enabled = form.get('enabled', False)
             themeSelection = form.get('selectedTheme', None)
 
             if themeSelection != "_other_":
                 themeData = self.getThemeData(self.availableThemes, themeSelection)
                 applyTheme(themeData)
+            
+            IStatusMessage(self.request).add(_(u"Changes saved"))
+            self._setup()
 
         if 'form.button.AdvancedSave' in form:
             self.authorize()
-            submitted = True
 
             self.settings.readNetwork = form.get('readNetwork', False)
 
@@ -90,7 +97,7 @@ class ThemingControlpanel(BrowserView):
                     self.errors['parameterExpressions'] = _('error_invalid_parameter_expressions',
                         default=u"Please ensure you enter one expression per line, in the format <name> = <expression>."
                     )
-
+            
             if not self.errors:
 
                 # Trigger onDisabled() on plugins if theme was active
@@ -105,9 +112,17 @@ class ThemingControlpanel(BrowserView):
                 self.settings.hostnameBlacklist = hostnameBlacklist
                 self.settings.doctype = doctype
 
+                IStatusMessage(self.request).add(_(u"Changes saved"))
+                self._seutp()
+            
+            else:
+                
+                IStatusMessage(self.request).add(_(u"There were errors"), 'error')
+                self.redirectToFieldset('advanced')
+                return False
+
         if 'form.button.Import' in form:
             self.authorize()
-            submitted = True
 
             enableNewTheme = form.get('enableNewTheme', False)
             replaceExisting = form.get('replaceExisting', False)
@@ -163,39 +178,56 @@ class ThemingControlpanel(BrowserView):
                 if enableNewTheme:
                     applyTheme(themeData)
                     self.settings.enabled = True
+            
+            if not self.errors:
+                IStatusMessage(self.request).add(_(u"Changes saved"))
+                self._setup()
+            else:
+                IStatusMessage(self.request).add(_(u"There were errors"), "error")
+                self.redirectToFieldset('import')
+                return False
         
         if 'form.button.CreateTheme' in form:
             self.authorize()
             
             title = form.get('title')
             description = form.get('description') or ''
+            baseOn = form.get('baseOn', 'template')
+            enableImmediately = form.get('enableImmediately', True)
             
             if not title:
                 self.errors['title'] = _(u"Title is required")
-                submitted = True
+
+                IStatusMessage(self.request).add(_(u"There were errors"), 'error')
+                self.redirectToFieldset('create')
+                return False
+            
             else:
-                name = createThemeFromTemplate(title, description)
+                name = createThemeFromTemplate(title, description, baseOn)
+                self._setup()
+
+                if enableImmediately:
+                    themeData = [t for t in self.availableThemes if t.__name__ == name][0]
+                    applyTheme(themeData)
+                    self.settings.enabled = True
 
                 IStatusMessage(self.request).add(_(u"Theme created"))
                 portalUrl = getToolByName(self.context, 'portal_url')()
                 self.request.response.redirect("%s/++theme++%s/@@theming-controlpanel-editor" % (portalUrl, name,))
+                return False
 
         if 'form.button.DeleteSelected' in form:
             self.authorize()
-            submitted = True
 
             toDelete = form.get('themes', [])
             themeDirectory = getOrCreatePersistentResourceDirectory()
 
             for theme in toDelete:
                 del themeDirectory[theme]
-
-        if submitted and not self.errors:
-            self._setup()
-            IStatusMessage(self.request).add(_(u"Changes saved"))
-        elif submitted:
-            IStatusMessage(self.request).add(_(u"There were errors"), 'error')
-
+            
+            self.redirectToFieldset('manage')
+            return False
+        
         return True
 
     def getSelectedTheme(self, themes, rules):
@@ -210,6 +242,7 @@ class ThemingControlpanel(BrowserView):
                 return item
         return None
     
+    @memoize
     def themeList(self):
         themes = []
         zodbNames = [t.__name__ for t in self.zodbThemes]
@@ -231,7 +264,7 @@ class ThemingControlpanel(BrowserView):
         if not authenticator.verify():
             raise Unauthorized
 
-    def redirect(self, message):
-        IStatusMessage(self.request).add(message)
+    def redirectToFieldset(self, fieldset):
         portalUrl = getToolByName(self.context, 'portal_url')()
-        self.request.response.redirect("%s/plone_control_panel" % portalUrl)
+        self.request.response.redirect("%s/%s#fieldsetlegend-%s" % (portalUrl, self.__name__, fieldset,))
+
