@@ -113,7 +113,7 @@ class ThemingControlpanel(BrowserView):
                 self.settings.doctype = doctype
 
                 IStatusMessage(self.request).add(_(u"Changes saved"))
-                self._seutp()
+                self._setup()
             
             else:
                 
