@@ -210,7 +210,7 @@ class ThemingControlpanel(BrowserView):
                 self._setup()
 
                 if enableImmediately:
-                    themeData = [t for t in self.availableThemes if t.__name__ == name][0]
+                    themeData = self.getThemeData(self.availableThemes, name)
                     applyTheme(themeData)
                     self.settings.enabled = True
 
