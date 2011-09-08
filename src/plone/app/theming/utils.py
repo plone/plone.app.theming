@@ -1,5 +1,7 @@
 import Globals
 
+import pkg_resources
+
 from StringIO import StringIO
 from ConfigParser import SafeConfigParser
 
