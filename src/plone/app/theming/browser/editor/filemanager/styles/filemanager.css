@@ -1,6 +1,4 @@
-* {
-	font-family: Lucida Sans Unicode, Lucida Grande, sans-serif;
-	color: #333;
+#filemanager {
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
@@ -8,8 +6,22 @@
 }
 
 body {
-	padding: 10px;
+/*	padding: 10px;
 	background-color: #E2EAF3;
+*/}
+
+#filemanager {
+	position: relative;
+}
+
+#uploader {
+	margin-top: 10px;
+	padding: 5px;
+	background-color: #E2EAF3;
+}
+
+#filemanager ul {
+	margin-left: 0 !important;
 }
 
 #uploader {

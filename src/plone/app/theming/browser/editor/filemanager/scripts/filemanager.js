@@ -656,7 +656,7 @@ var getFolderInfo = function(path){
 				result += '</ul>';
 			} else {
 				result += '<table id="contents" class="list">';
-				result += '<thead><tr><th class="headerSortDown"><span>' + lg.name + '</span></th><th><span>' + lg.dimensions + '</span></th><th><span>' + lg.size + '</span></th><th><span>' + lg.modified + '</span></th></tr></thead>';
+				result += '<thead><tr><th class="headerSortDown"><span>' + lg.name + '</span></th><th><span>' + lg.size + '</span></th><th><span>' + lg.modified + '</span></th></tr></thead>';
 				result += '<tbody>';
 				
 				for(key in data){
@@ -671,12 +671,6 @@ var getFolderInfo = function(path){
 					result += '<tr class="' + cap_classes + '">';
 					result += '<td title="' + path + '">' + data[key]['Filename'] + '</td>';
 
-					if(props['Width'] && props['Width'] != ''){
-						result += ('<td>' + props['Width'] + 'x' + props['Height'] + '</td>');
-					} else {
-						result += '<td></td>';
-					}
-					
 					if(props['Size'] && props['Size'] != ''){
 						result += '<td><abbr title="' + props['Size'] + '">' + formatBytes(props['Size']) + '</abbr></td>';
 					} else {

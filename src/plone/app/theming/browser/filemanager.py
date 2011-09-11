@@ -8,7 +8,10 @@ from zope.publisher.browser import BrowserView
 from zope.i18n import translate
 
 from plone.resource.interfaces import IResourceDirectory
+from plone.resource.manifest import MANIFEST_FILENAME
+from plone.resource.manifest import getManifest
 
+from plone.app.theming.interfaces import MANIFEST_FORMAT
 from plone.app.theming.interfaces import _
 
 from AccessControl import Unauthorized
@@ -105,6 +108,7 @@ class FileManager(BrowserView):
         
         self.resourceDirectory = self.context
         self.name = self.resourceDirectory.__name__
+        self.title = self.name.capitalize().replace('-', ' ').replace('.', ' ')
 
         self.portalUrl = getToolByName(self.context, 'portal_url')()
     
@@ -112,6 +116,10 @@ class FileManager(BrowserView):
         fileConnector = "%s/++%s++%s/@@theming-controlpanel-filemanager" % (self.portalUrl, self.resourceType, self.name,)
         pathPrefix = "%s/%s/" % (self.portalUrl, RESOURCE_DIRECTORY,)
 
+        if MANIFEST_FILENAME in self.resourceDirectory:
+            self.manifest = getManifest(self.resourceDirectory.openFile(MANIFEST_FILENAME), MANIFEST_FORMAT)
+            self.title = self.manifest.get('title') or self.title
+        
         self.filemanagerConfiguration = """\
 var defaultViewMode = 'grid';
 var autoload = true;
