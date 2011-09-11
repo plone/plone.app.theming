@@ -16,7 +16,7 @@ body {
 
 #uploader {
 	margin-top: 10px;
-	padding: 5px;
+	padding: 5px 5px 0 5px;
 	background-color: #E2EAF3;
 }
 
@@ -227,7 +227,6 @@ div.clip {
 #contents.list th.headerSortUp span {
 	display: block;
 	width: 100%;
-	padding-right: 20px;
 	background-image: url(../images/bullet_arrow_up.png);
 	background-repeat: no-repeat;
 	background-position: right center;
@@ -236,7 +235,6 @@ div.clip {
 #contents.list th.headerSortDown span {
 	display: block;
 	width: 100%;
-	padding-right: 20px;
 	background-image: url(../images/bullet_arrow_down.png);
 	background-repeat: no-repeat;
 	background-position: right center;
