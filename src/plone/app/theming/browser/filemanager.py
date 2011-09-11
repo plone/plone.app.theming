@@ -2,7 +2,6 @@ import urllib
 import os.path
 import json
 
-from zope.component import getMultiAdapter
 from zope.site.hooks import getSite
 from zope.publisher.browser import BrowserView
 from zope.i18n import translate
@@ -14,7 +13,6 @@ from plone.resource.manifest import getManifest
 from plone.app.theming.interfaces import MANIFEST_FORMAT
 from plone.app.theming.interfaces import _
 
-from AccessControl import Unauthorized
 from OFS.Image import File, Image
 from zExceptions import NotFound
 from Products.Five.browser.decode import processInputs
@@ -113,7 +111,7 @@ class FileManager(BrowserView):
         self.portalUrl = getToolByName(self.context, 'portal_url')()
     
     def update(self):
-        fileConnector = "%s/++%s++%s/@@theming-controlpanel-filemanager" % (self.portalUrl, self.resourceType, self.name,)
+        fileConnector = "%s/++%s++%s/@@%s" % (self.portalUrl, self.resourceType, self.name, self.__name__)
         pathPrefix = "%s/%s/" % (self.portalUrl, RESOURCE_DIRECTORY,)
 
         if MANIFEST_FILENAME in self.resourceDirectory:
@@ -135,12 +133,6 @@ var pathPrefix = '%s';
 
         return True
     
-    def authorize(self):
-        authenticator = getMultiAdapter((self.context, self.request), name=u"authenticator")
-        if not authenticator.verify():
-            raise Unauthorized
-    
-    
     # AJAX responses
     def getFolder(self, path, getSizes=False):
         """Returns a dict of file and folder objects representing the
@@ -157,7 +149,6 @@ var pathPrefix = '%s';
         to getFolder(). This can be used for example to only show image files
         in a file system tree.
         """
-
 
         folders = []
         files = []

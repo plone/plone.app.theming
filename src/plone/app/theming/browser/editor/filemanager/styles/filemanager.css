@@ -286,7 +286,7 @@ button {outline: none;}
 #upload span.loading { background-image: url(../images/ajax-loader.gif);color:#555555;font-size:0.9em; }
 #parentfolder span { background-image: url(../images/parentfolder.png); }
 #newfolder span { background-image: url(../images/folder_add.png); }
-#addnew span { background-image: url(../images/add.png); }
+#addnew span { background-image: url(../images/addnew.png); }
 #home span { background-image: url(../images/house.png); }
 
 /* div.jqi button { background-image: url(../images/circular/yes.png); } */
