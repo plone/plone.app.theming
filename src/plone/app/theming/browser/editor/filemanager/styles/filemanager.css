@@ -5,10 +5,6 @@
 	-ms-box-sizing: border-box;
 }
 
-body {
-/*	padding: 10px;
-	background-color: #E2EAF3;
-*/}
 
 #filemanager {
 	position: relative;
@@ -163,7 +159,7 @@ button:focus {
 #contents.grid li {
 	display: block;
 	float: left;
-	width: 25%;
+	width: 24%;
 	min-height: 128px;
 	text-align: center;
 	overflow: hidden;
@@ -227,7 +223,8 @@ div.clip {
 #contents.list th.headerSortUp span {
 	display: block;
 	width: 100%;
-	background-image: url(../images/bullet_arrow_up.png);
+	/* No, really */
+	background-image: url(../images/bullet_arrow_down.png);
 	background-repeat: no-repeat;
 	background-position: right center;
 }
@@ -235,7 +232,8 @@ div.clip {
 #contents.list th.headerSortDown span {
 	display: block;
 	width: 100%;
-	background-image: url(../images/bullet_arrow_down.png);
+	/* No, really */
+	background-image: url(../images/bullet_arrow_up.png);
 	background-repeat: no-repeat;
 	background-position: right center;
 }
