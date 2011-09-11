@@ -33,7 +33,7 @@
     <browser:page
         name="theming-controlpanel-filemanager"
         for="plone.resource.interfaces.IResourceDirectory"
-        class=".filemanager.FileManager"
+        class=".filemanager.ThemeFileManager"
         template="filemanager.pt"
         permission="cmf.ManagePortal"
         />

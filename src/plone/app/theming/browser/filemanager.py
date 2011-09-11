@@ -18,20 +18,26 @@ from zExceptions import NotFound
 from Products.Five.browser.decode import processInputs
 from Products.CMFCore.utils import getToolByName
 
-IMAGE_EXTENSIONS = frozenset(['png', 'gif', 'jpg', 'jpeg'])
-EXTENSIONS_WITH_ICONS = frozenset([
-    'aac', 'avi', 'bmp', 'chm', 'css', 'dll', 'doc', 'fla',
-    'gif', 'htm', 'html', 'ini', 'jar', 'jpeg', 'jpg', 'js',
-    'lasso', 'mdb', 'mov', 'mp3', 'mpg', 'pdf', 'php', 'png',
-    'ppt', 'py', 'rb', 'real', 'reg', 'rtf', 'sql', 'swf', 'txt',
-    'vbs', 'wav', 'wma', 'wmv', 'xls', 'xml', 'xsl', 'zip',
-])
-
-RESOURCE_DIRECTORY = "++resource++plone.app.theming.editor/filemanager"
-
 class FileManager(BrowserView):
+    """Render the file manager and support its AJAX requests.
 
-    resourceType = 'theme'
+    This is essentially a generic plone.resource directory file manager. The
+    theme-specific bits are in ThemeFileManager, below.
+    """
+
+    staticFiles = "++resource++plone.app.theming.editor/filemanager"
+    imageExtensions = ['png', 'gif', 'jpg', 'jpeg']
+    capabilities = ['select', 'download', 'rename', 'delete']
+
+    extensionsWithIcons = frozenset([
+        'aac', 'avi', 'bmp', 'chm', 'css', 'dll', 'doc', 'fla',
+        'gif', 'htm', 'html', 'ini', 'jar', 'jpeg', 'jpg', 'js',
+        'lasso', 'mdb', 'mov', 'mp3', 'mpg', 'pdf', 'php', 'png',
+        'ppt', 'py', 'rb', 'real', 'reg', 'rtf', 'sql', 'swf', 'txt',
+        'vbs', 'wav', 'wma', 'wmv', 'xls', 'xml', 'xsl', 'zip',
+    ])
+
+    resourceType = None # Set in subclass
 
     def __call__(self):
         self.setup()
@@ -110,14 +116,17 @@ class FileManager(BrowserView):
 
         self.portalUrl = getToolByName(self.context, 'portal_url')()
     
-    def update(self):
-        fileConnector = "%s/++%s++%s/@@%s" % (self.portalUrl, self.resourceType, self.name, self.__name__)
-        pathPrefix = "%s/%s/" % (self.portalUrl, RESOURCE_DIRECTORY,)
+    def normalizePath(self, path):
+        if path.startswith('/'):
+            path = path[1:]
+        if path.endswith('/'):
+            path = path[:-1]
+        return path
 
-        if MANIFEST_FILENAME in self.resourceDirectory:
-            self.manifest = getManifest(self.resourceDirectory.openFile(MANIFEST_FILENAME), MANIFEST_FORMAT)
-            self.title = self.manifest.get('title') or self.title
-        
+    def update(self):
+        fileConnector = self.request.get('URL')
+        pathPrefix = "%s/%s/" % (self.portalUrl, self.staticFiles,)
+
         self.filemanagerConfiguration = """\
 var defaultViewMode = 'grid';
 var autoload = true;
@@ -125,15 +134,16 @@ var showFullPath = false;
 var browseOnly = false;
 var fileRoot = '/';
 var showThumbs = true;
-var imagesExt = ['jpg', 'jpeg', 'gif', 'png'];
-var capabilities = new Array('select', 'download', 'rename', 'delete');
+var imagesExt = %s;
+var capabilities = %s;
 var fileConnector = '%s';
 var pathPrefix = '%s';
-""" % (fileConnector, pathPrefix)
+""" % (repr(self.imageExtensions), repr(self.capabilities), fileConnector, pathPrefix)
 
         return True
     
     # AJAX responses
+
     def getFolder(self, path, getSizes=False):
         """Returns a dict of file and folder objects representing the
         contents of the given directory (indicated by a "path" parameter). The
@@ -194,19 +204,19 @@ var pathPrefix = '%s';
         siteUrl = self.portalUrl
         themeName = self.resourceDirectory.__name__
 
-        preview = "%s/%s/images/fileicons/default.png" % (siteUrl, RESOURCE_DIRECTORY,)
+        preview = "%s/%s/images/fileicons/default.png" % (siteUrl, self.staticFiles,)
 
         if IResourceDirectory.providedBy(obj):
-            preview = "%s/%s/images/fileicons/_Open.png" % (siteUrl, RESOURCE_DIRECTORY,)
+            preview = "%s/%s/images/fileicons/_Open.png" % (siteUrl, self.staticFiles,)
             fileType = 'dir'
             path = path + '/'
         else:
             basename, ext = os.path.splitext(filename)
             filetype = ext[1:]
-            if filetype in IMAGE_EXTENSIONS:
+            if filetype in self.imageExtensions:
                 preview = '%s/++%s++%s/%s' % (siteUrl, self.resourceType, themeName, path)
-            elif filetype in EXTENSIONS_WITH_ICONS:
-                preview = "%s/%s/images/fileicons/%s.png" % (siteUrl, RESOURCE_DIRECTORY, filetype,)
+            elif filetype in self.extensionsWithIcons:
+                preview = "%s/%s/images/fileicons/%s.png" % (siteUrl, self.staticFiles, filetype,)
             
         if getSize and isinstance(obj, Image):
             properties['Height'] = obj.height
@@ -354,15 +364,6 @@ var pathPrefix = '%s';
         # TODO: Use streams here if we can
         return parent.readFile(name)
 
-    # AJAX helper methods
-    
-    def normalizePath(self, path):
-        if path.startswith('/'):
-            path = path[1:]
-        if path.endswith('/'):
-            path = path[:-1]
-        return path
-
     def getObject(self, path):
         path = self.normalizePath(path)
         if not path:
@@ -371,3 +372,14 @@ var pathPrefix = '%s';
             return self.resourceDirectory[path]
         except (KeyError, NotFound,):
             raise KeyError(path)
+
+class ThemeFileManager(FileManager):
+    """Theme resource directory file manager
+    """
+
+    resourceType = 'theme'
+
+    def title(self):
+        if MANIFEST_FILENAME in self.resourceDirectory:
+            self.manifest = getManifest(self.resourceDirectory.openFile(MANIFEST_FILENAME), MANIFEST_FORMAT)
+            self.title = self.manifest.get('title') or self.title

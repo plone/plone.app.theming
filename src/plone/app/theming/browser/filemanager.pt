@@ -10,7 +10,7 @@
 <metal:block fill-slot="top_slot">
 
 <tal:defines define="dummy python:request.set('disable_border',1);
-                     disable_column_one python:request.set('disable_plone.leftcolumn',0);
+                     disable_column_one python:request.set('disable_plone.leftcolumn',1);
                      disable_column_two python:request.set('disable_plone.rightcolumn',1);"/>
 
 <link
@@ -106,7 +106,7 @@
             <input id="mode" name="mode" type="hidden" value="add" i18n:attributes="value"/> 
             <input id="currentpath" name="currentpath" type="hidden" /> 
             <input  id="newfile" name="newfile" type="file" />
-            <button id="upload" name="upload" type="submit" value="Upload" i18n:attributes="value"></button>
+            <button id="upload" name="upload" type="submit" value="Upload" class="allowMultiSubmit" i18n:attributes="value"></button>
             <button id="addnew" name="addnew" type="button" value="New File" i18n:attributes="value"></button>
             <button id="newfolder" name="newfolder" type="button" value="New Folder" i18n:attributes="value"></button>
             <button id="grid" class="ON" type="button">&nbsp;</button>
