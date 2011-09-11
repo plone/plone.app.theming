@@ -31,23 +31,6 @@ $.urlParam = function(name){
 //      - We've added "addnew" method, button and messages to create a new blank file
 //      - We don't use cleanstring() to normalise file/folder names
 
-// var fileConnector = 'connectors/' + lang + '/filemanager.' + lang;
-// var pathPrefix = "./++resource++plone.app.theming.editor/filemanager/";
-// var capabilities = new Array('select', 'download', 'rename', 'delete');
-
-// Get localized messages from file 
-// through culture var or from URL
-// if($.urlParam('langCode') != 0 && file_exists (pathPrefix + 'scripts/languages/'  + $.urlParam('langCode') + '.js')) culture = $.urlParam('langCode');
-// var lg = [];
-// $.ajax({
-//   url: pathPrefix + 'scripts/languages/'  + culture + '.js',
-//   async: false,
-//   dataType: 'json',
-//   success: function (json) {
-//     lg = json;
-//   }
-// });
-
 // Options for alert, prompt, and confirm dialogues.
 $.prompt.setDefaults({
     overlayspeed: 'fast',
@@ -82,31 +65,6 @@ var setViewButtonsFor = function(viewMode) {
     }
 }
 
-// Test if a given url exists
-// function file_exists (url) {
-//     // http://kevin.vanzonneveld.net
-//     // +   original by: Enrique Gonzalez
-//     // +      input by: Jani Hartikainen
-//     // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-//     // %        note 1: This function uses XmlHttpRequest and cannot retrieve resource from different domain.
-//     // %        note 1: Synchronous so may lock up browser, mainly here for study purposes. 
-//     // *     example 1: file_exists('http://kevin.vanzonneveld.net/pj_test_supportfile_1.htm');
-//     // *     returns 1: '123'
-//     var req = this.window.ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : new XMLHttpRequest();
-//     if (!req) {
-//         throw new Error('XMLHttpRequest not supported');
-//     }
-
-//     // HEAD Results are usually shorter (faster) than GET
-//     req.open('HEAD', url, false);
-//     req.send(null);
-//     if (req.status == 200) {
-//         return true;
-//     }
-
-//     return false;
-// }
-
 // preg_replace
 // Code from : http://xuxu.fr/2006/05/20/preg-replace-javascript/
 var preg_replace = function(array_pattern, array_pattern_replace, str)  {
@@ -119,33 +77,7 @@ var preg_replace = function(array_pattern, array_pattern_replace, str)  {
 		return new_str;
 	}
 
-// cleanString (), on the same model as server side (connector)
-// cleanString
-var cleanString = function(str) {
-	var cleaned = "";
-	var p_search  = 	new Array("Š", "š", "Đ", "đ", "Ž", "ž", "Č", "č", "Ć", "ć", "À", 
-						"Á", "Â", "Ã", "Ä", "Å", "Æ", "Ç", "È", "É", "Ê", "Ë", "Ì", "Í", "Î", "Ï", 
-						"Ñ", "Ò", "Ó", "Ô", "Õ", "Ö", "Ő", "Ø", "Ù", "Ú", "Û", "Ü", "Ý", "Þ", "ß", 
-						"à", "á", "â", "ã", "ä", "å", "æ", "ç", "è", "é", "ê", "ë", "ì",  "í",  
-						"î", "ï", "ð", "ñ", "ò", "ó", "ô", "õ", "ö", "ő", "ø", "ù", "ú", "û", "ý", 
-						"ý", "þ", "ÿ", "Ŕ", "ŕ", " ", "'", "/"
-						);
-	var p_replace = 	new Array("S", "s", "Dj", "dj", "Z", "z", "C", "c", "C", "c", "A", 
-						"A", "A", "A", "A", "A", "A", "C", "E", "E", "E", "E", "I", "I", "I", "I", 
-						"N", "O", "O", "O", "O", "O", "O", "O", "U", "U", "U", "U", "Y", "B", "Ss", 
-						"a", "a", "a", "a", "a", "a", "a", "c", "e", "e", "e", "e", "i", "i",
-						"i", "i", "o", "n", "o", "o", "o", "o", "o", "o", "o", "u", "u", "u", "y", 
-						"y", "b", "y", "R", "r", "_", "_", ""
-					);
-
-	cleaned = preg_replace(p_search, p_replace, str);
-	cleaned = cleaned.replace(/[^_a-zA-Z0-9]/g, "");
-	cleaned = cleaned.replace(/[_]+/g, "_");
-	
-	return cleaned;
-}
-
-// nameFormat (), separate filename from extension before calling cleanString()
+// nameFormat (), separate filename from extension
 // nameFormat
 var nameFormat = function(input) {
 	filename = '';
