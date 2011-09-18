@@ -320,7 +320,7 @@ var pathPrefix = '%s';
         oldName = npath.split('/')[-1]
         
         parent = self.getObject(oldPath)
-        parent.renameFile(oldName, newName)
+        parent.rename(oldName, newName)
 
         return {
             "Old Path": oldPath,
