@@ -38,4 +38,19 @@
         permission="cmf.ManagePortal"
         />
 
+    <browser:page
+        name="theming-controlpanel-filemanager-getfile"
+        for="plone.resource.interfaces.IResourceDirectory"
+        class=".filemanager.ThemeFileManager"
+        attribute="getFile"
+        permission="cmf.ManagePortal"
+        />
+    <browser:page
+        name="theming-controlpanel-filemanager-savefile"
+        for="plone.resource.interfaces.IResourceDirectory"
+        class=".filemanager.ThemeFileManager"
+        attribute="saveFile"
+        permission="cmf.ManagePortal"
+        />
+
 </configure>

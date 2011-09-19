@@ -54,6 +54,43 @@
     <script 
         type="text/javascript"
         tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/filemanager/scripts/jquery.tablesorter-2.0.5b.min.js"></script>
+<!-- ACE editor -->
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/ace.js"
+    ></script>
+
+<!-- Theme -->
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/theme-textmate.js"
+    ></script>
+
+<!-- Syntax highlighting -->
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-html.js"
+    ></script>
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-css.js"
+    ></script>
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-javascript.js"
+    ></script>
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-xml.js"
+    ></script>
+
+
     <script 
         type="text/javascript"
         tal:content="structure view/filemanagerConfiguration"></script>
@@ -109,18 +146,20 @@
             <button id="upload" name="upload" type="submit" value="Upload" class="allowMultiSubmit" i18n:attributes="value"></button>
             <button id="addnew" name="addnew" type="button" value="New File" i18n:attributes="value"></button>
             <button id="newfolder" name="newfolder" type="button" value="New Folder" i18n:attributes="value"></button>
-            <button id="grid" class="ON" type="button">&nbsp;</button>
-            <button id="list" type="button">&nbsp;</button>
         </form>
         <div id="splitter">
             <div id="filetree"></div>
-            <div id="fileinfo">
-                <h1></h1>
+            <div id="fileeditor">
+                <ul id="fileselector">
+
+                </ul>
+                <ul id="aceeditors">
+                
+                </ul>
             </div>
         </div>
 
         <ul id="itemOptions" class="contextMenu">
-            <li class="select"><a href="#select"></a></li>
             <li class="download"><a href="#download"></a></li>
             <li class="rename"><a href="#rename"></a></li>
             <li class="delete separator"><a href="#delete"></a></li>
@@ -144,14 +183,12 @@
             <span id='INVALID_FILE_UPLOAD' i18n:translate='filemanager_INVALID_FILE_UPLOAD'>Invalid file upload.</span>
             <span id='successful_added_folder' i18n:translate='filemanager_successful_added_folder'>New folder added successfully.</span>
             <span id='ERROR_RENAMING_FILE' i18n:translate='filemanager_ERROR_RENAMING_FILE'>Error while renaming the file %s to %s.</span>
-            <span id='list_view' i18n:translate='filemanager_list_view'>Switch to list view.</span>
             <span id='upload' i18n:translate='filemanager_upload'>Upload</span>
             <span id='INVALID_VAR' i18n:translate='filemanager_INVALID_VAR'>Invalid var %s.</span>
             <span id='could_not_retrieve_folder' i18n:translate='filemanager_could_not_retrieve_folder'>Could not retrieve folder contents.</span>
             <span id='current_folder' i18n:translate='filemanager_current_folder'>Current folder: </span>
             <span id='successful_rename' i18n:translate='filemanager_successful_rename'>Rename successful.</span>
             <span id='loading_data' i18n:translate='filemanager_loading_data'>Transferring data ...</span>
-            <span id='grid_view' i18n:translate='filemanager_grid_view'>Switch to grid view.</span>
             <span id='FILE_ALREADY_EXISTS' i18n:translate='filemanager_FILE_ALREADY_EXISTS'>The file '%s' already exists.</span>
             <span id='name' i18n:translate='filemanager_name'>Name</span>
             <span id='create_folder' i18n:translate='filemanager_create_folder'>Create Folder</span>

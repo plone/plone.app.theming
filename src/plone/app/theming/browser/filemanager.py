@@ -18,6 +18,7 @@ from zExceptions import NotFound
 from Products.Five.browser.decode import processInputs
 from Products.CMFCore.utils import getToolByName
 
+
 class FileManager(BrowserView):
     """Render the file manager and support its AJAX requests.
 
@@ -27,7 +28,7 @@ class FileManager(BrowserView):
 
     staticFiles = "++resource++plone.app.theming.editor/filemanager"
     imageExtensions = ['png', 'gif', 'jpg', 'jpeg']
-    capabilities = ['select', 'download', 'rename', 'delete']
+    capabilities = ['download', 'rename', 'delete']
 
     extensionsWithIcons = frozenset([
         'aac', 'avi', 'bmp', 'chm', 'css', 'dll', 'doc', 'fla',
@@ -37,7 +38,7 @@ class FileManager(BrowserView):
         'vbs', 'wav', 'wma', 'wmv', 'xls', 'xml', 'xsl', 'zip',
     ])
 
-    resourceType = None # Set in subclass
+    resourceType = None  # Set in subclass
 
     def __call__(self):
         self.setup()
@@ -46,14 +47,15 @@ class FileManager(BrowserView):
         # AJAX methods called by the file manager
         if 'mode' in form:
             mode = form['mode']
-            
+
             response = {'Error:': 'Unknown request', 'Code': -1}
             textareaWrap = False
 
             if mode == u'getfolder':
                 response = self.getFolder(
                                 path=urllib.unquote(form['path']),
-                                getSizes=form.get('getsizes', 'false') == 'true',
+                                getSizes=form.get(
+                                    'getsizes', 'false') == 'true'
                             )
             elif mode == u'getinfo':
                 response = self.getInfo(
@@ -89,14 +91,14 @@ class FileManager(BrowserView):
                 return self.download(
                                 path=urllib.unquote(form['path']),
                             )
-            
             if textareaWrap:
                 self.request.response.setHeader('Content-Type', 'text/html')
                 return "<textarea>%s</textarea>" % json.dumps(response)
             else:
-                self.request.response.setHeader('Content-Type', 'application/json')
+                self.request.response.setHeader('Content-Type',
+                                                'application/json')
                 return json.dumps(response)
-        
+
         # Rendering the view
         else:
             if self.update():
@@ -105,17 +107,17 @@ class FileManager(BrowserView):
                 self.context = getSite()
                 return self.index()
             return ''
-    
+
     def setup(self):
         self.request.response.setHeader('X-Theme-Disabled', '1')
         processInputs(self.request)
-        
+
         self.resourceDirectory = self.context
         self.name = self.resourceDirectory.__name__
         self.title = self.name.capitalize().replace('-', ' ').replace('.', ' ')
 
         self.portalUrl = getToolByName(self.context, 'portal_url')()
-    
+
     def normalizePath(self, path):
         if path.startswith('/'):
             path = path[1:]
@@ -126,9 +128,7 @@ class FileManager(BrowserView):
     def update(self):
         fileConnector = self.request.get('URL')
         pathPrefix = "%s/%s/" % (self.portalUrl, self.staticFiles,)
-
         self.filemanagerConfiguration = """\
-var defaultViewMode = 'grid';
 var autoload = true;
 var showFullPath = false;
 var browseOnly = false;
@@ -137,11 +137,16 @@ var showThumbs = true;
 var imagesExt = %s;
 var capabilities = %s;
 var fileConnector = '%s';
+var baseUrl = '%s';
 var pathPrefix = '%s';
-""" % (repr(self.imageExtensions), repr(self.capabilities), fileConnector, pathPrefix)
+""" % (repr(self.imageExtensions),
+       repr(self.capabilities),
+       fileConnector,
+       self.portalUrl + '/++theme++' + self.context.__name__,
+       pathPrefix)
 
         return True
-    
+
     # AJAX responses
 
     def getFolder(self, path, getSizes=False):
@@ -168,12 +173,13 @@ var pathPrefix = '%s';
 
         for name in folder.listDirectory():
             if IResourceDirectory.providedBy(folder[name]):
-                folders.append(self.getInfo(path="%s/%s/" % (path, name), getSize=getSizes))
+                folders.append(self.getInfo(
+                    path="%s/%s/" % (path, name), getSize=getSizes))
             else:
-                files.append(self.getInfo(path="%s/%s" % (path, name), getSize=getSizes))
-        
+                files.append(self.getInfo(
+                    path="%s/%s" % (path, name), getSize=getSizes))
         return folders + files
-        
+
     def getInfo(self, path, getSize=False):
         """ Returns information about a single file. Requests
         with mode "getinfo" will include an additional parameter, "path",
@@ -181,7 +187,7 @@ var pathPrefix = '%s';
         indicates whether the dimensions of the file (if an image) should be
         returned.
         """
-        
+
         path = self.normalizePath(path)
         obj = self.getObject(path)
 
@@ -204,24 +210,29 @@ var pathPrefix = '%s';
         siteUrl = self.portalUrl
         themeName = self.resourceDirectory.__name__
 
-        preview = "%s/%s/images/fileicons/default.png" % (siteUrl, self.staticFiles,)
+        preview = "%s/%s/images/fileicons/default.png" % (siteUrl,
+                                                          self.staticFiles)
 
         if IResourceDirectory.providedBy(obj):
-            preview = "%s/%s/images/fileicons/_Open.png" % (siteUrl, self.staticFiles,)
+            preview = "%s/%s/images/fileicons/_Open.png" % (siteUrl,
+                                                            self.staticFiles)
             fileType = 'dir'
             path = path + '/'
         else:
             basename, ext = os.path.splitext(filename)
             filetype = ext[1:]
             if filetype in self.imageExtensions:
-                preview = '%s/++%s++%s/%s' % (siteUrl, self.resourceType, themeName, path)
+                preview = '%s/++%s++%s/%s' % (siteUrl, self.resourceType,
+                                              themeName, path)
             elif filetype in self.extensionsWithIcons:
-                preview = "%s/%s/images/fileicons/%s.png" % (siteUrl, self.staticFiles, filetype,)
-            
+                preview = "%s/%s/images/fileicons/%s.png" % (siteUrl,
+                                                             self.staticFiles,
+                                                             filetype)
+
         if getSize and isinstance(obj, Image):
             properties['Height'] = obj.height
             properties['Width'] = obj.width
-        
+
         return {
             'Path': path,
             'Filename': filename,
@@ -231,7 +242,7 @@ var pathPrefix = '%s';
             'Error': error,
             'Code': errorCode,
         }
-    
+
     def addFolder(self, path, name):
         """The addfolder method creates a new directory on the server within
         the given path.
@@ -246,7 +257,7 @@ var pathPrefix = '%s';
             'Error': '',
             'Code': 0,
         }
-    
+
     def add(self, path, newfile):
         """The add method adds the uploaded file to the specified path. Unlike
         the other methods, this method must return its JSON response wrapped in
@@ -257,37 +268,42 @@ var pathPrefix = '%s';
         uploaded file's name should be safe to use as a path component in a
         URL, so URL-encoded at a minimum.
         """
-        
+
         parentPath = self.normalizePath(path)
-    
+
         error = ''
         code = 0
-            
+
         name = newfile.filename
         newPath = u"%s/%s" % (parentPath, name,)
 
         parent = self.getObject(parentPath)
         if name in parent:
-            error = translate(_(u'filemanager_error_file_exists', default=u"File already exists."), context=self.request)
+            error = translate(_(u'filemanager_error_file_exists',
+                              default=u"File already exists."),
+                              context=self.request)
             code = 1
         else:
             try:
-                self.resourceDirectory.writeFile(newPath.encode('utf-8'), newfile)
+                self.resourceDirectory.writeFile(newPath.encode('utf-8'),
+                                                 newfile)
             except (ValueError,):
-                error = translate(_(u'filemanager_error_file_invalid', default=u"Could not read file."), context=self.request)
+                error = translate(_(u'filemanager_error_file_invalid',
+                                  default=u"Could not read file."),
+                                context=self.request)
                 code = 1
-        
+
         return {
             "Path": path,
             "Name": name,
             "Error": error,
             "Code": code,
         }
-    
+
     def addNew(self, path, name):
         """Add a new empty file in the given directory
         """
-        
+
         error = ''
         code = 0
 
@@ -296,7 +312,9 @@ var pathPrefix = '%s';
 
         parent = self.getObject(parentPath)
         if name in parent:
-            error = translate(_(u'filemanager_error_file_exists', default=u"File already exists."), context=self.request)
+            error = translate(_(u'filemanager_error_file_exists',
+                              default=u"File already exists."),
+                              context=self.request)
             code = 1
         else:
             self.resourceDirectory.writeFile(newPath.encode('utf-8'), '')
@@ -308,7 +326,6 @@ var pathPrefix = '%s';
             "Code": code,
         }
 
-
     def rename(self, path, newName):
         """The rename method renames the item at the path given in the "old"
         parameter with the name given in the "new" parameter and returns an
@@ -318,14 +335,14 @@ var pathPrefix = '%s';
         npath = self.normalizePath(path)
         oldPath = newPath = '/'.join(npath.split('/')[:-1])
         oldName = npath.split('/')[-1]
-        
+
         parent = self.getObject(oldPath)
         parent.rename(oldName, newName)
 
         return {
             "Old Path": oldPath,
             "Old Name": oldName,
-            "New Path": newPath, 
+            "New Path": newPath,
             "New Name": newName,
             'Error': '',
             'Code': 0,
@@ -334,7 +351,7 @@ var pathPrefix = '%s';
     def delete(self, path):
         """The delete method deletes the item at the given path.
         """
-        
+
         npath = self.normalizePath(path)
         parentPath = '/'.join(npath.split('/')[:-1])
         name = npath.split('/')[-1]
@@ -358,8 +375,10 @@ var pathPrefix = '%s';
 
         parent = self.getObject(parentPath)
 
-        self.request.response.setHeader('Content-Type', 'application/octet-stream')
-        self.request.response.setHeader('Content-Disposition', 'attachment; filename="%s"' % name)
+        self.request.response.setHeader('Content-Type',
+                                        'application/octet-stream')
+        self.request.response.setHeader('Content-Disposition',
+                                        'attachment; filename="%s"' % name)
 
         # TODO: Use streams here if we can
         return parent.readFile(name)
@@ -373,6 +392,10 @@ var pathPrefix = '%s';
         except (KeyError, NotFound,):
             raise KeyError(path)
 
+
+KNOWN_EXTENSIONS = frozenset(['css', 'html', 'htm', 'txt', 'xml', 'js', 'cfg'])
+
+
 class ThemeFileManager(FileManager):
     """Theme resource directory file manager
     """
@@ -381,5 +404,19 @@ class ThemeFileManager(FileManager):
 
     def title(self):
         if MANIFEST_FILENAME in self.resourceDirectory:
-            self.manifest = getManifest(self.resourceDirectory.openFile(MANIFEST_FILENAME), MANIFEST_FORMAT)
+            fi = self.resourceDirectory.openFile(MANIFEST_FILENAME)
+            self.manifest = getManifest(fi, MANIFEST_FORMAT)
             self.title = self.manifest.get('title') or self.title
+
+    def getFile(self, path):
+        self.request.response.setHeader('X-Theme-Disabled', '1')
+        basename, ext = os.path.splitext(path)
+        ext = ext[1:].lower()
+        result = {'ext': ext}
+        if ext in KNOWN_EXTENSIONS:
+            result['contents'] = self.context.readFile(path.encode('utf-8'))
+        return json.dumps(result)
+
+    def saveFile(self, path, value):
+        self.request.response.setHeader('X-Theme-Disabled', '1')
+        self.context.writeFile(path, value.encode('utf-8'))

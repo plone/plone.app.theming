@@ -10,6 +10,22 @@
  */
 
 (function($) {
+
+var HTMLMode = require("ace/mode/html").Mode;
+var CSSMode  = require("ace/mode/css").Mode;
+var XMLMode  = require("ace/mode/xml").Mode;
+var JSMode   = require("ace/mode/javascript").Mode;
+var TextMode = require("ace/mode/text").Mode;
+
+var extensionModes = {
+    css: new CSSMode(),
+    js: new JSMode(),
+    htm: new HTMLMode(),
+    html: new HTMLMode(),
+    xml: new XMLMode()
+};
+var defaultMode = new TextMode();
+var EDITORS = {};
  
 // function to retrieve GET params
 $.urlParam = function(name){
@@ -25,11 +41,9 @@ $.urlParam = function(name){
 ---------------------------------------------------------*/
 
 // PLONE CHANGES:
-//      - We set configuration variables the configuration generated in the view
-//      - We've integrated pathPrefix into various lookups below (set in the view)
-//      - We generate the lg language object in the view instead of fetching with JSON
-//      - We've added "addnew" method, button and messages to create a new blank file
-//      - We don't use cleanstring() to normalise file/folder names
+// Changed it to use ACE editor and use it more as a text
+// editor instead of a file manager/browser.
+// XXX Loads of cleanup needs to be done. This is quite ugly...
 
 // Options for alert, prompt, and confirm dialogues.
 $.prompt.setDefaults({
@@ -42,7 +56,7 @@ $.prompt.setDefaults({
 // Called on initial page load and on resize.
 var setDimensions = function(){
 	var newH = $(window).height() - $('#uploader').height() - 30;	
-	$('#splitter, #filetree, #fileinfo, .vsplitbar').height(newH);
+	$('#splitter, #filetree, #fileeditor, .vsplitbar').height(newH);
 }
 
 // Display Min Path
@@ -51,18 +65,6 @@ var displayPath = function(path) {
 		return path.replace(fileRoot, "/");
 	else 
 		return path;
-}
-
-// Set the view buttons state
-var setViewButtonsFor = function(viewMode) {
-    if (viewMode == 'grid') {
-        $('#grid').addClass('ON');
-        $('#list').removeClass('ON');
-    }
-    else {
-        $('#list').addClass('ON');
-        $('#grid').removeClass('ON');
-    }
 }
 
 // preg_replace
@@ -94,7 +96,6 @@ var nameFormat = function(input) {
 // Handle Error. Freeze interactive buttons and display
 // error message. Also called when auth() function return false (Code == "-1")
 var handleError = function(errMsg) {
-	$('#fileinfo').html('<h1>' + errMsg+ '</h1>');
 	$('#newfile').attr("disabled", "disabled");
 	$('#upload').attr("disabled", "disabled");
 	$('#addnew').attr("disabled", "disabled");
@@ -194,45 +195,6 @@ var setUploader = function(path){
 	});	
 }
 
-// Binds specific actions to the toolbar in detail views.
-// Called when detail views are loaded.
-var bindToolbar = function(data){
-	// this little bit is purely cosmetic
-	$('#fileinfo').find('button').wrapInner('<span></span>');
-
-	if (!has_capability(data, 'select')) {
-		$('#fileinfo').find('button#select').hide();
-	} else {
-		$('#fileinfo').find('button#select').click(function(){
-			selectItem(data);
-		}).show();
-	}
-	
-	if (!has_capability(data, 'rename')) {
-		$('#fileinfo').find('button#rename').hide();
-	} else {
-		$('#fileinfo').find('button#rename').click(function(){
-			var newName = renameItem(data);
-			if(newName.length) $('#fileinfo > h1').text(newName);
-		}).show();
-	}
-
-	if (!has_capability(data, 'delete')) {
-		$('#fileinfo').find('button#delete').hide();
-	} else {
-		$('#fileinfo').find('button#delete').click(function(){
-			if(deleteItem(data)) $('#fileinfo').html('<h1>' + lg.select_from_left + '</h1>');
-		}).show();
-	}
-
-	if (!has_capability(data, 'download')) {
-		$('#fileinfo').find('button#download').hide();
-	} else {
-		$('#fileinfo').find('button#download').click(function(){
-			window.location = fileConnector + '?mode=download&path=' + encodeURIComponent(data['Path']);
-		}).show();
-	}
-}
 
 // Converts bytes to kb, mb, or gb as needed for display.
 var formatBytes = function(bytes){
@@ -335,14 +297,6 @@ var renameItem = function(data){
 
 						if (typeof title !="undefined" && title == oldPath) {
 							$('#preview h1').text(newName);
-						}
-						
-						if($('#fileinfo').data('view') == 'grid'){
-							$('#fileinfo img[alt="' + oldPath + '"]').parent().next('p').text(newName);
-							$('#fileinfo img[alt="' + oldPath + '"]').attr('alt', newPath);
-						} else {
-							$('#fileinfo td[title="' + oldPath + '"]').text(newName);
-							$('#fileinfo td[title="' + oldPath + '"]').attr('title', newPath);
 						}
 										
 						$.prompt(lg.successful_rename);
@@ -449,22 +403,6 @@ var removeNode = function(path){
         .fadeOut('slow', function(){ 
             $(this).remove();
         });
-    // grid case
-    if($('#fileinfo').data('view') == 'grid'){
-        $('#contents img[alt="' + path + '"]').parent().parent()
-            .fadeOut('slow', function(){ 
-                $(this).remove();
-        });
-    }
-    // list case
-    else {
-        $('table#contents')
-            .find('td[title="' + path + '"]')
-            .parent()
-            .fadeOut('slow', function(){ 
-                $(this).remove();
-        });
-    }
     // remove fileinfo when item to remove is currently selected
     if ($('#preview').length) {
     	getFolderInfo(path.substr(0, path.lastIndexOf('/') + 1));
@@ -502,16 +440,6 @@ var addFolder = function(parent, name){
   Functions to Retrieve File and Folder Details
 ---------------------------------------------------------*/
 
-// Decides whether to retrieve file or folder info based on
-// the path provided.
-var getDetailView = function(path){
-	if(path.lastIndexOf('/') == path.length - 1){
-		getFolderInfo(path);
-		$('#filetree').find('a[rel="' + path + '"]').click();
-	} else {
-		getFileInfo(path);
-	}
-}
 
 function getContextMenuOptions(elem) {
 	var optionsID = elem.attr('class').replace(/ /g, '_');
@@ -519,7 +447,6 @@ function getContextMenuOptions(elem) {
 	if (!($('#' + optionsID).length)) {
 		// Create a clone to itemOptions with menus specific to this element
 		var newOptions = $('#itemOptions').clone().attr('id', optionsID);
-		if (!elem.hasClass('cap_select')) $('.select', newOptions).remove();
 		if (!elem.hasClass('cap_download')) $('.download', newOptions).remove();
 		if (!elem.hasClass('cap_rename')) $('.rename', newOptions).remove();
 		if (!elem.hasClass('cap_delete')) $('.delete', newOptions).remove();
@@ -532,76 +459,20 @@ function getContextMenuOptions(elem) {
 var setMenus = function(action, path){
 	var d = new Date(); // to prevent IE cache issues
 	$.getJSON(fileConnector + '?mode=getinfo&path=' + path + '&time=' + d.getMilliseconds(), function(data){
-		if($('#fileinfo').data('view') == 'grid'){
-			var item = $('#fileinfo').find('img[alt="' + data['Path'] + '"]').parent();
-		} else {
-			var item = $('#fileinfo').find('td[title="' + data['Path'] + '"]').parent();
-		}
-	
-		switch(action){
-			case 'select':
-				selectItem(data);
-				break;
-			
-			case 'download':
-				window.location = fileConnector + '?mode=download&path=' + data['Path'];
-				break;
-				
-			case 'rename':
-				var newName = renameItem(data);
-				break;
-				
-			case 'delete':
-				deleteItem(data);
-				break;
-		}
+        switch(action){
+            case 'download':
+                window.location = fileConnector + '?mode=download&path=' + data['Path'];
+                break;
+                
+            case 'rename':
+                var newName = renameItem(data);
+                break;
+                
+            case 'delete':
+                deleteItem(data);
+                break;
+        }
 	});
-}
-
-// Retrieves information about the specified file as a JSON
-// object and uses that data to populate a template for
-// detail views. Binds the toolbar for that detail view to
-// enable specific actions. Called whenever an item is
-// clicked in the file tree or list views.
-var getFileInfo = function(file){
-	// Update location for status, upload, & new folder functions.
-	var currentpath = file.substr(0, file.lastIndexOf('/') + 1);
-	setUploader(currentpath);
-
-	// Include the template.
-	var template = '<div id="preview"><img /><h1></h1><dl></dl></div>';
-	template += '<form id="toolbar">';
-	if(window.opener != null) template += '<button id="select" name="select" type="button" value="Select">' + lg.select + '</button>';
-	template += '<button id="download" name="download" type="button" value="Download">' + lg.download + '</button>';
-	if(browseOnly != true) template += '<button id="rename" name="rename" type="button" value="Rename">' + lg.rename + '</button>';
-	if(browseOnly != true) template += '<button id="delete" name="delete" type="button" value="Delete">' + lg.del + '</button>';
-	template += '<button id="parentfolder">' + lg.parentfolder + '</button>';
-	template += '</form>';
-	
-	$('#fileinfo').html(template);
-	$('#parentfolder').click(function() {getFolderInfo(currentpath);});
-	
-	// Retrieve the data & populate the template.
-	var d = new Date(); // to prevent IE cache issues
-	$.getJSON(fileConnector + '?mode=getinfo&path=' + encodeURIComponent(file) + '&time=' + d.getMilliseconds(), function(data){
-		if(data['Code'] == 0){
-			$('#fileinfo').find('h1').text(data['Filename']).attr('title', file);
-			$('#fileinfo').find('img').attr('src',data['Preview']);
-			
-			var properties = '';
-			
-			if(data['Properties']['Width'] && data['Properties']['Width'] != '') properties += '<dt>' + lg.dimensions + '</dt><dd>' + data['Properties']['Width'] + 'x' + data['Properties']['Height'] + '</dd>';
-			if(data['Properties']['Date Created'] && data['Properties']['Date Created'] != '') properties += '<dt>' + lg.created + '</dt><dd>' + data['Properties']['Date Created'] + '</dd>';
-			if(data['Properties']['Date Modified'] && data['Properties']['Date Modified'] != '') properties += '<dt>' + lg.modified + '</dt><dd>' + data['Properties']['Date Modified'] + '</dd>';
-			if(data['Properties']['Size'] || parseInt(data['Properties']['Size'])==0) properties += '<dt>' + lg.size + '</dt><dd>' + formatBytes(data['Properties']['Size']) + '</dd>';
-			$('#fileinfo').find('dl').html(properties);
-			
-			// Bind toolbar functions.
-			bindToolbar(data);
-		} else {
-			$.prompt(data['Error']);
-		}
-	});	
 }
 
 // Retrieves data for all items within the given folder and
@@ -611,9 +482,6 @@ var getFileInfo = function(file){
 var getFolderInfo = function(path){
 	// Update location for status, upload, & new folder functions.
 	setUploader(path);
-
-	// Display an activity indicator.
-	$('#fileinfo').html('<img id="activity" src="' + pathPrefix + 'images/wait30trans.gif" width="30" height="30" />');
 
 	// Retrieve the data and generate the markup.
 	var d = new Date(); // to prevent IE cache issues
@@ -627,120 +495,6 @@ var getFolderInfo = function(path){
 			handleError(data.Error);
 			return;
 		};
-		
-		if(data){
-			if($('#fileinfo').data('view') == 'grid'){
-				result += '<ul id="contents" class="grid">';
-				
-				for(key in data){
-					var props = data[key]['Properties'];
-					var cap_classes = "";
-					for (cap in capabilities) {
-						if (has_capability(data[key], capabilities[cap])) {
-							cap_classes += " cap_" + capabilities[cap];
-						}
-					}
-				
-					var scaledWidth = 64;
-					var actualWidth = props['Width'];
-					if(actualWidth > 1 && actualWidth < scaledWidth) scaledWidth = actualWidth;
-				
-					result += '<li class="' + cap_classes + '"><div class="clip"><img src="' + data[key]['Preview'] + '" width="' + scaledWidth + '" alt="' + data[key]['Path'] + '" /></div><p>' + data[key]['Filename'] + '</p>';
-					if(props['Width'] && props['Width'] != '') result += '<span class="meta dimensions">' + props['Width'] + 'x' + props['Height'] + '</span>';
-					if(props['Size'] && props['Size'] != '') result += '<span class="meta size">' + props['Size'] + '</span>';
-					if(props['Date Created'] && props['Date Created'] != '') result += '<span class="meta created">' + props['Date Created'] + '</span>';
-					if(props['Date Modified'] && props['Date Modified'] != '') result += '<span class="meta modified">' + props['Date Modified'] + '</span>';
-					result += '</li>';
-				}
-				
-				result += '</ul>';
-			} else {
-				result += '<table id="contents" class="list">';
-				result += '<thead><tr><th class="headerSortDown"><span>' + lg.name + '</span></th><th><span>' + lg.size + '</span></th><th><span>' + lg.modified + '</span></th></tr></thead>';
-				result += '<tbody>';
-				
-				for(key in data){
-					var path = data[key]['Path'];
-					var props = data[key]['Properties'];
-					var cap_classes = "";
-					for (cap in capabilities) {
-						if (has_capability(data[key], capabilities[cap])) {
-							cap_classes += " cap_" + capabilities[cap];
-						}
-					}
-					result += '<tr class="' + cap_classes + '">';
-					result += '<td title="' + path + '">' + data[key]['Filename'] + '</td>';
-
-					if(props['Size'] && props['Size'] != ''){
-						result += '<td><abbr title="' + props['Size'] + '">' + formatBytes(props['Size']) + '</abbr></td>';
-					} else {
-						result += '<td></td>';
-					}
-					
-					if(props['Date Modified'] && props['Date Modified'] != ''){
-						result += '<td>' + props['Date Modified'] + '</td>';
-					} else {
-						result += '<td></td>';
-					}
-				
-					result += '</tr>';					
-				}
-								
-				result += '</tbody>';
-				result += '</table>';
-			}			
-		} else {
-			result += '<h1>' + lg.could_not_retrieve_folder + '</h1>';
-		}
-		
-		// Add the new markup to the DOM.
-		$('#fileinfo').html(result);
-		
-		// Bind click events to create detail views and add
-		// contextual menu options.
-		if($('#fileinfo').data('view') == 'grid'){
-			$('#fileinfo').find('#contents li').click(function(){
-				var path = $(this).find('img').attr('alt');
-				getDetailView(path);
-			}).each(function() {
-				$(this).contextMenu(
-					{ menu: getContextMenuOptions($(this)) },
-					function(action, el, pos){
-						var path = $(el).find('img').attr('alt');
-						setMenus(action, path);
-					}
-				);
-			});
-		} else {
-			$('#fileinfo').find('td:first-child').each(function(){
-				var path = $(this).attr('title');
-				var treenode = $('#filetree').find('a[rel="' + path + '"]').parent();
-				$(this).css('background-image', treenode.css('background-image'));
-			});
-			
-			$('#fileinfo tbody tr').click(function(){
-				var path = $('td:first-child', this).attr('title');
-				getDetailView(path);		
-			}).each(function() {
-				$(this).contextMenu(
-					{ menu: getContextMenuOptions($(this)) },
-					function(action, el, pos){
-						var path = $('td:first-child', el).attr('title');
-						setMenus(action, path);
-					}
-				);
-			});
-			
-			$('#fileinfo').find('table').tablesorter({
-				textExtraction: function(node){					
-					if($(node).find('abbr').size()){
-						return $(node).find('abbr').attr('title');
-					} else {					
-						return node.innerHTML;
-					}
-				}
-			});
-		}
 	});
 }
 
@@ -799,9 +553,6 @@ $(function(){
 		$('#upload').append(lg.upload);
 		$('#addnew').append(lg.add_new);
         $('#newfolder').append(lg.new_folder);
-		$('#grid').attr('title', lg.grid_view);
-		$('#list').attr('title', lg.list_view);
-		$('#fileinfo h1').append(lg.select_from_left);
 		$('#itemOptions a[href$="#select"]').append(lg.select);
 		$('#itemOptions a[href$="#download"]').append(lg.download);
 		$('#itemOptions a[href$="#rename"]').append(lg.rename);
@@ -815,29 +566,10 @@ $(function(){
 
 	// cosmetic tweak for buttons
 	$('button').wrapInner('<span></span>');
-
-	// Set initial view state.
-	$('#fileinfo').data('view', defaultViewMode);
-	setViewButtonsFor(defaultViewMode);
 	
 	$('#home').click(function(){
-		var currentViewMode = $('#fileinfo').data('view');
-		$('#fileinfo').data('view', currentViewMode);
 		$('#filetree>ul>li.expanded>a').trigger('click');
 		getFolderInfo(fileRoot);
-	});
-
-	// Set buttons to switch between grid and list views.
-	$('#grid').click(function(){
-		setViewButtonsFor('grid');
-		$('#fileinfo').data('view', 'grid');
-		getFolderInfo($('#currentpath').val());
-	});
-	
-	$('#list').click(function(){
-		setViewButtonsFor('list');
-		$('#fileinfo').data('view', 'list');
-		getFolderInfo($('#currentpath').val());
 	});
 
 	// Provide initial values for upload form, status, etc.
@@ -896,21 +628,90 @@ $(function(){
 			});
 		}
 	}, function(file){
-		getFileInfo(file);
+        var relselector = 'li[rel="' + file + '"]';
+        $("#fileselector li.selected,#aceeditors li.selected").removeClass('selected');
+        if($('#fileselector ' + relselector).size() == 0){
+            var tab = $('<li class="selected" rel="' + file + '">' + file + '</li>');
+            var close = $('<a href="#close"> (x) </a>');
+            tab.click(function(){
+                 $("#fileselector li.selected,#aceeditors li.selected").removeClass('selected');
+                 $(this).addClass('selected');
+                $("#aceeditors li[rel='" + $(this).attr('rel') + "']").addClass('selected');
+            });
+            close.click(function(){
+                var atab = $(this).parent();
+                if(atab.hasClass('selected')){
+                    var other = atab.siblings().eq(0);
+                    other.addClass('selected');
+                    $("#aceeditors li[rel='" + other.attr('rel') + "']").addClass('selected'); 
+                }
+                $("#aceeditors li[rel='" + atab.attr('rel') + "']").remove();
+                atab.remove();
+
+                return false;
+            })
+            tab.append(close);
+            $("#fileselector").append(tab);
+            $.ajax({
+                url: baseUrl + '/@@theming-controlpanel-filemanager-getfile',
+                data: {path: file},
+                dataType: 'json',
+                success: function(data){
+                    var editorId = 'id' + Math.floor(Math.random()*999999);
+                    var li = $('<li class="selected" data-editorid="' + editorId + '" rel="' + file + '"></li>');
+                    if(data.contents !== undefined){
+                        var extension = data.ext;
+                        var container = '<pre id="' + editorId + '" name="' + file + '">' + data.contents + '</pre>';
+                        li.append(container);
+                        var div = $('<div class="buttons"><form class="save"><input type="submit" name="savefile" value="Save" /></form></div>');
+                        li.append(div);
+                        $("#aceeditors").append(li);
+                        var editor = ace.edit(editorId);
+                        editor.setTheme("ace/theme/textmate");
+                        editor.getSession().setTabSize(4);
+                        editor.getSession().setUseSoftTabs(true);
+                        editor.getSession().setUseWrapMode(false);
+                        var mode = defaultMode;
+                        if (extension in extensionModes) {
+                            mode = extensionModes[extension];
+                        }
+                        editor.getSession().setMode(mode);
+                        editor.setShowPrintMargin(false);
+
+                        editor.getSession().setValue(data.contents);
+                        editor.navigateTo(0, 0);
+                        EDITORS[file] = editor;
+                        var markDirty = function(){
+                            $("#fileselector li[rel='" + file + "']").addClass('dirty'); 
+                        }
+                        editor.getSession().on('change', markDirty);
+                    }else{
+                        li.append('<p>This file is not editable</p>');
+                        $("#aceeditors").append(li);
+                    }
+                }
+            })
+        }
+        $("#fileselector " + relselector + ",#aceeditors " + relselector).addClass('selected');
 	});
+
+    $("#aceeditors div.buttons form.save").live('submit', function(){
+        var li = $(this).parents('li.selected');
+        var path = li.attr('rel');
+        var editor = EDITORS[path];
+        $.ajax({
+            url: baseUrl + '/@@theming-controlpanel-filemanager-savefile',
+            data: {path: path, value: editor.getSession().getValue()},
+            type: 'POST',
+            success: function(){
+                $("#fileselector li[rel='" + path + "']").removeClass('dirty'); 
+            }
+        });
+        return false;
+    });
+
 	// Disable select function if no window.opener
 	if(window.opener == null) $('#itemOptions a[href$="#select"]').remove();
-	// Keep only browseOnly features if needed
-	if(browseOnly == true) {
-		$('#newfile').remove();
-		$('#upload').remove();
-		$('#addnew').remove();
-        $('#newfolder').remove();
-		$('#toolbar').remove('#rename');
-		$('.contextMenu .rename').remove();
-		$('.contextMenu .delete').remove();
-	}
-    getDetailView(fileRoot);
 });
 
 })(jQuery);

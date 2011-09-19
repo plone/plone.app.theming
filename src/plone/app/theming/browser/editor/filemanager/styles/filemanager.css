@@ -57,12 +57,6 @@
 	padding: 4px;
 }
 
-#fileinfo {
-	min-width: 100px;
-	overflow: auto;
-	/* no margin or border allowed */
-}
-
 #splitter .vsplitbar {
 	width: 6px;
 	border-left: 1px solid #ccc;
@@ -70,11 +64,7 @@
 	background: #E2EAF3 url(../scripts/jquery.splitter/vgrabber.gif) no-repeat center;
 }
 
-#fileinfo {
-	text-align: center;
-}
-
-#fileinfo * {
+#fileeditor * {
 	font-size: 12px;
 }
 
@@ -83,7 +73,7 @@
 	max-width: 80%;
 }
 
-#fileinfo > h1 {
+#fileeditor > h1 {
 	font-size: 16px;
 	margin: 100px auto;
 }
@@ -124,13 +114,11 @@ button {
 	border: 1px outset #ccc;
 	padding: 2px;
 	margin-left: 4px;
-	background-image: url(../images/btnOFF.gif);
 	background-repeat: repeat-x;
 }
 
 button:hover {
 	border: 1px inset #ccc;
-	background-image: url(../images/btnON.gif);
 }
 
 button span {
@@ -353,4 +341,79 @@ button.ON {
 	display:inline-table;
 	width:30px;
 	height:30px;
+}
+
+#fileeditor {
+	min-width: 100px;
+	overflow: auto;
+	/* no margin or border allowed */
+}
+
+#fileeditor ul#fileselector{
+	height: 26px;
+	background-color: #DDDDDD;
+}
+
+#fileeditor ul#fileselector, #fileeditor ul#fileselector li,
+#fileeditor ul#aceeditors, #fileeditor ul#aceeditors li{
+    list-style: none;
+    list-style-type: none;
+}
+
+#fileeditor ul#fileselector li{
+	cursor: pointer;
+	margin: 3px 3px 0 3px;
+	padding: 2px 7px;
+	float:left;
+    background-color: #f1f1f1;
+    border: 1px solid black;
+    border-bottom: none;
+    border-top-left-radius: 5px 5px;
+    -moz-border-radius-topleft: 5px 5px;
+    border-top-right-radius: 5px 5px;
+    -moz-border-radius-topright: 5px 5px;
+}
+
+#fileeditor ul#fileselector li.dirty{
+	color: #D57A46;
+}
+
+#fileeditor ul#fileselector li.selected{
+	border: 1px solid #427597;
+	border-bottom: none;
+	background-color: white;
+}
+
+#fileeditor ul#aceeditors li{
+	display:none;
+}
+
+#fileeditor ul#aceeditors li.selected{
+	display: block;
+}
+
+#fileeditor ul#fileselector{
+    margin:0;
+    padding:0;
+}
+
+#fileeditor ul#aceeditors{
+	border-top: 3px solid #427597;
+    width:100%;
+    height:95%;
+    clear:both;
+}
+
+#fileeditor ul#aceeditors li pre {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    position: relative;
+    min-width:400px;
+    height:500px;
+}
+
+#uploader {
+    background-color: #EEEEEE;
 }
