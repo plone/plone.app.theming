@@ -1,11 +1,7 @@
 import logging
 import Globals
 
-from urlparse import urlsplit
-
 from lxml import etree
-from diazo.compiler import compile_theme
-from diazo.utils import quote_param
 
 from repoze.xmliter.utils import getHTMLSerializer
 
@@ -18,16 +14,11 @@ from plone.registry.interfaces import IRegistry
 from plone.transformchain.interfaces import ITransform
 
 from plone.app.theming.interfaces import IThemeSettings, IThemingLayer
-from plone.app.theming.utils import expandAbsolutePrefix
 
-from plone.app.theming.utils import PythonResolver
-from plone.app.theming.utils import InternalResolver
-from plone.app.theming.utils import NetworkResolver
-
-from plone.app.theming.utils import findContext
-from plone.app.theming.utils import compileExpression
-from plone.app.theming.utils import createExpressionContext
+from plone.app.theming.utils import compileThemeTransform
+from plone.app.theming.utils import prepareThemeParameters
 from plone.app.theming.utils import isThemeEnabled
+from plone.app.theming.utils import findContext
 from plone.app.theming.zmi import patch_zmi
 
 # Disable theming of ZMI
@@ -111,55 +102,12 @@ class ThemeTransform(object):
             rules = settings.rules
             absolutePrefix = settings.absolutePrefix or None
             readNetwork = settings.readNetwork
-            accessControl = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=readNetwork, write_network=False)
+            parameterExpressions = settings.parameterExpressions
 
-            if absolutePrefix:
-                absolutePrefix = expandAbsolutePrefix(absolutePrefix)
-
-            params = set(settings.parameterExpressions.keys() + ['url', 'base', 'path', 'scheme', 'host'])
-            xslParams = dict((k, '') for k in params)
-
-            internalResolver = InternalResolver()
-            pythonResolver = PythonResolver()
-            if readNetwork:
-                networkResolver = NetworkResolver()
-
-            rulesParser = etree.XMLParser(recover=False)
-            rulesParser.resolvers.add(internalResolver)
-            rulesParser.resolvers.add(pythonResolver)
-            if readNetwork:
-                rulesParser.resolvers.add(networkResolver)
-
-            themeParser = etree.HTMLParser()
-            themeParser.resolvers.add(internalResolver)
-            themeParser.resolvers.add(pythonResolver)
-            if readNetwork:
-                themeParser.resolvers.add(networkResolver)
-
-            compilerParser = etree.XMLParser()
-            compilerParser.resolvers.add(internalResolver)
-            compilerParser.resolvers.add(pythonResolver)
-            if readNetwork:
-                compilerParser.resolvers.add(networkResolver)
-
-            compiledTheme = compile_theme(rules,
-                    absolute_prefix=absolutePrefix,
-                    parser=themeParser,
-                    rules_parser=rulesParser,
-                    compiler_parser=compilerParser,
-                    read_network=readNetwork,
-                    access_control=accessControl,
-                    update=True,
-                    xsl_params=xslParams,
-                )
-
-            if not compiledTheme:
+            transform = compileThemeTransform(rules, absolutePrefix, readNetwork, parameterExpressions)
+            if transform is None:
                 return None
-
-            transform = etree.XSLT(compiledTheme,
-                    access_control=accessControl,
-                )
-
+            
             if not DevelopmentMode:
                 cache.updateTransform(transform)
 
@@ -208,53 +156,20 @@ class ThemeTransform(object):
         transform = self.setupTransform()
         if transform is None:
             return None
-
-        # Find real or virtual path - PATH_INFO has VHM elements in it
-        url = self.request.get('ACTUAL_URL', '')
-
-        # Find the host name
-        base = self.request.get('BASE1', '')
-        path = url[len(base):]
-        parts = urlsplit(base.lower())
-
-        params = dict(
-                url=quote_param(url),
-                base=quote_param(base),
-                path=quote_param(path),
-                scheme=quote_param(parts.scheme),
-                host=quote_param(parts.netloc),
-            )
-
-        # Add expression-based parameters
-
+        
         settings = self.getSettings()
         if settings.doctype:
             result.doctype = settings.doctype
             if not result.doctype.endswith('\n'):
                 result.doctype += '\n'
-        parameterExpressions = settings.parameterExpressions or {}
-        if parameterExpressions:
+        
+        cache = None
+        DevelopmentMode = Globals.DevelopmentMode
+        if not DevelopmentMode:
             cache = getCache(settings)
-            DevelopmentMode = Globals.DevelopmentMode
-
-            # Compile and cache expressions
-            expressions = None
-            if not DevelopmentMode:
-                expressions = cache.expressions
-
-            if expressions is None:
-                expressions = {}
-                for name, expressionText in parameterExpressions.items():
-                    expressions[name] = compileExpression(expressionText)
-
-                if not DevelopmentMode:
-                    cache.updateExpressions(expressions)
-
-            # Execute all expressions
-            context = findContext(self.published)
-            expressionContext = createExpressionContext(context, self.request)
-            for name, expression in expressions.items():
-                params[name] = quote_param(expression(expressionContext))
+        
+        parameterExpressions = settings.parameterExpressions or {}
+        params = prepareThemeParameters(findContext(self.published), self.request, parameterExpressions, cache) 
 
         transformed = transform(result.tree, **params)
         if transformed is None:

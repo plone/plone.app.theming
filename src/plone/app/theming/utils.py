@@ -5,7 +5,12 @@ import pkg_resources
 from StringIO import StringIO
 from ConfigParser import SafeConfigParser
 
+from urlparse import urlsplit
+
 from lxml import etree
+
+from diazo.compiler import compile_theme
+from diazo.compiler import quote_param
 
 from zope.site.hooks import getSite
 from zope.component import getUtility
@@ -18,6 +23,7 @@ from plone.subrequest import subrequest
 from plone.resource.interfaces import IResourceDirectory
 from plone.resource.utils import queryResourceDirectory
 from plone.resource.utils import cloneResourceDirectory
+from plone.resource.manifest import getManifest
 from plone.resource.manifest import extractManifestFromZipFile
 from plone.resource.manifest import getAllResources
 from plone.resource.manifest import getZODBResources
@@ -294,6 +300,41 @@ def getAvailableThemes():
     themes.sort(key=lambda x: x.title)
     return themes
 
+def getThemeFromResourceDirectory(resourceDirectory):
+    """Return a Theme object from a resource directory
+    """
+
+    name = resourceDirectory.__name__
+
+    title = name.capitalize().replace('-', ' ').replace('.', ' ')
+    description = None
+    rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
+    prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
+    params = {}
+    doctype = ""
+
+    if MANIFEST_FILENAME in resourceDirectory:
+        manifest = getManifest(resourceDirectory.openFile(MANIFEST_FILENAME), MANIFEST_FORMAT)
+
+        title = manifest['title'] or title
+        description = manifest['description'] or description
+        rules = manifest['rules'] or rules
+        prefix = manifest['prefix'] or prefix
+        params = manifest['parameters'] or params
+        doctype = manifest['doctype'] or doctype
+
+    if isinstance(rules, str):
+        rules = rules.decode('utf-8')
+    if isinstance(prefix, str):
+        prefix = prefix.decode('utf-8')
+
+    return Theme(name, rules,
+                title=title,
+                description=description,
+                absolutePrefix=prefix,
+                parameterExpressions=params,
+                doctype=doctype,
+            )
 
 def getZODBThemes():
     """Get a list of ITheme's stored in the ZODB.
@@ -468,8 +509,6 @@ def createThemeFromTemplate(title, description, baseOn='template'):
 
     cloneResourceDirectory(source, target)
     
-    # TODO: Preserve rest of manifest from source
-
     manifest = SafeConfigParser()
 
     if MANIFEST_FILENAME in target:
@@ -490,3 +529,102 @@ def createThemeFromTemplate(title, description, baseOn='template'):
     target.writeFile(MANIFEST_FILENAME, manifestContents)
     
     return themeName
+
+def compileThemeTransform(rules, absolutePrefix=None, readNetwork=False, parameterExpressions=None):
+    """Prepare the theme transform by compiling the rules with the given options
+    """
+    
+    if parameterExpressions is None:
+        parameterExpressions = {}
+    
+    accessControl = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=readNetwork, write_network=False)
+
+    if absolutePrefix:
+        absolutePrefix = expandAbsolutePrefix(absolutePrefix)
+
+    params = set(parameterExpressions.keys() + ['url', 'base', 'path', 'scheme', 'host'])
+    xslParams = dict((k, '') for k in params)
+    
+    internalResolver = InternalResolver()
+    pythonResolver = PythonResolver()
+    if readNetwork:
+        networkResolver = NetworkResolver()
+
+    rulesParser = etree.XMLParser(recover=False)
+    rulesParser.resolvers.add(internalResolver)
+    rulesParser.resolvers.add(pythonResolver)
+    if readNetwork:
+        rulesParser.resolvers.add(networkResolver)
+
+    themeParser = etree.HTMLParser()
+    themeParser.resolvers.add(internalResolver)
+    themeParser.resolvers.add(pythonResolver)
+    if readNetwork:
+        themeParser.resolvers.add(networkResolver)
+
+    compilerParser = etree.XMLParser()
+    compilerParser.resolvers.add(internalResolver)
+    compilerParser.resolvers.add(pythonResolver)
+    if readNetwork:
+        compilerParser.resolvers.add(networkResolver)
+
+    compiledTheme = compile_theme(rules,
+            absolute_prefix=absolutePrefix,
+            parser=themeParser,
+            rules_parser=rulesParser,
+            compiler_parser=compilerParser,
+            read_network=readNetwork,
+            access_control=accessControl,
+            update=True,
+            xsl_params=xslParams,
+        )
+
+    if not compiledTheme:
+        return None
+
+    return etree.XSLT(compiledTheme,
+            access_control=accessControl,
+        )
+
+def prepareThemeParameters(context, request, parameterExpressions, cache=None):
+    """Prepare and return a dict of parameter expression values.
+    """
+
+    # Find real or virtual path - PATH_INFO has VHM elements in it
+    url = request.get('ACTUAL_URL', '')
+
+    # Find the host name
+    base = request.get('BASE1', '')
+    path = url[len(base):]
+    parts = urlsplit(base.lower())
+
+    params = dict(
+            url=quote_param(url),
+            base=quote_param(base),
+            path=quote_param(path),
+            scheme=quote_param(parts.scheme),
+            host=quote_param(parts.netloc),
+        )
+
+    # Add expression-based parameters
+    if parameterExpressions:
+        
+        # Compile and cache expressions
+        expressions = None
+        if cache is not None:
+            expressions = cache.expressions
+
+        if expressions is None:
+            expressions = {}
+            for name, expressionText in parameterExpressions.items():
+                expressions[name] = compileExpression(expressionText)
+
+            if cache is not None:
+                cache.updateExpressions(expressions)
+
+        # Execute all expressions
+        expressionContext = createExpressionContext(context, request)
+        for name, expression in expressions.items():
+            params[name] = quote_param(expression(expressionContext))
+    
+    return params
