@@ -17,6 +17,7 @@ from OFS.Image import File, Image
 from zExceptions import NotFound
 from Products.Five.browser.decode import processInputs
 from Products.CMFCore.utils import getToolByName
+from plone.app.theming.browser.controlpanel import authorize
 
 
 class FileManager(BrowserView):
@@ -38,6 +39,11 @@ class FileManager(BrowserView):
         'vbs', 'wav', 'wma', 'wmv', 'xls', 'xml', 'xsl', 'zip',
     ])
 
+    protectedActions = (
+        'addfolder', 'add', 'addnew',
+        'rename', 'delete'
+    )
+
     resourceType = None  # Set in subclass
 
     def __call__(self):
@@ -47,6 +53,9 @@ class FileManager(BrowserView):
         # AJAX methods called by the file manager
         if 'mode' in form:
             mode = form['mode']
+
+            if mode in self.protectedActions:
+                authorize(self.context, self.request)
 
             response = {'Error:': 'Unknown request', 'Code': -1}
             textareaWrap = False
@@ -164,7 +173,6 @@ var pathPrefix = '%s';
         to getFolder(). This can be used for example to only show image files
         in a file system tree.
         """
-
         folders = []
         files = []
 

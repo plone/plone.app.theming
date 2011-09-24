@@ -36,6 +36,10 @@ $.urlParam = function(name){
 		return 0;
 }
 
+var getAuthenicator = function(){
+    return $('input[name="_authenticator"]').eq(0).val();
+}
+
 /*---------------------------------------------------------
   Setup, Layout, and Status Functions
 ---------------------------------------------------------*/
@@ -139,15 +143,24 @@ var setUploader = function(path){
 
             if(fname != ''){
                 filename = fname;
-                var d = new Date(); // to prevent IE cache issues
-                $.getJSON(fileConnector + '?mode=addnew&path=' + $('#currentpath').val() + '&name=' + filename + '&time=' + d.getMilliseconds(), function(result){
-                    if(result['Code'] == 0){
-                        // addNewFile(result['Parent'], result['Name']);
-                        // getFolderInfo(result['Parent']);
-                        addNode(result['Parent'], result['Name']);
-                    } else {
-                        $.prompt(result['Error']);
-                    }               
+                $.ajax({
+                    url: fileConnector,
+                    data: {
+                        mode: 'addnew',
+                        path: $('#currentpath').val(),
+                        name: filename,
+                        _authenticator: getAuthenicator()
+                    },
+                    type: 'POST',
+                    success: function(result){
+                        if(result['Code'] == 0){
+                            // addNewFile(result['Parent'], result['Name']);
+                            // getFolderInfo(result['Parent']);
+                            addNode(result['Parent'], result['Name']);
+                        } else {
+                            $.prompt(result['Error']);
+                        }
+                    }
                 });
             } else {
                 $.prompt(lg.no_filename);
@@ -172,15 +185,20 @@ var setUploader = function(path){
 
 			if(fname != ''){
 				foldername = fname;
-				var d = new Date(); // to prevent IE cache issues
-				$.getJSON(fileConnector + '?mode=addfolder&path=' + $('#currentpath').val() + '&name=' + foldername + '&time=' + d.getMilliseconds(), function(result){
-					if(result['Code'] == 0){
-						addFolder(result['Parent'], result['Name']);
-						getFolderInfo(result['Parent']);
-					} else {
-						$.prompt(result['Error']);
-					}				
-				});
+				$.getJSON(fileConnector, {
+                        mode: 'addfolder',
+                        path: $('#currentpath').val(),
+                        name: foldername,
+                        _authenticator: getAuthenicator()
+                    }, function(result){
+				       if(result['Code'] == 0){
+					      addFolder(result['Parent'], result['Name']);
+					      getFolderInfo(result['Parent']);
+				       } else {
+					      $.prompt(result['Error']);
+				       }				
+				    }
+            );
 			} else {
 				$.prompt(lg.no_foldername);
 			}
@@ -279,11 +297,16 @@ var renameItem = function(data){
 		if(rname != ''){
 			var givenName = nameFormat(rname);	
 			var oldPath = data['Path'];	
-			var connectString = fileConnector + '?mode=rename&old=' + data['Path'] + '&new=' + givenName;
 		
 			$.ajax({
-				type: 'GET',
-				url: connectString,
+				type: 'POST',
+				url: fileConnector,
+                data: {
+                    mode: 'rename',
+                    old: data['Path'],
+                    new: givenName,
+                    _authenticator: getAuthenicator()
+                },
 				dataType: 'json',
 				async: false,
 				success: function(result){
@@ -328,13 +351,17 @@ var deleteItem = function(data){
 	var msg = lg.confirmation_delete;
 	
 	var doDelete = function(v, m){
-		if(v != 1) return false;	
-		var connectString = fileConnector + '?mode=delete&path=' + encodeURIComponent(data['Path']);
+		if(v != 1) return false;
 	
 		$.ajax({
-			type: 'GET',
-			url: connectString,
+			type: 'POST',
+			url: fileConnector,
 			dataType: 'json',
+            data: {
+                mode: 'delete',
+                path: encodeURIComponent(data['Path']),
+                _authenticator: getAuthenicator()
+            },
 			async: false,
 			success: function(result){
 				if(result['Code'] == 0){

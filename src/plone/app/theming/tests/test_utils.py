@@ -2,6 +2,7 @@ import unittest2 as unittest
 
 from plone.app.theming.testing import THEMING_INTEGRATION_TESTING
 
+
 class TestIntegration(unittest.TestCase):
 
     layer = THEMING_INTEGRATION_TESTING
@@ -25,17 +26,20 @@ class TestIntegration(unittest.TestCase):
 
     def test_getAvailableThemes(self):
         from plone.app.theming.utils import getAvailableThemes
+        from plone.app.theming.utils import getTheme
 
         themes = getAvailableThemes()
 
         self.assertEqual(len(themes), 2)
-        self.assertEqual(themes[1].__name__, 'plone.app.theming.tests')
-        self.assertEqual(themes[1].title, 'Test theme')
-        self.assertEqual(themes[1].description, 'A theme for testing')
-        self.assertEqual(themes[1].rules, '/++theme++plone.app.theming.tests/rules.xml')
-        self.assertEqual(themes[1].absolutePrefix, '/++theme++plone.app.theming.tests')
-        self.assertEqual(themes[1].parameterExpressions, {'foo': "python:request.get('bar')"})
-        self.assertEqual(themes[1].doctype, "<!DOCTYPE html>")
+        theme = getTheme('plone.app.theming.tests')
+        self.assertTrue(theme is not None)
+        self.assertEqual(theme.__name__, 'plone.app.theming.tests')
+        self.assertEqual(theme.title, 'Test theme')
+        self.assertEqual(theme.description, 'A theme for testing')
+        self.assertEqual(theme.rules, '/++theme++plone.app.theming.tests/rules.xml')
+        self.assertEqual(theme.absolutePrefix, '/++theme++plone.app.theming.tests')
+        self.assertEqual(theme.parameterExpressions, {'foo': "python:request.get('bar')"})
+        self.assertEqual(theme.doctype, "<!DOCTYPE html>")
 
     def test_getZODBThemes(self):
         import zipfile
@@ -103,6 +107,7 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(settings.rules, None)
         self.assertEqual(settings.absolutePrefix, None)
         self.assertEqual(settings.parameterExpressions, {})
+
 
 class TestUnit(unittest.TestCase):
 

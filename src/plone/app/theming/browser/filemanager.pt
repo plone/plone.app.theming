@@ -122,7 +122,7 @@
 </head>
 
 <body>
-<div metal:fill-slot="prefs_configlet_main">
+<div metal:fill-slot="prefs_configlet_main" tal:define="authenticator context/@@authenticator/authenticator">
 
     <h1 class="documentFirstHeading"
         i18n:translate="heading_edit_theme">Manage theme: 
@@ -134,9 +134,11 @@
         i18n:translate="label_up_to_theming_contorlpanel">
             Up to Diazo theme control panel
     </a>
+    <input tal:replace="structure authenticator" />
 
     <div id="filemanager">
         <form id="uploader" method="post">
+            <input tal:replace="structure authenticator" />
             <button id="home" name="home" type="button" value="Home" i18n:attributes="value">&nbsp;</button>
             <h1></h1>
             <div id="uploadresponse"></div>
@@ -148,7 +150,8 @@
             <button id="newfolder" name="newfolder" type="button" value="New Folder" i18n:attributes="value"></button>
         </form>
         <div id="splitter">
-            <div id="filetree"></div>
+            <div id="filetree">
+            </div>
             <div id="fileeditor">
                 <ul id="fileselector">
 

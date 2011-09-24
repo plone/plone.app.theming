@@ -261,6 +261,43 @@ def extractThemeInfo(zipfile):
         )
 
 
+def getTheme(name, manifest=None, resources=None):
+    if manifest is None:
+        if resources is None:
+            resources = getAllResources(
+                MANIFEST_FORMAT, filter=isValidThemeDirectory)
+        if name not in resources:
+            return None
+        manifest = resources[name]
+    title = name.capitalize().replace('-', ' ').replace('.', ' ')
+    description = None
+    rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
+    prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
+    params = {}
+    doctype = ""
+
+    if manifest is not None:
+        title = manifest['title'] or title
+        description = manifest['description'] or description
+        rules = manifest['rules'] or rules
+        prefix = manifest['prefix'] or prefix
+        params = manifest['parameters'] or params
+        doctype = manifest['doctype'] or doctype
+
+    if isinstance(rules, str):
+        rules = rules.decode('utf-8')
+    if isinstance(prefix, str):
+        prefix = prefix.decode('utf-8')
+
+    return Theme(name, rules,
+            title=title,
+            description=description,
+            absolutePrefix=prefix,
+            parameterExpressions=params,
+            doctype=doctype,
+        )
+
+
 def getAvailableThemes():
     """Get a list of all ITheme's available in resource directories.
     """
@@ -268,37 +305,11 @@ def getAvailableThemes():
     resources = getAllResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
     themes = []
     for name, manifest in resources.items():
-        title = name.capitalize().replace('-', ' ').replace('.', ' ')
-        description = None
-        rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
-        prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
-        params = {}
-        doctype = ""
-
-        if manifest is not None:
-            title = manifest['title'] or title
-            description = manifest['description'] or description
-            rules = manifest['rules'] or rules
-            prefix = manifest['prefix'] or prefix
-            params = manifest['parameters'] or params
-            doctype = manifest['doctype'] or doctype
-
-        if isinstance(rules, str):
-            rules = rules.decode('utf-8')
-        if isinstance(prefix, str):
-            prefix = prefix.decode('utf-8')
-
-        themes.append(Theme(name, rules,
-                    title=title,
-                    description=description,
-                    absolutePrefix=prefix,
-                    parameterExpressions=params,
-                    doctype=doctype,
-                )
-            )
+        themes.append(getTheme(name, manifest))
 
     themes.sort(key=lambda x: x.title)
     return themes
+
 
 def getThemeFromResourceDirectory(resourceDirectory):
     """Return a Theme object from a resource directory
@@ -314,7 +325,8 @@ def getThemeFromResourceDirectory(resourceDirectory):
     doctype = ""
 
     if MANIFEST_FILENAME in resourceDirectory:
-        manifest = getManifest(resourceDirectory.openFile(MANIFEST_FILENAME), MANIFEST_FORMAT)
+        manifest = getManifest(
+            resourceDirectory.openFile(MANIFEST_FILENAME), MANIFEST_FORMAT)
 
         title = manifest['title'] or title
         description = manifest['description'] or description
@@ -336,6 +348,7 @@ def getThemeFromResourceDirectory(resourceDirectory):
                 doctype=doctype,
             )
 
+
 def getZODBThemes():
     """Get a list of ITheme's stored in the ZODB.
     """
@@ -343,29 +356,7 @@ def getZODBThemes():
     resources = getZODBResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
     themes = []
     for name, manifest in resources.items():
-        title = name.capitalize().replace('-', ' ').replace('.', ' ')
-        description = None
-        rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
-        prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
-        params = {}
-        doctype = ""
-
-        if manifest is not None:
-            title = manifest['title'] or title
-            description = manifest['description'] or description
-            rules = manifest['rules'] or rules
-            prefix = manifest['prefix'] or prefix
-            params = manifest['parameters'] or params
-            doctype = manifest['doctype'] or doctype
-
-        themes.append(Theme(name, rules,
-                            title=title,
-                            description=description,
-                            absolutePrefix=prefix,
-                            parameterExpressions=params,
-                            doctype=doctype,
-                            )
-            )
+        themes.append(getTheme(name, manifest))
 
     themes.sort(key=lambda x: x.title)
     return themes
@@ -484,6 +475,7 @@ def applyTheme(theme):
                                   pluginSettings)
                 plugin.onEnabled(theme, pluginSettings[name], pluginSettings)
 
+
 def createThemeFromTemplate(title, description, baseOn='template'):
     """Create a new theme from the given title and description based on
     another theme resource directory
@@ -496,7 +488,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
     themeName = getUtility(IURLNormalizer).normalize(title)
     if isinstance(themeName, unicode):
         themeName = themeName.encode('utf-8')
-    
+
     resources = getOrCreatePersistentResourceDirectory()
     if themeName in resources:
         idx = 1
@@ -527,8 +519,9 @@ def createThemeFromTemplate(title, description, baseOn='template'):
     manifestContents = StringIO()
     manifest.write(manifestContents)
     target.writeFile(MANIFEST_FILENAME, manifestContents)
-    
+
     return themeName
+
 
 def compileThemeTransform(rules, absolutePrefix=None, readNetwork=False, parameterExpressions=None):
     """Prepare the theme transform by compiling the rules with the given options
@@ -585,6 +578,7 @@ def compileThemeTransform(rules, absolutePrefix=None, readNetwork=False, paramet
     return etree.XSLT(compiledTheme,
             access_control=accessControl,
         )
+
 
 def prepareThemeParameters(context, request, parameterExpressions, cache=None):
     """Prepare and return a dict of parameter expression values.

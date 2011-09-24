@@ -31,6 +31,13 @@ from Products.statusmessages.interfaces import IStatusMessage
 
 logger = logging.getLogger('plone.app.theming')
 
+
+def authorize(context, request):
+    authenticator = getMultiAdapter((context, request), name=u"authenticator")
+    if not authenticator.verify():
+        raise Unauthorized
+
+
 class ThemingControlpanel(BrowserView):
 
     def __call__(self):
@@ -39,13 +46,18 @@ class ThemingControlpanel(BrowserView):
         return ''
 
     def _setup(self):
-        self.settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        self.settings = getUtility(IRegistry).forInterface(
+                                                IThemeSettings, False)
         self.zodbThemes = getZODBThemes()
         self.availableThemes = getAvailableThemes()
-        self.selectedTheme = self.getSelectedTheme(self.availableThemes, self.settings.rules)
+        self.selectedTheme = self.getSelectedTheme(
+                                self.availableThemes, self.settings.rules)
 
         # Set response header to make sure control panel is never themed
         self.request.response.setHeader('X-Theme-Disabled', '1')
+
+    def redirect(self, url):
+        self.request.response.redirect(url)
 
     def update(self):
         processInputs(self.request)
@@ -54,24 +66,24 @@ class ThemingControlpanel(BrowserView):
         form = self.request.form
 
         if 'form.button.Cancel' in form:
-            
             IStatusMessage(self.request).add(_(u"Changes cancelled"))
 
             portalUrl = getToolByName(self.context, 'portal_url')()
-            self.request.response.redirect("%s/plone_control_panel" % portalUrl)
-            
+            self.redirect("%s/plone_control_panel" % portalUrl)
+
             return False
 
         if 'form.button.BasicSave' in form:
             self.authorize()
-            
+
             self.settings.enabled = form.get('enabled', False)
             themeSelection = form.get('selectedTheme', None)
 
             if themeSelection != "_other_":
-                themeData = self.getThemeData(self.availableThemes, themeSelection)
+                themeData = self.getThemeData(self.availableThemes,
+                                              themeSelection)
                 applyTheme(themeData)
-            
+
             IStatusMessage(self.request).add(_(u"Changes saved"))
             self._setup()
             return True
@@ -93,12 +105,16 @@ class ThemingControlpanel(BrowserView):
             for line in parameterExpressionsList:
                 try:
                     name, expression = line.split('=', 1)
-                    parameterExpressions[str(name.strip())] = str(expression.strip())
+                    parameterExpressions[str(name.strip())] = \
+                                                    str(expression.strip())
                 except ValueError:
-                    self.errors['parameterExpressions'] = _('error_invalid_parameter_expressions',
-                        default=u"Please ensure you enter one expression per line, in the format <name> = <expression>."
+                    self.errors['parameterExpressions'] = \
+                                    _('error_invalid_parameter_expressions',
+                        default=u"Please ensure you enter one "
+                                u"expression per line, in the "
+                                u"format <name> = <expression>."
                     )
-            
+
             if not self.errors:
 
                 # Trigger onDisabled() on plugins if theme was active
@@ -116,10 +132,9 @@ class ThemingControlpanel(BrowserView):
                 IStatusMessage(self.request).add(_(u"Changes saved"))
                 self._setup()
                 return True
-            
             else:
-                
-                IStatusMessage(self.request).add(_(u"There were errors"), 'error')
+                IStatusMessage(self.request).add(_(u"There were errors"),
+                                                 'error')
                 self.redirectToFieldset('advanced')
                 return False
 
@@ -148,7 +163,8 @@ class ThemingControlpanel(BrowserView):
                 except (ValueError, KeyError,), e:
                     logger.warn(str(e))
                     self.errors['themeArchive'] = _('error_no_rules_file',
-                            u"The uploaded file does not contain a valid theme archive."
+                            u"The uploaded file does not contain "
+                            u"a valid theme archive."
                         )
                 else:
 
@@ -157,8 +173,11 @@ class ThemingControlpanel(BrowserView):
 
                     if themeExists:
                         if not replaceExisting:
-                            self.errors['themeArchive'] = _('error_already_installed',
-                                    u"This theme is already installed. Select 'Replace existing theme' and re-upload to replace it."
+                            self.errors['themeArchive'] = \
+                                _('error_already_installed',
+                                    u"This theme is already installed. "
+                                    u"Select 'Replace existing theme' "
+                                    u"and re-upload to replace it."
                                 )
                         else:
                             del themeContainer[themeData.__name__]
@@ -169,42 +188,49 @@ class ThemingControlpanel(BrowserView):
             if performImport:
                 themeContainer.importZip(themeZip)
 
-                themeDirectory = queryResourceDirectory(THEME_RESOURCE_NAME, themeData.__name__)
+                themeDirectory = queryResourceDirectory(
+                        THEME_RESOURCE_NAME, themeData.__name__
+                    )
                 if themeDirectory is not None:
                     plugins = getPlugins()
                     pluginSettings = getPluginSettings(themeDirectory, plugins)
                     if pluginSettings is not None:
                         for name, plugin in plugins:
-                            plugin.onCreated(themeData.__name__, pluginSettings[name], pluginSettings)
+                            plugin.onCreated(themeData.__name__,
+                                             pluginSettings[name],
+                                             pluginSettings)
 
                 if enableNewTheme:
                     applyTheme(themeData)
                     self.settings.enabled = True
-            
+
             if not self.errors:
                 IStatusMessage(self.request).add(_(u"Changes saved"))
                 self._setup()
                 return True
             else:
-                IStatusMessage(self.request).add(_(u"There were errors"), "error")
+                IStatusMessage(self.request).add(
+                        _(u"There were errors"), "error"
+                    )
                 self.redirectToFieldset('import')
                 return False
-        
+
         if 'form.button.CreateTheme' in form:
             self.authorize()
-            
+
             title = form.get('title')
             description = form.get('description') or ''
             baseOn = form.get('baseOn', 'template')
             enableImmediately = form.get('enableImmediately', True)
-            
+
             if not title:
                 self.errors['title'] = _(u"Title is required")
 
-                IStatusMessage(self.request).add(_(u"There were errors"), 'error')
+                IStatusMessage(self.request).add(
+                    _(u"There were errors"), 'error')
                 self.redirectToFieldset('create')
                 return False
-            
+
             else:
                 name = createThemeFromTemplate(title, description, baseOn)
                 self._setup()
@@ -216,7 +242,10 @@ class ThemingControlpanel(BrowserView):
 
                 IStatusMessage(self.request).add(_(u"Theme created"))
                 portalUrl = getToolByName(self.context, 'portal_url')()
-                self.request.response.redirect("%s/++theme++%s/@@theming-controlpanel-editor" % (portalUrl, name,))
+                self.redirect(
+                    "%s/++theme++%s/@@theming-controlpanel-editor" % (
+                        portalUrl, name,)
+                    )
                 return False
 
         if 'form.button.DeleteSelected' in form:
@@ -227,10 +256,10 @@ class ThemingControlpanel(BrowserView):
 
             for theme in toDelete:
                 del themeDirectory[theme]
-            
+
             self.redirectToFieldset('manage')
             return False
-        
+
         return True
 
     def getSelectedTheme(self, themes, rules):
@@ -244,7 +273,7 @@ class ThemingControlpanel(BrowserView):
             if item.__name__ == themeSelection:
                 return item
         return None
-    
+
     @memoize
     def themeList(self):
         themes = []
@@ -257,17 +286,15 @@ class ThemingControlpanel(BrowserView):
                 'description': theme.description,
                 'editable': theme.__name__ in zodbNames,
             })
-        
-        themes.sort(key=lambda x:x['title'])
+
+        themes.sort(key=lambda x: x['title'])
 
         return themes
 
-    def authorize(self):
-        authenticator = getMultiAdapter((self.context, self.request), name=u"authenticator")
-        if not authenticator.verify():
-            raise Unauthorized
-
     def redirectToFieldset(self, fieldset):
         portalUrl = getToolByName(self.context, 'portal_url')()
-        self.request.response.redirect("%s/%s#fieldsetlegend-%s" % (portalUrl, self.__name__, fieldset,))
+        self.redirect("%s/%s#fieldsetlegend-%s" % (
+            portalUrl, self.__name__, fieldset,))
 
+    def authorize(self):
+        return authorize(self.context, self.request)

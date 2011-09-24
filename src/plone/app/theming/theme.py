@@ -22,3 +22,6 @@ class Theme(object):
         self.absolutePrefix = absolutePrefix
         self.parameterExpressions = parameterExpressions
         self.doctype = doctype
+
+    def __repr__(self):
+        return '<Theme "%s"' % self.__name__
