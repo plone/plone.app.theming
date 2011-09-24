@@ -37,7 +37,7 @@
         template="filemanager.pt"
         permission="cmf.ManagePortal"
         />
-
+    
     <browser:page
         name="theming-controlpanel-filemanager-getfile"
         for="plone.resource.interfaces.IResourceDirectory"
@@ -45,11 +45,36 @@
         attribute="getFile"
         permission="cmf.ManagePortal"
         />
+    
     <browser:page
         name="theming-controlpanel-filemanager-savefile"
         for="plone.resource.interfaces.IResourceDirectory"
         class=".filemanager.ThemeFileManager"
         attribute="saveFile"
+        permission="cmf.ManagePortal"
+        />
+    
+    <browser:page
+        name="theming-controlpanel-mapper"
+        for="plone.resource.interfaces.IResourceDirectory"
+        class=".mapper.ThemeMapper"
+        template="mapper.pt"
+        permission="cmf.ManagePortal"
+        />
+    
+    <browser:page
+        name="theming-controlpanel-mapper-getframe"
+        for="plone.resource.interfaces.IResourceDirectory"
+        class=".mapper.ThemeMapper"
+        attribute="getFrame"
+        permission="cmf.ManagePortal"
+        />
+    
+    <browser:page
+        name="theming-controlpanel-mapper-save"
+        for="plone.resource.interfaces.IResourceDirectory"
+        class=".mapper.ThemeMapper"
+        attribute="save"
         permission="cmf.ManagePortal"
         />
 

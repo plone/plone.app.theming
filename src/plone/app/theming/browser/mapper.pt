@@ -1,0 +1,340 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    lang="en"
+    metal:use-macro="context/prefs_main_template/macros/master"
+    i18n:domain="plone">
+
+<head>
+<metal:block fill-slot="top_slot">
+
+<tal:defines define="dummy python:request.set('disable_border',1);
+                     disable_column_one python:request.set('disable_plone.leftcolumn',1);
+                     disable_column_two python:request.set('disable_plone.rightcolumn',1);"/>
+
+<!-- ACE editor -->
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/ace.js"
+    ></script>
+
+<!-- Theme -->
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/theme-textmate.js"
+    ></script>
+
+<!-- Syntax highlighting -->
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-xml.js"
+    ></script>
+
+
+<!-- Styling for this page -->
+<link
+    rel="stylesheet"
+    type="text/css"
+    tal:attributes="href string:${context/absolute_url}/++resource++plone.app.theming.editor/mapper.css"
+    />
+
+<script type="text/javascript" tal:content="view/jsVariables"></script>
+
+<script type="text/javascript">
+    
+    jQuery(function($) {
+        
+        $(document).ready(function() {
+            
+            // Editor management
+
+            var editor;
+            
+            function initEditor(mode, data) {
+                editor = ace.edit("editor");
+                editor.setTheme("ace/theme/textmate");
+                editor.getSession().setTabSize(4);
+                editor.getSession().setUseSoftTabs(true);
+                editor.getSession().setUseWrapMode(false);
+                editor.getSession().setMode(mode);
+                editor.renderer.setShowGutter(false);
+                editor.setShowPrintMargin(false);
+
+                editor.getSession().setValue(data);
+                editor.navigateTo(0, 0);
+            }
+
+            var XMLMode = require("ace/mode/xml").Mode;
+            var data = $("#file-contents").text();
+            initEditor(new XMLMode(), data);
+
+            // Outline / highlight management
+
+            var FrameHighlighter = function(frame) {
+                this.frame = frame;
+                this.currentOutline = null;
+
+                this.setOutline = function(element) {
+                    $(element).data('old-outline', $(element).css('outline'));
+                    $(element).data('old-cursor', $(element).css('cursor'));
+                    $(element).css('outline', 'solid red 1px');
+                    $(element).css('cursor', 'pointer');
+
+                    $(element).addClass('theming-highlight-active');
+
+                    if(this.currentOutline != null) {
+                        this.clearOutline(this.currentOutline);
+                    }
+
+                    this.currentOutline = element;
+                }
+
+                this.clearOutline = function(element) {
+                    $(element).css('outline', $(element).data('old-outline'));
+                    $(element).css('cursor', $(element).data('old-cursor'));
+
+                    $(element).removeClass('theming-highlight-active');
+
+                    this.currentOutline = null;
+                }
+
+                this.setupElements = function() {
+                    var highlighter = this;
+                    $(this.frame).contents().find("*").hover(
+                        function(event) {
+                            event.stopPropagation();
+                            highlighter.setOutline(this);
+                        },
+                        function(event) {
+                            highlighter.clearOutline(this); 
+                        }
+                    );
+                }
+
+            }
+
+            // Link management
+
+            var LinkManager = function(frame, themeMode) {
+                this.frame = frame;
+                this.themeMode = themeMode;
+
+                var base = window.location.protocol + '//' + window.location.host;
+
+                this.isInternal = function(url) {
+                    if (url.slice(0, base.length) == base) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
+                this.setupLinks = function() {
+                    var manager = this;
+                    $(this.frame).contents().find("a").each(function() {
+                        var href = $(this).attr('href');
+
+                        if(!$(this).hasClass("theming-modified")) {
+                            $(this).addClass('theming-modified');
+                            if(manager.isInternal(href)) {
+                                var path = href.slice(base.length, href.length);
+                                var newHref = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + encodeURIComponent(path) + "&amp;theme=" + manager.themeMode;
+                                $(this).attr('href', newHref);
+                            } else {
+                                $(this).click(function(event) {
+                                    event.preventDefault();
+                                    alert("External links are disabled in the theme editor");
+                                    return false;
+                                });
+                            }
+                        }
+                    });    
+                }
+
+                this.setupForms = function() {
+                    $(this.frame).contents().find("form").each(function() {
+                        if(!$(this).hasClass("theming-modified")) {
+                            $(this).addClass('theming-modified');
+                            $(this).submit(function(event) {
+                                event.preventDefault();
+                                alert("Form submissions are disabled in theme editor");
+                                return false;
+                            });
+                        }
+                    }); 
+                }
+
+            }
+
+            // Frame setup - the apparent double loading is needed for this
+            // to work reliably in multiple browsers
+            
+            $("#content-frame").ready(function() {
+                var frameHighlighter = new FrameHighlighter("#content-frame");
+                var linkManager = new LinkManager("#content-frame", 'off');
+                function setup() {
+                    frameHighlighter.setupElements();
+                    linkManager.setupLinks();
+                    linkManager.setupForms();
+                }
+                setup();
+                $("#content-frame").load(setup);
+            });
+
+            $("#theme-frame").ready(function() {
+                var frameHighlighter = new FrameHighlighter("#theme-frame");
+                function setup() {
+                    frameHighlighter.setupElements();
+                }
+                setup();
+                $("#theme-frame").load(setup);
+            });
+
+            $("#preview-frame").ready(function() {
+                var linkManager = new LinkManager("#preview-frame", 'apply');
+                function setup() {
+                    linkManager.setupLinks();
+                    linkManager.setupForms();
+                }
+                setup();
+                $("#preview-frame").load(setup);
+            });
+
+            // Set up theme file selector
+
+            $("#file-selector").change(function() {
+                var option = $(":selected", this);
+                var path = $(option).attr('data-path');
+                var fetch = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + path + "&amp;theme=off";
+                $("#theme-frame").attr('src', fetch);
+                return false;
+            });
+
+            // Set up save rules button
+
+            $("#save-rules").click(function() {
+                
+                var data = editor.getSession().getValue();
+                $("#file-contents").text(data);
+
+                $.ajax({
+                    url: THEME_BASE_URL + '/@@theming-controlpanel-mapper-save',
+                    data: {value: data},
+                    type: 'POST',
+                    success: function(){
+                        $('#preview-frame').attr("src", $('#preview-frame').attr("src"));
+                    }
+                });
+
+            });
+
+        });
+
+    });
+
+</script>
+
+</metal:block>
+</head>
+
+<body>
+<div metal:fill-slot="prefs_configlet_main">
+
+    <h1 class="documentFirstHeading"
+        i18n:translate="heading_theme_mapper">Map theme: 
+        <span i18n:name="name" tal:content="view/title">name</span></h1>
+    
+    <a href=""
+        class="link-parent"
+        tal:attributes="href string:${portal_url}/@@theming-controlpanel"
+        i18n:translate="label_up_to_theming_contorlpanel">
+            Up to Diazo theme control panel
+    </a>
+
+    <p i18n:translate="help_theme_mapper">
+        
+    </p>
+
+    <div id="splitview">
+        <div class="row">
+            <div id="content-split" class="cell width-1:2 position-0">
+                <h2 i18n:translate="heading_content">Content</h2>
+
+                 <p class="discreet" i18n:translate="help_split_content">
+                    The raw content
+                </p>
+
+                <iframe id="content-frame"
+                    tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=off"></iframe>
+
+            </div>
+            <div id="theme-split" class="cell width-1:2 position-1:2">
+                <h2 i18n:translate="heading_theme">Theme</h2>
+
+                <select size="1" name="file-selector" id="file-selector">
+                    <option
+                        tal:repeat="f view/themeFiles"
+                        tal:attributes="value f/path;
+                                        data-path f/path;
+                                        data-extension f/extension"
+                        tal:content="f/path"
+                        />
+                </select>
+
+                <p class="discreet" i18n:translate="help_split_theme">
+                    The pristine theme
+                </p>
+
+                <iframe id="theme-frame"
+                    tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off"></iframe>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="editor-area" class="cell width-full position-0">
+
+            <h2 i18n:translate="heading_rules">Rules</h2>
+
+            <p class="discreet" i18n:translate="help_split_content">
+                The rules that apply the theme to the content
+            </p>
+
+            <pre id="editor"></pre>
+            <textarea id="file-contents" class="hiddenStructure" name="rules"
+                tal:content="view/rules"></textarea>
+
+            <div class="formControls">
+                <button
+                    id="save-rules"
+                    name="form.button.Save"
+                    class="allowMultiSubmit"
+                    i18n:translate=""
+                    >Save and refresh preview</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="preview" class="cell width-full position-0">
+            <h2 i18n:translate="heading_merged">Preview</h2>
+
+            <p class="discreet" i18n:translate="help_split_merged">
+                The result of applying the rules can be shown here
+            </p>
+
+            <iframe id="preview-frame"
+                tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply"></iframe>
+
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
