@@ -28,14 +28,14 @@ class TestIntegration(unittest.TestCase):
 
         themes = getAvailableThemes()
 
-        self.assertEqual(len(themes), 1)
-        self.assertEqual(themes[0].__name__, 'plone.app.theming.tests')
-        self.assertEqual(themes[0].title, 'Test theme')
-        self.assertEqual(themes[0].description, 'A theme for testing')
-        self.assertEqual(themes[0].rules, '/++theme++plone.app.theming.tests/rules.xml')
-        self.assertEqual(themes[0].absolutePrefix, '/++theme++plone.app.theming.tests')
-        self.assertEqual(themes[0].parameterExpressions, {'foo': "python:request.get('bar')"})
-        self.assertEqual(themes[0].doctype, "<!DOCTYPE html>")
+        self.assertEqual(len(themes), 2)
+        self.assertEqual(themes[1].__name__, 'plone.app.theming.tests')
+        self.assertEqual(themes[1].title, 'Test theme')
+        self.assertEqual(themes[1].description, 'A theme for testing')
+        self.assertEqual(themes[1].rules, '/++theme++plone.app.theming.tests/rules.xml')
+        self.assertEqual(themes[1].absolutePrefix, '/++theme++plone.app.theming.tests')
+        self.assertEqual(themes[1].parameterExpressions, {'foo': "python:request.get('bar')"})
+        self.assertEqual(themes[1].doctype, "<!DOCTYPE html>")
 
     def test_getZODBThemes(self):
         import zipfile

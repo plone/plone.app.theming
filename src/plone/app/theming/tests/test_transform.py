@@ -97,7 +97,7 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        theme = getAvailableThemes()[0]
+        theme = getAvailableThemes()[1]
         applyTheme(theme)
         self.assertEqual(self.settings.rules, u'/++theme++plone.app.theming.tests/rules.xml')
         self.assertEqual(self.settings.currentTheme, u"plone.app.theming.tests")
