@@ -243,7 +243,7 @@ class ThemingControlpanel(BrowserView):
                 IStatusMessage(self.request).add(_(u"Theme created"))
                 portalUrl = getToolByName(self.context, 'portal_url')()
                 self.redirect(
-                    "%s/++theme++%s/@@theming-controlpanel-editor" % (
+                    "%s/++theme++%s/@@theming-controlpanel-filemanager" % (
                         portalUrl, name,)
                     )
                 return False
