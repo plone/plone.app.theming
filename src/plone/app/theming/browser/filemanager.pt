@@ -139,7 +139,6 @@
     <div id="filemanager">
         <form id="uploader" method="post">
             <input tal:replace="structure authenticator" />
-            <button id="home" name="home" type="button" value="Home" i18n:attributes="value">&nbsp;</button>
             <h1></h1>
             <div id="uploadresponse"></div>
             <input id="mode" name="mode" type="hidden" value="add" i18n:attributes="value"/> 
@@ -150,7 +149,14 @@
             <button id="newfolder" name="newfolder" type="button" value="New Folder" i18n:attributes="value"></button>
         </form>
         <div id="splitter">
-            <div id="filetree">
+            <div id="fileRoot">
+                <ul class="jqueryFileTree">
+                    <li id="rootNode" class="directory">
+                        <a rel="/" href="#">/</a>
+                    </li>
+                </ul>
+                <div id="filetree">
+                </div>
             </div>
             <div id="fileeditor">
                 <ul id="fileselector">

@@ -593,11 +593,6 @@ $(function(){
 
 	// cosmetic tweak for buttons
 	$('button').wrapInner('<span></span>');
-	
-	$('#home').click(function(){
-		$('#filetree>ul>li.expanded>a').trigger('click');
-		getFolderInfo(fileRoot);
-	});
 
 	// Provide initial values for upload form, status, etc.
 	setUploader(fileRoot);
@@ -736,6 +731,12 @@ $(function(){
         });
         return false;
     });
+
+    $("#rootNode a").click(function(){
+        $('#filetree>ul>li.expanded>a').trigger('click');
+        getFolderInfo(fileRoot);
+        return false;
+    })
 
 	// Disable select function if no window.opener
 	if(window.opener == null) $('#itemOptions a[href$="#select"]').remove();
