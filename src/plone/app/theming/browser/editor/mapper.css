@@ -28,11 +28,7 @@
     border: dashed #333 1px;
 }
 
-#preview {
-    margin-top: 20px;
-}
-
-#editor-area {
+#splitview {
     margin-top: 20px;
 }
 

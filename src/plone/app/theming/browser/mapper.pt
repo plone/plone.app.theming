@@ -455,50 +455,13 @@
     </a>
 
     <p i18n:translate="help_theme_mapper">
-        Below, you will find four panels: The unthemed content, the raw theme,
-        the Diazo rules, and the result of applying the rules to the theme and
-        content. You can navigate the content, theme or preview, and change to
+        Below, you will find four panels: The Diazo rules, a preview of the themed
+        site using these rules, the unthemed content and the raw theme.
+        You can navigate the content, theme or preview, and change to
         a different theme file if you wish. If you edit the rules and click
         <strong>Save and refresh preview</strong>, your changes will be saved
         and the preview updated to reflect the latest rules.
     </p>
-
-    <div id="splitview">
-        <div class="row">
-            <div id="content-split" class="cell width-1:2 position-0">
-                <h2 i18n:translate="heading_content">Content</h2>
-
-                 <p class="discreet" i18n:translate="help_split_content">
-                    The raw content
-                </p>
-
-                <iframe id="content-frame"
-                    tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=off"></iframe>
-
-            </div>
-            <div id="theme-split" class="cell width-1:2 position-1:2">
-                <h2 i18n:translate="heading_theme">Theme</h2>
-
-                <select size="1" name="file-selector" id="file-selector">
-                    <option
-                        tal:repeat="f view/themeFiles"
-                        tal:attributes="value f/path;
-                                        data-path f/path;
-                                        data-extension f/extension"
-                        tal:content="f/path"
-                        />
-                </select>
-
-                <p class="discreet" i18n:translate="help_split_theme">
-                    The pristine theme
-                </p>
-
-                <iframe id="theme-frame"
-                    tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off"></iframe>
-
-            </div>
-        </div>
-    </div>
 
     <div class="row">
         <div id="editor-area" class="cell width-full position-0">
@@ -542,6 +505,41 @@
 
             <iframe id="preview-frame"
                 tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply"></iframe>
+
+        </div>
+    </div>
+
+    <div id="splitview" class="row">
+        <div id="content-split" class="cell width-1:2 position-0">
+            <h2 i18n:translate="heading_content">Content</h2>
+
+             <p class="discreet" i18n:translate="help_split_content">
+                The raw content
+            </p>
+
+            <iframe id="content-frame"
+                tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=off"></iframe>
+
+        </div>
+        <div id="theme-split" class="cell width-1:2 position-1:2">
+            <h2 i18n:translate="heading_theme">Theme</h2>
+
+            <select size="1" name="file-selector" id="file-selector">
+                <option
+                    tal:repeat="f view/themeFiles"
+                    tal:attributes="value f/path;
+                                    data-path f/path;
+                                    data-extension f/extension"
+                    tal:content="f/path"
+                    />
+            </select>
+
+            <p class="discreet" i18n:translate="help_split_theme">
+                The pristine theme
+            </p>
+
+            <iframe id="theme-frame"
+                tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off"></iframe>
 
         </div>
     </div>
