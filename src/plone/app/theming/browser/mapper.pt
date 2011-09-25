@@ -295,9 +295,8 @@
                                 
                             highlighter.ruleBuilder.select(this);
                             highlighter.ruleBuilder.next();
+                            return false;
                         }
-
-                        return false;
                     });
                 }
 
