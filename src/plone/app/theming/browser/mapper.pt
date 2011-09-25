@@ -51,19 +51,18 @@
         $(document).ready(function() {
             
             // TODO:
-            //      - Hide Plone header / footer
-            //      - Add source view for iframes (mode toggle)
-            //      - Add rule creation wizard
-            //          1) enter wizard mode
-            //          2) select content node
-            //          3) select theme node
-            //          4) select type of rule
-            //          5) see expression, with radio buttons to change to -children rendering on the fly
+            //      - Add source view for iframes (mode toggle, use ACE in readonly mode in overlay)
+            //      - Turn rule builder into something more usable, e.g.
+            //          1) enter wizard mode (should show depressed button ala Firebug Inspect)
+            //          2) select content node - maybe chance to confirm/reselect
+            //          3) select theme node - maybe chance to confirm/reselect
+            //          4) select type of rule + whether to work on children of theme or content or both
+            //          5) see expression, with radio buttons to change rule type/children mode on the fly
             //          6) click to copy to clipboard or insert into rules file
 
             // Editor management
 
-            var editor;
+            var editor = null;
             
             function initEditor(mode, data) {
                 editor = ace.edit("editor");
@@ -83,37 +82,62 @@
             var data = $("#file-contents").text();
             initEditor(new XMLMode(), data);
 
-            // Outline / highlight management
+            // Rule builder
 
-            var FrameHighlighter = function(frame, scope) {
-                this.frame = frame;
-                this.scope = scope;
-                this.currentOutline = null;
-                this.activeClass = '_theming-highlighted';
+            var RuleBuilder = function() {
+                this.active = false;
+                this.currentScope = null;
 
-                this.setOutline = function(element) {
-                    $(element).data('old-outline', $(element).css('outline'));
-                    $(element).data('old-cursor', $(element).css('cursor'));
-                    $(element).css('outline', 'solid red 1px');
-                    $(element).css('cursor', 'crosshair');
+                this._contentElement = null;
+                this._themeElement = null;
 
-                    $(element).addClass(this.activeClass);
-
-                    if(this.currentOutline != null) {
-                        this.clearOutline(this.currentOutline);
+                this.select = function(element) {
+                    if(this.currentScope == "content") {
+                        this._contentElement = element;
+                    } else if(this.currentScope == "theme") {
+                        this._themeElement = element;
                     }
+                }
 
-                    this.currentOutline = element;
-                };
+                this.start = function() {
+                    this._contentElement = null;
+                    this._themeElement = null;
+                    this.currentScope = "content";
+                    this.active = true;
+                }
 
-                this.clearOutline = function(element) {
-                    $(element).css('outline', $(element).data('old-outline'));
-                    $(element).css('cursor', $(element).data('old-cursor'));
+                this.next = function() {
+                    if(this.currentScope == "content") {
+                        this.currentScope = "theme";
 
-                    $(element).removeClass(this.activeClass);
+                        // XXX: Debug code until we have a better way to show (also think about i18n)
+                        $("#new-rule-text").text("Please select a theme element");
 
-                    this.currentOutline = null;
-                };
+                    } else if (this.currentScope == "theme") {
+                        this.currentScope = null;
+
+                        // XXX: Debug code until we have a better way to choose/show
+                        alert(this.buildRule('replace', true, false));
+                        $("#new-rule-text").text("");
+
+                    }
+                }
+
+                this.end = function() {
+                    this._contentElement = null;
+                    this._themeElement = null;
+                    this.currentScope = null;
+                    this.active = false;
+                }
+
+                this.buildRule = function(rule, contentChildren, themeChildren) {
+                
+                    var contentSelector = this.calculateDiazoSelector(this._contentElement, 'content', contentChildren);
+                    var themeSelector = this.calculateDiazoSelector(this._themeElement, 'theme', themeChildren);
+
+                    return "<" + rule + " " + contentSelector + " " + themeSelector + " />"
+
+                }
 
                 this.calculateCSSSelector = function(element) {
                     var selector = element.tagName.toLowerCase();
@@ -195,9 +219,9 @@
                     return xpathString;
                 };
 
-                this.calculateDiazoSelector = function(element, children) {
+                this.calculateDiazoSelector = function(element, scope, children) {
                         
-                    var selectorType = this.scope;
+                    var selectorType = scope;
                     if(children) {
                         selectorType += "-children";
                     }
@@ -212,23 +236,66 @@
 
                 };
 
+            }
+
+            var ruleBuilder = new RuleBuilder();
+
+            // Outline / highlight management
+
+            var FrameHighlighter = function(frame, scope, ruleBuilder) {
+                this.frame = frame;
+                this.scope = scope;
+                this.ruleBuilder = ruleBuilder;
+
+                this.currentOutline = null;
+                this.activeClass = '_theming-highlighted';
+
+                this.setOutline = function(element) {
+                    $(element).data('old-outline', $(element).css('outline'));
+                    $(element).data('old-cursor', $(element).css('cursor'));
+                    $(element).css('outline', 'solid red 1px');
+                    $(element).css('cursor', 'crosshair');
+
+                    $(element).addClass(this.activeClass);
+
+                    if(this.currentOutline != null) {
+                        this.clearOutline(this.currentOutline);
+                    }
+
+                    this.currentOutline = element;
+                };
+
+                this.clearOutline = function(element) {
+                    $(element).css('outline', $(element).data('old-outline'));
+                    $(element).css('cursor', $(element).data('old-cursor'));
+
+                    $(element).removeClass(this.activeClass);
+
+                    this.currentOutline = null;
+                };
+                
                 this.setupElements = function() {
                     var highlighter = this;
                     $(this.frame).contents().find("*").hover(
                         function(event) {
-                            event.stopPropagation();
-                            highlighter.setOutline(this);
+                            if(highlighter.ruleBuilder.active && highlighter.ruleBuilder.currentScope == highlighter.scope) {
+                                event.stopPropagation();
+                                highlighter.setOutline(this);
+                            }
                         },
                         function(event) {
-                            highlighter.clearOutline(this); 
+                            if($(this).hasClass(activeClass)) {
+                                highlighter.clearOutline(this); 
+                            }
                         }
                     ).click(function (event) {
-                        event.stopPropagation();
-                        event.preventDefault();
-                            
-                        // XXX: Debug code
-                        var selector = highlighter.calculateDiazoSelector(this, true);
-                        alert(selector);
+                        if(highlighter.ruleBuilder.active && highlighter.ruleBuilder.currentScope == highlighter.scope) {
+                            event.stopPropagation();
+                            event.preventDefault();
+                                
+                            highlighter.ruleBuilder.select(this);
+                            highlighter.ruleBuilder.next();
+                        }
 
                         return false;
                     });
@@ -295,7 +362,7 @@
             // to work reliably in multiple browsers
             
             $("#content-frame").ready(function() {
-                var frameHighlighter = new FrameHighlighter("#content-frame", 'content');
+                var frameHighlighter = new FrameHighlighter("#content-frame", 'content', ruleBuilder);
                 var linkManager = new LinkManager("#content-frame", 'off');
                 function setup() {
                     frameHighlighter.setupElements();
@@ -307,7 +374,7 @@
             });
 
             $("#theme-frame").ready(function() {
-                var frameHighlighter = new FrameHighlighter("#theme-frame", 'theme');
+                var frameHighlighter = new FrameHighlighter("#theme-frame", 'theme', ruleBuilder);
                 function setup() {
                     frameHighlighter.setupElements();
                 }
@@ -351,6 +418,14 @@
                     }
                 });
 
+            });
+
+            $("#new-rule").click(function (event){
+                event.preventDefault();
+                ruleBuilder.start();
+
+                // XXX: Debug code until we have a better way to show (also think about i18n)
+                $("#new-rule-text").text("Please select a content element");
             });
 
         });
@@ -442,6 +517,13 @@
                     class="allowMultiSubmit"
                     i18n:translate=""
                     >Save and refresh preview</button>
+                <button
+                    id="new-rule"
+                    name="form.button.BuildRule"
+                    class="allowMultiSubmit"
+                    i18n:translate=""
+                    >New rule</button>
+                <span id="new-rule-text"></span>
             </div>
 
         </div>

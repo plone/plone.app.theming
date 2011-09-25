@@ -1,3 +1,13 @@
+/* Give us some more real-estate */
+#portal-top,
+#viewlet-above-content,
+#portal-breadcrumbs,
+#portal-footer,
+#portal-colophon,
+#portal-siteactions {
+    display: none;
+}
+
 #content #editor {
     margin: 0;
     padding: 0;
