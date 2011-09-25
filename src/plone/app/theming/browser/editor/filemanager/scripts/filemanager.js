@@ -562,7 +562,14 @@ var populateFileTree = function(path, callback){
 	});
 }
 
-
+var setSaveState = function(){
+    var li = $("#fileselector li.selected");
+    if(li.hasClass('dirty')){
+        $("#save")[0].disabled = false;
+    }else{
+        $("#save")[0].disabled = true;
+    }
+}
 
 
 /*---------------------------------------------------------
@@ -579,6 +586,8 @@ $(function(){
 	if(autoload == true) {
 		$('#upload').append(lg.upload);
 		$('#addnew').append(lg.add_new);
+        $('#save').append(lg.savemsg);
+        $('#saveall').append(lg.saveallmsg);
         $('#newfolder').append(lg.new_folder);
 		$('#itemOptions a[href$="#select"]').append(lg.select);
 		$('#itemOptions a[href$="#download"]').append(lg.download);
@@ -602,6 +611,11 @@ $(function(){
 	$('#uploader').ajaxForm({
 		target: '#uploadresponse',
 		beforeSubmit: function(arr, form, options) {
+            if($("#fileselector li.selected").size() > 0){
+                if(confirm("Replace the current file?")){
+                    form.append('<input name="replacepath" value="' + $("#fileselector li.selected").attr('rel') + '" />');
+                }
+            }
 			$('#upload').attr('disabled', true);
 			$('#upload span').addClass('loading').text(lg.loading_data);
 			if ($.urlParam('type').toString().toLowerCase() == 'images') {
@@ -617,6 +631,7 @@ $(function(){
 			}
 		},
 		success: function(result){
+            $('input[name="replacepath"]').remove();
 			var data = jQuery.parseJSON($('#uploadresponse').find('textarea').text());
 			
 			if(data['Code'] == 0){
@@ -628,7 +643,7 @@ $(function(){
 			$('#upload span').removeClass('loading').text(lg.upload);
 			
 			// clear data in browse input
-                	$("#newfile").replaceWith('<input id="newfile" type="file" name="newfile">');
+            $("#newfile").replaceWith('<input id="newfile" type="file" name="newfile">');
 		}
 	});
 
@@ -637,7 +652,9 @@ $(function(){
 		root: fileRoot,
 		datafunc: populateFileTree,
 		multiFolder: false,
-		folderCallback: function(path){ getFolderInfo(path); },
+		folderCallback: function(path){
+            getFolderInfo(path); 
+        },
 		after: function(data){
 			$('#filetree').find('li a').each(function() {
 				$(this).contextMenu(
@@ -659,6 +676,7 @@ $(function(){
                 $("#fileselector li.selected,#aceeditors li.selected").removeClass('selected');
                 $(this).addClass('selected');
                 $("#aceeditors li[rel='" + $(this).attr('rel') + "']").addClass('selected');
+                setSaveState();
             });
             close.click(function(){
                 var tabel = $(this).parent()
@@ -688,6 +706,7 @@ $(function(){
                 if(!dirty){
                     remove_tab();
                 }
+                setSaveState();
                 return false;
             })
             tab.append(close);
@@ -703,8 +722,6 @@ $(function(){
                         var extension = data.ext;
                         var container = '<pre id="' + editorId + '" name="' + file + '">' + data.contents + '</pre>';
                         li.append(container);
-                        var div = $('<div class="buttons"><form class="save"><input type="submit" name="savefile" value="Save" /></form></div>');
-                        li.append(div);
                         $("#aceeditors").append(li);
                         var editor = ace.edit(editorId);
                         editor.setTheme("ace/theme/textmate");
@@ -723,10 +740,26 @@ $(function(){
                         EDITORS[file] = editor;
                         var markDirty = function(){
                             $("#fileselector li[rel='" + file + "']").addClass('dirty'); 
+                            setSaveState();
                         }
                         editor.getSession().on('change', markDirty);
                     }else{
-                        li.append('<p>This file is not editable</p>');
+                        var html = '<div class="info">';
+                        if(data.Preview !== undefined){
+                            html += '<img src="' + data.Preview + '" />';
+                        }
+                        var size = data.Properties.Size/1024;
+                        if(size > 1024){
+                            size = (size/1024).toFixed(1) + 'MB';
+                        }else{
+                            size = size.toFixed(1) + 'KB';
+                        }
+                        html += '<p class="discreet">';
+                        html += '<b>Date Created</b>: ' + data.Properties['Date Created'];
+                        html += ', <b>Date Modified</b>: ' + data.Properties['Date Modified'];
+                        html += ', <b>Size</b>: ' + size;
+                        html += '</p></div>';
+                        li.append(html);
                         $("#aceeditors").append(li);
                     }
                 }
@@ -735,8 +768,8 @@ $(function(){
         $("#fileselector " + relselector + ",#aceeditors " + relselector).addClass('selected');
 	});
 
-    $("#aceeditors div.buttons form.save").live('submit', function(){
-        var li = $(this).parents('li.selected');
+    $("#save").live('click', function(){
+        var li = $("#fileselector li.selected");
         var path = li.attr('rel');
         var editor = EDITORS[path];
         $.ajax({
@@ -745,6 +778,7 @@ $(function(){
             type: 'POST',
             success: function(){
                 $("#fileselector li[rel='" + path + "']").removeClass('dirty'); 
+                setSaveState();
             }
         });
         return false;

@@ -81,6 +81,7 @@ class FileManager(BrowserView):
                 response = self.add(
                                 path=urllib.unquote(form['currentpath']),
                                 newfile=form['newfile'],
+                                replacepath=form.get('replacepath', None)
                             )
             elif mode == u'addnew':
                 response = self.addNew(
@@ -266,7 +267,7 @@ var pathPrefix = '%s';
             'Code': 0,
         }
 
-    def add(self, path, newfile):
+    def add(self, path, newfile, replacepath=None):
         """The add method adds the uploaded file to the specified path. Unlike
         the other methods, this method must return its JSON response wrapped in
         an HTML <textarea>, so the MIME type of the response is text/html
@@ -283,10 +284,14 @@ var pathPrefix = '%s';
         code = 0
 
         name = newfile.filename
-        newPath = u"%s/%s" % (parentPath, name,)
+        if replacepath:
+            newPath = replacepath
+            parentPath = '/'.join(replacepath.split('/')[:-1])
+        else:
+            newPath = u"%s/%s" % (parentPath, name,)
 
         parent = self.getObject(parentPath)
-        if name in parent:
+        if name in parent and not replacepath:
             error = translate(_(u'filemanager_error_file_exists',
                               default=u"File already exists."),
                               context=self.request)
@@ -417,12 +422,14 @@ class ThemeFileManager(FileManager):
             self.title = self.manifest.get('title') or self.title
 
     def getFile(self, path):
-        self.request.response.setHeader('X-Theme-Disabled', '1')
+        self.setup()
         basename, ext = os.path.splitext(path)
         ext = ext[1:].lower()
         result = {'ext': ext}
         if ext in KNOWN_EXTENSIONS:
             result['contents'] = self.context.readFile(path.encode('utf-8'))
+        else:
+            result.update(self.getInfo(path))
         return json.dumps(result)
 
     def saveFile(self, path, value):
