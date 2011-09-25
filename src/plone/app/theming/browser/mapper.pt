@@ -50,6 +50,17 @@
         
         $(document).ready(function() {
             
+            // TODO:
+            //      - Hide Plone header / footer
+            //      - Add source view for iframes (mode toggle)
+            //      - Add rule creation wizard
+            //          1) enter wizard mode
+            //          2) select content node
+            //          3) select theme node
+            //          4) select type of rule
+            //          5) see expression, with radio buttons to change to -children rendering on the fly
+            //          6) click to copy to clipboard or insert into rules file
+
             // Editor management
 
             var editor;
@@ -74,33 +85,132 @@
 
             // Outline / highlight management
 
-            var FrameHighlighter = function(frame) {
+            var FrameHighlighter = function(frame, scope) {
                 this.frame = frame;
+                this.scope = scope;
                 this.currentOutline = null;
+                this.activeClass = '_theming-highlighted';
 
                 this.setOutline = function(element) {
                     $(element).data('old-outline', $(element).css('outline'));
                     $(element).data('old-cursor', $(element).css('cursor'));
                     $(element).css('outline', 'solid red 1px');
-                    $(element).css('cursor', 'pointer');
+                    $(element).css('cursor', 'crosshair');
 
-                    $(element).addClass('theming-highlight-active');
+                    $(element).addClass(this.activeClass);
 
                     if(this.currentOutline != null) {
                         this.clearOutline(this.currentOutline);
                     }
 
                     this.currentOutline = element;
-                }
+                };
 
                 this.clearOutline = function(element) {
                     $(element).css('outline', $(element).data('old-outline'));
                     $(element).css('cursor', $(element).data('old-cursor'));
 
-                    $(element).removeClass('theming-highlight-active');
+                    $(element).removeClass(this.activeClass);
 
                     this.currentOutline = null;
-                }
+                };
+
+                this.calculateCSSSelector = function(element) {
+                    var selector = element.tagName.toLowerCase();
+                    
+                    if (element.id) {
+                        selector += "#" + element.id;
+                    } else {
+                        var classes = $(element).attr('class');
+                        if(classes != undefined) {
+                            var splitClasses = classes.split(/\s+/);
+                            for(var i = 0; i < splitClasses.length; ++i) {
+                                if(splitClasses[i] != "" && !splitClasses[i].indexOf('_theming') == 0) {
+                                    selector += "." + splitClasses[i];
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    return selector;
+                };
+    
+                this.calculateUniqueCSSSelector = function(element) {
+                    var paths = [];
+                    var path = null;
+
+                    var parents = $(element).parents();
+                    var ultimateParent = parents[parents.length - 1];
+
+                    while (element && element.nodeType == 1) {
+                        var selector = this.calculateCSSSelector(element);
+                        paths.splice(0, 0, selector);
+                        path = paths.join(" ");
+
+                        // The ultimateParent constraint is necessary since
+                        // this may be inside an iframe
+                        if($(path, ultimateParent).length == 1) {
+                            return path;
+                        }
+
+                        element = element.parentNode;
+                    }
+
+                    return null;
+                };
+
+                this.calculateUniqueXpathExpression = function(element) {
+                    var pathElements = [];
+                    var parents = $(element).parents();
+                    
+                    function elementIndex(e) {
+                        var siblings = $(e).siblings(e.tagName.toLowerCase());
+                        if(siblings.length > 0) {
+                            return "[" + ($(e).index() + 1) + "]";
+                        } else {
+                            return "";
+                        }
+                    }
+
+                    var xpathString = "/" + element.tagName.toLowerCase();
+                    if(element.id) {
+                        return "/" + xpathString + "[@id='" + element.id + "']";
+                    } else {
+                        xpathString += elementIndex(element);
+                    }
+
+                    for(var i = 0; i < parents.length; ++i) {
+                        var p = parents[i];
+
+                        var pString = "/" + p.tagName.toLowerCase();
+
+                        if(p.id) {
+                            return "/" + pString + "[@id='" + p.id + "']" + xpathString;
+                        } else {
+                            xpathString = pString + elementIndex(p) + xpathString;
+                        }
+                    }
+
+                    return xpathString;
+                };
+
+                this.calculateDiazoSelector = function(element, children) {
+                        
+                    var selectorType = this.scope;
+                    if(children) {
+                        selectorType += "-children";
+                    }
+
+                    var cssSelector = this.calculateUniqueCSSSelector(element);
+                    if(cssSelector) {
+                        return "css:" + selectorType + "=\"" + cssSelector + "\"";
+                    } else {
+                        var xpathSelector = this.calculateUniqueXpathExpression(element);
+                        return selectorType + "=\"" + xpathSelector + "\"";
+                    }
+
+                };
 
                 this.setupElements = function() {
                     var highlighter = this;
@@ -112,7 +222,16 @@
                         function(event) {
                             highlighter.clearOutline(this); 
                         }
-                    );
+                    ).click(function (event) {
+                        event.stopPropagation();
+                        event.preventDefault();
+                            
+                        // XXX: Debug code
+                        var selector = highlighter.calculateDiazoSelector(this, true);
+                        alert(selector);
+
+                        return false;
+                    });
                 }
 
             }
@@ -122,6 +241,7 @@
             var LinkManager = function(frame, themeMode) {
                 this.frame = frame;
                 this.themeMode = themeMode;
+                this.modifiedClass = "_theming-modified"
 
                 var base = window.location.protocol + '//' + window.location.host;
 
@@ -138,8 +258,8 @@
                     $(this.frame).contents().find("a").each(function() {
                         var href = $(this).attr('href');
 
-                        if(!$(this).hasClass("theming-modified")) {
-                            $(this).addClass('theming-modified');
+                        if(!$(this).hasClass(manager.modifiedClass)) {
+                            $(this).addClass(manager.modifiedClass);
                             if(manager.isInternal(href)) {
                                 var path = href.slice(base.length, href.length);
                                 var newHref = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + encodeURIComponent(path) + "&amp;theme=" + manager.themeMode;
@@ -156,9 +276,10 @@
                 }
 
                 this.setupForms = function() {
+                    var manager = this;
                     $(this.frame).contents().find("form").each(function() {
-                        if(!$(this).hasClass("theming-modified")) {
-                            $(this).addClass('theming-modified');
+                        if(!$(this).hasClass(manager.modifiedClass)) {
+                            $(this).addClass(manager.modifiedClass);
                             $(this).submit(function(event) {
                                 event.preventDefault();
                                 alert("Form submissions are disabled in theme editor");
@@ -174,7 +295,7 @@
             // to work reliably in multiple browsers
             
             $("#content-frame").ready(function() {
-                var frameHighlighter = new FrameHighlighter("#content-frame");
+                var frameHighlighter = new FrameHighlighter("#content-frame", 'content');
                 var linkManager = new LinkManager("#content-frame", 'off');
                 function setup() {
                     frameHighlighter.setupElements();
@@ -186,7 +307,7 @@
             });
 
             $("#theme-frame").ready(function() {
-                var frameHighlighter = new FrameHighlighter("#theme-frame");
+                var frameHighlighter = new FrameHighlighter("#theme-frame", 'theme');
                 function setup() {
                     frameHighlighter.setupElements();
                 }
@@ -256,7 +377,12 @@
     </a>
 
     <p i18n:translate="help_theme_mapper">
-        
+        Below, you will find four panels: The unthemed content, the raw theme,
+        the Diazo rules, and the result of applying the rules to the theme and
+        content. You can navigate the content, theme or preview, and change to
+        a different theme file if you wish. If you edit the rules and click
+        <strong>Save and refresh preview</strong>, your changes will be saved
+        and the preview updated to reflect the latest rules.
     </p>
 
     <div id="splitview">
