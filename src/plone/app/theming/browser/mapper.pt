@@ -52,13 +52,6 @@
             
             // TODO:
             //      - Add source view for iframes (mode toggle, use ACE in readonly mode in overlay)
-            //      - Turn rule builder into something more usable, e.g.
-            //          1) enter wizard mode (should show depressed button ala Firebug Inspect)
-            //          2) select content node - maybe chance to confirm/reselect
-            //          3) select theme node - maybe chance to confirm/reselect
-            //          4) select type of rule + whether to work on children of theme or content or both
-            //          5) see expression, with radio buttons to change rule type/children mode on the fly
-            //          6) click to copy to clipboard or insert into rules file
 
             // Editor management
 
@@ -84,9 +77,15 @@
 
             // Rule builder
 
-            var RuleBuilder = function() {
+            var RuleBuilder = function(callback) {
+
+                this.callback = callback;
+
                 this.active = false;
                 this.currentScope = null;
+
+                this.rule = null;
+                this.subtype = null;
 
                 this._contentElement = null;
                 this._themeElement = null;
@@ -99,28 +98,44 @@
                     }
                 }
 
-                this.start = function() {
+                this.start = function(rule) {
                     this._contentElement = null;
                     this._themeElement = null;
                     this.currentScope = "content";
+                    
+                    // Drop rules get e.g. drop:content or drop:theme,
+                    // which predetermines the scope
+                    var ruleSplit = rule.split(':');
+                    if(ruleSplit.length >= 2) {
+                        this.rule = ruleSplit[0];
+                        this.subtype = ruleSplit[1];
+                        this.currentScope = this.subtype;
+                    } else{
+                        this.rule = rule;
+                        this.subtype = null;    
+                    }
+    
                     this.active = true;
+
+                    this.callback(this);
                 }
 
                 this.next = function() {
-                    if(this.currentScope == "content") {
-                        this.currentScope = "theme";
 
-                        // XXX: Debug code until we have a better way to show (also think about i18n)
-                        $("#new-rule-text").text("Please select a theme element");
-
-                    } else if (this.currentScope == "theme") {
+                    if(this.subtype != null) {
+                        // Drop rules have only one scope
                         this.currentScope = null;
-
-                        // XXX: Debug code until we have a better way to choose/show
-                        alert(this.buildRule('replace', true, false));
-                        $("#new-rule-text").text("");
-
+                    } else {
+                        // Other rules have content and theme
+                        if(this.currentScope == "content") {
+                            this.currentScope = "theme";
+                        } else if (this.currentScope == "theme") {
+                            this.currentScope = null;
+                        }
                     }
+
+                    this.callback(this);
+
                 }
 
                 this.end = function() {
@@ -128,15 +143,39 @@
                     this._themeElement = null;
                     this.currentScope = null;
                     this.active = false;
+                    this.rule = null;
+                    this.subtype = null;
+
+                    this.callback(this);
                 }
 
-                this.buildRule = function(rule, contentChildren, themeChildren) {
-                
-                    var contentSelector = this.calculateDiazoSelector(this._contentElement, 'content', contentChildren);
-                    var themeSelector = this.calculateDiazoSelector(this._themeElement, 'theme', themeChildren);
+                this.buildRule = function(contentChildren, themeChildren) {
 
-                    return "<" + rule + " " + contentSelector + " " + themeSelector + " />"
+                    if(this.rule == null) {
+                        return "";
+                    }
 
+                    if(this.subtype != null) {
+
+                        if(this.subtype == 'content') {
+                            return "<" + this.rule + "\n    " + 
+                                    this.calculateDiazoSelector(this._contentElement, 'content', contentChildren) +
+                                    "\n    />";
+                        } else if(this.subtype == 'theme') {
+                            return "<" + this.rule + "\n    " + 
+                                    this.calculateDiazoSelector(this._themeElement, 'theme', themeChildren) + 
+                                    "\n    />";
+                        }
+                    
+                    } else {
+                        return "<" + this.rule + "\n    " + 
+                                    this.calculateDiazoSelector(this._contentElement, 'content', contentChildren) + "\n    " + 
+                                    this.calculateDiazoSelector(this._themeElement, 'theme', themeChildren) + 
+                                    "\n    />";
+                    }
+
+                    // Should never happen
+                    return "Error";
                 }
 
                 this.calculateCSSSelector = function(element) {
@@ -237,8 +276,6 @@
                 };
 
             }
-
-            var ruleBuilder = new RuleBuilder();
 
             // Outline / highlight management
 
@@ -361,6 +398,77 @@
 
             }
 
+            // New rule wizard
+
+            var triggers = $("#new-rule").overlay({
+                closeOnClick: false,
+                onBeforeClose: function() {
+                    if(ruleBuilder.active && $("#new-rule-step-2").is(":visible")) {
+                        ruleBuilder.end();
+                        $(".hideDuringWizard").fadeIn();    
+                    }
+                }
+            });
+            var overlay = $(triggers[0]).data('overlay');
+
+            function updateRule(ruleBuilder) {
+                $("#new-rule-output").text(ruleBuilder.buildRule(
+                    $('#new-rule-content-children').is(':checked'), 
+                    $('#new-rule-theme-children').is(':checked')
+                ));   
+            }
+
+            var ruleBuilder = new RuleBuilder(function(ruleBuilder) {
+                $(".wizard-text").hide();
+
+                if(ruleBuilder.currentScope == 'content') {
+                    if(overlay.isOpened()) {
+                        overlay.close();
+                    }
+
+                    $("#new-rule-text-select-content").show();
+                
+                } else if(ruleBuilder.currentScope == 'theme') {
+                    if(overlay.isOpened()) {
+                        overlay.close();
+                    }
+
+                    $("#new-rule-text-select-theme").show();
+
+                } else if(ruleBuilder.rule != null && ruleBuilder.currentScope == null) {
+                    $("#new-rule-step-1").hide();
+                    $("#new-rule-step-2").show();
+                    updateRule(ruleBuilder);
+
+                    if(!overlay.isOpened()) {
+                        overlay.load();    
+                    }
+
+                } else { // end
+
+                    if(overlay.isOpened()) {
+                        overlay.close();
+                    }
+
+                    $("#new-rule-step-1").show();
+                    $("#new-rule-step-2").hide();
+
+
+                }
+                
+            });
+
+            $(".rule-modifier").change(function() {
+                updateRule(ruleBuilder);
+            });
+
+            $("#new-rule-step-1 button.next").click(function() {
+                var ruleType = $("input[name='new-rule-type']:checked").val();
+                ruleBuilder.start(ruleType);
+
+                $(".hideDuringWizard").fadeOut('slow');
+            });
+
             // Frame setup - the apparent double loading is needed for this
             // to work reliably in multiple browsers
             
@@ -423,14 +531,6 @@
 
             });
 
-            $("#new-rule").click(function (event){
-                event.preventDefault();
-                ruleBuilder.start();
-
-                // XXX: Debug code until we have a better way to show (also think about i18n)
-                $("#new-rule-text").text("Please select a content element");
-            });
-
         });
 
     });
@@ -459,7 +559,7 @@
         site using these rules, the unthemed content and the raw theme.
         You can navigate the content, theme or preview, and change to
         a different theme file if you wish. If you edit the rules and click
-        <strong>Save and refresh preview</strong>, your changes will be saved
+        <strong>Save</strong>, your changes will be saved
         and the preview updated to reflect the latest rules.
     </p>
 
@@ -472,35 +572,43 @@
                 The rules that apply the theme to the content
             </p>
 
-            <pre id="editor"></pre>
-            <textarea id="file-contents" class="hiddenStructure" name="rules"
-                tal:content="view/rules"></textarea>
-
-            <div class="formControls">
+            <div id="mapper-toolbar">
                 <button
                     id="save-rules"
                     name="form.button.Save"
                     class="allowMultiSubmit"
                     i18n:translate=""
-                    >Save and refresh preview</button>
+                    >Save</button>
                 <button
                     id="new-rule"
                     name="form.button.BuildRule"
                     class="allowMultiSubmit"
+                    rel="#new-rule-wizard"
                     i18n:translate=""
                     >New rule</button>
-                <span id="new-rule-text"></span>
+                
+                <span class="wizard-text" id="new-rule-text-select-content" i18n:translate="theming_mapper_select_content">
+                    Select an element in the content panel.
+                </span>
+                <span class="wizard-text" id="new-rule-text-select-theme" i18n:translate="theming_mapper_select_theme">
+                    Select an element in the theme panel.
+                </span>
+            
             </div>
+
+            <pre class="hideDuringWizard" id="editor"></pre>
+            <textarea id="file-contents" class="hiddenStructure" name="rules"
+                tal:content="view/rules"></textarea>
 
         </div>
     </div>
 
-    <div class="row">
+    <div class="row hideDuringWizard">
         <div id="preview" class="cell width-full position-0">
             <h2 i18n:translate="heading_merged">Preview</h2>
 
             <p class="discreet" i18n:translate="help_split_merged">
-                The result of applying the rules can be shown here
+                The result of applying the rules can be seen below
             </p>
 
             <iframe id="preview-frame"
@@ -541,6 +649,93 @@
             <iframe id="theme-frame"
                 tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off"></iframe>
 
+        </div>
+    </div>
+
+    <!-- Overlays -->
+    <div id="new-rule-wizard" class="overlay">
+        <div class="close">
+            <span i18n:translate="">Close</span>
+        </div>
+        <div class="pb-ajax">
+            <div class="new-rule">
+                <h2 i18n:translate="theming_mapper_heading_newrule">New rule</h2>
+
+                <div id="new-rule-step-1">
+                    <p i18n:translate="theming_mapper_wizard_step1">
+                        Choose the operation you would like to perform:
+                    </p>
+
+                    <form>
+                        <div id="new-rule-type-panel">
+                            <div>
+                                <input type="radio" name="new-rule-type" value="replace" id="new-rule-replace" checked="checked" />
+                                <label for="new-rule-replace" i18n:translate="theming_mapping_wizard_replace">
+                                    <strong>Replace</strong> an element of the theme with an element from the content
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" name="new-rule-type" value="before" id="new-rule-before" />
+                                <label for="new-rule-before" i18n:translate="theming_mapping_wizard_before">
+                                    Insert an element from the content <strong>before</strong> an element in the theme
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" name="new-rule-type" value="after" id="new-rule-after" />
+                                <label for="new-rule-after" i18n:translate="theming_mapping_wizard_after">
+                                    Insert an element from the content <strong>after</strong> an element in the theme
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" name="new-rule-type" value="drop:content" id="new-rule-drop-content" />
+                                <label for="new-rule-drop-content" i18n:translate="theming_mapping_wizard_drop_content">
+                                    <strong>Drop</strong> an element in the <strong>content</strong>
+                                </label>
+                            </div>
+                            <div>
+                                <input type="radio" name="new-rule-type" value="drop:theme" id="new-rule-drop-theme" />
+                                <label for="new-rule-drop-theme" i18n:translate="theming_mapping_wizard_drop_theme">
+                                    <strong>Drop</strong> an element in the <strong>theme</strong>
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div class="new-rule-actions">
+                        <button type="button" class="next">Next</button>
+                        <button type="button" class="close">Cancel</button>
+                    </div>
+
+                </div>
+                <div id="new-rule-step-2" style="display:none">
+                    <p i18n:translate="theming_mapper_wizard_step2">
+                        The rule can be found below. Use the checkboxes
+                        to further refine it.
+                    </p>
+                    <form>
+                        <div id="new-rule-output-panel">
+                            <textarea name="new-rule-output" id="new-rule-output"></textarea>
+                        </div>
+                        <div id="new-rule-selector-panel">
+                            <div>
+                                <input type="checkbox" class="rule-modifier" name="new-rule-content-children" value="replace" id="new-rule-content-children" />
+                                <label for="new-rule-content-children" i18n:translate="">Use children of the content</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" class="rule-modifier" name="new-rule-theme-children" value="replace" id="new-rule-theme-children" />
+                                <label for="new-rule-theme-children" i18n:translate="">Use children of the theme</label>
+                            </div>
+                        </div>
+                        
+                    </form>
+
+                    <div class="new-rule-actions">
+                        <button type="button" class="close">Close</button>
+                    </div>
+                </div>
+
+                
+            </div>
         </div>
     </div>
 
