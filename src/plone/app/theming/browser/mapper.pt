@@ -284,7 +284,7 @@
                             }
                         },
                         function(event) {
-                            if($(this).hasClass(activeClass)) {
+                            if($(this).hasClass(highlighter.activeClass)) {
                                 highlighter.clearOutline(this); 
                             }
                         }
@@ -292,11 +292,15 @@
                         if(highlighter.ruleBuilder.active && highlighter.ruleBuilder.currentScope == highlighter.scope) {
                             event.stopPropagation();
                             event.preventDefault();
-                                
+                             
                             highlighter.ruleBuilder.select(this);
                             highlighter.ruleBuilder.next();
+
+                            highlighter.clearOutline(); 
+
                             return false;
                         }
+                        
                     });
                 }
 
