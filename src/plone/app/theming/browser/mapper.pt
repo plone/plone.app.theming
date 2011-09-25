@@ -420,6 +420,7 @@
 
             var ruleBuilder = new RuleBuilder(function(ruleBuilder) {
                 $(".wizard-text").hide();
+                $.mask.close();
 
                 if(ruleBuilder.currentScope == 'content') {
                     if(overlay.isOpened()) {
@@ -427,6 +428,7 @@
                     }
 
                     $("#new-rule-text-select-content").show();
+                    $("#content-split").expose();
                 
                 } else if(ruleBuilder.currentScope == 'theme') {
                     if(overlay.isOpened()) {
@@ -434,6 +436,7 @@
                     }
 
                     $("#new-rule-text-select-theme").show();
+                    $("#theme-split").expose();
 
                 } else if(ruleBuilder.rule != null && ruleBuilder.currentScope == null) {
                     $("#new-rule-step-1").hide();
