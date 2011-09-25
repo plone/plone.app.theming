@@ -654,22 +654,40 @@ $(function(){
         $("#fileselector li.selected,#aceeditors li.selected").removeClass('selected');
         if($('#fileselector ' + relselector).size() == 0){
             var tab = $('<li class="selected" rel="' + file + '">' + file + '</li>');
-            var close = $('<a href="#close"> (x) </a>');
+            var close = $('<a href="#close" class="closebtn"> x </a>');
             tab.click(function(){
-                 $("#fileselector li.selected,#aceeditors li.selected").removeClass('selected');
-                 $(this).addClass('selected');
+                $("#fileselector li.selected,#aceeditors li.selected").removeClass('selected');
+                $(this).addClass('selected');
                 $("#aceeditors li[rel='" + $(this).attr('rel') + "']").addClass('selected');
             });
             close.click(function(){
-                var atab = $(this).parent();
-                if(atab.hasClass('selected')){
-                    var other = atab.siblings().eq(0);
-                    other.addClass('selected');
-                    $("#aceeditors li[rel='" + other.attr('rel') + "']").addClass('selected'); 
+                var tabel = $(this).parent()
+                var remove_tab = function(){
+                    if(tabel.hasClass('selected')){
+                        var other = tabel.siblings().eq(0);
+                        other.addClass('selected');
+                        $("#aceeditors li[rel='" + other.attr('rel') + "']").addClass('selected'); 
+                    }
+                    $("#aceeditors li[rel='" + tabel.attr('rel') + "']").remove();
+                    tabel.remove();
                 }
-                $("#aceeditors li[rel='" + atab.attr('rel') + "']").remove();
-                atab.remove();
-
+                var dirty = $('#fileselector li.selected').hasClass('dirty');
+                if(dirty){
+                    $.prompt('You have unsaved changes. Would you like to save first??', {
+                        buttons: { Cancel: 2, No: 1, Yes: 0},
+                        submit: function(v,m,f){
+                            if(v == 0){
+                                $("#aceeditors li.selected form").trigger('submit');
+                                remove_tab();
+                            }else if(v == 1){
+                                remove_tab();
+                            }
+                        }
+                    });
+                }
+                if(!dirty){
+                    remove_tab();
+                }
                 return false;
             })
             tab.append(close);
