@@ -8,6 +8,10 @@
     display: none;
 }
 
+#mapper-toolbar {
+    margin-bottom: 1em;
+}
+
 #content #editor {
     margin: 0;
     padding: 0;
@@ -35,3 +39,35 @@
 #file-selector {
     float: right;
 }
+
+/* Wizard */
+
+ .wizard-text {
+     display: none;
+ }
+
+#new-rule-type-panel {
+    white-space: nowrap;
+}
+
+#new-rule-type-panel label,
+#new-rule-selector-panel label {
+    font-weight: normal;
+    padding-left: 0.5em;
+}
+
+#new-rule-output-panel {
+    clear: both;
+    padding: 1em 0;
+}
+
+#new-rule-output-panel textarea {
+    height: 6em;
+    width: 50em;
+}
+
+.new-rule-actions {
+    clear: both;
+    margin-top: 1em;
+}
+
