@@ -186,8 +186,8 @@
 
                 editor.navigateLineStart();
                 editor.insert('    ' + rule.replace(/\n/g, '\n    ') + '\n\n');
-                editor.navigateTo(cursorPosition.row + 1, 0);
-                editor.getSelection().selectTo(cursorPosition.row + rows + 2, 0);
+                editor.navigateTo(cursorPosition.row, 0);
+                editor.getSelection().selectTo(cursorPosition.row + rows + 1, 0);
                 
                 overlay.close();
             });
