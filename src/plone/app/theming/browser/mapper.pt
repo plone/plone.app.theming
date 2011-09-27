@@ -185,7 +185,7 @@
                 }
 
                 editor.navigateLineStart();
-                editor.insert('\n    ' + rule.replace(/\n/g, '\n    ') + '\n\n');
+                editor.insert('    ' + rule.replace(/\n/g, '\n    ') + '\n\n');
                 editor.navigateTo(cursorPosition.row + 1, 0);
                 editor.getSelection().selectTo(cursorPosition.row + rows + 2, 0);
                 
