@@ -111,7 +111,7 @@
             }
 
             var ruleBuilder = new RuleBuilder(function(ruleBuilder) {
-                $(".wizard-text").hide();
+                $(".wizard-text").css('display', 'none');
                 $.mask.close();
 
                 if(ruleBuilder.currentScope == 'content') {
@@ -119,16 +119,16 @@
                         overlay.close();
                     }
 
-                    $("#new-rule-text-select-content").show();
-                    $("#content-split").expose();
+                    $("#new-rule-text-select-content").css('display', 'inline-block');
+                    $("#content-split, .wizard-text").expose();
                 
                 } else if(ruleBuilder.currentScope == 'theme') {
                     if(overlay.isOpened()) {
                         overlay.close();
                     }
 
-                    $("#new-rule-text-select-theme").show();
-                    $("#theme-split").expose();
+                    $("#new-rule-text-select-theme").css('display', 'inline-block');
+                    $("#theme-split, .wizard-text").expose();
 
                 } else if(ruleBuilder.rule != null && ruleBuilder.currentScope == null) {
                     $("#new-rule-step-1").hide();

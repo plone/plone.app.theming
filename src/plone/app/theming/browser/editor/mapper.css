@@ -44,6 +44,8 @@
 
  .wizard-text {
      display: none;
+     background-color: #FFFFE3;
+     padding: 0 5px;
  }
 
 #new-rule-type-panel {
