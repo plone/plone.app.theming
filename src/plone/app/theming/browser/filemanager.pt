@@ -128,9 +128,18 @@
     <a href=""
         class="link-parent"
         tal:attributes="href string:${portal_url}/@@theming-controlpanel"
-        i18n:translate="label_up_to_theming_contorlpanel">
+        i18n:translate="label_up_to_theming_controlpanel">
             Up to Diazo theme control panel
     </a>
+
+    |
+
+    <a class="link-parent"
+       tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper"
+       i18n:translate="label_up_to_theming_mapper">
+            Open theme mapper
+    </a>
+
     <input tal:replace="structure authenticator" />
 
     <div id="filemanager">
