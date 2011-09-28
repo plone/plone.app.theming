@@ -70,10 +70,8 @@
 
             // Editor management
 
-            var editor = null;
-            
-            function initEditor(mode, data) {
-                editor = ace.edit("editor");
+            function initEditor(element, mode, data, readonly) {
+                var editor = ace.edit(element);
                 editor.setTheme("ace/theme/textmate");
                 editor.getSession().setTabSize(4);
                 editor.getSession().setUseSoftTabs(true);
@@ -81,14 +79,25 @@
                 editor.getSession().setMode(mode);
                 editor.renderer.setShowGutter(false);
                 editor.setShowPrintMargin(false);
+                editor.setReadOnly(readonly);
 
                 editor.getSession().setValue(data);
                 editor.navigateTo(0, 0);
+
+                return editor;
             }
 
             var XMLMode = require("ace/mode/xml").Mode;
-            var data = $("#file-contents").text();
-            initEditor(new XMLMode(), data);
+            var HTMLMode = require("ace/mode/html").Mode;
+
+            // Rules editor
+
+            var editor = initEditor('editor', new XMLMode(), $("#file-contents").text(), false);
+
+            // Source editors
+            var contentSource = initEditor('content-source', new HTMLMode(), "", true);
+            var themeSource = initEditor('theme-source',     new HTMLMode(), "", true);
+            var previewSource = initEditor('preview-source', new HTMLMode(), "", true);
 
             // New rule wizard
 
@@ -120,6 +129,7 @@
                     }
 
                     $("#new-rule-text-select-content").css('display', 'inline-block');
+                    $("#view-content-preview").click();
                     $("#content-split, .wizard-text").expose();
                 
                 } else if(ruleBuilder.currentScope == 'theme') {
@@ -128,6 +138,7 @@
                     }
 
                     $("#new-rule-text-select-theme").css('display', 'inline-block');
+                    $("#view-theme-preview").click();
                     $("#theme-split, .wizard-text").expose();
 
                 } else if(ruleBuilder.rule != null && ruleBuilder.currentScope == null) {
@@ -229,6 +240,8 @@
             // Set up theme file selector
 
             $("#file-selector").change(function() {
+                $("#view-theme-preview").click();
+
                 var option = $(":selected", this);
                 var path = $(option).attr('data-path');
                 var fetch = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + path + "&amp;theme=off";
@@ -253,6 +266,55 @@
                 });
 
             });
+
+            // Set up the preview editors
+            $("#view-preview-preview").change(function() {
+                $("#preview-frame").show();
+                $("#preview-source").hide();
+            });
+            $("#view-preview-preview").click();
+            $("#view-preview-preview").click(function() { $(this).change(); });
+
+            $("#view-preview-source").change(function() {
+                var html = $("#preview-frame").contents().find(":root").html();
+                previewSource.getSession().setValue("\n<" + "html>" + html + '\n<' + '/html>');
+                $("#preview-frame").hide();
+                $("#preview-source").show();
+                previewSource.resize();
+            });
+            $("#view-preview-source").click(function() { $(this).change(); });
+
+            $("#view-content-preview").change(function() {
+                $("#content-frame").show();
+                $("#content-source").hide();
+            });
+            $("#view-content-preview").click();
+            $("#view-content-preview").click(function() { $(this).change(); });
+
+            $("#view-content-source").change(function() {
+                var html = $("#content-frame").contents().find(":root").html();
+                contentSource.getSession().setValue("<" + "html>\n" + html + '\n<' + '/html>');
+                $("#content-frame").hide();
+                $("#content-source").show();
+                contentSource.resize();
+            });
+            $("#view-content-source").click(function() { $(this).change(); });
+
+            $("#view-theme-preview").change(function() {
+                $("#theme-frame").show();
+                $("#theme-source").hide();
+            });
+            $("#view-theme-preview").click();
+            $("#view-theme-preview").click(function() { $(this).change(); });
+
+            $("#view-theme-source").change(function() {
+                var html = $("#theme-frame").contents().find(":root").html();
+                themeSource.getSession().setValue("<" + "html>\n" + html + '\n<' + '/html>');
+                $("#theme-frame").hide();
+                $("#theme-source").show();
+                themeSource.resize();
+            });
+            $("#view-theme-source").click(function() { $(this).change(); });
 
         });
 
@@ -330,12 +392,21 @@
         <div id="preview" class="cell width-full position-0">
             <h2 i18n:translate="heading_merged">Preview</h2>
 
+            <div class="panel-toolbar">
+                <input type="radio" name="view-preview" id="view-preview-preview" value="preview" checked="checked" />
+                <label for="view-preview-preview" i18n:translate="">Preview</label>
+
+                <input type="radio" name="view-preview" id="view-preview-source" value="source" />
+                <label for="view-preview-source" i18n:translate="">Source</label>
+            </div>
+            
             <p class="discreet" i18n:translate="help_split_merged">
                 The result of applying the rules can be seen below
             </p>
 
             <iframe id="preview-frame"
                 tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply"></iframe>
+            <pre class="source-editor" id="preview-source"></pre>
 
         </div>
     </div>
@@ -344,26 +415,44 @@
         <div id="content-split" class="cell width-1:2 position-0">
             <h2 i18n:translate="heading_content">Content</h2>
 
+            <div class="panel-toolbar">
+                <input type="radio" name="view-content" id="view-content-preview" value="preview" checked="checked" />
+                <label for="view-content-preview" i18n:translate="">Preview</label>
+
+                <input type="radio" name="view-content" id="view-content-source" value="source" />
+                <label for="view-content-source" i18n:translate="">Source</label>
+            </div>
+
              <p class="discreet" i18n:translate="help_split_content">
                 The raw content
             </p>
 
             <iframe id="content-frame"
                 tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=off"></iframe>
+            <pre class="source-editor" id="content-source"></pre>
 
         </div>
         <div id="theme-split" class="cell width-1:2 position-1:2">
             <h2 i18n:translate="heading_theme">Theme</h2>
 
-            <select size="1" name="file-selector" id="file-selector">
-                <option
-                    tal:repeat="f view/themeFiles"
-                    tal:attributes="value f/path;
-                                    data-path f/path;
-                                    data-extension f/extension"
-                    tal:content="f/path"
-                    />
-            </select>
+            <div class="panel-toolbar">
+                <select size="1" name="file-selector" id="file-selector">
+                    <option
+                        tal:repeat="f view/themeFiles"
+                        tal:attributes="value f/path;
+                                        data-path f/path;
+                                        data-extension f/extension"
+                        tal:content="f/path"
+                        />
+                </select>
+
+                <input type="radio" name="view-theme" id="view-theme-preview" value="preview" checked="checked" />
+                <label for="view-theme-preview" i18n:translate="">Preview</label>
+
+                <input type="radio" name="view-theme" id="view-theme-source" value="source" />
+                <label for="view-theme-source" i18n:translate="">Source</label>
+
+            </div>
 
             <p class="discreet" i18n:translate="help_split_theme">
                 The pristine theme
@@ -371,11 +460,12 @@
 
             <iframe id="theme-frame"
                 tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off"></iframe>
+            <pre class="source-editor" id="theme-source"></pre>
 
         </div>
     </div>
 
-    <!-- Overlays -->
+    <!-- Wizard overlay -->
     <div id="new-rule-wizard" class="overlay">
         <div class="close">
             <span i18n:translate="">Close</span>
