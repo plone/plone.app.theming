@@ -381,9 +381,17 @@
     <a href=""
         class="link-parent"
         tal:attributes="href string:${portal_url}/@@theming-controlpanel"
-        i18n:translate="label_up_to_theming_contorlpanel">
+        i18n:translate="label_up_to_theming_controlpanel">
             Up to Diazo theme control panel
     </a>
+
+    |
+
+    <a class="link-parent"
+       tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-filemanager"
+       i18n:translate="label_up_to_theming_filemanager">
+            File manager
+    </a>    
 
     <p i18n:translate="help_theme_mapper">
         Below, you will find four panels: The Diazo rules, a preview of the themed

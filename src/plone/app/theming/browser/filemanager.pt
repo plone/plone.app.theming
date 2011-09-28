@@ -137,7 +137,7 @@
     <a class="link-parent"
        tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper"
        i18n:translate="label_up_to_theming_mapper">
-            Open theme mapper
+            Theme mapper
     </a>
 
     <input tal:replace="structure authenticator" />
