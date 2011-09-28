@@ -51,6 +51,7 @@
 	overflow: auto;
 	min-width: 100px;	/* optional */
 	/* no margin or border allowed */
+	padding-left: 10px;
 }
 
 #filetree > ul {
@@ -110,15 +111,8 @@
 	margin: 50px auto;
 }
 
-button {
-	border: 1px outset #ccc;
-	padding: 2px;
-	margin-left: 4px;
-	background-repeat: repeat-x;
-}
-
-button:hover {
-	border: 1px inset #ccc;
+button:hover{
+	cursor:pointer;
 }
 
 button span {
@@ -128,6 +122,7 @@ button span {
 	background-repeat: no-repeat;
 	background-color: transparent;
 	height: 16px;
+	padding-top: 3px;
 	white-space: nowrap;
 }
 
@@ -272,6 +267,7 @@ button {outline: none;}
 #upload span.loading { background-image: url(../images/ajax-loader.gif);color:#555555;font-size:0.9em; }
 #parentfolder span { background-image: url(../images/parentfolder.png); }
 #newfolder span { background-image: url(../images/folder_add.png); }
+#save span { background-image: url(../images/pencil.png); }
 #addnew span { background-image: url(../images/addnew.png); }
 
 /* div.jqi button { background-image: url(../images/circular/yes.png); } */
@@ -415,4 +411,26 @@ button.ON {
 
 #uploader {
     background-color: #EEEEEE;
+}
+
+#fileRoot{
+	padding: 10px;
+}
+#fileRoot a:visited{
+	border:none;
+}
+
+#filetree a.selected{
+	background-color: #EEEEEE;
+}
+
+#aceeditors div.info{
+	padding: 10px;
+}
+
+#upload-container{
+	padding-left:10px;
+	border-left: 1px solid #ddd;
+	margin-left:5px;
+	display:inline;
 }

@@ -11,110 +11,63 @@
 
 <tal:defines define="dummy python:request.set('disable_border',1);
                      disable_column_one python:request.set('disable_plone.leftcolumn',1);
-                     disable_column_two python:request.set('disable_plone.rightcolumn',1);"/>
+                     disable_column_two python:request.set('disable_plone.rightcolumn',1);
+                     staticFiles string:${context/absolute_url}/++resource++plone.app.theming.editor;
+                     managerFiles string:${staticFiles}/filemanager;
+                     aceFiles string:${staticFiles}/ace;">
 
-<link
-    rel="stylesheet"
-    type="text/css"
-    tal:attributes="href string:${context/absolute_url}/++resource++plone.app.theming.editor/filemanager/scripts/jquery.filetree/jqueryFileTree.css"
-    />
-<link
-    rel="stylesheet"
-    type="text/css"
-    tal:attributes="href string:${context/absolute_url}/++resource++plone.app.theming.editor/filemanager/scripts/jquery.contextmenu/jquery.contextMenu-1.01.css"
-    />
-<link
-    rel="stylesheet"
-    type="text/css"
-    tal:attributes="href string:${context/absolute_url}/++resource++plone.app.theming.editor/filemanager/styles/filemanager.css"
-    />
+<link rel="stylesheet" type="text/css"
+    tal:attributes="href string:${managerFiles}/scripts/jquery.filetree/jqueryFileTree.css" />
+<link rel="stylesheet" type="text/css"
+    tal:attributes="href string:${managerFiles}/scripts/jquery.contextmenu/jquery.contextMenu-1.01.css" />
+<link rel="stylesheet" type="text/css"
+    tal:attributes="href string:${managerFiles}/styles/filemanager.css" />
 <!--[if IE]>
-<link
-    rel="stylesheet"
-    type="text/css"
-    tal:attributes="href string:${context}/++resource++plone.app.theming.editor/filemanager/styles/ie.css"
-    />
+<link rel="stylesheet" type="text/css"
+    tal:attributes="href string:${managerFiles}/styles/ie.css" />
 <![endif]-->
 
-<script 
-        type="text/javascript"
-        tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/filemanager/scripts/jquery.form-2.63.js"></script>
-    <script 
-        type="text/javascript"
-        tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/filemanager/scripts/jquery.splitter/jquery.splitter-1.5.1.js"></script>
-    <script 
-        type="text/javascript"
-        tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/filemanager/scripts/jquery.filetree/jqueryFileTree.js"></script>
-    <script 
-        type="text/javascript"
-        tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/filemanager/scripts/jquery.contextmenu/jquery.contextMenu-1.01.js"></script>
-    <script 
-        type="text/javascript"
-        tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/filemanager/scripts/jquery.impromptu-3.1.min.js"></script>
+<!--
+    File Manager Related Imports
+-->
+<script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.form-2.63.js"></script>
+<script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.splitter/jquery.splitter-1.5.1.js"></script>
+<script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.filetree/jqueryFileTree.js"></script>
+<script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.contextmenu/jquery.contextMenu-1.01.js"></script>
+<script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.impromptu-3.1.min.js"></script>
+
 <!-- ACE editor -->
-<script
-    type="text/javascript"
-    charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/ace.js"
-    ></script>
-
+<script type="text/javascript" charset="utf-8" tal:attributes="src string:${aceFiles}/ace.js"></script>
 <!-- Theme -->
-<script
-    type="text/javascript"
-    charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/theme-textmate.js"
-    ></script>
-
+<script type="text/javascript" charset="utf-8" tal:attributes="src string:${aceFiles}/theme-textmate.js"></script>
 <!-- Syntax highlighting -->
-<script
-    type="text/javascript"
-    charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-html.js"
-    ></script>
-<script
-    type="text/javascript"
-    charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-css.js"
-    ></script>
-<script
-    type="text/javascript"
-    charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-javascript.js"
-    ></script>
-<script
-    type="text/javascript"
-    charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-xml.js"
-    ></script>
+<script type="text/javascript" charset="utf-8" tal:attributes="src string:${aceFiles}/mode-html.js"></script>
+<script type="text/javascript" charset="utf-8" tal:attributes="src string:${aceFiles}/mode-css.js"></script>
+<script type="text/javascript" charset="utf-8" tal:attributes="src string:${aceFiles}/mode-javascript.js"></script>
+<script type="text/javascript" charset="utf-8" tal:attributes="src string:${aceFiles}/mode-xml.js"></script>
+<script type="text/javascript" tal:content="structure view/filemanagerConfiguration"></script>
+<script type="text/javascript">
+var lg = {}; // Languages for the file manager
 
+(function($) {
+    
+    $().ready(function() {
+        $("#messages span").each(function() {
+            lg[$(this).attr('id')] = $(this).text();
+        });
 
-    <script 
-        type="text/javascript"
-        tal:content="structure view/filemanagerConfiguration"></script>
-    <script type="text/javascript">
-        var lg = {}; // Languages for the file manager
-        
-        (function($) {
-            
-            $().ready(function() {
-                $("#messages span").each(function() {
-                    lg[$(this).attr('id')] = $(this).text();
-                });
+        // Workaround for lack of slots in prefs_main_template:
+        // #itemOptions needs to be at top level
 
-                // Workaround for lack of slots in prefs_main_template:
-                // #itemOptions needs to be at top level
+        $("#itemOptions").appendTo("body");
 
-                $("#itemOptions").appendTo("body");
+    });
 
-            });
+})(jQuery);
+</script>
+<script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/filemanager.js"></script>
 
-        })(jQuery);
-        
-    </script>
-    <script 
-        type="text/javascript"
-        tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/filemanager/scripts/filemanager.js"></script>
-
+</tal:defines>
 </metal:block>
 </head>
 
@@ -149,10 +102,13 @@
             <div id="uploadresponse"></div>
             <input id="mode" name="mode" type="hidden" value="add" i18n:attributes="value"/> 
             <input id="currentpath" name="currentpath" type="hidden" /> 
-            <input  id="newfile" name="newfile" type="file" />
-            <button id="upload" name="upload" type="submit" value="Upload" class="allowMultiSubmit" i18n:attributes="value"></button>
+            <button id="save" name="save" type="button" value="Save" disabled="disabled" i18n:attributes="value"></button>
             <button id="addnew" name="addnew" type="button" value="New File" i18n:attributes="value"></button>
             <button id="newfolder" name="newfolder" type="button" value="New Folder" i18n:attributes="value"></button>
+            <div id="upload-container">
+                <button id="upload" name="upload" type="submit" value="Upload" class="allowMultiSubmit" i18n:attributes="value"></button>
+                <input  id="newfile" name="newfile" type="file" />
+            </div>
         </form>
         <div id="splitter">
             <div id="fileRoot">
@@ -240,6 +196,8 @@
             <span id='parentfolder' i18n:translate='filemanager_parentfolder'>Parent folder</span>
             <span id='MODE_ERROR' i18n:translate='filemanager_MODE_ERROR'>Mode error.</span>
 
+            <span id='savemsg' i18n:translate='filemanager_save'>Save</span>
+            <span id='saveallmsg' i18n:translate='filemanager_saveall'>Save all</span>
             <span id='add_new' i18n:translate='filemanager_add_new'>New file</span>
             <span id='no_filename' i18n:translate='filemanager_no_filename'>No file name was provided.</span>
             <span id='successful_added_file' i18n:translate='filemanager_successful_added_file'>New file added successfully.</span>
