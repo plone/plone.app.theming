@@ -64,7 +64,13 @@
         $(document).ready(function() {
             
             // TODO:
-            //      - Add source view for iframes (mode toggle, use ACE in readonly mode in overlay)
+            //      - Full screen editing mode for rules + theme resources
+            //      - Allow editing + saving of CSS, JS and HTML files (source view)
+            //      - On insert rule, insert after current tag instead of near end of document
+
+            // Longer term:
+            //      - Working copy
+            //      - Integrate file manager with mapper
 
             var WINDOW_BASE = window.location.protocol + '//' + window.location.host;
 
@@ -179,15 +185,55 @@
                 
                 var rule = $("#new-rule-output").text();
 
-                editor.navigateTo(0, 0);
-                var pos = editor.find('<' + '/rules>',{
-                  backwards: true,
-                  wrap: true,
-                  caseSensitive: false,
-                  wholeWord: false,
-                  regExp: false
-                });
-                
+                function findStartTag(backwards) {
+                    editor.find("<\\w+", {
+                        backwards: backwards,
+                        wrap: false,
+                        wholeWord: false,
+                        regExp: true
+                    });
+                }
+
+                function indent(string, amount) {
+                    var padding = '';
+                    for(var i = 0; i < amount; ++i) {
+                        padding += ' ';
+                    }
+                    return padding + string.replace(/\n/g, '\n' + padding) + '\n\n';
+                }
+
+                // Go to the next opening tag - we want to insert before this
+                findStartTag(false);
+                if(editor.getCursorPosition().row <= 1) {
+                    // Probably the opening rules tag
+                    findStartTag(false);
+                }
+
+                var selectionText = editor.getSession().getTextRange(editor.getSelectionRange());
+
+                // If we didn't find anything, look for the end of the current tag
+                if(selectionText == "") {
+
+                    editor.find("(/>|<" + "/)", {
+                        backwards: false,
+                        wrap: false,
+                        wholeWord: false,
+                        regExp: true
+                    });
+
+                    var selectionText = editor.getSession().getTextRange(editor.getSelectionRange());
+                    if(selectionText == "") {
+                        // Still nothing? Go to the end
+                        editor.navigateFileEnd();
+                    } else {
+                        // Go one past the end tag, but first figure out how far we should i
+                        editor.navigateDown();
+                    }
+
+                } 
+
+                var indentation = editor.getSelectionRange().start.column;
+
                 var cursorPosition = editor.getCursorPosition();
                 var newlines = rule.match(/\n/g);
                 var rows = 0;
@@ -195,8 +241,8 @@
                     rows = newlines.length;
                 }
 
-                editor.navigateLineStart();
-                editor.insert('    ' + rule.replace(/\n/g, '\n    ') + '\n\n');
+                editor.navigateTo(cursorPosition.row, 0);
+                editor.insert(indent(rule, indentation));
                 editor.navigateTo(cursorPosition.row, 0);
                 editor.getSelection().selectTo(cursorPosition.row + rows + 1, 0);
                 
