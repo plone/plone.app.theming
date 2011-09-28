@@ -33,6 +33,19 @@
     charset="utf-8"
     tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-xml.js"
     ></script>
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-html.js"
+    ></script>
+
+
+<!-- Mapper tools -->
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/mapper.js"
+    ></script>
 
 
 <!-- Styling for this page -->
@@ -53,12 +66,12 @@
             // TODO:
             //      - Add source view for iframes (mode toggle, use ACE in readonly mode in overlay)
 
+            var WINDOW_BASE = window.location.protocol + '//' + window.location.host;
+
             // Editor management
 
-            var editor = null;
-            
-            function initEditor(mode, data) {
-                editor = ace.edit("editor");
+            function initEditor(element, mode, data, readonly) {
+                var editor = ace.edit(element);
                 editor.setTheme("ace/theme/textmate");
                 editor.getSession().setTabSize(4);
                 editor.getSession().setUseSoftTabs(true);
@@ -66,337 +79,25 @@
                 editor.getSession().setMode(mode);
                 editor.renderer.setShowGutter(false);
                 editor.setShowPrintMargin(false);
+                editor.setReadOnly(readonly);
 
                 editor.getSession().setValue(data);
                 editor.navigateTo(0, 0);
+
+                return editor;
             }
 
             var XMLMode = require("ace/mode/xml").Mode;
-            var data = $("#file-contents").text();
-            initEditor(new XMLMode(), data);
+            var HTMLMode = require("ace/mode/html").Mode;
 
-            // Rule builder
+            // Rules editor
 
-            var RuleBuilder = function(callback) {
+            var editor = initEditor('editor', new XMLMode(), $("#file-contents").text(), false);
 
-                this.callback = callback;
-
-                this.active = false;
-                this.currentScope = null;
-
-                this.rule = null;
-                this.subtype = null;
-
-                this._contentElement = null;
-                this._themeElement = null;
-
-                this.select = function(element) {
-                    if(this.currentScope == "content") {
-                        this._contentElement = element;
-                    } else if(this.currentScope == "theme") {
-                        this._themeElement = element;
-                    }
-                }
-
-                this.start = function(rule) {
-                    this._contentElement = null;
-                    this._themeElement = null;
-                    this.currentScope = "content";
-                    
-                    // Drop rules get e.g. drop:content or drop:theme,
-                    // which predetermines the scope
-                    var ruleSplit = rule.split(':');
-                    if(ruleSplit.length >= 2) {
-                        this.rule = ruleSplit[0];
-                        this.subtype = ruleSplit[1];
-                        this.currentScope = this.subtype;
-                    } else{
-                        this.rule = rule;
-                        this.subtype = null;    
-                    }
-    
-                    this.active = true;
-
-                    this.callback(this);
-                }
-
-                this.next = function() {
-
-                    if(this.subtype != null) {
-                        // Drop rules have only one scope
-                        this.currentScope = null;
-                    } else {
-                        // Other rules have content and theme
-                        if(this.currentScope == "content") {
-                            this.currentScope = "theme";
-                        } else if (this.currentScope == "theme") {
-                            this.currentScope = null;
-                        }
-                    }
-
-                    this.callback(this);
-
-                }
-
-                this.end = function() {
-                    this._contentElement = null;
-                    this._themeElement = null;
-                    this.currentScope = null;
-                    this.active = false;
-                    this.rule = null;
-                    this.subtype = null;
-
-                    this.callback(this);
-                }
-
-                this.buildRule = function(contentChildren, themeChildren) {
-
-                    if(this.rule == null) {
-                        return "";
-                    }
-
-                    if(this.subtype != null) {
-
-                        if(this.subtype == 'content') {
-                            return "<" + this.rule + "\n    " + 
-                                    this.calculateDiazoSelector(this._contentElement, 'content', contentChildren) +
-                                    "\n    />";
-                        } else if(this.subtype == 'theme') {
-                            return "<" + this.rule + "\n    " + 
-                                    this.calculateDiazoSelector(this._themeElement, 'theme', themeChildren) + 
-                                    "\n    />";
-                        }
-                    
-                    } else {
-                        return "<" + this.rule + "\n    " + 
-                                    this.calculateDiazoSelector(this._contentElement, 'content', contentChildren) + "\n    " + 
-                                    this.calculateDiazoSelector(this._themeElement, 'theme', themeChildren) + 
-                                    "\n    />";
-                    }
-
-                    // Should never happen
-                    return "Error";
-                }
-
-                this.calculateCSSSelector = function(element) {
-                    var selector = element.tagName.toLowerCase();
-                    
-                    if (element.id) {
-                        selector += "#" + element.id;
-                    } else {
-                        var classes = $(element).attr('class');
-                        if(classes != undefined) {
-                            var splitClasses = classes.split(/\s+/);
-                            for(var i = 0; i < splitClasses.length; ++i) {
-                                if(splitClasses[i] != "" && !splitClasses[i].indexOf('_theming') == 0) {
-                                    selector += "." + splitClasses[i];
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    return selector;
-                };
-    
-                this.calculateUniqueCSSSelector = function(element) {
-                    var paths = [];
-                    var path = null;
-
-                    var parents = $(element).parents();
-                    var ultimateParent = parents[parents.length - 1];
-
-                    while (element && element.nodeType == 1) {
-                        var selector = this.calculateCSSSelector(element);
-                        paths.splice(0, 0, selector);
-                        path = paths.join(" ");
-
-                        // The ultimateParent constraint is necessary since
-                        // this may be inside an iframe
-                        if($(path, ultimateParent).length == 1) {
-                            return path;
-                        }
-
-                        element = element.parentNode;
-                    }
-
-                    return null;
-                };
-
-                this.calculateUniqueXpathExpression = function(element) {
-                    var pathElements = [];
-                    var parents = $(element).parents();
-                    
-                    function elementIndex(e) {
-                        var siblings = $(e).siblings(e.tagName.toLowerCase());
-                        if(siblings.length > 0) {
-                            return "[" + ($(e).index() + 1) + "]";
-                        } else {
-                            return "";
-                        }
-                    }
-
-                    var xpathString = "/" + element.tagName.toLowerCase();
-                    if(element.id) {
-                        return "/" + xpathString + "[@id='" + element.id + "']";
-                    } else {
-                        xpathString += elementIndex(element);
-                    }
-
-                    for(var i = 0; i < parents.length; ++i) {
-                        var p = parents[i];
-
-                        var pString = "/" + p.tagName.toLowerCase();
-
-                        if(p.id) {
-                            return "/" + pString + "[@id='" + p.id + "']" + xpathString;
-                        } else {
-                            xpathString = pString + elementIndex(p) + xpathString;
-                        }
-                    }
-
-                    return xpathString;
-                };
-
-                this.calculateDiazoSelector = function(element, scope, children) {
-                        
-                    var selectorType = scope;
-                    if(children) {
-                        selectorType += "-children";
-                    }
-
-                    var cssSelector = this.calculateUniqueCSSSelector(element);
-                    if(cssSelector) {
-                        return "css:" + selectorType + "=\"" + cssSelector + "\"";
-                    } else {
-                        var xpathSelector = this.calculateUniqueXpathExpression(element);
-                        return selectorType + "=\"" + xpathSelector + "\"";
-                    }
-
-                };
-
-            }
-
-            // Outline / highlight management
-
-            var FrameHighlighter = function(frame, scope, ruleBuilder) {
-                this.frame = frame;
-                this.scope = scope;
-                this.ruleBuilder = ruleBuilder;
-
-                this.currentOutline = null;
-                this.activeClass = '_theming-highlighted';
-
-                this.setOutline = function(element) {
-                    $(element).data('old-outline', $(element).css('outline'));
-                    $(element).data('old-cursor', $(element).css('cursor'));
-                    $(element).css('outline', 'solid red 1px');
-                    $(element).css('cursor', 'crosshair');
-
-                    $(element).addClass(this.activeClass);
-
-                    if(this.currentOutline != null) {
-                        this.clearOutline(this.currentOutline);
-                    }
-
-                    this.currentOutline = element;
-                };
-
-                this.clearOutline = function(element) {
-                    $(element).css('outline', $(element).data('old-outline'));
-                    $(element).css('cursor', $(element).data('old-cursor'));
-
-                    $(element).removeClass(this.activeClass);
-
-                    this.currentOutline = null;
-                };
-                
-                this.setupElements = function() {
-                    var highlighter = this;
-                    $(this.frame).contents().find("*").hover(
-                        function(event) {
-                            if(highlighter.ruleBuilder.active && highlighter.ruleBuilder.currentScope == highlighter.scope) {
-                                event.stopPropagation();
-                                highlighter.setOutline(this);
-                            }
-                        },
-                        function(event) {
-                            if($(this).hasClass(highlighter.activeClass)) {
-                                highlighter.clearOutline(this); 
-                            }
-                        }
-                    ).click(function (event) {
-                        if(highlighter.ruleBuilder.active && highlighter.ruleBuilder.currentScope == highlighter.scope) {
-                            event.stopPropagation();
-                            event.preventDefault();
-                             
-                            highlighter.ruleBuilder.select(this);
-                            highlighter.ruleBuilder.next();
-
-                            highlighter.clearOutline(); 
-
-                            return false;
-                        }
-                        
-                    });
-                }
-
-            }
-
-            // Link management
-
-            var LinkManager = function(frame, themeMode) {
-                this.frame = frame;
-                this.themeMode = themeMode;
-                this.modifiedClass = "_theming-modified"
-
-                var base = window.location.protocol + '//' + window.location.host;
-
-                this.isInternal = function(url) {
-                    if (url.slice(0, base.length) == base) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-
-                this.setupLinks = function() {
-                    var manager = this;
-                    $(this.frame).contents().find("a").each(function() {
-                        var href = $(this).attr('href');
-
-                        if(!$(this).hasClass(manager.modifiedClass)) {
-                            $(this).addClass(manager.modifiedClass);
-                            if(manager.isInternal(href)) {
-                                var path = href.slice(base.length, href.length);
-                                var newHref = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + encodeURIComponent(path) + "&amp;theme=" + manager.themeMode;
-                                $(this).attr('href', newHref);
-                            } else {
-                                $(this).click(function(event) {
-                                    event.preventDefault();
-                                    alert("External links are disabled in the theme editor");
-                                    return false;
-                                });
-                            }
-                        }
-                    });    
-                }
-
-                this.setupForms = function() {
-                    var manager = this;
-                    $(this.frame).contents().find("form").each(function() {
-                        if(!$(this).hasClass(manager.modifiedClass)) {
-                            $(this).addClass(manager.modifiedClass);
-                            $(this).submit(function(event) {
-                                event.preventDefault();
-                                alert("Form submissions are disabled in theme editor");
-                                return false;
-                            });
-                        }
-                    }); 
-                }
-
-            }
+            // Source editors
+            var contentSource = initEditor('content-source', new HTMLMode(), "", true);
+            var themeSource = initEditor('theme-source',     new HTMLMode(), "", true);
+            var previewSource = initEditor('preview-source', new HTMLMode(), "", true);
 
             // New rule wizard
 
@@ -419,7 +120,7 @@
             }
 
             var ruleBuilder = new RuleBuilder(function(ruleBuilder) {
-                $(".wizard-text").hide();
+                $(".wizard-text").css('display', 'none');
                 $.mask.close();
 
                 if(ruleBuilder.currentScope == 'content') {
@@ -427,16 +128,18 @@
                         overlay.close();
                     }
 
-                    $("#new-rule-text-select-content").show();
-                    $("#content-split").expose();
+                    $("#new-rule-text-select-content").css('display', 'inline-block');
+                    $("#view-content-preview").click();
+                    $("#content-split, .wizard-text").expose();
                 
                 } else if(ruleBuilder.currentScope == 'theme') {
                     if(overlay.isOpened()) {
                         overlay.close();
                     }
 
-                    $("#new-rule-text-select-theme").show();
-                    $("#theme-split").expose();
+                    $("#new-rule-text-select-theme").css('display', 'inline-block');
+                    $("#view-theme-preview").click();
+                    $("#theme-split, .wizard-text").expose();
 
                 } else if(ruleBuilder.rule != null && ruleBuilder.currentScope == null) {
                     $("#new-rule-step-1").hide();
@@ -472,12 +175,40 @@
                 $(".hideDuringWizard").fadeOut('slow');
             });
 
+            $("#new-rule-step-2 button.insert").click(function() {
+                
+                var rule = $("#new-rule-output").text();
+
+                editor.navigateTo(0, 0);
+                var pos = editor.find('<' + '/rules>',{
+                  backwards: true,
+                  wrap: true,
+                  caseSensitive: false,
+                  wholeWord: false,
+                  regExp: false
+                });
+                
+                var cursorPosition = editor.getCursorPosition();
+                var newlines = rule.match(/\n/g);
+                var rows = 0;
+                if(newlines != null) {
+                    rows = newlines.length;
+                }
+
+                editor.navigateLineStart();
+                editor.insert('    ' + rule.replace(/\n/g, '\n    ') + '\n\n');
+                editor.navigateTo(cursorPosition.row, 0);
+                editor.getSelection().selectTo(cursorPosition.row + rows + 1, 0);
+                
+                overlay.close();
+            });
+
             // Frame setup - the apparent double loading is needed for this
             // to work reliably in multiple browsers
             
             $("#content-frame").ready(function() {
                 var frameHighlighter = new FrameHighlighter("#content-frame", 'content', ruleBuilder);
-                var linkManager = new LinkManager("#content-frame", 'off');
+                var linkManager = new LinkManager("#content-frame", 'off',  WINDOW_BASE, THEME_BASE_URL);
                 function setup() {
                     frameHighlighter.setupElements();
                     linkManager.setupLinks();
@@ -497,7 +228,7 @@
             });
 
             $("#preview-frame").ready(function() {
-                var linkManager = new LinkManager("#preview-frame", 'apply');
+                var linkManager = new LinkManager("#preview-frame", 'apply', WINDOW_BASE, THEME_BASE_URL);
                 function setup() {
                     linkManager.setupLinks();
                     linkManager.setupForms();
@@ -509,6 +240,8 @@
             // Set up theme file selector
 
             $("#file-selector").change(function() {
+                $("#view-theme-preview").click();
+
                 var option = $(":selected", this);
                 var path = $(option).attr('data-path');
                 var fetch = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + path + "&amp;theme=off";
@@ -533,6 +266,55 @@
                 });
 
             });
+
+            // Set up the preview editors
+            $("#view-preview-preview").change(function() {
+                $("#preview-frame").show();
+                $("#preview-source").hide();
+            });
+            $("#view-preview-preview").click();
+            $("#view-preview-preview").click(function() { $(this).change(); });
+
+            $("#view-preview-source").change(function() {
+                var html = $("#preview-frame").contents().find(":root").html();
+                previewSource.getSession().setValue("\n<" + "html>" + html + '\n<' + '/html>');
+                $("#preview-frame").hide();
+                $("#preview-source").show();
+                previewSource.resize();
+            });
+            $("#view-preview-source").click(function() { $(this).change(); });
+
+            $("#view-content-preview").change(function() {
+                $("#content-frame").show();
+                $("#content-source").hide();
+            });
+            $("#view-content-preview").click();
+            $("#view-content-preview").click(function() { $(this).change(); });
+
+            $("#view-content-source").change(function() {
+                var html = $("#content-frame").contents().find(":root").html();
+                contentSource.getSession().setValue("<" + "html>\n" + html + '\n<' + '/html>');
+                $("#content-frame").hide();
+                $("#content-source").show();
+                contentSource.resize();
+            });
+            $("#view-content-source").click(function() { $(this).change(); });
+
+            $("#view-theme-preview").change(function() {
+                $("#theme-frame").show();
+                $("#theme-source").hide();
+            });
+            $("#view-theme-preview").click();
+            $("#view-theme-preview").click(function() { $(this).change(); });
+
+            $("#view-theme-source").change(function() {
+                var html = $("#theme-frame").contents().find(":root").html();
+                themeSource.getSession().setValue("<" + "html>\n" + html + '\n<' + '/html>');
+                $("#theme-frame").hide();
+                $("#theme-source").show();
+                themeSource.resize();
+            });
+            $("#view-theme-source").click(function() { $(this).change(); });
 
         });
 
@@ -610,12 +392,21 @@
         <div id="preview" class="cell width-full position-0">
             <h2 i18n:translate="heading_merged">Preview</h2>
 
+            <div class="panel-toolbar">
+                <input type="radio" name="view-preview" id="view-preview-preview" value="preview" checked="checked" />
+                <label for="view-preview-preview" i18n:translate="">Preview</label>
+
+                <input type="radio" name="view-preview" id="view-preview-source" value="source" />
+                <label for="view-preview-source" i18n:translate="">Source</label>
+            </div>
+            
             <p class="discreet" i18n:translate="help_split_merged">
                 The result of applying the rules can be seen below
             </p>
 
             <iframe id="preview-frame"
                 tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply"></iframe>
+            <pre class="source-editor" id="preview-source"></pre>
 
         </div>
     </div>
@@ -624,26 +415,44 @@
         <div id="content-split" class="cell width-1:2 position-0">
             <h2 i18n:translate="heading_content">Content</h2>
 
+            <div class="panel-toolbar">
+                <input type="radio" name="view-content" id="view-content-preview" value="preview" checked="checked" />
+                <label for="view-content-preview" i18n:translate="">Preview</label>
+
+                <input type="radio" name="view-content" id="view-content-source" value="source" />
+                <label for="view-content-source" i18n:translate="">Source</label>
+            </div>
+
              <p class="discreet" i18n:translate="help_split_content">
                 The raw content
             </p>
 
             <iframe id="content-frame"
                 tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=off"></iframe>
+            <pre class="source-editor" id="content-source"></pre>
 
         </div>
         <div id="theme-split" class="cell width-1:2 position-1:2">
             <h2 i18n:translate="heading_theme">Theme</h2>
 
-            <select size="1" name="file-selector" id="file-selector">
-                <option
-                    tal:repeat="f view/themeFiles"
-                    tal:attributes="value f/path;
-                                    data-path f/path;
-                                    data-extension f/extension"
-                    tal:content="f/path"
-                    />
-            </select>
+            <div class="panel-toolbar">
+                <select size="1" name="file-selector" id="file-selector">
+                    <option
+                        tal:repeat="f view/themeFiles"
+                        tal:attributes="value f/path;
+                                        data-path f/path;
+                                        data-extension f/extension"
+                        tal:content="f/path"
+                        />
+                </select>
+
+                <input type="radio" name="view-theme" id="view-theme-preview" value="preview" checked="checked" />
+                <label for="view-theme-preview" i18n:translate="">Preview</label>
+
+                <input type="radio" name="view-theme" id="view-theme-source" value="source" />
+                <label for="view-theme-source" i18n:translate="">Source</label>
+
+            </div>
 
             <p class="discreet" i18n:translate="help_split_theme">
                 The pristine theme
@@ -651,11 +460,12 @@
 
             <iframe id="theme-frame"
                 tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off"></iframe>
+            <pre class="source-editor" id="theme-source"></pre>
 
         </div>
     </div>
 
-    <!-- Overlays -->
+    <!-- Wizard overlay -->
     <div id="new-rule-wizard" class="overlay">
         <div class="close">
             <span i18n:translate="">Close</span>
@@ -733,6 +543,7 @@
                     </form>
 
                     <div class="new-rule-actions">
+                        <button type="button" class="insert">Insert</button>
                         <button type="button" class="close">Close</button>
                     </div>
                 </div>
