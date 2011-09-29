@@ -106,8 +106,8 @@ var lg = {}; // Languages for the file manager
             <button id="addnew" name="addnew" type="button" value="New File" i18n:attributes="value"></button>
             <button id="newfolder" name="newfolder" type="button" value="New Folder" i18n:attributes="value"></button>
             <div id="upload-container">
-                <button id="upload" name="upload" type="submit" value="Upload" class="allowMultiSubmit" i18n:attributes="value"></button>
                 <input  id="newfile" name="newfile" type="file" />
+                <button id="upload" name="upload" type="submit" value="Upload" class="allowMultiSubmit" i18n:attributes="value"></button>
             </div>
         </form>
         <div id="splitter">
@@ -203,6 +203,8 @@ var lg = {}; // Languages for the file manager
             <span id='successful_added_file' i18n:translate='filemanager_successful_added_file'>New file added successfully.</span>
             <span id='create_file' i18n:translate='filemanager_create_file'>Create File</span>
             <span id='prompt_filename' i18n:translate='filemanager_prompt_filename'>Enter the name of the new file</span>
+
+            <span id='prompt_replacefile' i18n:translate="filemanager_prompt_replacefile">Replace currently selected file?</span>
         </div>
     
     </div>

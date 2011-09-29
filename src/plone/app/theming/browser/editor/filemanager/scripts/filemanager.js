@@ -612,7 +612,7 @@ $(function(){
 		target: '#uploadresponse',
 		beforeSubmit: function(arr, form, options) {
             if($("#fileselector li.selected").size() > 0){
-                if(confirm("Replace the current file?")){
+                if(confirm(lg.prompt_replacefile)){
                     form.append('<input name="replacepath" value="' + $("#fileselector li.selected").attr('rel') + '" />');
                 }
             }
@@ -691,7 +691,7 @@ $(function(){
                 }
                 var dirty = $('#fileselector li.selected').hasClass('dirty');
                 if(dirty){
-                    $.prompt('You have unsaved changes. Would you like to save first??', {
+                    $.prompt('You have unsaved changes. Would you like to save first?', {
                         buttons: { Cancel: 2, No: 1, Yes: 0},
                         submit: function(v,m,f){
                             if(v == 0){

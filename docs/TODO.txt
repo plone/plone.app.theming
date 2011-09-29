@@ -1,0 +1,26 @@
+plone.app.theming to-do
+=======================
+
+General
+-------
+
+[ ] Integrate mapper and file manager more meaningfully
+
+File manager
+------------
+
+[ ] Add page unload protection
+[ ] Use $.prompt(), not confirm() to confirm image upload
+[ ] Style prompts to look more like Plone's standard overlays (or replace with jQuery Tools overlays)
+[ ] Visual artefacts when viewing large image
+[ ] Height of file tree does not match height of editor pane
+[ ] Currently selected file should be highlighted in file tree
+[ ] All buttons jump when depressed
+[ ] File upload input box should be in an overlay, not in the toolbar itself
+[ ] When uploading a new file to the root folder, the file tree is not refreshed to show it
+[ ] Remove confirmation boxes for new file / folder added (tree is feedback enough)
+
+Mapper
+------
+
+[ ] Add page unload protection
