@@ -19,8 +19,13 @@ File manager
 [ ] File upload input box should be in an overlay, not in the toolbar itself
 [ ] When uploading a new file to the root folder, the file tree is not refreshed to show it
 [ ] Remove confirmation boxes for new file / folder added (tree is feedback enough)
+[ ] Ensure all strings are internationalised via the lg variable (set in filemanager.pt via spans)
 
 Mapper
 ------
 
 [ ] Add page unload protection
+[ ] Full screen editing
+[ ] Working copy
+
+[ ] Table-based visual rules list viewer/editor instead of source (unless rules source too complex)
