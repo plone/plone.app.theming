@@ -28,8 +28,6 @@ File manager
 Mapper
 ------
 
-[ ] Add page unload protection
 [ ] Full screen editing
-[ ] Working copy
-
+[ ] Working copy editing
 [ ] Table-based visual rules list viewer/editor instead of source (unless rules source too complex)

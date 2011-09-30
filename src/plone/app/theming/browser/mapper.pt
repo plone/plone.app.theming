@@ -110,6 +110,7 @@
             var defaultMode = new TextMode();
 
             var ruleBuilder = null; // initialised in the closure for the rule editor
+            var dirties = {}; // which things are dirty?
 
             function getExtension(path) {
                 var m = path.match(/.(\w+)$/);
@@ -121,10 +122,21 @@
                 $('#preview-frame').attr("src", $('#preview-frame').attr("src"));
             }
 
+            window.onbeforeunload = function() {
+                for(key in dirties) {
+                    if(dirties[key]) {
+                        return $("#unload-warning-text").text();
+                    }
+                }
+            };
+
             // Rules editor
             (function() {
                 
                 var editor = initEditor('editor', extensionModes.html, $("#file-contents").text(), false);            
+                editor.getSession().on('change', function() {
+                    dirties['rules.xml'] = true;
+                });
                 var overlay = null;
                 
                 function updateRule(ruleBuilder) {
@@ -201,6 +213,7 @@
                         type: 'POST',
                         success: function(){
                             refreshPreview();
+                            dirties['rules.xml'] = false;
                             editor.focus();
                         }
                     });
@@ -366,6 +379,7 @@
                         if(!label.match(/ \*$/)) {
                             $("#file-selector option:selected").text(label + " *");
                         }
+                        dirties[sourceManager.currentPath] = true;
                         sourceManager.markDirty();   
                     }
                 });
@@ -478,6 +492,8 @@
                             if(label.match(/ \*$/)) {
                                 $("#file-selector option:selected").text(label.substr(0, label.length - 2));
                             }
+
+                            dirties[path] = false;
                             sourceManager.markClean(path);
                             refreshPreview();
                             themeSource.focus();
@@ -694,6 +710,10 @@
             <pre class="source-editor" id="theme-source"></pre>
 
         </div>
+    </div>
+
+    <div id="unload-warning-text" class="hiddenStructure" i18n:translate="theming_mapper_unload_warning">
+        Are you sure you want to leave this page? Unsaved changes will be lost.
     </div>
 
     <!-- Wizard overlay -->
