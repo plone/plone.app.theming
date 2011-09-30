@@ -105,6 +105,14 @@ var lg = {}; // Languages for the file manager
             Theme mapper
     </a>
 
+    <p class="discreet" i18n:translate="help_theme_filemanager">
+        You can edit files in the theme by opening them from the file
+        tree. Use the buttons on the toolbar to create new folders and
+        files. You can right-click on items in the file tree to download,
+        delete or rename them.
+    </p>
+
+
     <input tal:replace="structure authenticator" />
 
     <div id="filemanager">

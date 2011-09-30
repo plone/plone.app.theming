@@ -29,12 +29,11 @@ File manager
 
 [ ] Make Ctrl+W/Cmd+W work for tabs opened as images / files
 [ ] Tidy up layout / spacing of overlays and provide some (translated) help text
+[ ] Style right-click menu more like Plone
 [ ] Don't default the name of a new folder to 'My folder'
 
 Mapper
 ------
-
-[ ] Use same buttons as file manager
 
 [ ] Full screen editing
 [ ] Working copy editing
