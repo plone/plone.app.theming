@@ -10,6 +10,8 @@ File manager
 ------------
 
 [ ] Add page unload protection
+[ ] Support Ctrl+S/Cmd+S to save
+[ ] Support Ctrl+W/Cmd+W to close tab
 [ ] Use $.prompt(), not confirm() to confirm image upload
 [ ] Style prompts to look more like Plone's standard overlays (or replace with jQuery Tools overlays)
 [ ] Visual artefacts when viewing large image

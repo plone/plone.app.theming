@@ -190,7 +190,7 @@
 
                 var overlay = $(triggers[0]).data('overlay');
 
-                $("#save-rules").click(function() {
+                $("#rules-save").click(function() {
                     
                     var data = editor.getSession().getValue();
                     $("#file-contents").text(data);
@@ -314,6 +314,7 @@
                     $("#preview-frame").hide();
                     $("#preview-source").show();
                     previewSource.resize();
+                    previewSource.focus();
                 });
                 $("#view-preview-source").click(function() { $(this).change(); });
             })();
@@ -348,6 +349,7 @@
                     $("#content-frame").hide();
                     $("#content-source").show();
                     contentSource.resize();
+                    contentSource.focus();
                 });
                 $("#view-content-source").click(function() { $(this).change(); });
             })();
@@ -409,6 +411,8 @@
 
                         updateView();
                         sourceManager.currentPath = path;
+
+                        themeSource.focus();
                     } else {
                         $.ajax({
                             url: THEME_BASE_URL + '/@@theming-controlpanel-filemanager-getfile',
@@ -423,6 +427,8 @@
                                 
                                 updateView();
                                 sourceManager.currentPath = path;
+
+                                themeSource.focus();
                             }
                         });                               
                     }
@@ -482,6 +488,42 @@
                 });
                 
             })();
+
+            // Key bindings
+            (function() {
+
+                var canon = require('pilot/canon');
+                canon.addCommand({
+                    name: 'saveEditor',
+                    bindKey: {
+                        mac: 'Command-S',
+                        win: 'Ctrl+S',
+                        sender: 'editor'
+                    },
+                    exec: function(env, args, request) {
+                        if($(env.editor.container).is("#theme-source")) {
+                            $("#theme-save").click();
+                        } else if($(env.editor.container).is("#editor")) {
+                            $("#rules-save").click();
+                        }
+                    }
+                });
+
+                canon.addCommand({
+                    name: 'newRule',
+                    bindKey: {
+                        mac: 'Command-N',
+                        win: 'Ctrl+N',
+                        sender: 'editor'
+                    },
+                    exec: function(env, args, request) {
+                        if($(env.editor.container).is("#editor")) {
+                            $("#new-rule").click();
+                        }
+                    }
+                });
+
+            })();
             
         });
 
@@ -518,9 +560,9 @@
         Below, you will find four panels: The Diazo rules, a preview of the themed
         site using these rules, the unthemed content and the raw theme.
         You can navigate the content, theme or preview, and change to
-        a different theme file if you wish. If you edit the rules and click
-        <strong>Save</strong>, your changes will be saved
-        and the preview updated to reflect the latest rules.
+        a different theme file if you wish. You can edit the rules and any
+        HTML, CSS or JavaScript resources in the theme. When they are saved,
+        the preview will reload to show the effects of your changes.
     </p>
 
     <div class="row">
@@ -534,7 +576,7 @@
 
             <div id="mapper-toolbar">
                 <button
-                    id="save-rules"
+                    id="rules-save"
                     name="form.button.Save"
                     class="allowMultiSubmit"
                     i18n:translate=""
