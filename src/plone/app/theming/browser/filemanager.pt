@@ -34,7 +34,6 @@
 <script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.splitter/jquery.splitter-1.5.1.js"></script>
 <script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.filetree/jqueryFileTree.js"></script>
 <script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.contextmenu/jquery.contextMenu-1.01.js"></script>
-<script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.impromptu-3.1.min.js"></script>
 
 <!-- ACE editor -->
 <script type="text/javascript" charset="utf-8" tal:attributes="src string:${aceFiles}/ace.js"></script>
