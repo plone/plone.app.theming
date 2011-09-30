@@ -21,7 +21,7 @@ _prompt.overlay({
 		loadSpeed: 200,
 		opacity: 0.9
 	},
-	top : 0,
+	// top : 0,
     fixed : false,
     closeOnClick: false
 });
