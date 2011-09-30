@@ -10,7 +10,7 @@
 	position: relative;
 }
 
-#uploader {
+#buttons {
 	margin-top: 10px;
 	padding: 5px 5px 0 5px;
 	background-color: #E2EAF3;
@@ -20,7 +20,7 @@
 	margin-left: 0 !important;
 }
 
-#uploader {
+#buttons {
 	display: block;
 	text-align: right;
 	height: auto;
@@ -29,7 +29,7 @@
 	overflow: hidden;
 }
 
-#uploader h1 {
+#buttons h1 {
 	display: block;
 	float: left;
 	text-align: left;
@@ -409,7 +409,7 @@ button.ON {
     height:500px;
 }
 
-#uploader {
+#buttons {
     background-color: #EEEEEE;
 }
 

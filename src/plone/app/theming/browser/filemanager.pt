@@ -78,7 +78,6 @@ var lg = {}; // Languages for the file manager
         <h1 class="documentFirstHeading"></h1>
         <div class="documentDescription"></div>
         <div class="input">
-            <input type="text" name="input" />
         </div>
         <div class="formControls">
             <input class="context" type="submit" name="form.button.save" value="Save">
@@ -109,18 +108,16 @@ var lg = {}; // Languages for the file manager
     <input tal:replace="structure authenticator" />
 
     <div id="filemanager">
-        <form id="uploader" method="post">
+        <form id="buttons">
             <input tal:replace="structure authenticator" />
             <h1></h1>
             <div id="uploadresponse"></div>
             <input id="mode" name="mode" type="hidden" value="add" i18n:attributes="value"/> 
-            <input id="currentpath" name="currentpath" type="hidden" /> 
             <button id="save" name="save" type="button" value="Save" disabled="disabled" i18n:attributes="value"></button>
             <button id="addnew" name="addnew" type="button" value="New File" i18n:attributes="value"></button>
             <button id="newfolder" name="newfolder" type="button" value="New Folder" i18n:attributes="value"></button>
             <div id="upload-container">
-                <input  id="newfile" name="newfile" type="file" />
-                <button id="upload" name="upload" type="submit" value="Upload" class="allowMultiSubmit" i18n:attributes="value"></button>
+                <button id="upload" name="upload" type="button" value="Upload" class="allowMultiSubmit" i18n:attributes="value"></button>
             </div>
         </form>
         <div id="splitter">
@@ -168,6 +165,8 @@ var lg = {}; // Languages for the file manager
             <span id='successful_added_folder' i18n:translate='filemanager_successful_added_folder'>New folder added successfully.</span>
             <span id='ERROR_RENAMING_FILE' i18n:translate='filemanager_ERROR_RENAMING_FILE'>Error while renaming the file %s to %s.</span>
             <span id='upload' i18n:translate='filemanager_upload'>Upload</span>
+            <span id='upload_and_replace' i18n:translate='filemanager_upload_and_replace'>Upload and Replace</span>
+            <span id='upload_and_replace_current' i18n:translate='filemanager_upload_and_replace_current'>Upload and Replace Current File</span>
             <span id='INVALID_VAR' i18n:translate='filemanager_INVALID_VAR'>Invalid var %s.</span>
             <span id='could_not_retrieve_folder' i18n:translate='filemanager_could_not_retrieve_folder'>Could not retrieve folder contents.</span>
             <span id='current_folder' i18n:translate='filemanager_current_folder'>Current folder: </span>
@@ -222,6 +221,7 @@ var lg = {}; // Languages for the file manager
             <span id='prompt_unsavedchanges_desc' i18n:translate="filemanager_prompt_unsavedchanges_desc">
                 Would you like to save first?
             </span>
+            <span id='prompt_fileupload' i18n:translate='filemanager_prompt_fileupload'>Select a file to upload</span>
         </div>
     
     </div>

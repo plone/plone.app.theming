@@ -139,23 +139,16 @@ class FileManager(BrowserView):
 
     def update(self):
         fileConnector = self.request.get('URL')
-        pathPrefix = "%s/%s/" % (self.portalUrl, self.staticFiles,)
         self.filemanagerConfiguration = """\
-var autoload = true;
-var showFullPath = false;
-var browseOnly = false;
-var fileRoot = '/';
-var showThumbs = true;
-var imagesExt = %s;
-var capabilities = %s;
-var fileConnector = '%s';
-var baseUrl = '%s';
-var pathPrefix = '%s';
+var FILE_ROOT = '/';
+var IMAGES_EXT = %s;
+var CAPABILITIES = %s;
+var FILE_CONNECTOR = '%s';
+var BASE_URL = '%s';
 """ % (repr(self.imageExtensions),
        repr(self.capabilities),
        fileConnector,
-       self.portalUrl + '/++theme++' + self.context.__name__,
-       pathPrefix)
+       self.portalUrl + '/++theme++' + self.context.__name__)
 
         return True
 
@@ -434,6 +427,15 @@ class ThemeFileManager(FileManager):
         basename, ext = os.path.splitext(path)
         ext = ext[1:].lower()
         result = {'ext': ext}
+
+        file = self.context.context.unrestrictedTraverse(path)
+        ct = file.getContentType()
+        if ct:
+            # take content type of the file over extension if available
+            if '/' in ct:
+                _ext = ct.split('/')[1].lower()
+            if _ext in self.extensionsWithIcons:
+                ext = result['ext'] = _ext
         if ext in KNOWN_EXTENSIONS:
             result['contents'] = self.context.readFile(path.encode('utf-8'))
         else:
