@@ -232,15 +232,14 @@ var BASE_URL = '%s';
             fileType = 'dir'
             path = path + '/'
         else:
-            basename, ext = os.path.splitext(filename)
-            filetype = ext[1:]
-            if filetype in self.imageExtensions:
+            fileType = self.getExtension(path, obj)
+            if fileType in self.imageExtensions:
                 preview = '%s/++%s++%s/%s' % (siteUrl, self.resourceType,
                                               themeName, path)
-            elif filetype in self.extensionsWithIcons:
+            elif fileType in self.extensionsWithIcons:
                 preview = "%s/%s/images/fileicons/%s.png" % (siteUrl,
                                                              self.staticFiles,
-                                                             filetype)
+                                                             fileType)
 
         if getSize and isinstance(obj, Image):
             properties['height'] = obj.height
@@ -409,6 +408,19 @@ var BASE_URL = '%s';
         except (KeyError, NotFound,):
             raise KeyError(path)
 
+    def getExtension(self, path, obj):
+        basename, ext = os.path.splitext(path)
+        ext = ext[1:].lower()
+
+        ct = obj.getContentType()
+        if ct:
+            # take content type of the file over extension if available
+            if '/' in ct:
+                _ext = ct.split('/')[1].lower()
+            if _ext in self.extensionsWithIcons:
+                return _ext
+        return ext
+
 
 class ThemeFileManager(FileManager):
     """Theme resource directory file manager
@@ -424,20 +436,11 @@ class ThemeFileManager(FileManager):
 
     def getFile(self, path):
         self.setup()
-        basename, ext = os.path.splitext(path)
-        ext = ext[1:].lower()
+        file = self.context.context.unrestrictedTraverse(path.encode('utf-8'))
+        ext = self.getExtension(path, file)
         result = {'ext': ext}
-
-        file = self.context.context.unrestrictedTraverse(path)
-        ct = file.getContentType()
-        if ct:
-            # take content type of the file over extension if available
-            if '/' in ct:
-                _ext = ct.split('/')[1].lower()
-            if _ext in self.extensionsWithIcons:
-                ext = result['ext'] = _ext
         if ext in KNOWN_EXTENSIONS:
-            result['contents'] = self.context.readFile(path.encode('utf-8'))
+            result['contents'] = str(file.data)
         else:
             info = self.getInfo(path)
             result['info'] = self.filepreview_template(info=info)

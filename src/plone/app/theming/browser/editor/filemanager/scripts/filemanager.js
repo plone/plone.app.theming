@@ -259,7 +259,7 @@ var setUploader = function(path){
         var filename = '';
         
         var getFileName = function(button, fname){
-            if(button != lg.create_file){ return false;}
+            if(button != lg.create_file){ return;}
 
             if(fname != ''){
                 filename = fname;
@@ -299,7 +299,7 @@ var setUploader = function(path){
 		var foldername =  lg.default_foldername;
 		
 		var getFolderName = function(button, fname){
-			if(button != lg.create_folder){return false;}
+			if(button != lg.create_folder){return;}
 
 			if(fname != ''){
 				foldername = fname;
@@ -339,7 +339,7 @@ var renameItem = function(data){
 	var finalName = '';
 
 	var getNewName = function(button, rname){
-		if(button != lg.rename){ return false; }
+		if(button != lg.rename){ return; }
 		var deffered = function(){};
 
 		if(rname != ''){
@@ -391,7 +391,7 @@ var deleteItem = function(data){
 	var msg = lg.confirmation_delete;
 	
 	var doDelete = function(button, value){
-		if(button != lg.yes) return false;
+		if(button != lg.yes){ return; }
 		var deffered = function(){};
 		$.ajax({
 			type: 'POST',
@@ -442,7 +442,14 @@ var addNode = function(path, name){
 	}else{
 		path = '';
 	}
-	var a = $('<a rel="' + path + name + '" href="#">' + name + '</a>');
+	var filepath = path + name;
+	$('#filetree li a[rel="' + filepath + '"]').parent().remove();
+	$('#fileselector li[rel="' + filepath + '"]').remove();
+	$('#aceeditors li[rel="' + filepath + '"]').remove()
+	if(_editors[filepath] !== undefined){
+		delete _editors[filepath];
+	}
+	var a = $('<a rel="' + filepath + '" href="#">' + name + '</a>');
 	var newNode = $('<li class="file ext_' + ext + '"></li>');
 	newNode.append(a);
 	a.click(function(){
