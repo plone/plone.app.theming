@@ -94,7 +94,7 @@ var lg = {}; // Languages for the file manager
         class="link-parent"
         tal:attributes="href string:${portal_url}/@@theming-controlpanel"
         i18n:translate="label_up_to_theming_controlpanel">
-            Up to Diazo theme control panel
+            Back to Diazo theme control panel
     </a>
 
     |

@@ -1,3 +1,13 @@
+/* Give us some more real-estate */
+#portal-top,
+#viewlet-above-content,
+#portal-breadcrumbs,
+#portal-footer,
+#portal-colophon,
+#portal-siteactions {
+    display: none;
+}
+
 #filemanager {
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
