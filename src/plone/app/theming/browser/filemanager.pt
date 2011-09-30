@@ -218,6 +218,10 @@ var lg = {}; // Languages for the file manager
             <span id='prompt_filename' i18n:translate='filemanager_prompt_filename'>Enter the name of the new file</span>
 
             <span id='prompt_replacefile' i18n:translate="filemanager_prompt_replacefile">Replace currently selected file?</span>
+            <span id='prompt_unsavedchanges' i18n:translate="filemanager_prompt_unsavedchanges">You have unsaved changes</span>
+            <span id='prompt_unsavedchanges_desc' i18n:translate="filemanager_prompt_unsavedchanges_desc">
+                Would you like to save first?
+            </span>
         </div>
     
     </div>

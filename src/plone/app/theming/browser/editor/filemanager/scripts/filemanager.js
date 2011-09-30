@@ -178,7 +178,6 @@ var setUploader = function(path){
     // New
     $('#addnew').unbind().click(function(){
         var filename = '';
-        var msg = lg.prompt_filename + ' : <input id="fname" name="fname" type="text" value="' + filename + '" />';
         
         var getFileName = function(button, fname){
             if(button != lg.create_file){ return false;}
@@ -209,12 +208,11 @@ var setUploader = function(path){
             }
         }
         var btns = [lg.create_file, lg.cancel];
-        showPrompt({title: msg, callback: getFileName, buttons: btns, prompt: true}); 
+        showPrompt({title: lg.prompt_filename, callback: getFileName, buttons: btns, inputValue: filename, prompt: true}); 
     }); 
 
 	$('#newfolder').unbind().click(function(){
 		var foldername =  lg.default_foldername;
-		var msg = lg.prompt_foldername + ' : <input id="fname" name="fname" type="text" value="' + foldername + '" />';
 		
 		var getFolderName = function(button, fname){
 			if(button != lg.create_folder){return false;}
@@ -240,7 +238,7 @@ var setUploader = function(path){
 			}
 		}
 		var btns = [lg.create_folder, lg.cancel];
-		showPrompt({title: msg, callback: getFolderName, buttons: btns, prompt: true});	
+		showPrompt({title: lg.prompt_foldername, callback: getFolderName, buttons: btns, inputValue: foldername, prompt: true});	
 	});	
 }
 
@@ -324,7 +322,7 @@ var deleteItem = function(data){
 	
 	var doDelete = function(button, value){
 		if(button != lg.yes) return false;
-	
+		var deffered = function(){};
 		$.ajax({
 			type: 'POST',
 			url: fileConnector,
@@ -342,13 +340,14 @@ var deleteItem = function(data){
 					rootpath = rootpath.substr(0, rootpath.lastIndexOf('/') + 1);
 					$('#uploader h1').text(lg.current_folder + displayPath(rootpath));
 					isDeleted = true;
-					showPrompt({title: lg.successful_delete});
+					deffered = function(){ showPrompt({title: lg.successful_delete}); }
 				} else {
 					isDeleted = false;
-					showPrompt({title: result['Error']});
-				}			
+					deffered = function(){ showPrompt({title: result['Error']});}
+				}
 			}
-		});	
+		});
+		return deffered;
 	}
 	var btns = [lg.yes, lg.no];
 	showPrompt({title: msg, callback: doDelete, buttons: btns});
@@ -594,9 +593,9 @@ $('#uploader').ajaxForm({
         if($("#fileselector li.selected").size() > 0){
         	showPrompt({
 	        	title: lg.prompt_replacefile,
-	        	buttons: ['Yes', 'No'],
+	        	buttons: [lg.yes, lg.no],
 	        	callback: function(button){
-	        		if(button == 'Yes'){
+	        		if(button == lg.yes){
 	        			form.append('<input name="replacepath" value="' + $("#fileselector li.selected").attr('rel') + '" />');
 	        		}
 	        		doUpload();
@@ -668,14 +667,14 @@ $('#filetree').fileTree({
             var dirty = $('#fileselector li.selected').hasClass('dirty');
             if(dirty){
             	showPrompt({
-            		title: 'Unsaved Changes',
-            		description: 'You have unsaved changes. Would you like to save first?',
-            		buttons: ['Yes', 'No', 'Cancel'],
+            		title: lg.prompt_unsavedchanges,
+            		description: lg.prompt_unsavedchanges_desc,
+            		buttons: [lg.yes, lg.no, lg.cancel],
             		callback: function(button){
-            			if(button == 'Yes'){
+            			if(button == lg.yes){
             				$("#save").trigger('click');
                             remove_tab();
-            			}else if(button == 'No'){
+            			}else if(button == lg.no){
             				remove_tab();
             			}
             		}
@@ -759,7 +758,7 @@ if(window.opener == null) $('#itemOptions a[href$="#select"]').remove();
 
 window.onbeforeunload = function() {
 	if($('#fileselector li.dirty').size() > 0){
-		return "You have unsaved changes.";	
+		return lg.prompt_unsavedchanges;
 	}
 };
 

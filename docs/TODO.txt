@@ -9,13 +9,13 @@ General
 File manager
 ------------
 
-[ ] Add page unload protection
+[X] Add page unload protection
 [ ] Support Ctrl+S/Cmd+S to save
 [ ] Support Ctrl+W/Cmd+W to close tab
 [ ] Support Ctrl+N/Cmd+N for new file
 [ ] Support Ctrl+Shift+N/Cmd+Shif+N for new folder
-[ ] Use $.prompt(), not confirm() to confirm image upload
-[ ] Style prompts to look more like Plone's standard overlays (or replace with jQuery Tools overlays)
+[X] Use showPrompt, not confirm() to confirm image upload
+[X] Style prompts to look more like Plone's standard overlays (or replace with jQuery Tools overlays)
 [ ] Visual artefacts when viewing large image
 [ ] Height of file tree does not match height of editor pane
 [ ] Currently open / selected file should be highlighted in file tree

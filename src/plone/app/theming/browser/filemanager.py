@@ -314,7 +314,7 @@ var pathPrefix = '%s';
             except (ValueError,):
                 error = translate(_(u'filemanager_error_file_invalid',
                                   default=u"Could not read file."),
-                                context=self.request)
+                                  context=self.request)
                 code = 1
 
         return {
