@@ -20,6 +20,7 @@ from plone.subrequest import subrequest
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.interfaces import RULE_FILENAME
+from plone.app.theming.interfaces import KNOWN_EXTENSIONS
 
 from plone.app.theming.utils import getPortal
 from plone.app.theming.utils import findContext
@@ -74,10 +75,13 @@ class ThemeMapper(BrowserView):
         
         self.themeFiles = self.findThemeFiles(self.resourceDirectory)
 
-        # XXX: Need to pick the right theme file in a better way
-        self.defaultThemeFile = "index.html"
-        if len(self.themeFiles) > 0:
-            self.defaultThemeFile = self.themeFiles[0]['path']
+        self.defaultThemeFile = None
+        for t in self.themeFiles:
+            if self.defaultThemeFile is None:
+                self.defaultThemeFile = t['path']
+            if t['extension'] in ('html', 'htm'):
+                self.defaultThemeFile = t['path']
+                break
         
         return True
     
@@ -98,24 +102,36 @@ class ThemeMapper(BrowserView):
         if files is None:
             files = []
         
+        dirs = []
+
         for f in directory.listDirectory():
-            if not f:
+            if not f or f == RULE_FILENAME:
                 continue
             
-            path = f
-            if prefix:
-                path = prefix + '/' + f
             if directory.isDirectory(f):
-                self.findThemeFiles(directory[f], files=files, prefix=path)
+                dirs.append(f)
             else:
+
+                path = f
+                if prefix:
+                    path = prefix + '/' + f
+
                 basename, ext = os.path.splitext(f)
                 ext = ext[1:].lower()
-                if ext in ("html", "htm"):
+                if ext in KNOWN_EXTENSIONS:
                     files.append({
                         'path': path,
                         'filename': f,
                         'extension': ext,
                     })
+        
+        # Do directories last
+        for f in dirs:
+            path = f
+            if prefix:
+                path = prefix + '/' + f
+            self.findThemeFiles(directory[f], files=files, prefix=path)
+
         return files
     
     def getFrame(self):
@@ -125,6 +141,7 @@ class ThemeMapper(BrowserView):
         ``theme``, which can be 'off', to disable the theme and 'apply' to
         apply the current theme to the response.
         """
+
         processInputs(self.request)
 
         path = self.request.form.get('path', None)
@@ -146,8 +163,17 @@ class ThemeMapper(BrowserView):
         else:
             # e.g. charset=utf-8
             encoding = encoding.split('=', 1)[1].strip()
-        result = result.decode(encoding).encode('ascii', 'xmlcharrefreplace')
+        
+        # Not HTML? Return as-is
+        if content_type is None or not content_type.startswith('text/html'):
+            if len(result) == 0:
+                result = ' ' # Zope does not deal well with empty responses
+            return result
 
+        result = result.decode(encoding).encode('ascii', 'xmlcharrefreplace')
+        if len(result) == 0:
+            result = ' ' # Zope does not deal well with empty responses
+        
         if theme == 'off':
             self.request.response.setHeader('X-Theme-Disabled', '1')
         elif theme == 'apply':
@@ -172,8 +198,8 @@ class ThemeMapper(BrowserView):
             params['url'] = quote_param("%s%s" % (portal.absolute_url(), path,))
             params['path'] = quote_param("%s%s" % (portal.absolute_url_path(), path,))
 
-            if settings.doctype:
-                serializer.doctype = settings.doctype
+            if theme.doctype:
+                serializer.doctype = theme.doctype
                 if not serializer.doctype.endswith('\n'):
                     serializer.doctype += '\n'
             

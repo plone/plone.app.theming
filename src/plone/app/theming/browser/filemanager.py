@@ -11,6 +11,7 @@ from plone.resource.manifest import MANIFEST_FILENAME
 from plone.resource.manifest import getManifest
 
 from plone.app.theming.interfaces import MANIFEST_FORMAT
+from plone.app.theming.interfaces import KNOWN_EXTENSIONS
 from plone.app.theming.interfaces import _
 
 from OFS.Image import File, Image
@@ -404,9 +405,6 @@ var pathPrefix = '%s';
             return self.resourceDirectory[path]
         except (KeyError, NotFound,):
             raise KeyError(path)
-
-
-KNOWN_EXTENSIONS = frozenset(['css', 'html', 'htm', 'txt', 'xml', 'js', 'cfg'])
 
 
 class ThemeFileManager(FileManager):

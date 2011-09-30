@@ -14,6 +14,8 @@ MANIFEST_FORMAT = ManifestFormat(THEME_RESOURCE_NAME,
         parameterSections=['parameters'],
     )
 
+KNOWN_EXTENSIONS = frozenset(['css', 'html', 'htm', 'txt', 'xml', 'js', 'cfg'])
+
 class ITheme(Interface):
     """A theme, loaded from a resource directory
     """

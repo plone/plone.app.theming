@@ -47,8 +47,9 @@
     font-weight: normal;
 }
 
-#file-selector {
-    margin-right: 10px;
+#file-selector,
+.save-button {
+    margin-right: 5px;
     vertical-align: middle !important;
 }
 
