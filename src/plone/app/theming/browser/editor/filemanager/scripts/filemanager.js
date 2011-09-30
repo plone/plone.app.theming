@@ -464,8 +464,6 @@ var addNode = function(path, name){
 	a.trigger('click');
 
 	getFolderInfo(path);
-
-	showPrompt({title: lg.successful_added_file});
 }
 
 // Updates the specified node with a new name. Called after
@@ -500,12 +498,13 @@ var removeNode = function(path){
 var addFolder = function(parent, name){
 	var newNode = '<li class="directory collapsed"><a rel="' + parent + name + '/" href="#">' + name + '</a><ul class="jqueryFileTree" style="display: block;"></ul></li>';
 	var parentNode = $('#filetree').find('a[rel="' + parent + '"]');
-	if(parent != fileRoot){
+	if(parent != FILE_ROOT){
 		parentNode.next('ul').prepend(newNode).prev('a').click().click();
 	} else {
 		$('#filetree > ul').prepend(newNode); 
 		$('#filetree').find('li a[rel="' + parent + name + '/"]').click(function(){
 				getFolderInfo(parent + name + '/');
+				return false;
 			}).each(function() {
 				$(this).contextMenu(
 					{ menu: getContextMenuOptions($(this)) }, 
@@ -516,7 +515,6 @@ var addFolder = function(parent, name){
 				}
 			);
 	}
-	showPrompt({title: lg.successful_added_folder});
 }
 
 /*---------------------------------------------------------
@@ -676,9 +674,11 @@ $("#upload").click(function(){
 			$('.input', _prompt).append(form);
 			input.change(function(){
 				if($('#filetree li a[rel="' + currentPath + input.val() + '"]').size() > 0){
-					$('input[value="' + lg.upload_and_replace + '"]', _prompt).show();		
+					$('input[value="' + lg.upload_and_replace + '"]', _prompt).show();
+					$('input[value="' + lg.upload + '"]', _prompt).hide();
 				}else{
 					$('input[value="' + lg.upload_and_replace + '"]', _prompt).hide();
+					$('input[value="' + lg.upload + '"]', _prompt).show();
 				}
 			});
 			$('input[value="' + lg.upload_and_replace + '"]', _prompt).hide();
@@ -727,9 +727,7 @@ $('#filetree').fileTree({
 		root: FILE_ROOT,
 		datafunc: populateFileTree,
 		multiFolder: false,
-		folderCallback: function(path){
-	        getFolderInfo(path); 
-	    },
+		folderCallback: getFolderInfo,
 		after: function(data){
 			$('#filetree').find('li a').each(function() {
 				$(this).contextMenu(
