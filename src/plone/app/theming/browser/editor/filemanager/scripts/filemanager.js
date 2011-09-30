@@ -722,22 +722,7 @@ $('#filetree').fileTree({
                     }
                     editor.getSession().on('change', markDirty);
                 }else{
-                    var html = '<div class="info">';
-                    if(data.Preview !== undefined){
-                        html += '<img src="' + data.Preview + '" />';
-                    }
-                    var size = data.Properties.Size/1024;
-                    if(size > 1024){
-                        size = (size/1024).toFixed(1) + 'MB';
-                    }else{
-                        size = size.toFixed(1) + 'KB';
-                    }
-                    html += '<p class="discreet">';
-                    html += '<b>Date Created</b>: ' + data.Properties['Date Created'];
-                    html += ', <b>Date Modified</b>: ' + data.Properties['Date Modified'];
-                    html += ', <b>Size</b>: ' + size;
-                    html += '</p></div>';
-                    li.append(html);
+                    li.append(data.info);
                     $("#aceeditors").append(li);
                 }
             }

@@ -1,3 +1,4 @@
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 import urllib
 import os.path
 import json
@@ -206,14 +207,19 @@ var pathPrefix = '%s';
         errorCode = 0
 
         properties = {
-            'Date Created': None,
-            'Date Modified': None,
+            'dateCreated': None,
+            'dateModified': None,
         }
 
         if isinstance(obj, File):
-            properties['Date Created'] = obj.created().strftime('%c')
-            properties['Date Modified'] = obj.modified().strftime('%c')
-            properties['Size'] = obj.get_size()
+            properties['dateCreated'] = obj.created().strftime('%c')
+            properties['dateModified'] = obj.modified().strftime('%c')
+            size = obj.get_size() / 1024
+            if size < 1024:
+                size = '%iKB' % size
+            else:
+                size = '%iMB' % size / 1024
+            properties['size'] = size
 
         fileType = 'txt'
 
@@ -240,15 +246,15 @@ var pathPrefix = '%s';
                                                              filetype)
 
         if getSize and isinstance(obj, Image):
-            properties['Height'] = obj.height
-            properties['Width'] = obj.width
+            properties['height'] = obj.height
+            properties['width'] = obj.width
 
         return {
             'Path': path,
             'Filename': filename,
             'File Type': fileType,
-            'Preview': preview,
-            'Properties': properties,
+            'preview': preview,
+            'properties': properties,
             'Error': error,
             'Code': errorCode,
         }
@@ -410,7 +416,7 @@ var pathPrefix = '%s';
 class ThemeFileManager(FileManager):
     """Theme resource directory file manager
     """
-
+    filepreview_template = ViewPageTemplateFile('filemanager-file-preview.pt')
     resourceType = 'theme'
 
     def title(self):
@@ -427,7 +433,8 @@ class ThemeFileManager(FileManager):
         if ext in KNOWN_EXTENSIONS:
             result['contents'] = self.context.readFile(path.encode('utf-8'))
         else:
-            result.update(self.getInfo(path))
+            info = self.getInfo(path)
+            result['info'] = self.filepreview_template(info=info)
         return json.dumps(result)
 
     def saveFile(self, path, value):
