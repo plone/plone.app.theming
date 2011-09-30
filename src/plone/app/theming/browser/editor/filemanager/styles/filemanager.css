@@ -48,7 +48,7 @@
 }
 
 #filetree {
-	overflow: auto;
+	overflow: hidden;
 	min-width: 100px;	/* optional */
 	/* no margin or border allowed */
 	padding-left: 10px;
@@ -398,7 +398,6 @@ button.ON {
     background: none;
     position: relative;
     min-width:400px;
-    height:500px;
 }
 
 #buttons {

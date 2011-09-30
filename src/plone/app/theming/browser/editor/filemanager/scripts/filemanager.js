@@ -12,6 +12,7 @@
 (function($) {
 $(function(){
 
+var _editorHeight = $(window).height() - $('#buttons').height() - 30;
 var _currentPath = '/';
 var _prompt = $('#pb_prompt');
 _prompt.overlay({
@@ -127,8 +128,10 @@ var highlightItem = function(file){
 // Forces columns to fill the layout vertically.
 // Called on initial page load and on resize.
 var setDimensions = function(){
-	var newH = $(window).height() - $('#buttons').height() - 30;	
-	$('#splitter, #filetree, #fileeditor, .vsplitbar').height(newH);
+	_editorHeight = $(window).height() - $('#buttons').height() - 30;
+	$('#splitter, #fileeditor, .vsplitbar').height(_editorHeight);
+	$('#filetree').height(_editorHeight-25);
+	$('#fileeditor ul#aceeditors li pre').height(_editorHeight-32);
 }
 
 // nameFormat (), separate filename from extension
@@ -222,7 +225,8 @@ var selectFile = function(file){
                 var li = $('<li class="selected" data-editorid="' + editorId + '" rel="' + file + '"></li>');
                 if(data.contents !== undefined){
                     var extension = data.ext;
-                    var container = '<pre id="' + editorId + '" name="' + file + '">' + data.contents + '</pre>';
+                    var container = $('<pre id="' + editorId + '" name="' + file + '">' + data.contents + '</pre>');
+                    container.height(_editorHeight - 32);
                     li.append(container);
                     $("#aceeditors").append(li);
                     var editor = ace.edit(editorId);

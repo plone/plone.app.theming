@@ -17,8 +17,8 @@ File manager
 [X] Use showPrompt, not confirm() to confirm image upload
 [X] Style prompts to look more like Plone's standard overlays (or replace with jQuery Tools overlays)
 [X] Visual artefacts when viewing large image
-[ ] Height of file tree does not match height of editor pane
-[ ] Currently open / selected file should be highlighted in file tree
+[X] Height of file tree does not match height of editor pane
+[X] Currently open / selected file should be highlighted in file tree
 [X] All buttons jump when depressed
 [X] File upload input box should be in an overlay, not in the toolbar itself
 [X] When uploading a new file to the root folder, the file tree is not refreshed to show it
