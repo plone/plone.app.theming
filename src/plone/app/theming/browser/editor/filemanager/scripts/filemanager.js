@@ -115,6 +115,11 @@ var getAuthenicator = function(){
     return $('input[name="_authenticator"]').eq(0).val();
 }
 
+var highlightItem = function(file){
+	$('#filetree li a').removeClass('selected');
+	$('#filetree li a[rel="' + file + '"]').addClass('selected');
+}
+
 /*---------------------------------------------------------
   Setup, Layout, and Status Functions
 ---------------------------------------------------------*/
@@ -160,6 +165,7 @@ function has_capability(data, cap) {
 
 var selectFile = function(file){
     var relselector = 'li[rel="' + file + '"]';
+    highlightItem(file);
     $("#fileselector li.selected,#aceeditors li.selected").removeClass('selected');
     if($('#fileselector ' + relselector).size() == 0){
         var tab = $('<li class="selected" rel="' + file + '">' + file + '</li>');
@@ -169,6 +175,7 @@ var selectFile = function(file){
             $(this).addClass('selected');
             $("#aceeditors li[rel='" + $(this).attr('rel') + "']").addClass('selected');
             setSaveState();
+            highlightItem($(this).attr('rel'));
         });
         close.click(function(){
             var tabel = $(this).parent()
@@ -201,6 +208,7 @@ var selectFile = function(file){
                 remove_tab();
             }
             setSaveState();
+            highlightItem($('#fileselector li.selected').attr('rel'));
             return false;
         })
         tab.append(close);
