@@ -8,6 +8,8 @@
     display: none;
 }
 
+/* Panels */
+
 #mapper-toolbar {
     margin-bottom: 1em;
 }
@@ -37,6 +39,10 @@
 
 #splitview {
     margin: 20px 0;
+}
+
+#preview {
+    margin-top: 20px;
 }
 
 .panel-toolbar {
