@@ -31,7 +31,7 @@
 #content .source-editor {
     width: 100%;
     height: 300px;
-    border: dashed #333 1px;
+    border: solid #eee 1px;
     position: relative;
 }
 
