@@ -436,6 +436,7 @@ class ThemeFileManager(FileManager):
 
     def getFile(self, path):
         self.setup()
+        path = self.normalizePath(path)
         file = self.context.context.unrestrictedTraverse(path.encode('utf-8'))
         ext = self.getExtension(path, file)
         result = {'ext': ext}

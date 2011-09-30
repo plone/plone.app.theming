@@ -271,8 +271,9 @@ var setUploader = function(path){
         var filename = '';
         
         var getFileName = function(button, fname){
-            if(button != lg.create_file){ return;}
-
+            if(button != lg.create_file){ return; }
+            $('input', _prompt).attr('disabled', 'disabled');
+            var deffered = null;
             if(fname != ''){
                 filename = fname;
                 $.ajax({
@@ -283,6 +284,7 @@ var setUploader = function(path){
                         name: filename,
                         _authenticator: getAuthenicator()
                     },
+                    async: false,
                     type: 'POST',
                     success: function(result){
                         if(result['Code'] == 0){
@@ -290,13 +292,14 @@ var setUploader = function(path){
                             // getFolderInfo(result['Parent']);
                             addNode(result['Parent'], result['Name']);
                         } else {
-                            showPrompt({title:result['Error']});
+                            deffered = function(){ showPrompt({title:result['Error']}); }
                         }
                     }
                 });
             } else {
-                showPrompt({title: lg.no_filename});
+                deffered = function(){ showPrompt({title: lg.no_filename}); }
             }
+            return deffered;
         }
         var btns = [lg.create_file, lg.cancel];
         showPrompt({
@@ -312,26 +315,33 @@ var setUploader = function(path){
 		
 		var getFolderName = function(button, fname){
 			if(button != lg.create_folder){return;}
-
+			$('input', _prompt).attr('disabled', 'disabled');
+			var deffered = null;
 			if(fname != ''){
 				foldername = fname;
-				$.getJSON(FILE_CONNECTOR, {
+				$.ajax({
+					url: FILE_CONNECTOR,
+					data: {
                         mode: 'addfolder',
                         path: _currentPath,
                         name: foldername,
                         _authenticator: getAuthenicator()
-                    }, function(result){
+                    }, 
+                    async: false,
+                    type: 'POST',
+                    success: function(result){
 				       if(result['Code'] == 0){
 					      addFolder(result['Parent'], result['Name']);
 					      getFolderInfo(result['Parent']);
 				       } else {
-					      showPrompt({title:result['Error']});
+					      deffered = function(){ showPrompt({title:result['Error']});}
 				       }				
 				    }
-            );
+            	})
 			} else {
-				showPrompt({title: lg.no_foldername});
+				deffered = function(){ showPrompt({title: lg.no_foldername});}
 			}
+			return deffered
 		}
 		var btns = [lg.create_folder, lg.cancel];
 		showPrompt({

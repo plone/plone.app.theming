@@ -429,3 +429,20 @@ button.ON {
 	margin-left:5px;
 	display:inline;
 }
+
+#pb_prompt .pb-ajax{
+	padding:10px;
+}
+
+#pb_prompt .pb-ajax .documentDescription{
+	padding: 0 0 5px 0;
+}
+
+#pb_prompt .pb-ajax .input{
+	padding: 2px;
+}
+
+#pb_prompt .pb-ajax .formControls{
+	margin:0;
+	padding: 5px 5px 5px 0;
+}
