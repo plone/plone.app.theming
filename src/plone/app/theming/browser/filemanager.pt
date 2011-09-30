@@ -73,6 +73,20 @@ var lg = {}; // Languages for the file manager
 
 <body>
 <div metal:fill-slot="prefs_configlet_main" tal:define="authenticator context/@@authenticator/authenticator">
+<div id="pb_prompt" class="overlay overlay-ajax">
+    <div class="close"><span>Close</span></div>
+    <div class="pb-ajax">
+        <h1 class="documentFirstHeading"></h1>
+        <div class="documentDescription"></div>
+        <div class="input">
+            <input type="text" name="input" />
+        </div>
+        <div class="formControls">
+            <input class="context" type="submit" name="form.button.save" value="Save">
+            <input class="standalone" type="submit" name="form.button.cancel" value="Cancel">
+        </div>
+    </div>
+</div>
 
     <h1 class="documentFirstHeading"
         i18n:translate="heading_edit_theme">Manage theme: 
