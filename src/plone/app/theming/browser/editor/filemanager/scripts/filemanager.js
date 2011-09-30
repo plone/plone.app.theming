@@ -787,5 +787,57 @@ window.onbeforeunload = function() {
 	}
 };
 
+
+/* key bindings */
+var canon = require('pilot/canon');
+canon.addCommand({
+    name: 'saveEditor',
+    bindKey: {
+        mac: 'Command-S',
+        win: 'Ctrl-S',
+        sender: 'editor'
+    },
+    exec: function(env, args, request) {
+        $('#save').trigger('click');
+    }
+});
+
+canon.addCommand({
+    name: 'newFile',
+    bindKey: {
+        mac: 'Command-N',
+        win: 'Ctrl-N',
+        sender: 'editor'
+    },
+    exec: function(env, args, request) {
+        $('#addnew').trigger('click');
+    }
+});
+
+canon.addCommand({
+    name: 'newFolder',
+    bindKey: {
+        mac: 'Command-Shift-N',
+        win: 'Ctrl+Shift+N',
+        sender: 'editor'
+    },
+    exec: function(env, args, request) {
+        $('#newfolder').trigger('click');
+    }
+});
+
+canon.addCommand({
+    name: 'newFolder',
+    bindKey: {
+        mac: 'Command-W',
+        win: 'Ctrl+W',
+        sender: 'editor'
+    },
+    exec: function(env, args, request) {
+        $('#fileselector li.selected a.closebtn').trigger('click');
+    }
+});
+
+
 });
 })(jQuery);
