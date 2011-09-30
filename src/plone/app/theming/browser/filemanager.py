@@ -216,12 +216,14 @@ var pathPrefix = '%s';
             properties['dateModified'] = obj.modified().strftime('%c')
             size = obj.get_size() / 1024
             if size < 1024:
-                size_specifier = 'kb'
+                size_specifier = u'kb'
             else:
-                size_specifier = 'mb'
+                size_specifier = u'mb'
                 size = size / 1024
-            properties['size'] = size
-            properties['size_specifier'] = size_specifier
+            properties['size'] = '%i%s' % (size,
+                translate(_(u'filemanager_%s' % size_specifier,
+                          default=size_specifier), context=self.request)
+                )
 
         fileType = 'txt'
 
