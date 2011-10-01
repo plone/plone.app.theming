@@ -96,3 +96,32 @@
 .source-editor {
     display: none;
 }
+
+/* Help */
+#rules-help-text {
+    max-width: 55%;
+}
+
+#rules-help-text .help {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 1em;
+}
+
+#rules-help-text h3 {
+    font-size: 1.5em;
+}
+
+#rules-help-text p {
+    line-height: 1.2em;
+}
+
+#rules-help-text pre {
+    color: black;
+    background-color: transparent;
+    font-size: 100%;
+    line-height: normal;
+    overflow: visible;
+    margin: 0.5em 0 0.5em 1em;
+    padding: 0 0 0 1em;
+}
