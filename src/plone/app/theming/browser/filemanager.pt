@@ -17,8 +17,6 @@
                      aceFiles string:${staticFiles}/ace;">
 
 <link rel="stylesheet" type="text/css"
-    tal:attributes="href string:${managerFiles}/scripts/jquery.filetree/jqueryFileTree.css" />
-<link rel="stylesheet" type="text/css"
     tal:attributes="href string:${managerFiles}/scripts/jquery.contextmenu/jquery.contextMenu-1.01.css" />
 <link rel="stylesheet" type="text/css"
     tal:attributes="href string:${managerFiles}/styles/filemanager.css" />
@@ -32,7 +30,6 @@
 -->
 <script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.form-2.63.js"></script>
 <script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.splitter/jquery.splitter-1.5.1.js"></script>
-<script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.filetree/jqueryFileTree.js"></script>
 <script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.contextmenu/jquery.contextMenu-1.01.js"></script>
 
 <!-- ACE editor -->

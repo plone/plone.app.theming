@@ -12,6 +12,7 @@
 (function($) {
 $(function(){
 
+var _fileTree = $('#filetree');
 var _editorHeight = $(window).height() - $('#buttons').height() - 30;
 var _currentPath = '/';
 var _prompt = $('#pb_prompt');
@@ -130,7 +131,7 @@ var highlightItem = function(file){
 var setDimensions = function(){
 	_editorHeight = $(window).height() - $('#buttons').height() - 30;
 	$('#splitter, #fileeditor, .vsplitbar').height(_editorHeight);
-	$('#filetree').height(_editorHeight-25);
+	_fileTree.height(_editorHeight-25);
 	$('#fileeditor ul#aceeditors li pre').height(_editorHeight-32);
 }
 
@@ -459,7 +460,7 @@ var addNode = function(path, name){
 	var thisNode = $('#rootNode a');
 	var parentNode = $('#filetree ul.jqueryFileTree:first');
 	if(path != '/'){
-		thisNode = $('#filetree').find('a[rel="' + path + '"]');
+		thisNode = _fileTree.find('a[rel="' + path + '"]');
 		parentNode = thisNode.parent();
 	}else{
 		path = '';
@@ -474,10 +475,7 @@ var addNode = function(path, name){
 	var a = $('<a rel="' + filepath + '" href="#">' + name + '</a>');
 	var newNode = $('<li class="file ext_' + ext + '"></li>');
 	newNode.append(a);
-	a.click(function(){
-		selectFile($(this).attr('rel'));
-		return false;	
-	})
+	a.click(treeEvent);
 	
 	if(!parentNode.find('ul').size()){
 		parentNode.append('<ul></ul>');
@@ -491,7 +489,7 @@ var addNode = function(path, name){
 // Updates the specified node with a new name. Called after
 // a successful rename operation.
 var updateNode = function(oldPath, newPath, newName){
-	var thisNode = $('#filetree').find('a[rel="' + oldPath + '"]');
+	var thisNode = _fileTree.find('a[rel="' + oldPath + '"]');
 	var parentNode = thisNode.parent().parent().prev('a');
 	thisNode.attr('rel', newPath).text(newName);
 	parentNode.click().click();
@@ -501,7 +499,7 @@ var updateNode = function(oldPath, newPath, newName){
 // Removes the specified node. Called after a successful 
 // delete operation.
 var removeNode = function(path){
-    $('#filetree')
+    _fileTree
         .find('a[rel="' + path + '"]')
         .parent()
         .fadeOut('slow', function(){ 
@@ -519,15 +517,12 @@ var removeNode = function(path){
 // successfully created.
 var addFolder = function(parent, name){
 	var newNode = '<li class="directory collapsed"><a rel="' + parent + name + '/" href="#">' + name + '</a><ul class="jqueryFileTree" style="display: block;"></ul></li>';
-	var parentNode = $('#filetree').find('a[rel="' + parent + '"]');
+	var parentNode = _fileTree.find('a[rel="' + parent + '"]');
 	if(parent != FILE_ROOT){
 		parentNode.next('ul').prepend(newNode).prev('a').click().click();
 	} else {
 		$('#filetree > ul').prepend(newNode); 
-		$('#filetree').find('li a[rel="' + parent + name + '/"]').click(function(){
-				getFolderInfo(parent + name + '/');
-				return false;
-			}).each(function() {
+		_fileTree.find('li a[rel="' + parent + name + '/"]').click(treeEvent).each(function() {
 				$(this).contextMenu(
 					{ menu: getContextMenuOptions($(this)) }, 
 					function(action, el, pos){
@@ -744,26 +739,80 @@ $("#upload").click(function(){
 	})
 });
 
-// Creates file tree.
-$('#filetree').fileTree({
-		root: FILE_ROOT,
-		datafunc: populateFileTree,
-		multiFolder: false,
-		folderCallback: getFolderInfo,
-		after: function(data){
-			$('#filetree').find('li a').each(function() {
-				$(this).contextMenu(
-					{ menu: getContextMenuOptions($(this)) },
-					function(action, el, pos){
-						var path = $(el).attr('rel');
-						setMenus(action, path);
-					}
-				)
-			});
+var _fileTreeOptions = {
+	root: FILE_ROOT,
+	datafunc: populateFileTree,
+	expandSpeed: 500,
+	collapseSpeed: 500,
+	expandEasing: null,
+	collapseEasing: null,
+	multiFolder: false,
+	loadMessage: 'Loading...',
+	folderCallback: getFolderInfo,
+	after: function(data){
+		_fileTree.find('li a').each(function() {
+			$(this).contextMenu(
+				{ menu: getContextMenuOptions($(this)) },
+				function(action, el, pos){
+					var path = $(el).attr('rel');
+					setMenus(action, path);
+				}
+			)
+		});
+	}
+}
+
+function showTree(c, t) {
+	function showData(data) {
+		$(c).find('.start').html('');
+		$(c).removeClass('wait').append(data);
+		if( _fileTreeOptions.root == t ) $(c).find('UL:hidden').show();
+		else $(c).find('UL:hidden').slideDown({ duration: _fileTreeOptions.expandSpeed, easing: _fileTreeOptions.expandEasing });
+		bindTree(c);
+		_fileTreeOptions.after(data);
+	}
+	$(c).addClass('wait');
+	$(".jqueryFileTree.start").remove();
+	if(_fileTreeOptions.datafunc){
+		_fileTreeOptions.datafunc(t, showData);
+	}
+}
+
+var treeEvent = function() {
+	if( $(this).parent().hasClass('directory') ) {
+		if( $(this).parent().hasClass('collapsed') ) {
+			// Expand
+			if( !_fileTreeOptions.multiFolder ) {
+				$(this).parent().parent().find('UL').slideUp({ duration: _fileTreeOptions.collapseSpeed, easing: _fileTreeOptions.collapseEasing });
+				$(this).parent().parent().find('LI.directory').removeClass('expanded').addClass('collapsed');
+			}
+			$(this).parent().find('UL').remove(); // cleanup
+			showTree( $(this).parent(), escape($(this).attr('rel').match( /.*\// )) );
+			$(this).parent().removeClass('collapsed').addClass('expanded');
+		} else {
+			// Collapse
+			$(this).parent().find('UL').slideUp({ duration: _fileTreeOptions.collapseSpeed, easing: _fileTreeOptions.collapseEasing });
+			$(this).parent().removeClass('expanded').addClass('collapsed');
 		}
-	},
-	selectFile
-);
+			
+		_fileTreeOptions.folderCallback($(this).attr('rel'));
+	
+	} else {
+		selectFile($(this).attr('rel'));
+	}
+	return false;
+}
+
+
+function bindTree(t) {
+	$(t).find('LI A').bind('click', treeEvent);
+}
+
+// Loading message
+_fileTree.html('<ul class="jqueryFileTree start"><li class="wait">' + _fileTreeOptions.loadMessage + '<li></ul>');
+// Get the initial file list
+showTree(_fileTree, escape(_fileTreeOptions.root) );
+
 
 $("#save").live('click', function(){
     var li = $("#fileselector li.selected");
