@@ -1,3 +1,13 @@
+/* Give us some more real-estate */
+#portal-top,
+#viewlet-above-content,
+#portal-breadcrumbs,
+#portal-footer,
+#portal-colophon,
+#portal-siteactions {
+    display: none;
+}
+
 #filemanager {
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -13,7 +23,7 @@
 #buttons {
 	margin-top: 10px;
 	padding: 5px 5px 0 5px;
-	background-color: #E2EAF3;
+	/*background-color: #E2EAF3;*/
 }
 
 #filemanager ul {
@@ -250,7 +260,7 @@ div.clip {
 }
 
 /* these apply to the contextual menus as well as the buttons */
-button {outline: none;}
+/*button {outline: none;}*/
 #select span, .contextMenu li.select a { background-image: url(../images/accept.png); }
 #download span, .contextMenu li.download a { background-image: url(../images/disk.png); }
 #rename span, .contextMenu li.rename a { background-image: url(../images/pencil.png); }
@@ -430,17 +440,30 @@ button.ON {
 	display:inline;
 }
 
+#pb_prompt {
+	width: auto;
+}
+
 #pb_prompt .pb-ajax{
 	padding:10px;
 }
 
 #pb_prompt .pb-ajax .documentDescription{
 	padding: 0 0 5px 0;
+	white-space: nowrap;
+	font-weight: normal;
 }
 
 #pb_prompt .pb-ajax .input{
-	padding: 2px;
+	padding: 5px 5px 5px 0;
+	min-width: 280px;
 }
+
+#pb_prompt .pb-ajax .input input{
+	width: 100%;
+	padding-left: 0;
+}
+
 
 #pb_prompt .pb-ajax .formControls{
 	margin:0;

@@ -22,7 +22,7 @@ _prompt.overlay({
 		loadSpeed: 200,
 		opacity: 0.9
 	},
-	top : 0,
+	// top : 0,
     fixed : false,
     closeOnClick: false
 });
@@ -304,7 +304,8 @@ var setUploader = function(path){
         }
         var btns = [lg.create_file, lg.cancel];
         showPrompt({
-	        title: lg.prompt_filename,
+            title: lg.create_file,
+	        description: lg.prompt_filename,
 	        callback: getFileName,
 	        buttons: btns,
 	        inputValue: filename,
@@ -346,7 +347,8 @@ var setUploader = function(path){
 		}
 		var btns = [lg.create_folder, lg.cancel];
 		showPrompt({
-			title: lg.prompt_foldername,
+            title: lg.create_folder,
+			description: lg.prompt_foldername,
 			callback: getFolderName,
 			buttons: btns,
 			inputValue: foldername,
@@ -397,7 +399,8 @@ var renameItem = function(data){
 	}
 	var btns = [lg.rename, lg.cancel];
 	showPrompt({
-		title: lg.new_filename,
+        title: lg.rename,
+		description: lg.new_filename,
 		callback: getNewName,
 		buttons: btns,
 		inputValue: data['Filename'], 
@@ -678,7 +681,8 @@ $("#upload").click(function(){
 		currentPath = currentPath.substring(1);
 	}
 	showPrompt({
-		title: lg.prompt_fileupload,
+        title: lg.upload,
+		description: lg.prompt_fileupload,
 		buttons: [lg.upload, lg.upload_and_replace, lg.upload_and_replace_current, lg.cancel],
 		onBeforeLoad: function(){
 			if($('#fileselector li.selected').size() == 0){

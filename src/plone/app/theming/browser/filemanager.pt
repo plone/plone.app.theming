@@ -91,7 +91,7 @@ var lg = {}; // Languages for the file manager
         class="link-parent"
         tal:attributes="href string:${portal_url}/@@theming-controlpanel"
         i18n:translate="label_up_to_theming_controlpanel">
-            Up to Diazo theme control panel
+            Back to Diazo theme control panel
     </a>
 
     |
@@ -101,6 +101,14 @@ var lg = {}; // Languages for the file manager
        i18n:translate="label_up_to_theming_mapper">
             Theme mapper
     </a>
+
+    <p class="discreet" i18n:translate="help_theme_filemanager">
+        You can edit files in the theme by opening them from the file
+        tree. Use the buttons on the toolbar to create new folders and
+        files. You can right-click on items in the file tree to download,
+        delete or rename them.
+    </p>
+
 
     <input tal:replace="structure authenticator" />
 
@@ -185,7 +193,7 @@ var lg = {}; // Languages for the file manager
             <span id='UPLOAD_FILES_SMALLER_THAN' i18n:translate='filemanager_UPLOAD_FILES_SMALLER_THAN'>Please upload only files smaller than %s.</span>
             <span id='download' i18n:translate='filemanager_download'>Download</span>
             <span id='FILE_DOES_NOT_EXIST' i18n:translate='filemanager_FILE_DOES_NOT_EXIST'>The file %s does not exist.</span>
-            <span id='default_foldername' i18n:translate='filemanager_default_foldername'>My folder</span>
+            <span id='default_foldername' i18n:translate='filemanager_default_foldername'></span>
             <span id='no_foldername' i18n:translate='filemanager_no_foldername'>No folder name was provided.</span>
             <span id='UPLOAD_IMAGES_TYPE_JPEG_GIF_PNG' i18n:translate='filemanager_UPLOAD_IMAGES_TYPE_JPEG_GIF_PNG'>Please upload only images of type JPEG, GIF or PNG.</span>
             <span id='dimensions' i18n:translate='filemanager_dimensions'>Dimensions</span>
