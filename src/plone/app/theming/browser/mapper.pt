@@ -197,7 +197,8 @@
                     onBeforeClose: function() {
                         if(ruleBuilder.active && $("#new-rule-step-2").is(":visible")) {
                             ruleBuilder.end();
-                            $(".hideDuringWizard").fadeIn();    
+                            $(".hideDuringWizard").fadeIn();
+                            editor.focus();
                         }
                     }
                 });
