@@ -107,6 +107,10 @@
     vertical-align: middle;
 }
 
+.frame-shelf {
+    float: right;
+}
+
 /* Help */
 #rules-help-text {
     max-width: 55%;

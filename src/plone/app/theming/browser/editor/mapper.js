@@ -201,9 +201,10 @@ RuleBuilder.prototype.calculateDiazoSelector = function(element, scope, children
 
 // Outline / highlight management
 
-var FrameHighlighter = function(frame, infoPanel, scope, ruleBuilder) {
+var FrameHighlighter = function(frame, infoPanel, shelf, scope, ruleBuilder) {
     this.frame = frame;
     this.infoPanel = infoPanel;
+    this.shelf = shelf;
     this.scope = scope;
     this.ruleBuilder = ruleBuilder;
 
@@ -237,16 +238,21 @@ FrameHighlighter.prototype.clearOutline = function(element) {
     
 FrameHighlighter.prototype.setupElements = function() {
         var highlighter = this;
+
+        function bestSelector(element) {
+            return highlighter.ruleBuilder.calculateUniqueCSSSelector(element) ||
+                   highlighter.ruleBuilder.calculateUniqueXPathExpression(element);
+        }
+
         $(this.frame).contents().find("*").hover(
             function(event) {
+
+                $(highlighter.frame).focus();
+
                 highlighter.setOutline(this);
                 event.stopPropagation();
 
-                var expr = highlighter.ruleBuilder.calculateUniqueCSSSelector(this);
-                if(!expr) {
-                    expr = highlighter.ruleBuilder.calculateUniqueXPathExpression(this);
-                }
-                $(highlighter.infoPanel).text(expr);
+                $(highlighter.infoPanel).text(bestSelector(this));
             },
             function(event) {
                 if($(this).hasClass(highlighter.activeClass)) {
@@ -265,7 +271,36 @@ FrameHighlighter.prototype.setupElements = function() {
 
                 return false;
             }
+        });
+
+        $(this.frame).contents().keyup(function (event) {
             
+            // ESC -> Move selection to parent node
+            if(event.keyCode == 27 && highlighter.currentOutline != null) {
+                event.stopPropagation();
+                event.preventDefault();
+
+                var parent = highlighter.currentOutline.parentNode;
+                if(parent != null && parent.tagName != undefined) {
+                    highlighter.setOutline(parent);
+                    $(highlighter.infoPanel).text(bestSelector(parent));
+                }
+            }
+
+            // Enter -> Equivalent to clicking on selected node
+            if(event.keyCode == 13 && highlighter.currentOutline != null) {
+                
+                event.stopPropagation();
+                event.preventDefault();
+
+                $(highlighter.shelf).text(bestSelector(highlighter.currentOutline));
+
+                if(highlighter.ruleBuilder.active && highlighter.ruleBuilder.currentScope == highlighter.scope) {
+                    highlighter.ruleBuilder.select(highlighter.currentOutline);
+                    highlighter.ruleBuilder.next();
+                    highlighter.clearOutline(); 
+                }
+            }
         });
     };
 

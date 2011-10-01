@@ -341,7 +341,7 @@
                 var contentSource = initEditor('content-source', extensionModes.html, "", true);
 
                 $("#content-frame").ready(function() {
-                    var frameHighlighter = new FrameHighlighter("#content-frame", "#content-frame-info", 'content', ruleBuilder);
+                    var frameHighlighter = new FrameHighlighter("#content-frame", "#content-frame-info", "#content-frame-shelf", 'content', ruleBuilder);
                     var linkManager = new LinkManager("#content-frame", 'off',  WINDOW_BASE, THEME_BASE_URL);
                     function setup() {
                         frameHighlighter.setupElements();
@@ -452,7 +452,7 @@
                 }
 
                 $("#theme-frame").ready(function() {
-                    var frameHighlighter = new FrameHighlighter("#theme-frame", "#theme-frame-info", 'theme', ruleBuilder);
+                    var frameHighlighter = new FrameHighlighter("#theme-frame", "#theme-frame-info", "#theme-frame-shelf", 'theme', ruleBuilder);
                     function setup() {
                         frameHighlighter.setupElements();
                     }
@@ -684,7 +684,7 @@
             </div>
 
              <p class="discreet" i18n:translate="help_split_content">
-                The raw content
+                The raw content.
             </p>
 
             <iframe id="content-frame"
@@ -692,8 +692,20 @@
             <pre class="source-editor" id="content-source"></pre>
 
             <div class="frame-info">
-                <span id="content-frame-info">
+                <div class="frame-shelf">
+                    <span i18n:translate="theming_mapper_shelf_label">Last saved:</span>
+                    <span id="content-frame-shelf" i18n:translate="">(none)</span>
+                </div>
+                <span id="content-frame-info"></span>
             </div>
+
+            <p class="discreet" span:translate="help_hover_select">
+                Hover over an element to see its most
+                specific unique selector in the status bar at the bottom of the
+                frame. Press <code>Esc</code> to move the selection to its parent.
+                Press <code>Enter</code> to confirm the selection.
+            </p>
+
 
         </div>
         <div id="theme-split" class="cell width-1:2 position-1:2">
@@ -730,7 +742,7 @@
             </div>
 
             <p class="discreet" i18n:translate="help_split_theme">
-                The pristine theme
+                The pristine theme.
             </p>
 
             <iframe id="theme-frame"
@@ -738,8 +750,18 @@
             <pre class="source-editor" id="theme-source"></pre>
 
             <div class="frame-info">
-                <span id="theme-frame-info">
+                <div class="frame-shelf">
+                    <span i18n:translate="theming_mapper_shelf_label">Last saved:</span>
+                    <span id="theme-frame-shelf" i18n:translate="">(none)</span>
+                </div>
+                <span id="theme-frame-info"></span>
             </div>
+
+            <p class="discreet" span:translate="help_hover_select">
+                Hover over an element to see its selector.
+                Press <code>Esc</code> to move the selection to its parent.
+                Press <code>Enter</code> to save or confirm the selection.
+            </p>
 
         </div>
     </div>
