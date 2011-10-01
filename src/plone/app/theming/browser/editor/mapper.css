@@ -116,6 +116,10 @@
     line-height: 1.2em;
 }
 
+#rules-help-text .tip {
+    padding: 0 1em;
+}
+
 #rules-help-text pre {
     color: black;
     background-color: transparent;

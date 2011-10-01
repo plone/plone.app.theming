@@ -792,7 +792,7 @@
                     expression, the rule is ignored.
                 </p>
                 <p class="tip">
-                    <strong>Tip:</strong> if a <code>&lt;replace /&gt;<code> rule matches
+                    <strong>Tip:</strong> if a <code>&lt;replace /&gt;</code> rule matches
                     an element in the theme but not in the content, the theme node will be
                     dropped (replaced with nothing). If you do not want this behavior and
                     you are unsure if the content will contain the relevant element(s),
@@ -834,6 +834,18 @@
                     a <a href="#help_conditions">condition</a> to apply a single
                     condition to a set of rules.
                 </p>
+                <p>
+                    When used as the root element of the rules file, the various
+                    XML namespaces must be declared:
+                <p>
+<pre>
+&lt;rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"&gt;
+    ...
+&lt;/rules&gt;
+</pre>
                 <h5><a name="help_theme_notheme"><code>theme</code> and <code>notheme</code></a></h5>
 <pre>
 &lt;theme href="theme.html" /&gt; 
