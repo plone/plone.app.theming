@@ -540,6 +540,18 @@
                     }
                 });
 
+                canon.addCommand({
+                    name: 'rulesHelp',
+                    bindKey: {
+                        mac: 'Command-H',
+                        win: 'Ctrl+H',
+                        sender: 'editor'
+                    },
+                    exec: function(env, args, request) {
+                        $("#rules-help").click();
+                    }
+                });
+
             })();
             
         });
@@ -606,6 +618,7 @@
                     name="form.button.RulesHelp"
                     class="allowMultiSubmit"
                     rel="#rules-help-text"
+                    title="Ctrl+H (Windows/Linux) or Cmd+H (Mac)"
                     i18n:attributes="title"
                     i18n:translate=""
                     >Help</button>
