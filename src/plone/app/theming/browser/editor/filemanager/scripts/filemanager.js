@@ -433,7 +433,6 @@ var deleteItem = function(data){
 					rootpath = rootpath.substr(0, rootpath.lastIndexOf('/') + 1);
 					$('#buttons h1').text(lg.current_folder + rootpath);
 					isDeleted = true;
-					deffered = function(){ showPrompt({title: lg.successful_delete}); }
 				} else {
 					isDeleted = false;
 					deffered = function(){ showPrompt({title: result['Error']});}
