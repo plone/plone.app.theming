@@ -97,6 +97,16 @@
     display: none;
 }
 
+/* Frame info */
+
+.frame-info {
+    background-color: #EEEEEE;
+    height: 1.5em;
+    margin-right: -2px;
+    padding: 0 5px;
+    vertical-align: middle;
+}
+
 /* Help */
 #rules-help-text {
     max-width: 55%;

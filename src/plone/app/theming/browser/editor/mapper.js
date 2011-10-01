@@ -147,7 +147,7 @@ RuleBuilder.prototype.calculateUniqueCSSSelector = function(element) {
         return null;
     };
 
-RuleBuilder.prototype.calculateUniqueXpathExpression = function(element) {
+RuleBuilder.prototype.calculateUniqueXPathExpression = function(element) {
         var pathElements = [];
         var parents = $(element).parents();
         
@@ -193,7 +193,7 @@ RuleBuilder.prototype.calculateDiazoSelector = function(element, scope, children
         if(cssSelector) {
             return "css:" + selectorType + "=\"" + cssSelector + "\"";
         } else {
-            var xpathSelector = this.calculateUniqueXpathExpression(element);
+            var xpathSelector = this.calculateUniqueXPathExpression(element);
             return selectorType + "=\"" + xpathSelector + "\"";
         }
 
@@ -201,8 +201,9 @@ RuleBuilder.prototype.calculateDiazoSelector = function(element, scope, children
 
 // Outline / highlight management
 
-var FrameHighlighter = function(frame, scope, ruleBuilder) {
+var FrameHighlighter = function(frame, infoPanel, scope, ruleBuilder) {
     this.frame = frame;
+    this.infoPanel = infoPanel;
     this.scope = scope;
     this.ruleBuilder = ruleBuilder;
 
@@ -238,10 +239,14 @@ FrameHighlighter.prototype.setupElements = function() {
         var highlighter = this;
         $(this.frame).contents().find("*").hover(
             function(event) {
-                if(highlighter.ruleBuilder.active && highlighter.ruleBuilder.currentScope == highlighter.scope) {
-                    event.stopPropagation();
-                    highlighter.setOutline(this);
+                highlighter.setOutline(this);
+                event.stopPropagation();
+
+                var expr = highlighter.ruleBuilder.calculateUniqueCSSSelector(this);
+                if(!expr) {
+                    expr = highlighter.ruleBuilder.calculateUniqueXPathExpression(this);
                 }
+                $(highlighter.infoPanel).text(expr);
             },
             function(event) {
                 if($(this).hasClass(highlighter.activeClass)) {
@@ -291,7 +296,7 @@ LinkManager.prototype.setupLinks = function() {
                 $(this).addClass(manager.modifiedClass);
                 if(manager.isInternal(href)) {
                     var path = href.slice(manager.base.length, href.length);
-                    var newHref = this.prefix + "/@@theming-controlpanel-mapper-getframe?path=" + encodeURIComponent(path) + "&amp;theme=" + manager.themeMode;
+                    var newHref = manager.prefix + "/@@theming-controlpanel-mapper-getframe?path=" + encodeURIComponent(path) + "&amp;theme=" + manager.themeMode;
                     $(this).attr('href', newHref);
                 } else {
                     $(this).click(function(event) {

@@ -340,7 +340,7 @@
                 var contentSource = initEditor('content-source', extensionModes.html, "", true);
 
                 $("#content-frame").ready(function() {
-                    var frameHighlighter = new FrameHighlighter("#content-frame", 'content', ruleBuilder);
+                    var frameHighlighter = new FrameHighlighter("#content-frame", "#content-frame-info", 'content', ruleBuilder);
                     var linkManager = new LinkManager("#content-frame", 'off',  WINDOW_BASE, THEME_BASE_URL);
                     function setup() {
                         frameHighlighter.setupElements();
@@ -451,7 +451,7 @@
                 }
 
                 $("#theme-frame").ready(function() {
-                    var frameHighlighter = new FrameHighlighter("#theme-frame", 'theme', ruleBuilder);
+                    var frameHighlighter = new FrameHighlighter("#theme-frame", "#theme-frame-info", 'theme', ruleBuilder);
                     function setup() {
                         frameHighlighter.setupElements();
                     }
@@ -677,6 +677,10 @@
                 tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=off"></iframe>
             <pre class="source-editor" id="content-source"></pre>
 
+            <div class="frame-info">
+                <span id="content-frame-info">
+            </div>
+
         </div>
         <div id="theme-split" class="cell width-1:2 position-1:2">
             <h2 i18n:translate="heading_theme">Theme</h2>
@@ -718,6 +722,10 @@
             <iframe id="theme-frame"
                 tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off"></iframe>
             <pre class="source-editor" id="theme-source"></pre>
+
+            <div class="frame-info">
+                <span id="theme-frame-info">
+            </div>
 
         </div>
     </div>
