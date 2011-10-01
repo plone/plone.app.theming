@@ -9,27 +9,12 @@ General
 File manager
 ------------
 
-[X] Add page unload protection
-[X] Support Ctrl+S/Cmd+S to save
-[X] Support Ctrl+W/Cmd+W to close tab
-[X] Support Ctrl+N/Cmd+N for new file
-[X] Support Ctrl+Shift+N/Cmd+Shif+N for new folder
-[X] Use showPrompt, not confirm() to confirm image upload
-[X] Style prompts to look more like Plone's standard overlays (or replace with jQuery Tools overlays)
-[X] Visual artefacts when viewing large image
-[X] Height of file tree does not match height of editor pane
-[X] Currently open / selected file should be highlighted in file tree
-[X] All buttons jump when depressed
-[X] File upload input box should be in an overlay, not in the toolbar itself
-[X] When uploading a new file to the root folder, the file tree is not refreshed to show it
-[X] Remove confirmation boxes for new file / folder added (tree is feedback enough)
-[X] Ensure all strings are internationalised via the lg variable (set in filemanager.pt via spans)
-[x] Don't default the name of a new folder to 'My folder'
-[x] Tidy up layout / spacing of overlays and provide some (translated) help text
-[ ] Make Ctrl+W/Cmd+W work for tabs opened as images / files
+[ ] Make Ctrl+W/Cmd+W work for tabs opened as images / files(will need to key bind differently)
+[ ] Cmd-Shift-] and Cmd-Shift-[
 [ ] Style right-click menu more like Plone
-
-[ ] Need a way to cut/paste or drag/drop to move files
+[ ] Need a way to cut/paste or drag/drop to move files(HTML5)
+[ ] Fix the styling with the filemanager--it's ugly
+[ ] Full Screen? Maybe, we'll see.
 
 Mapper
 ------
