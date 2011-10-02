@@ -403,45 +403,58 @@ SourceManager.prototype.getSource = function(path) {
 // Editor abstraction
 
 var SourceEditor = function(element, mode, data, readonly, onchange) {
-    this.ace = ace.edit(element);
-    this.onchange = onchange;
+    this.useAce = ! $.browser.msie;
 
-    this.ace.setTheme("ace/theme/textmate");
-    this.ace.getSession().setTabSize(4);
-    this.ace.getSession().setUseSoftTabs(true);
-    this.ace.getSession().setUseWrapMode(false);
-    this.ace.getSession().setMode(mode);
-    this.ace.renderer.setShowGutter(false);
-    this.ace.setShowPrintMargin(false);
-    this.ace.setReadOnly(readonly);
+    this.element = '#' + element;
+    this.ace = null;
+    
+    if(this.useAce) {
+        this.ace = ace.edit(element);
+        
+        this.ace.setTheme("ace/theme/textmate");
+        this.ace.getSession().setTabSize(4);
+        this.ace.getSession().setUseSoftTabs(true);
+        this.ace.getSession().setUseWrapMode(false);
+        this.ace.getSession().setMode(mode);
+        this.ace.renderer.setShowGutter(false);
+        this.ace.setShowPrintMargin(false);
+        this.ace.setReadOnly(readonly);
 
-    this.ace.getSession().setValue(data);
-    this.ace.navigateTo(0, 0);
+        this.ace.getSession().setValue(data);
+        this.ace.navigateTo(0, 0);
 
-    // Allow the onchange property be changed without rebinding
-    this._onchange = function() {
-        this.onchange();
+        if(onchange) {
+            this.ace.on('change', onchange);   
+        }
+    } else {
+        $(this.element).replaceWith("<textarea id='" + element + "' class='" + $(this.element).attr('class') + "' wrap='off'></textarea>");
+        this.setValue(data);
+        if(readonly) {
+            $(this.element).attr('readonly', 'true');
+        }
+        if(onchange) {
+            $(this.element).keyup(onchange);
+        }
     }
-    this.ace.on('change', this._onchange);
+    
 };
 
 SourceEditor.prototype.focus = function() {
-        this.ace.focus();
+        this.useAce? this.ace.focus() : $(this.element).focus();
     };
 
 SourceEditor.prototype.resize = function() {
-        return this.ace.resize();
+        this.useAce? this.ace.resize() : $(this.element).resize();
     };
 
 SourceEditor.prototype.getValue = function() {
-        return this.ace.getSession().getValue();
+        return this.useAce? this.ace.getSession().getValue() : $(this.element).text();
     };
 
 SourceEditor.prototype.setValue = function(data) {
-        this.ace.getSession().setValue(data);
+        this.useAce? this.ace.getSession().setValue(data) : $(this.element).val(data);
     };
 
 SourceEditor.prototype.setMode = function(mode) {
-        this.ace.getSession().setMode(mode);
+        this.useAce? this.ace.getSession().setMode(mode) : null;
     };
-

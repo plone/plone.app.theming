@@ -212,5 +212,5 @@ class ThemeMapper(BrowserView):
         """Save the rules file (AJAX request)
         """
         processInputs(self.request)
-        self.request.response.setHeader('X-Theme-Disabled', '1')
+        value = value.replace('\r\n', '\n');
         self.context.writeFile(RULE_FILENAME, value.encode('utf-8'))

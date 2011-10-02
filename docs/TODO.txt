@@ -15,6 +15,7 @@ File manager
 [ ] Need a way to cut/paste or drag/drop to move files(HTML5)
 [ ] Fix the styling with the filemanager--it's ugly
 [ ] Full Screen? Maybe, we'll see.
+[ ] IE support - may need to use the SourceEditor abstraction from mapper.js (can move out)
 
 Mapper
 ------

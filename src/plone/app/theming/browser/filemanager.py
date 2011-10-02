@@ -448,5 +448,8 @@ class ThemeFileManager(FileManager):
         return json.dumps(result)
 
     def saveFile(self, path, value):
+        processInputs(self.request)
+        value = value.replace('\r\n', '\n')
+
         self.request.response.setHeader('X-Theme-Disabled', '1')
         self.context.writeFile(path, value.encode('utf-8'))

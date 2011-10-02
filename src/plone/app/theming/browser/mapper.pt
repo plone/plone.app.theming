@@ -113,6 +113,10 @@
                 }
             };
 
+            if($.browser.msie) {
+                $(".ie-warning").show();
+            }
+
             // Rules editor
             (function() {
                 
@@ -124,7 +128,7 @@
                 var overlay = null;
                 
                 function updateRule(ruleBuilder) {
-                    $("#new-rule-output").text(ruleBuilder.buildRule(
+                    $("#new-rule-output").val(ruleBuilder.buildRule(
                         $('#new-rule-content-children').is(':checked'), 
                         $('#new-rule-theme-children').is(':checked')
                     ));   
@@ -192,7 +196,7 @@
                 $("#rules-save").click(function() {
                     
                     var data = editor.getValue();
-                    $("#file-contents").text(data);
+                    $("#file-contents").val(data);
 
                     $.ajax({
                         url: THEME_BASE_URL + '/@@theming-controlpanel-mapper-save',
@@ -217,76 +221,81 @@
                     $(".hideDuringWizard").fadeOut('slow');
                 });
 
-                $("#new-rule-step-2 button.insert").click(function() {
+                if($.browser.msie) {
+                    $("#new-rule-step-2 button.insert").hide();
+                } else {
                     
-                    var rule = $("#new-rule-output").text();
+                    $("#new-rule-step-2 button.insert").click(function() {
+                        
+                        var rule = $("#new-rule-output").val();
 
-                    // Get the underlying ACE editor: no IE support for this anyway
-                    var aceEditor = editor.ace;
+                        // Get the underlying ACE editor: no IE support for this anyway
+                        var aceEditor = editor.ace;
 
-                    function findStartTag(backwards) {
-                        aceEditor.find("<\\w+", {
-                            backwards: backwards,
-                            wrap: false,
-                            wholeWord: false,
-                            regExp: true
-                        });
-                    }
-
-                    function indent(string, amount) {
-                        var padding = '';
-                        for(var i = 0; i < amount; ++i) {
-                            padding += ' ';
+                        function findStartTag(backwards) {
+                            aceEditor.find("<\\w+", {
+                                backwards: backwards,
+                                wrap: false,
+                                wholeWord: false,
+                                regExp: true
+                            });
                         }
-                        return padding + string.replace(/\n/g, '\n' + padding) + '\n\n';
-                    }
 
-                    // Go to the next opening tag - we want to insert before this
-                    findStartTag(false);
-                    if(aceEditor.getCursorPosition().row <= 1) {
-                        // Probably the opening rules tag
+                        function indent(string, amount) {
+                            var padding = '';
+                            for(var i = 0; i < amount; ++i) {
+                                padding += ' ';
+                            }
+                            return padding + string.replace(/\n/g, '\n' + padding) + '\n\n';
+                        }
+
+                        // Go to the next opening tag - we want to insert before this
                         findStartTag(false);
-                    }
-
-                    var selectionText = aceEditor.getSession().getTextRange(aceEditor.getSelectionRange());
-
-                    // If we didn't find anything, look for the end of the current tag
-                    if(selectionText == "") {
-
-                        aceEditor.find("(/>|<" + "/)", {
-                            backwards: false,
-                            wrap: false,
-                            wholeWord: false,
-                            regExp: true
-                        });
+                        if(aceEditor.getCursorPosition().row <= 1) {
+                            // Probably the opening rules tag
+                            findStartTag(false);
+                        }
 
                         var selectionText = aceEditor.getSession().getTextRange(aceEditor.getSelectionRange());
+
+                        // If we didn't find anything, look for the end of the current tag
                         if(selectionText == "") {
-                            // Still nothing? Go to the end
-                            aceEditor.navigateFileEnd();
-                        } else {
-                            // Go one past the end tag, but first figure out how far we should i
-                            aceEditor.navigateDown();
+
+                            aceEditor.find("(/>|<" + "/)", {
+                                backwards: false,
+                                wrap: false,
+                                wholeWord: false,
+                                regExp: true
+                            });
+
+                            var selectionText = aceEditor.getSession().getTextRange(aceEditor.getSelectionRange());
+                            if(selectionText == "") {
+                                // Still nothing? Go to the end
+                                aceEditor.navigateFileEnd();
+                            } else {
+                                // Go one past the end tag, but first figure out how far we should i
+                                aceEditor.navigateDown();
+                            }
+
+                        } 
+
+                        var indentation = aceEditor.getSelectionRange().start.column;
+
+                        var cursorPosition = aceEditor.getCursorPosition();
+                        var newlines = rule.match(/\n/g);
+                        var rows = 0;
+                        if(newlines != null) {
+                            rows = newlines.length;
                         }
 
-                    } 
-
-                    var indentation = aceEditor.getSelectionRange().start.column;
-
-                    var cursorPosition = aceEditor.getCursorPosition();
-                    var newlines = rule.match(/\n/g);
-                    var rows = 0;
-                    if(newlines != null) {
-                        rows = newlines.length;
-                    }
-
-                    aceEditor.navigateTo(cursorPosition.row, 0);
-                    aceEditor.insert(indent(rule, indentation));
-                    aceEditor.navigateTo(cursorPosition.row, 0);
-                    aceEditor.getSelection().selectTo(cursorPosition.row + rows + 1, 0);
-                    
-                    overlay.close();
-                });
+                        aceEditor.navigateTo(cursorPosition.row, 0);
+                        aceEditor.insert(indent(rule, indentation));
+                        aceEditor.navigateTo(cursorPosition.row, 0);
+                        aceEditor.getSelection().selectTo(cursorPosition.row + rows + 1, 0);
+                        
+                        overlay.close();
+                    });
+                }
             })();
 
             // Preview panel
@@ -581,6 +590,15 @@
         the preview will reload to show the effects of your changes. Click
         <strong>New rule</strong> to create a new rule using a guided wizard.
     </p>
+
+    <dl style="display: none" class="ie-warning portalMessage warning">
+        <dt i18n:translate="">Warning</dt>
+        <dd i18n:translate="theming_mapper_warning_ie">
+            You are using Internet Explorer. The theme mapper will work,
+            but some functionality will not be available. We recommend that
+            you use Mozilla Firefox or Google Chrome instead.
+        </dd>
+    </dl>
 
     <div class="row">
         <div id="editor-area" class="cell width-full position-0">
