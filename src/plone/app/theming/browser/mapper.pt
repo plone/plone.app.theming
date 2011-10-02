@@ -700,12 +700,10 @@
             </div>
 
             <p class="discreet" span:translate="help_hover_select">
-                Hover over an element to see its most
-                specific unique selector in the status bar at the bottom of the
-                frame. Press <code>Esc</code> to move the selection to its parent.
-                Press <code>Enter</code> to confirm the selection.
+                Hover over an element to see its selector.
+                Press <code>Esc</code> to move the selection to its parent.
+                Press <code>Enter</code> to save or confirm the selection.
             </p>
-
 
         </div>
         <div id="theme-split" class="cell width-1:2 position-1:2">
@@ -827,8 +825,8 @@
                 </p>
                 <h4><a name="help_conditions">Conditions</a></h4>
                 <p>
-                    By default, every rule is executed, though rules that do match any elements
-                    in the theme are ignored. You can make a rule, set of rules of
+                    By default, every rule is executed, though rules that do not match any elements
+                    in the theme are ignored. You can make a rule, set of rules or
                     theme reference (see below) conditional upon an element appearing
                     in the content by adding an attribute to the rule like
                     <code>css:if-content="#some-element"</code> (to use an XPath expression
@@ -862,7 +860,7 @@
                 </p>
                 <h4><a name="help_element">Available rules</a></h4>
                 <p>
-                    The standard Diazo rules are summarised below. Please refer to
+                    The standard Diazo rules are summarized below. Please refer to
                     <a target="_blank" href="http://diazo.org">diazo.org</a> for more
                     details and examples.
                 </p>
