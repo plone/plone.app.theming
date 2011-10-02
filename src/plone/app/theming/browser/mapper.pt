@@ -221,10 +221,16 @@
                     $(".hideDuringWizard").fadeOut('slow');
                 });
 
+                // The insert wizard doesn't work well in IE where we use plain
+                // textareas, but we offer a copy-to-clipboard button instead
                 if($.browser.msie) {
                     $("#new-rule-step-2 button.insert").hide();
+                    $("#new-rule-step-2 button.copy").click(function() {
+                        window.clipboardData.setData('Text', $("#new-rule-output").val());
+                        overlay.close();
+                    });
                 } else {
-                    
+                    $("#new-rule-step-2 button.copy").hide();
                     $("#new-rule-step-2 button.insert").click(function() {
                         
                         var rule = $("#new-rule-output").val();
@@ -1106,9 +1112,9 @@
                         </div>
                     </form>
 
-                    <div class="new-rule-actions">
-                        <button type="button" class="next">Next</button>
-                        <button type="button" class="close">Cancel</button>
+                    <div class=" ">
+                        <button type="button" class="next" i18n:translate="">Next</button>
+                        <button type="button" class="close" i18n:translate="">Cancel</button>
                     </div>
 
                 </div>
@@ -1135,8 +1141,9 @@
                     </form>
 
                     <div class="new-rule-actions">
-                        <button type="button" class="insert">Insert</button>
-                        <button type="button" class="close">Close</button>
+                        <button type="button" class="insert" i18n:translate="">Insert</button>
+                        <button type="button" class="copy" i18n:translate="">Copy to clipboard</button>
+                        <button type="button" class="close" i18n:translate="">Close</button>
                     </div>
                 </div>
 
