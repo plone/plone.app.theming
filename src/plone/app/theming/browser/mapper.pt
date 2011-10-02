@@ -382,6 +382,12 @@
                         }
                     }
                 );
+
+                function savePrevious() {
+                    if(sourceManager.currentPath != null && themeSource != null) {
+                        sourceManager.setSource(themeSource.getValue());
+                    }
+                }
                 
                 function reloadFrame() {
                     var path = $("#file-selector option:selected").val();
@@ -391,12 +397,6 @@
 
                 function updateSource() {
                     var path = $("#file-selector option:selected").attr('data-path');
-
-                    function savePrevious() {
-                        if(sourceManager.currentPath != null && themeSource != null && sourceManager.isDirty()) {
-                            sourceManager.setSource(themeSource.getValue());   
-                        }
-                    }
 
                     function initThemeSourceEditor(extension, data) {
                         var mode = defaultMode;
@@ -466,6 +466,7 @@
 
                 $("#view-theme-preview").change(function() {
 
+                    savePrevious();
                     reloadFrame();
 
                     $("#theme-frame").show();
@@ -492,6 +493,7 @@
                                 $("#file-selector option:selected").text(label.substr(0, label.length - 2));
                             }
 
+                            savePrevious();
                             dirties[path] = false;
                             sourceManager.markClean(path);
                             refreshPreview();
