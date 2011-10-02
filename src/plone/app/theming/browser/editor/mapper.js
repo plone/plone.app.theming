@@ -257,6 +257,7 @@ FrameHighlighter.prototype.setupElements = function() {
             function(event) {
                 if($(this).hasClass(highlighter.activeClass)) {
                     highlighter.clearOutline(this); 
+                    $(highlighter.infoPanel).text("");
                 }
             }
         ).click(function (event) {
@@ -267,7 +268,8 @@ FrameHighlighter.prototype.setupElements = function() {
                 highlighter.ruleBuilder.select(this);
                 highlighter.ruleBuilder.next();
 
-                highlighter.clearOutline(); 
+                highlighter.clearOutline();
+                $(highlighter.infoPanel).text("");
 
                 return false;
             }
