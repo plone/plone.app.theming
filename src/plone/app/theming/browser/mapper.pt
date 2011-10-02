@@ -77,23 +77,6 @@
 
             // Editor management
 
-            function initEditor(element, mode, data, readonly) {
-                var editor = ace.edit(element);
-                editor.setTheme("ace/theme/textmate");
-                editor.getSession().setTabSize(4);
-                editor.getSession().setUseSoftTabs(true);
-                editor.getSession().setUseWrapMode(false);
-                editor.getSession().setMode(mode);
-                editor.renderer.setShowGutter(false);
-                editor.setShowPrintMargin(false);
-                editor.setReadOnly(readonly);
-
-                editor.getSession().setValue(data);
-                editor.navigateTo(0, 0);
-
-                return editor;
-            }
-
             var HTMLMode = require("ace/mode/html").Mode;
             var CSSMode  = require("ace/mode/css").Mode;
             var XMLMode  = require("ace/mode/xml").Mode;
@@ -133,10 +116,11 @@
             // Rules editor
             (function() {
                 
-                var editor = initEditor('editor', extensionModes.html, $("#file-contents").text(), false);            
-                editor.getSession().on('change', function() {
-                    dirties['rules.xml'] = true;
-                });
+                var editor = new SourceEditor('editor', extensionModes.html, $("#file-contents").text(), false,
+                    function() {
+                        dirties['rules.xml'] = true;
+                    }
+                );
                 var overlay = null;
                 
                 function updateRule(ruleBuilder) {
@@ -207,7 +191,7 @@
 
                 $("#rules-save").click(function() {
                     
-                    var data = editor.getSession().getValue();
+                    var data = editor.getValue();
                     $("#file-contents").text(data);
 
                     $.ajax({
@@ -237,8 +221,11 @@
                     
                     var rule = $("#new-rule-output").text();
 
+                    // Get the underlying ACE editor: no IE support for this anyway
+                    var aceEditor = editor.ace;
+
                     function findStartTag(backwards) {
-                        editor.find("<\\w+", {
+                        aceEditor.find("<\\w+", {
                             backwards: backwards,
                             wrap: false,
                             wholeWord: false,
@@ -256,47 +243,47 @@
 
                     // Go to the next opening tag - we want to insert before this
                     findStartTag(false);
-                    if(editor.getCursorPosition().row <= 1) {
+                    if(aceEditor.getCursorPosition().row <= 1) {
                         // Probably the opening rules tag
                         findStartTag(false);
                     }
 
-                    var selectionText = editor.getSession().getTextRange(editor.getSelectionRange());
+                    var selectionText = aceEditor.getSession().getTextRange(aceEditor.getSelectionRange());
 
                     // If we didn't find anything, look for the end of the current tag
                     if(selectionText == "") {
 
-                        editor.find("(/>|<" + "/)", {
+                        aceEditor.find("(/>|<" + "/)", {
                             backwards: false,
                             wrap: false,
                             wholeWord: false,
                             regExp: true
                         });
 
-                        var selectionText = editor.getSession().getTextRange(editor.getSelectionRange());
+                        var selectionText = aceEditor.getSession().getTextRange(aceEditor.getSelectionRange());
                         if(selectionText == "") {
                             // Still nothing? Go to the end
-                            editor.navigateFileEnd();
+                            aceEditor.navigateFileEnd();
                         } else {
                             // Go one past the end tag, but first figure out how far we should i
-                            editor.navigateDown();
+                            aceEditor.navigateDown();
                         }
 
                     } 
 
-                    var indentation = editor.getSelectionRange().start.column;
+                    var indentation = aceEditor.getSelectionRange().start.column;
 
-                    var cursorPosition = editor.getCursorPosition();
+                    var cursorPosition = aceEditor.getCursorPosition();
                     var newlines = rule.match(/\n/g);
                     var rows = 0;
                     if(newlines != null) {
                         rows = newlines.length;
                     }
 
-                    editor.navigateTo(cursorPosition.row, 0);
-                    editor.insert(indent(rule, indentation));
-                    editor.navigateTo(cursorPosition.row, 0);
-                    editor.getSelection().selectTo(cursorPosition.row + rows + 1, 0);
+                    aceEditor.navigateTo(cursorPosition.row, 0);
+                    aceEditor.insert(indent(rule, indentation));
+                    aceEditor.navigateTo(cursorPosition.row, 0);
+                    aceEditor.getSelection().selectTo(cursorPosition.row + rows + 1, 0);
                     
                     overlay.close();
                 });
@@ -305,7 +292,7 @@
             // Preview panel
             (function() {
                 
-                var previewSource = initEditor('preview-source', extensionModes.html, "", true);
+                var previewSource = new SourceEditor('preview-source', extensionModes.html, "", true);
 
                 $("#preview-frame").ready(function() {
                     var linkManager = new LinkManager("#preview-frame", 'apply', WINDOW_BASE, THEME_BASE_URL);
@@ -326,7 +313,7 @@
 
                 $("#view-preview-source").change(function() {
                     var html = $("#preview-frame").contents().find(":root").html();
-                    previewSource.getSession().setValue("\n<" + "html>" + html + '\n<' + '/html>');
+                    previewSource.setValue("\n<" + "html>" + html + '\n<' + '/html>');
                     $("#preview-frame").hide();
                     $("#preview-source").show();
                     previewSource.resize();
@@ -338,7 +325,7 @@
             // Content panel
             (function() {
                 
-                var contentSource = initEditor('content-source', extensionModes.html, "", true);
+                var contentSource = new SourceEditor('content-source', extensionModes.html, "", true);
 
                 $("#content-frame").ready(function() {
                     var frameHighlighter = new FrameHighlighter("#content-frame", "#content-frame-info", "#content-frame-shelf", 'content', ruleBuilder);
@@ -361,7 +348,7 @@
 
                 $("#view-content-source").change(function() {
                     var html = $("#content-frame").contents().find(":root").html();
-                    contentSource.getSession().setValue("<" + "html>\n" + html + '\n<' + '/html>');
+                    contentSource.setValue("<" + "html>\n" + html + '\n<' + '/html>');
                     $("#content-frame").hide();
                     $("#content-source").show();
                     contentSource.resize();
@@ -373,20 +360,20 @@
             // Theme panel
             (function() {
                 
-                var themeSource = initEditor('theme-source', defaultMode, "", false);
                 var sourceManager = new SourceManager();
-
-                themeSource.getSession().on('change', function() {
-                    if(sourceManager.currentPath != null) {
-                        var label = $("#file-selector option:selected").text();
-                        if(!label.match(/ \*$/)) {
-                            $("#file-selector option:selected").text(label + " *");
+                var themeSource = new SourceEditor('theme-source', defaultMode, "", false,
+                    function() {
+                        if(sourceManager.currentPath != null) {
+                            var label = $("#file-selector option:selected").text();
+                            if(!label.match(/ \*$/)) {
+                                $("#file-selector option:selected").text(label + " *");
+                            }
+                            dirties[sourceManager.currentPath] = true;
+                            sourceManager.markDirty();   
                         }
-                        dirties[sourceManager.currentPath] = true;
-                        sourceManager.markDirty();   
                     }
-                });
-
+                );
+                
                 function reloadFrame() {
                     var path = $("#file-selector option:selected").val();
                     var fetch = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + path + "&amp;theme=off";
@@ -398,7 +385,7 @@
 
                     function savePrevious() {
                         if(sourceManager.currentPath != null && themeSource != null && sourceManager.isDirty()) {
-                            sourceManager.setSource(themeSource.getSession().getValue());   
+                            sourceManager.setSource(themeSource.getValue());   
                         }
                     }
 
@@ -408,8 +395,8 @@
                             mode = extensionModes[extension];
                         }
                         
-                        themeSource.getSession().setMode(mode);
-                        themeSource.getSession().setValue(data);
+                        themeSource.setMode(mode);
+                        themeSource.setValue(data);
                     }
 
                     function updateView() {
@@ -488,7 +475,7 @@
                     var path = sourceManager.currentPath;
                     $.ajax({
                         url: THEME_BASE_URL + '/@@theming-controlpanel-filemanager-savefile',
-                        data: {path: path, value: themeSource.getSession().getValue()},
+                        data: {path: path, value: themeSource.getValue()},
                         type: 'POST',
                         success: function(){
                             var label = $("#file-selector option:selected").text();

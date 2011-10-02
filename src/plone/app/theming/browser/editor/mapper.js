@@ -399,3 +399,49 @@ SourceManager.prototype.getSource = function(path) {
         if(path == undefined) path = this.currentPath;
         return this.source[path];
     };
+
+// Editor abstraction
+
+var SourceEditor = function(element, mode, data, readonly, onchange) {
+    this.ace = ace.edit(element);
+    this.onchange = onchange;
+
+    this.ace.setTheme("ace/theme/textmate");
+    this.ace.getSession().setTabSize(4);
+    this.ace.getSession().setUseSoftTabs(true);
+    this.ace.getSession().setUseWrapMode(false);
+    this.ace.getSession().setMode(mode);
+    this.ace.renderer.setShowGutter(false);
+    this.ace.setShowPrintMargin(false);
+    this.ace.setReadOnly(readonly);
+
+    this.ace.getSession().setValue(data);
+    this.ace.navigateTo(0, 0);
+
+    // Allow the onchange property be changed without rebinding
+    this._onchange = function() {
+        this.onchange();
+    }
+    this.ace.on('change', this._onchange);
+};
+
+SourceEditor.prototype.focus = function() {
+        this.ace.focus();
+    };
+
+SourceEditor.prototype.resize = function() {
+        return this.ace.resize();
+    };
+
+SourceEditor.prototype.getValue = function() {
+        return this.ace.getSession().getValue();
+    };
+
+SourceEditor.prototype.setValue = function(data) {
+        this.ace.getSession().setValue(data);
+    };
+
+SourceEditor.prototype.setMode = function(mode) {
+        this.ace.getSession().setMode(mode);
+    };
+
