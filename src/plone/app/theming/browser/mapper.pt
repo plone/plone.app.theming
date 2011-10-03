@@ -11,42 +11,43 @@
 
 <tal:defines define="dummy python:request.set('disable_border',1);
                      disable_column_one python:request.set('disable_plone.leftcolumn',1);
-                     disable_column_two python:request.set('disable_plone.rightcolumn',1);"/>
+                     disable_column_two python:request.set('disable_plone.rightcolumn',1);
+                     aceFiles string:${view/portalUrl}/++resource++plone.resourceeditor/ace;">
 
 <!-- ACE editor -->
 <script
     type="text/javascript"
     charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/ace.js"
+    tal:attributes="src string:${aceFiles}/ace.js"
     ></script>
 
 <!-- Theme -->
 <script
     type="text/javascript"
     charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/theme-textmate.js"
+    tal:attributes="src string:${aceFiles}/theme-textmate.js"
     ></script>
 
 <!-- Syntax highlighting -->
 <script
     type="text/javascript"
     charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-xml.js"
+    tal:attributes="src string:${aceFiles}/mode-xml.js"
     ></script>
 <script
     type="text/javascript"
     charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-html.js"
+    tal:attributes="src string:${aceFiles}/mode-html.js"
     ></script>
 <script
     type="text/javascript"
     charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-css.js"
+    tal:attributes="src string:${aceFiles}/mode-css.js"
     ></script>
 <script
     type="text/javascript"
     charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/ace/mode-javascript.js"
+    tal:attributes="src string:${aceFiles}/mode-javascript.js"
     ></script>
 
 
@@ -54,7 +55,11 @@
 <script
     type="text/javascript"
     charset="utf-8"
-    tal:attributes="src string:${context/absolute_url}/++resource++plone.app.theming.editor/mapper.js"
+    tal:attributes="src string:${view/portalUrl}/++resource++plone.resourceeditor/editor.js"></script>
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${view/portalUrl}/++resource++plone.app.theming/mapper.js"
     ></script>
 
 
@@ -62,7 +67,7 @@
 <link
     rel="stylesheet"
     type="text/css"
-    tal:attributes="href string:${context/absolute_url}/++resource++plone.app.theming.editor/mapper.css"
+    tal:attributes="href string:${view/portalUrl}/++resource++plone.app.theming/mapper.css"
     />
 
 <script type="text/javascript" tal:content="view/jsVariables"></script>
@@ -434,7 +439,7 @@
                         themeSource.focus();
                     } else {
                         $.ajax({
-                            url: THEME_BASE_URL + '/@@theming-controlpanel-filemanager-getfile',
+                            url: THEME_BASE_URL + '/@@plone.resourceeditor.getfile',
                             data: {path: path},
                             dataType: 'json',
                             success: function(data){
@@ -490,7 +495,7 @@
                 $("#theme-save").click(function() {
                     var path = sourceManager.currentPath;
                     $.ajax({
-                        url: THEME_BASE_URL + '/@@theming-controlpanel-filemanager-savefile',
+                        url: THEME_BASE_URL + '/@@plone.resourceeditor.savefile',
                         data: {path: path, value: themeSource.getValue()},
                         type: 'POST',
                         success: function(){
@@ -563,6 +568,7 @@
     });
 
 </script>
+</tal:defines>
 
 </metal:block>
 </head>

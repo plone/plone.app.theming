@@ -8,10 +8,10 @@
         name="plone.app.theming.gif"
         image="icon.gif"
         />
-    
+
     <browser:resourceDirectory
-        name="plone.app.theming.editor"
-        directory="editor"
+        name="plone.app.theming"
+        directory="resources"
         />
 
     <browser:page
@@ -25,24 +25,8 @@
     <browser:page
         name="theming-controlpanel-filemanager"
         for="plone.resource.interfaces.IResourceDirectory"
-        class=".filemanager.ThemeFileManager"
+        class=".filemanager.FileManager"
         template="filemanager.pt"
-        permission="cmf.ManagePortal"
-        />
-    
-    <browser:page
-        name="theming-controlpanel-filemanager-getfile"
-        for="plone.resource.interfaces.IResourceDirectory"
-        class=".filemanager.ThemeFileManager"
-        attribute="getFile"
-        permission="cmf.ManagePortal"
-        />
-    
-    <browser:page
-        name="theming-controlpanel-filemanager-savefile"
-        for="plone.resource.interfaces.IResourceDirectory"
-        class=".filemanager.ThemeFileManager"
-        attribute="saveFile"
         permission="cmf.ManagePortal"
         />
     

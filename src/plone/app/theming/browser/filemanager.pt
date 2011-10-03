@@ -11,77 +11,13 @@
 
 <tal:defines define="dummy python:request.set('disable_border',1);
                      disable_column_one python:request.set('disable_plone.leftcolumn',1);
-                     disable_column_two python:request.set('disable_plone.rightcolumn',1);
-                     staticFiles string:${context/absolute_url}/++resource++plone.app.theming.editor;
-                     managerFiles string:${staticFiles}/filemanager;
-                     aceFiles string:${staticFiles}/ace;">
+                     disable_column_two python:request.set('disable_plone.rightcolumn',1);" />
 
-<link rel="stylesheet" type="text/css"
-    tal:attributes="href string:${managerFiles}/scripts/jquery.contextmenu/jquery.contextMenu-1.01.css" />
-<link rel="stylesheet" type="text/css"
-    tal:attributes="href string:${managerFiles}/styles/filemanager.css" />
-<!--[if IE]>
-<link rel="stylesheet" type="text/css"
-    tal:attributes="href string:${managerFiles}/styles/ie.css" />
-<![endif]-->
-
-<!--
-    File Manager Related Imports
--->
-<script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.form-2.63.js"></script>
-<script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.splitter/jquery.splitter-1.5.1.js"></script>
-<script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/jquery.contextmenu/jquery.contextMenu-1.01.js"></script>
-
-<!-- ACE editor -->
-<script type="text/javascript" charset="utf-8" tal:attributes="src string:${aceFiles}/ace.js"></script>
-<!-- Theme -->
-<script type="text/javascript" charset="utf-8" tal:attributes="src string:${aceFiles}/theme-textmate.js"></script>
-<!-- Syntax highlighting -->
-<script type="text/javascript" charset="utf-8" tal:attributes="src string:${aceFiles}/mode-html.js"></script>
-<script type="text/javascript" charset="utf-8" tal:attributes="src string:${aceFiles}/mode-css.js"></script>
-<script type="text/javascript" charset="utf-8" tal:attributes="src string:${aceFiles}/mode-javascript.js"></script>
-<script type="text/javascript" charset="utf-8" tal:attributes="src string:${aceFiles}/mode-xml.js"></script>
-<script type="text/javascript" tal:content="structure view/filemanagerConfiguration"></script>
-<script type="text/javascript">
-var lg = {}; // Languages for the file manager
-
-(function($) {
-    
-    $().ready(function() {
-        $("#messages span").each(function() {
-            lg[$(this).attr('id')] = $(this).text();
-        });
-
-        // Workaround for lack of slots in prefs_main_template:
-        // #itemOptions needs to be at top level
-
-        $("#itemOptions").appendTo("body");
-
-    });
-
-})(jQuery);
-</script>
-<script type="text/javascript" tal:attributes="src string:${managerFiles}/scripts/filemanager.js"></script>
-
-</tal:defines>
 </metal:block>
 </head>
 
 <body>
-<div metal:fill-slot="prefs_configlet_main" tal:define="authenticator context/@@authenticator/authenticator">
-<div id="pb_prompt" class="overlay overlay-ajax">
-    <div class="close"><span>Close</span></div>
-    <div class="pb-ajax">
-        <h1 class="documentFirstHeading"></h1>
-        <div class="documentDescription"></div>
-        <div class="input">
-        </div>
-        <div class="formControls">
-            <input class="context" type="submit" name="form.button.save" value="Save">
-            <input class="standalone" type="submit" name="form.button.cancel" value="Cancel">
-        </div>
-    </div>
-</div>
+<div metal:fill-slot="prefs_configlet_main">
 
     <h1 class="documentFirstHeading"
         i18n:translate="heading_edit_theme">Manage theme: 
@@ -109,127 +45,7 @@ var lg = {}; // Languages for the file manager
         delete or rename them.
     </p>
 
-
-    <input tal:replace="structure authenticator" />
-
-    <div id="filemanager">
-        <form id="buttons">
-            <input tal:replace="structure authenticator" />
-            <h1></h1>
-            <div id="uploadresponse"></div>
-            <input id="mode" name="mode" type="hidden" value="add" i18n:attributes="value"/> 
-            <button id="save" name="save" type="button" value="Save" disabled="disabled" i18n:attributes="value"></button>
-            <button id="addnew" name="addnew" type="button" value="New File" i18n:attributes="value"></button>
-            <button id="newfolder" name="newfolder" type="button" value="New Folder" i18n:attributes="value"></button>
-            <div id="upload-container">
-                <button id="upload" name="upload" type="button" value="Upload" class="allowMultiSubmit" i18n:attributes="value"></button>
-            </div>
-        </form>
-        <div id="splitter">
-            <div id="fileRoot">
-                <ul class="jqueryFileTree">
-                    <li id="rootNode" class="directory">
-                        <a rel="/" href="#">/</a>
-                    </li>
-                </ul>
-                <div id="filetree">
-                </div>
-            </div>
-            <div id="fileeditor">
-                <ul id="fileselector">
-
-                </ul>
-                <ul id="aceeditors">
-                
-                </ul>
-            </div>
-        </div>
-
-        <ul id="itemOptions" class="contextMenu">
-            <li class="download"><a href="#download"></a></li>
-            <li class="rename"><a href="#rename"></a></li>
-            <li class="delete separator"><a href="#delete"></a></li>
-        </ul>
-
-        <div style="display:none" id="messages">
-            <tal:comment replace="nothing">
-                Use page template translation machinery to translate message strings.
-                These are put into the JavaScript array 'lg', which is used in 
-                filemanager.js to lookup languages. This takes the place of the
-                'culture' JS file approach in the default filemanager.
-            </tal:comment>
-            <span id='LANGUAGE_FILE_NOT_FOUND' i18n:translate='filemanager_LANGUAGE_FILE_NOT_FOUND'>Language file not found.</span>
-            <span id='new_folder' i18n:translate='filemanager_new_folder'>New folder</span>
-            <span id='gb' i18n:translate='filemanager_gb'>gb</span>
-            <span id='cancel' i18n:translate='filemanager_cancel'>Cancel</span>
-            <span id='yes' i18n:translate='filemanager_yes'>Yes</span>
-            <span id='select' i18n:translate='filemanager_select'>Select</span>
-            <span id='size' i18n:translate='filemanager_size'>Size</span>
-            <span id='ERROR_RENAMING_DIRECTORY' i18n:translate='filemanager_ERROR_RENAMING_DIRECTORY'>Error while renaming the directory %s to %s.</span>
-            <span id='INVALID_FILE_UPLOAD' i18n:translate='filemanager_INVALID_FILE_UPLOAD'>Invalid file upload.</span>
-            <span id='successful_added_folder' i18n:translate='filemanager_successful_added_folder'>New folder added successfully.</span>
-            <span id='ERROR_RENAMING_FILE' i18n:translate='filemanager_ERROR_RENAMING_FILE'>Error while renaming the file %s to %s.</span>
-            <span id='upload' i18n:translate='filemanager_upload'>Upload</span>
-            <span id='upload_and_replace' i18n:translate='filemanager_upload_and_replace'>Upload and Replace</span>
-            <span id='upload_and_replace_current' i18n:translate='filemanager_upload_and_replace_current'>Upload and Replace Current File</span>
-            <span id='INVALID_VAR' i18n:translate='filemanager_INVALID_VAR'>Invalid var %s.</span>
-            <span id='could_not_retrieve_folder' i18n:translate='filemanager_could_not_retrieve_folder'>Could not retrieve folder contents.</span>
-            <span id='current_folder' i18n:translate='filemanager_current_folder'>Current folder: </span>
-            <span id='successful_rename' i18n:translate='filemanager_successful_rename'>Rename successful.</span>
-            <span id='loading_data' i18n:translate='filemanager_loading_data'>Transferring data ...</span>
-            <span id='FILE_ALREADY_EXISTS' i18n:translate='filemanager_FILE_ALREADY_EXISTS'>The file '%s' already exists.</span>
-            <span id='name' i18n:translate='filemanager_name'>Name</span>
-            <span id='create_folder' i18n:translate='filemanager_create_folder'>Create Folder</span>
-            <span id='mb' i18n:translate='filemanager_mb'>mb</span>
-            <span id='bytes' i18n:translate='filemanager_bytes'> bytes</span>
-            <span id='modified' i18n:translate='filemanager_modified'>Modified</span>
-            <span id='del' i18n:translate='filemanager_del'>Delete</span>
-            <span id='UNABLE_TO_OPEN_DIRECTORY' i18n:translate='filemanager_UNABLE_TO_OPEN_DIRECTORY'>Unable to open the directory %s.</span>
-            <span id='DIRECTORY_ALREADY_EXISTS' i18n:translate='filemanager_DIRECTORY_ALREADY_EXISTS'>The directory '%s' already exists.</span>
-            <span id='rename' i18n:translate='filemanager_rename'>Rename</span>
-            <span id='prompt_foldername' i18n:translate='filemanager_prompt_foldername'>Enter the name of the new folder</span>
-            <span id='successful_added_file' i18n:translate='filemanager_successful_added_file'>New file added successfully.</span>
-            <span id='DIRECTORY_NOT_EXIST' i18n:translate='filemanager_DIRECTORY_NOT_EXIST'>The directory %s does not exist.</span>
-            <span id='UPLOAD_FILES_SMALLER_THAN' i18n:translate='filemanager_UPLOAD_FILES_SMALLER_THAN'>Please upload only files smaller than %s.</span>
-            <span id='download' i18n:translate='filemanager_download'>Download</span>
-            <span id='FILE_DOES_NOT_EXIST' i18n:translate='filemanager_FILE_DOES_NOT_EXIST'>The file %s does not exist.</span>
-            <span id='default_foldername' i18n:translate='filemanager_default_foldername'></span>
-            <span id='no_foldername' i18n:translate='filemanager_no_foldername'>No folder name was provided.</span>
-            <span id='UPLOAD_IMAGES_TYPE_JPEG_GIF_PNG' i18n:translate='filemanager_UPLOAD_IMAGES_TYPE_JPEG_GIF_PNG'>Please upload only images of type JPEG, GIF or PNG.</span>
-            <span id='dimensions' i18n:translate='filemanager_dimensions'>Dimensions</span>
-            <span id='no' i18n:translate='filemanager_no'>No</span>
-            <span id='UNABLE_TO_CREATE_DIRECTORY' i18n:translate='filemanager_UNABLE_TO_CREATE_DIRECTORY'>Unable to create the directory %s.</span>
-            <span id='confirmation_delete' i18n:translate='filemanager_confirmation_delete'>Are you sure you wish to delete this file?</span>
-            <span id='UPLOAD_IMAGES_ONLY' i18n:translate='filemanager_UPLOAD_IMAGES_ONLY'>Please upload only images, no other files are supported.</span>
-            <span id='fck_select_integration' i18n:translate='filemanager_fck_select_integration'>The 'Select' function is only used for integration with FCKEditor.</span>
-            <span id='INVALID_ACTION' i18n:translate='filemanager_INVALID_ACTION'>Invalid action.</span>
-            <span id='successful_delete' i18n:translate='filemanager_successful_delete'>Delete successful.</span>
-            <span id='AUTHORIZATION_REQUIRED' i18n:translate='filemanager_AUTHORIZATION_REQUIRED'>You are not authorized to use filemanager.</span>
-            <span id='INVALID_DIRECTORY_OR_FILE' i18n:translate='filemanager_INVALID_DIRECTORY_OR_FILE'>Invalid directory or file.</span>
-            <span id='new_filename' i18n:translate='filemanager_new_filename'>Enter a new name for the file</span>
-            <span id='kb' i18n:translate='filemanager_kb'>kb</span>
-            <span id='created' i18n:translate='filemanager_created'>Created</span>
-            <span id='select_from_left' i18n:translate='filemanager_select_from_left'>Select an item from the left.</span>
-            <span id='parentfolder' i18n:translate='filemanager_parentfolder'>Parent folder</span>
-            <span id='MODE_ERROR' i18n:translate='filemanager_MODE_ERROR'>Mode error.</span>
-
-            <span id='savemsg' i18n:translate='filemanager_save'>Save</span>
-            <span id='saveallmsg' i18n:translate='filemanager_saveall'>Save all</span>
-            <span id='add_new' i18n:translate='filemanager_add_new'>New file</span>
-            <span id='no_filename' i18n:translate='filemanager_no_filename'>No file name was provided.</span>
-            <span id='successful_added_file' i18n:translate='filemanager_successful_added_file'>New file added successfully.</span>
-            <span id='create_file' i18n:translate='filemanager_create_file'>Create File</span>
-            <span id='prompt_filename' i18n:translate='filemanager_prompt_filename'>Enter the name of the new file</span>
-
-            <span id='prompt_replacefile' i18n:translate="filemanager_prompt_replacefile">Replace currently selected file?</span>
-            <span id='prompt_unsavedchanges' i18n:translate="filemanager_prompt_unsavedchanges">You have unsaved changes</span>
-            <span id='prompt_unsavedchanges_desc' i18n:translate="filemanager_prompt_unsavedchanges_desc">
-                Would you like to save first?
-            </span>
-            <span id='prompt_fileupload' i18n:translate='filemanager_prompt_fileupload'>Select a file to upload</span>
-        </div>
-    
-    </div>
+    <tal:block replace="structure view/resourceDirectory/@@plone.resourceeditor.filemanager" />
 
 </div>
 </body>
