@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.0b9 - unreleased
+1.0b9 - 2011-11-02
 ------------------
 
 * Patch App.Management.Navigation to disable theming of ZMI pages.
