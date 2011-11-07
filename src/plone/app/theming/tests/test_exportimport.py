@@ -7,7 +7,6 @@ class TestExportImport(unittest.TestCase):
     layer = THEMING_INTEGRATION_TESTING
 
     def test_import_filesystem(self):
-        from zope.site.hooks import getSite
         from plone.app.theming.interfaces import IThemeSettingsGetter
         from plone.app.theming.exportimport.handler import importTheme
 
@@ -23,14 +22,13 @@ class TestExportImport(unittest.TestCase):
 
         importTheme(FauxContext())
 
-        settings = IThemeSettingsGetter(getSite())
+        settings = IThemeSettingsGetter(self.layer['portal'])
 
         self.assertEqual(settings.rules, '/++theme++plone.app.theming.tests/rules.xml')
         self.assertEqual(settings.absolutePrefix, '/++theme++plone.app.theming.tests')
         self.assertEqual(settings.parameterExpressions, {'foo': "python:request.get('bar')"})
 
     def test_import_no_file(self):
-        from zope.site.hooks import getSite
         from plone.app.theming.interfaces import IThemeSettingsGetter
         from plone.app.theming.exportimport.handler import importTheme
 
@@ -46,7 +44,7 @@ class TestExportImport(unittest.TestCase):
 
         importTheme(FauxContext())
 
-        settings = IThemeSettingsGetter(getSite())
+        settings = IThemeSettingsGetter(self.layer['portal'])
 
         self.assertEqual(settings.rules, None)
         self.assertEqual(settings.absolutePrefix, None)
@@ -68,7 +66,6 @@ class TestExportImport(unittest.TestCase):
         self.assertRaises(ValueError, importTheme, FauxContext())
 
     def test_import_enable(self):
-        from zope.site.hooks import getSite
         from plone.app.theming.interfaces import IThemeSettingsGetter
         from plone.app.theming.exportimport.handler import importTheme
 
@@ -82,7 +79,7 @@ class TestExportImport(unittest.TestCase):
                 assert name == 'theme.xml'
                 return "<theme><enabled>true</enabled></theme>"
 
-        settings = IThemeSettingsGetter(getSite())
+        settings = IThemeSettingsGetter(self.layer['portal'])
 
         self.assertEqual(settings.enabled, False)
 
@@ -91,7 +88,6 @@ class TestExportImport(unittest.TestCase):
         self.assertEqual(settings.enabled, True)
 
     def test_import_disable(self):
-        from zope.site.hooks import getSite
         from plone.app.theming.interfaces import IThemeSettingsGetter
         from plone.app.theming.exportimport.handler import importTheme
 
@@ -105,7 +101,7 @@ class TestExportImport(unittest.TestCase):
                 assert name == 'theme.xml'
                 return "<theme><enabled>false</enabled></theme>"
 
-        settings = IThemeSettingsGetter(getSite())
+        settings = IThemeSettingsGetter(self.layer['portal'])
 
         settings.enabled = True
 
