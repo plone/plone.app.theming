@@ -20,7 +20,7 @@ from plone.transformchain.interfaces import ITransform
 from OFS.interfaces import ITraversable
 
 from plone.app.theming.interfaces import IThemeSettings
-from plone.app.theming.interfaces import IThemeSettingsGetter
+from plone.app.theming.interfaces import IThemeSettingsLookup
 from plone.app.theming.interfaces import IThemingLayer
 from plone.app.theming.utils import expandAbsolutePrefix
 
@@ -78,7 +78,7 @@ def invalidateCache(settings, event):
 
 
 @adapter(ITraversable)
-@implementer(IThemeSettingsGetter)
+@implementer(IThemeSettingsLookup)
 def get_theme_settings(context):
     registry = queryUtility(IRegistry)
     if registry is None:
@@ -110,7 +110,7 @@ class ThemeTransform(object):
         DevelopmentMode = Globals.DevelopmentMode
 
         # Obtain settings. Do nothing if not found
-        settings = IThemeSettingsGetter(getSite())
+        settings = IThemeSettingsLookup(getSite())
 
         if settings is None:
             return None
@@ -234,7 +234,7 @@ class ThemeTransform(object):
 
         # Add expression-based parameters
 
-        settings = IThemeSettingsGetter(getSite())
+        settings = IThemeSettingsLookup(getSite())
         if settings.doctype:
             result.doctype = settings.doctype
             if not result.doctype.endswith('\n'):

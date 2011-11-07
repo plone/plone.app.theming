@@ -142,7 +142,7 @@ class IThemeSettings(Interface):
             default="",
         )
 
-class IThemeSettingsGetter(Interface):
+class IThemeSettingsLookup(Interface):
     """ Adapter to get Theme Settings, possibly modified by concrete
     Implementation.
     """

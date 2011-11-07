@@ -14,7 +14,7 @@ from urllib2 import HTTPError
 
 from Products.CMFCore.Expression import Expression, getExprContext
 
-from plone.app.theming.interfaces import IThemeSettingsGetter
+from plone.app.theming.interfaces import IThemeSettingsLookup
 from plone.app.theming.utils import applyTheme, getAvailableThemes
 from plone.app.theming.utils import InternalResolver, PythonResolver, resolvePythonURL
 
@@ -32,7 +32,7 @@ class TestCase(unittest.TestCase):
         # Enable debug mode always to ensure cache is disabled by default
         Globals.DevelopmentMode = True
 
-        self.settings = IThemeSettingsGetter(self.layer['portal'])
+        self.settings = IThemeSettingsLookup(self.layer['portal'])
 
         self.settings.enabled = False
         self.settings.rules = u'python://plone.app.theming/tests/rules.xml'
@@ -55,7 +55,7 @@ class TestCase(unittest.TestCase):
 
     def test_settings(self):
         # Test if IThemeSettings can be retrieved
-        settings = IThemeSettingsGetter(self.layer['portal'])
+        settings = IThemeSettingsLookup(self.layer['portal'])
         self.assertTrue(hasattr(settings, 'currentTheme'))
         self.assertTrue(hasattr(settings, 'rules'))
         self.assertTrue(hasattr(settings, 'enabled'))

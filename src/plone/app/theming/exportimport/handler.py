@@ -1,7 +1,7 @@
 from lxml import etree
 
 from zope.site.hooks import getSite
-from plone.app.theming.interfaces import IThemeSettingsGetter
+from plone.app.theming.interfaces import IThemeSettingsLookup
 from plone.app.theming.utils import applyTheme
 from plone.app.theming.utils import getAvailableThemes
 
@@ -37,7 +37,7 @@ def importTheme(context):
         applyTheme(themeInfo)
         logger.info('Theme %s applied' % themeName)
 
-    settings = IThemeSettingsGetter(getSite())
+    settings = IThemeSettingsLookup(getSite())
 
     if themeEnabled is not None:
         themeEnabled = themeEnabled.text.strip().lower()

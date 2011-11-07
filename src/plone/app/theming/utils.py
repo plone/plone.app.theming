@@ -20,7 +20,7 @@ from plone.resource.manifest import MANIFEST_FILENAME
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.interfaces import MANIFEST_FORMAT
 from plone.app.theming.interfaces import RULE_FILENAME
-from plone.app.theming.interfaces import IThemeSettingsGetter
+from plone.app.theming.interfaces import IThemeSettingsLookup
 
 from plone.app.theming.theme import Theme
 from plone.app.theming.plugins.utils import getPlugins
@@ -323,7 +323,7 @@ def getZODBThemes():
 def getCurrentTheme():
     """Get the name of the currently enabled theme
     """
-    settings = IThemeSettingsGetter(getSite())
+    settings = IThemeSettingsLookup(getSite())
     if not settings.rules:
         return None
 
@@ -358,7 +358,7 @@ def isThemeEnabled(request, settings=None):
         return False
 
     if settings is None:
-        settings = IThemeSettingsGetter(getSite())
+        settings = IThemeSettingsLookup(getSite())
 
     if not settings.enabled or not settings.rules:
         return False
@@ -379,7 +379,7 @@ def applyTheme(theme):
     """Apply an ITheme
     """
 
-    settings = IThemeSettingsGetter(getSite())
+    settings = IThemeSettingsLookup(getSite())
 
     plugins = None
     themeDirectory = None

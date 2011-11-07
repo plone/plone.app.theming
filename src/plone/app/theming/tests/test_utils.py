@@ -61,11 +61,11 @@ class TestIntegration(unittest.TestCase):
         f.close()
 
     def test_applyTheme(self):
-        from plone.app.theming.interfaces import IThemeSettingsGetter
+        from plone.app.theming.interfaces import IThemeSettingsLookup
         from plone.app.theming.utils import getAvailableThemes
         from plone.app.theming.utils import applyTheme
 
-        settings = IThemeSettingsGetter(self.layer['portal'])
+        settings = IThemeSettingsLookup(self.layer['portal'])
 
         theme = None
         for t in getAvailableThemes():
@@ -81,10 +81,10 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(settings.doctype, theme.doctype)
 
     def test_applyTheme_None(self):
-        from plone.app.theming.interfaces import IThemeSettingsGetter
+        from plone.app.theming.interfaces import IThemeSettingsLookup
         from plone.app.theming.utils import applyTheme
 
-        settings = IThemeSettingsGetter(self.layer['portal'])
+        settings = IThemeSettingsLookup(self.layer['portal'])
 
         settings.rules = u"/++theme++foo/rules.xml"
         settings.absolutePrefix = u"/++theme++foo"
