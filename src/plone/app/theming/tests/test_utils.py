@@ -61,15 +61,12 @@ class TestIntegration(unittest.TestCase):
         f.close()
 
     def test_applyTheme(self):
-        from zope.component import getUtility
-
-        from plone.registry.interfaces import IRegistry
-
-        from plone.app.theming.interfaces import IThemeSettings
+        from zope.site.hooks import getSite
+        from plone.app.theming.interfaces import IThemeSettingsGetter
         from plone.app.theming.utils import getAvailableThemes
         from plone.app.theming.utils import applyTheme
 
-        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        settings = IThemeSettingsGetter(getSite())
 
         theme = None
         for t in getAvailableThemes():
@@ -85,14 +82,11 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(settings.doctype, theme.doctype)
 
     def test_applyTheme_None(self):
-        from zope.component import getUtility
-
-        from plone.registry.interfaces import IRegistry
-
-        from plone.app.theming.interfaces import IThemeSettings
+        from zope.site.hooks import getSite
+        from plone.app.theming.interfaces import IThemeSettingsGetter
         from plone.app.theming.utils import applyTheme
 
-        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        settings = IThemeSettingsGetter(getSite())
 
         settings.rules = u"/++theme++foo/rules.xml"
         settings.absolutePrefix = u"/++theme++foo"

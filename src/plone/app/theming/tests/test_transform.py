@@ -14,10 +14,8 @@ from urllib2 import HTTPError
 
 from Products.CMFCore.Expression import Expression, getExprContext
 
-from plone.registry.interfaces import IRegistry
-from zope.component import getUtility
-
-from plone.app.theming.interfaces import IThemeSettings
+from zope.site.hooks import getSite
+from plone.app.theming.interfaces import IThemeSettingsGetter
 from plone.app.theming.utils import applyTheme, getAvailableThemes
 from plone.app.theming.utils import InternalResolver, PythonResolver, resolvePythonURL
 
@@ -35,7 +33,7 @@ class TestCase(unittest.TestCase):
         # Enable debug mode always to ensure cache is disabled by default
         Globals.DevelopmentMode = True
 
-        self.settings = getUtility(IRegistry).forInterface(IThemeSettings)
+        self.settings = IThemeSettingsGetter(getSite())
 
         self.settings.enabled = False
         self.settings.rules = u'python://plone.app.theming/tests/rules.xml'

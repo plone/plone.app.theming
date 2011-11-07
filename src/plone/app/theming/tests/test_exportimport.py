@@ -7,11 +7,8 @@ class TestExportImport(unittest.TestCase):
     layer = THEMING_INTEGRATION_TESTING
 
     def test_import_filesystem(self):
-        from zope.component import getUtility
-
-        from plone.registry.interfaces import IRegistry
-
-        from plone.app.theming.interfaces import IThemeSettings
+        from zope.site.hooks import getSite
+        from plone.app.theming.interfaces import IThemeSettingsGetter
         from plone.app.theming.exportimport.handler import importTheme
 
         class FauxContext(object):
@@ -26,18 +23,15 @@ class TestExportImport(unittest.TestCase):
 
         importTheme(FauxContext())
 
-        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        settings = IThemeSettingsGetter(getSite())
 
         self.assertEqual(settings.rules, '/++theme++plone.app.theming.tests/rules.xml')
         self.assertEqual(settings.absolutePrefix, '/++theme++plone.app.theming.tests')
         self.assertEqual(settings.parameterExpressions, {'foo': "python:request.get('bar')"})
 
     def test_import_no_file(self):
-        from zope.component import getUtility
-
-        from plone.registry.interfaces import IRegistry
-
-        from plone.app.theming.interfaces import IThemeSettings
+        from zope.site.hooks import getSite
+        from plone.app.theming.interfaces import IThemeSettingsGetter
         from plone.app.theming.exportimport.handler import importTheme
 
         class FauxContext(object):
@@ -52,7 +46,7 @@ class TestExportImport(unittest.TestCase):
 
         importTheme(FauxContext())
 
-        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        settings = IThemeSettingsGetter(getSite())
 
         self.assertEqual(settings.rules, None)
         self.assertEqual(settings.absolutePrefix, None)
@@ -74,11 +68,8 @@ class TestExportImport(unittest.TestCase):
         self.assertRaises(ValueError, importTheme, FauxContext())
 
     def test_import_enable(self):
-        from zope.component import getUtility
-
-        from plone.registry.interfaces import IRegistry
-
-        from plone.app.theming.interfaces import IThemeSettings
+        from zope.site.hooks import getSite
+        from plone.app.theming.interfaces import IThemeSettingsGetter
         from plone.app.theming.exportimport.handler import importTheme
 
         class FauxContext(object):
@@ -91,7 +82,7 @@ class TestExportImport(unittest.TestCase):
                 assert name == 'theme.xml'
                 return "<theme><enabled>true</enabled></theme>"
 
-        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        settings = IThemeSettingsGetter(getSite())
 
         self.assertEqual(settings.enabled, False)
 
@@ -100,11 +91,8 @@ class TestExportImport(unittest.TestCase):
         self.assertEqual(settings.enabled, True)
 
     def test_import_disable(self):
-        from zope.component import getUtility
-
-        from plone.registry.interfaces import IRegistry
-
-        from plone.app.theming.interfaces import IThemeSettings
+        from zope.site.hooks import getSite
+        from plone.app.theming.interfaces import IThemeSettingsGetter
         from plone.app.theming.exportimport.handler import importTheme
 
         class FauxContext(object):
@@ -117,11 +105,10 @@ class TestExportImport(unittest.TestCase):
                 assert name == 'theme.xml'
                 return "<theme><enabled>false</enabled></theme>"
 
-        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        settings = IThemeSettingsGetter(getSite())
 
         settings.enabled = True
 
         importTheme(FauxContext())
 
         self.assertEqual(settings.enabled, False)
-
