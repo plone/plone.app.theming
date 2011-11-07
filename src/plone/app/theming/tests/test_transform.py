@@ -53,6 +53,13 @@ class TestCase(unittest.TestCase):
         expr = Expression(expression)
         return expr(ec)
 
+    def test_settings(self):
+        # Test if IThemeSettings can be retrieved
+        settings = IThemeSettingsGetter(self.layer['portal'])
+        self.assertTrue(hasattr(settings, 'currentTheme'))
+        self.assertTrue(hasattr(settings, 'rules'))
+        self.assertTrue(hasattr(settings, 'enabled'))
+
     def test_no_effect_if_not_enabled(self):
         app = self.layer['app']
         portal = self.layer['portal']
