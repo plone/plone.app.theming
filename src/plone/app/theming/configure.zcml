@@ -49,6 +49,7 @@
               plone.registry.interfaces.IRecordModifiedEvent"
         handler=".transform.invalidateCache"
         />
+    <adapter factory=".transform.get_theme_settings" />
 
     <!-- Set X-Theme-Enabled header in the request if theming is enabled -->
     <subscriber

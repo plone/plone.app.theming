@@ -9,15 +9,19 @@ from diazo.utils import quote_param
 
 from repoze.xmliter.utils import getHTMLSerializer
 
-from zope.interface import implements, Interface
-from zope.component import adapts
+from zope.interface import implements, implementer, Interface
+from zope.component import adapts, adapter
 from zope.component import queryUtility
 from zope.site.hooks import getSite
 
 from plone.registry.interfaces import IRegistry
 from plone.transformchain.interfaces import ITransform
 
-from plone.app.theming.interfaces import IThemeSettings, IThemingLayer
+from OFS.interfaces import ITraversable
+
+from plone.app.theming.interfaces import IThemeSettings
+from plone.app.theming.interfaces import IThemeSettingsGetter
+from plone.app.theming.interfaces import IThemingLayer
 from plone.app.theming.utils import expandAbsolutePrefix
 
 from plone.app.theming.utils import PythonResolver
@@ -72,6 +76,21 @@ def invalidateCache(settings, event):
     if hasattr(registry, '_v_plone_app_theming_caches'):
         del registry._v_plone_app_theming_caches
 
+
+@adapter(ITraversable)
+@implementer(IThemeSettingsGetter)
+def get_theme_settings(context):
+    registry = queryUtility(IRegistry)
+    if registry is None:
+        return None
+
+    try:
+        settings = registry.forInterface(IThemeSettings, False)
+    except KeyError:
+        return None
+
+    return settings
+
 class ThemeTransform(object):
     """Late stage in the 8000's transform chain. When plone.app.blocks is
     used, we can benefit from lxml parsing having taken place already.
@@ -91,7 +110,7 @@ class ThemeTransform(object):
         DevelopmentMode = Globals.DevelopmentMode
 
         # Obtain settings. Do nothing if not found
-        settings = self.getSettings()
+        settings = IThemeSettingsGetter(getSite())
 
         if settings is None:
             return None
@@ -165,18 +184,6 @@ class ThemeTransform(object):
 
         return transform
 
-    def getSettings(self):
-        registry = queryUtility(IRegistry)
-        if registry is None:
-            return None
-
-        try:
-            settings = registry.forInterface(IThemeSettings, False)
-        except KeyError:
-            return None
-
-        return settings
-
     def parseTree(self, result):
         contentType = self.request.response.getHeader('Content-Type')
         if contentType is None or not contentType.startswith('text/html'):
@@ -227,7 +234,7 @@ class ThemeTransform(object):
 
         # Add expression-based parameters
 
-        settings = self.getSettings()
+        settings = IThemeSettingsGetter(getSite())
         if settings.doctype:
             result.doctype = settings.doctype
             if not result.doctype.endswith('\n'):
