@@ -12,12 +12,12 @@ from repoze.xmliter.utils import getHTMLSerializer
 from zope.interface import implements, implementer, Interface
 from zope.component import adapts, adapter
 from zope.component import queryUtility
+from zope.component.interfaces import ISite
 from zope.site.hooks import getSite
 
 from plone.registry.interfaces import IRegistry
 from plone.transformchain.interfaces import ITransform
 
-from OFS.interfaces import ITraversable
 
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.interfaces import IThemeSettingsLookup
@@ -77,7 +77,7 @@ def invalidateCache(settings, event):
         del registry._v_plone_app_theming_caches
 
 
-@adapter(ITraversable)
+@adapter(ISite)
 @implementer(IThemeSettingsLookup)
 def get_theme_settings(context):
     registry = queryUtility(IRegistry)
