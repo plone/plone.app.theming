@@ -142,7 +142,6 @@ class IThemeSettings(Interface):
             default="",
         )
 
-
 class IThemingLayer(Interface):
     """Browser layer used to indicate that plone.app.theming is installed
     """

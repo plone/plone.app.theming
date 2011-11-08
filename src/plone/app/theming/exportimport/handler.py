@@ -1,9 +1,8 @@
 from lxml import etree
 
-from zope.component import getUtility
-
-from plone.registry.interfaces import IRegistry
-
+from zope.component import getMultiAdapter
+from zope.globalrequest import getRequest
+from zope.site.hooks import getSite
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.utils import applyTheme
 from plone.app.theming.utils import getAvailableThemes
@@ -40,7 +39,8 @@ def importTheme(context):
         applyTheme(themeInfo)
         logger.info('Theme %s applied' % themeName)
 
-    settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+    toadapt = (getSite(), getRequest())
+    settings = getMultiAdapter(toadapt, IThemeSettings)
 
     if themeEnabled is not None:
         themeEnabled = themeEnabled.text.strip().lower()

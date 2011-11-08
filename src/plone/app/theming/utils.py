@@ -5,7 +5,7 @@ from lxml import etree
 
 from zope.site.hooks import getSite
 from zope.component import getUtility
-from zope.component import queryUtility
+from zope.component import getMultiAdapter
 from zope.component import queryMultiAdapter
 from zope.globalrequest import getRequest
 
@@ -17,8 +17,6 @@ from plone.resource.manifest import extractManifestFromZipFile
 from plone.resource.manifest import getAllResources
 from plone.resource.manifest import getZODBResources
 from plone.resource.manifest import MANIFEST_FILENAME
-
-from plone.registry.interfaces import IRegistry
 
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.interfaces import MANIFEST_FORMAT
@@ -326,7 +324,8 @@ def getZODBThemes():
 def getCurrentTheme():
     """Get the name of the currently enabled theme
     """
-    settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+    toadapt = (getSite(), getRequest())
+    settings = getMultiAdapter(toadapt, IThemeSettings)
     if not settings.rules:
         return None
 
@@ -361,11 +360,8 @@ def isThemeEnabled(request, settings=None):
         return False
 
     if settings is None:
-        registry = queryUtility(IRegistry)
-        if registry is None:
-            return False
-
-        settings = registry.forInterface(IThemeSettings, False)
+        toadapt = (getSite(), request)
+        settings = getMultiAdapter(toadapt, IThemeSettings)
 
     if not settings.enabled or not settings.rules:
         return False
@@ -386,7 +382,8 @@ def applyTheme(theme):
     """Apply an ITheme
     """
 
-    settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+    toadapt = (getSite(), getRequest())
+    settings = getMultiAdapter(toadapt, IThemeSettings)
 
     plugins = None
     themeDirectory = None
