@@ -142,11 +142,6 @@ class IThemeSettings(Interface):
             default="",
         )
 
-class IThemeSettingsLookup(Interface):
-    """ Adapter to get Theme Settings, possibly modified by concrete
-    Implementation.
-    """
-
 class IThemingLayer(Interface):
     """Browser layer used to indicate that plone.app.theming is installed
     """

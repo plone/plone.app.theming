@@ -1,5 +1,6 @@
 import unittest2 as unittest
 
+from zope.component import getMultiAdapter
 from plone.app.theming.testing import THEMING_INTEGRATION_TESTING
 
 class TestIntegration(unittest.TestCase):
@@ -61,11 +62,13 @@ class TestIntegration(unittest.TestCase):
         f.close()
 
     def test_applyTheme(self):
-        from plone.app.theming.interfaces import IThemeSettingsLookup
+        from zope.globalrequest import getRequest
+        from plone.app.theming.interfaces import IThemeSettings
         from plone.app.theming.utils import getAvailableThemes
         from plone.app.theming.utils import applyTheme
 
-        settings = IThemeSettingsLookup(self.layer['portal'])
+        toadapt = (self.layer['portal'], getRequest())
+        settings = getMultiAdapter(toadapt, IThemeSettings)
 
         theme = None
         for t in getAvailableThemes():
@@ -81,10 +84,12 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(settings.doctype, theme.doctype)
 
     def test_applyTheme_None(self):
-        from plone.app.theming.interfaces import IThemeSettingsLookup
+        from zope.globalrequest import getRequest
+        from plone.app.theming.interfaces import IThemeSettings
         from plone.app.theming.utils import applyTheme
 
-        settings = IThemeSettingsLookup(self.layer['portal'])
+        toadapt = (self.layer['portal'], getRequest())
+        settings = getMultiAdapter(toadapt, IThemeSettings)
 
         settings.rules = u"/++theme++foo/rules.xml"
         settings.absolutePrefix = u"/++theme++foo"

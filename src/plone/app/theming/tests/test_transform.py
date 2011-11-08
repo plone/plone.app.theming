@@ -1,5 +1,7 @@
 import unittest2 as unittest
 
+from zope.component import getMultiAdapter
+from zope.globalrequest import getRequest
 from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
 from plone.testing.z2 import Browser
 
@@ -14,7 +16,7 @@ from urllib2 import HTTPError
 
 from Products.CMFCore.Expression import Expression, getExprContext
 
-from plone.app.theming.interfaces import IThemeSettingsLookup
+from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.utils import applyTheme, getAvailableThemes
 from plone.app.theming.utils import InternalResolver, PythonResolver, resolvePythonURL
 
@@ -32,7 +34,8 @@ class TestCase(unittest.TestCase):
         # Enable debug mode always to ensure cache is disabled by default
         Globals.DevelopmentMode = True
 
-        self.settings = IThemeSettingsLookup(self.layer['portal'])
+        toadapt = (self.layer['portal'], getRequest())
+        self.settings = getMultiAdapter(toadapt, IThemeSettings)
 
         self.settings.enabled = False
         self.settings.rules = u'python://plone.app.theming/tests/rules.xml'
@@ -55,7 +58,8 @@ class TestCase(unittest.TestCase):
 
     def test_settings(self):
         # Test if IThemeSettings can be retrieved
-        settings = IThemeSettingsLookup(self.layer['portal'])
+        toadapt = (self.layer['portal'], getRequest())
+        settings = getMultiAdapter(toadapt, IThemeSettings)
         self.assertTrue(hasattr(settings, 'currentTheme'))
         self.assertTrue(hasattr(settings, 'rules'))
         self.assertTrue(hasattr(settings, 'enabled'))

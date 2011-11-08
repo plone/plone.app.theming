@@ -12,15 +12,15 @@ from repoze.xmliter.utils import getHTMLSerializer
 from zope.interface import implements, implementer, Interface
 from zope.component import adapts, adapter
 from zope.component import queryUtility
+from zope.component import getMultiAdapter
 from zope.component.interfaces import ISite
 from zope.site.hooks import getSite
+from zope.publisher.interfaces.browser import IBrowserRequest
 
 from plone.registry.interfaces import IRegistry
 from plone.transformchain.interfaces import ITransform
 
-
 from plone.app.theming.interfaces import IThemeSettings
-from plone.app.theming.interfaces import IThemeSettingsLookup
 from plone.app.theming.interfaces import IThemingLayer
 from plone.app.theming.utils import expandAbsolutePrefix
 
@@ -77,9 +77,9 @@ def invalidateCache(settings, event):
         del registry._v_plone_app_theming_caches
 
 
-@adapter(ISite)
-@implementer(IThemeSettingsLookup)
-def get_theme_settings(context):
+@adapter(ISite, IBrowserRequest)
+@implementer(IThemeSettings)
+def get_theme_settings(context, request):
     registry = queryUtility(IRegistry)
     if registry is None:
         return None
@@ -110,7 +110,8 @@ class ThemeTransform(object):
         DevelopmentMode = Globals.DevelopmentMode
 
         # Obtain settings. Do nothing if not found
-        settings = IThemeSettingsLookup(getSite())
+        toadapt = (getSite(), self.request)
+        settings = getMultiAdapter(toadapt, IThemeSettings)
 
         if settings is None:
             return None
@@ -234,7 +235,8 @@ class ThemeTransform(object):
 
         # Add expression-based parameters
 
-        settings = IThemeSettingsLookup(getSite())
+        toadapt = (getSite(), self.request)
+        settings = getMultiAdapter(toadapt, IThemeSettings)
         if settings.doctype:
             result.doctype = settings.doctype
             if not result.doctype.endswith('\n'):

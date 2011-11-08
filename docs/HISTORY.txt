@@ -4,8 +4,8 @@ Changelog
 1.0b10 - unreleased
 -------------------
 
-* Add IThemeSettingsLookup adapter, which returns IThemeSettings. Can be used
-  to override the theme settings in different contexts.
+* Add multiadapter for looking up IThemeSettings. Can be used to override the
+* theme settings for different sites.
   [thet, rnix]
 
 1.0b9 - 2011-11-02
