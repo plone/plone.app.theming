@@ -673,7 +673,7 @@ you just want to test::
             <copy attributes="id dir" css:content="body" css:theme="body" />
 
             <!-- Logo (link target) -->
-            <replace attributes="href" css:content='#portal-logo' css:theme="#logo" />
+            <copy attributes="href" css:content='#portal-logo' css:theme="#logo" />
             
             <!-- Site actions -->
             <replace css:content="#portal-siteactions li" css:theme-children="#actions" />
