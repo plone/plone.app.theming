@@ -8,8 +8,9 @@ from plone.app.theming.interfaces import MANIFEST_FORMAT
 
 from Products.CMFCore.utils import getToolByName
 
+
 class FileManager(BrowserView):
-    
+
     def __call__(self):
         if self.update():
             # Evil hack to deal with the lack of implicit acquisition from
@@ -20,7 +21,7 @@ class FileManager(BrowserView):
 
     def update(self):
         self.request.response.setHeader('X-Theme-Disabled', '1')
-        
+
         self.resourceDirectory = self.context
         self.name = self.resourceDirectory.__name__
 
