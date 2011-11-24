@@ -172,17 +172,15 @@ def createExpressionContext(context, request):
     expressions.
     """
 
-    portal = getPortal()
-
     contextState = queryMultiAdapter(
         (context, request), name=u"plone_context_state")
     portalState = queryMultiAdapter(
-        (portal, request), name=u"plone_portal_state")
+        (context, request), name=u"plone_portal_state")
 
     data = {
         'context': context,
         'request': request,
-        'portal': portal,
+        'portal': portalState.portal(),
         'context_state': contextState,
         'portal_state': portalState,
         'nothing': None,
