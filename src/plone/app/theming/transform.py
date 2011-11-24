@@ -251,7 +251,7 @@ class ThemeTransform(object):
                     cache.updateExpressions(expressions)
 
             # Execute all expressions
-            context = findContext(self.published)
+            context = findContext(self.request)
             expressionContext = createExpressionContext(context, self.request)
             for name, expression in expressions.items():
                 params[name] = quote_param(expression(expressionContext))

@@ -610,8 +610,8 @@ class TestCase(unittest.TestCase):
         # Not present in this request
         self.assertFalse('<script>request param on</script>' in browser.contents)
 
-        # Context wasn't available for parameter expressions
-        self.assertTrue('<script id="contextParam">no context</script>' in browser.contents)
+        # Context is the last found parent
+        self.assertTrue('<script id="contextParam">http://nohost/plone</script>' in browser.contents)
 
     def test_resource_condition_404(self):
         app = self.layer['app']
