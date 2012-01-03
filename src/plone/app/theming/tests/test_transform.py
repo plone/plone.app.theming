@@ -626,7 +626,7 @@ class TestCase(unittest.TestCase):
         thirdLastResource.setRendering('link')
         thirdLastResource.setEnabled(True)
         thirdLastResource.setConditionalcomment('')
-        
+
 
         # only show in theme
         secondToLastResource = portal_css.resources[-2]
@@ -634,7 +634,7 @@ class TestCase(unittest.TestCase):
         secondToLastResource.setRendering('link')
         secondToLastResource.setEnabled(True)
         secondToLastResource.setConditionalcomment('')
-        
+
 
         # only show when theme is disabled
         lastResource = portal_css.resources[-1]
@@ -642,7 +642,7 @@ class TestCase(unittest.TestCase):
         lastResource.setRendering('link')
         lastResource.setEnabled(True)
         lastResource.setConditionalcomment('')
-        
+
 
         portal_css.cookResources()
 
