@@ -9,7 +9,9 @@ class NoThemeDTMLFile(DTMLFile):
     '''DTMLFile that automatically sets the X-Theme-Disabled header'''
 
     def _exec(self, bound_data, args, kw):
-        getRequest().response.setHeader('X-Theme-Disabled', '1')
+        request = getRequest()
+        if request is not None:
+            request.response.setHeader('X-Theme-Disabled', '1')
         return DTMLFile._exec(self, bound_data, args, kw)
 
 # Most ZMI pages include 'manage_page_header'
