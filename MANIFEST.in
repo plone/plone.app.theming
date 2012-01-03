@@ -1,0 +1,7 @@
+include *
+
+recursive-include docs *
+recursive-include resources *
+recursive-include src *
+
+global-exclude *pyc
