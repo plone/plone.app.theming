@@ -1,11 +1,6 @@
 plone.app.theming to-do
 =======================
 
-General
--------
-
-[ ] Integrate mapper and file manager more meaningfully
-
 File manager
 ------------
 
@@ -20,6 +15,5 @@ File manager
 Mapper
 ------
 
-[ ] Full screen editing
 [ ] Working copy editing
 [ ] Table-based visual rules list viewer/editor instead of source (unless rules source too complex)
