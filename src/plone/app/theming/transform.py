@@ -169,7 +169,7 @@ class ThemeTransform(object):
             cache = getCache(settings)
 
         parameterExpressions = settings.parameterExpressions or {}
-        params = prepareThemeParameters(findContext(self.published), self.request, parameterExpressions, cache) 
+        params = prepareThemeParameters(findContext(self.request), self.request, parameterExpressions, cache) 
 
         transformed = transform(result.tree, **params)
         if transformed is None:

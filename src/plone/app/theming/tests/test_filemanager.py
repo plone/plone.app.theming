@@ -44,3 +44,5 @@ class TestControlPanel(unittest.TestCase):
             )
              + '')
 
+    def test_add_folder(self):
+        pass
