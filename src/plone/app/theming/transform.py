@@ -167,7 +167,7 @@ class ThemeTransform(object):
         DevelopmentMode = Globals.DevelopmentMode
         if not DevelopmentMode:
             cache = getCache(settings)
-        
+
         parameterExpressions = settings.parameterExpressions or {}
         params = prepareThemeParameters(findContext(self.published), self.request, parameterExpressions, cache) 
 

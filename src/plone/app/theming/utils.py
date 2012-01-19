@@ -96,11 +96,16 @@ class InternalResolver(etree.Resolver):
         if system_url.startswith('diazo:'):
             return None
 
-        portal = getPortal()
-        if portal is None:
-            return None
+        context = findContext(request)
+        portalState = queryMultiAdapter(
+            (context, request), name=u"plone_portal_state")
 
-        response = subrequest(system_url, root=portal)
+        if portalState is None:
+            root = None
+        else:
+            root = portalState.navigation_root()
+
+        response = subrequest(system_url, root=root)
         if response.status != 200:
             return None
         result = response.getBody()
@@ -134,24 +139,23 @@ class InternalResolver(etree.Resolver):
 def getPortal():
     """Return the portal object
     """
-    # is site ever not the portal?
-    site = getSite()
-    if site is None:
+    request = getRequest()
+    context = findContext(request)
+    portalState = queryMultiAdapter(
+        (context, request), name=u"plone_portal_state")
+    if portalState is None:
         return None
-    portal_url = getToolByName(site, 'portal_url', None)
-    if portal_url is None:
-        return None
-    return portal_url.getPortalObject()
+    return portalState.portal()
 
 
-def findContext(published):
-    """Find the context from a published resource (usually a view)/
+def findContext(request):
+    """Find the context from the request
     """
-
-    parent = getattr(published, '__parent__', None)
-    if parent is None:
-        parent = aq_parent(published)
-    return parent
+    published = request.get('PUBLISHED', None)
+    context = getattr(published, '__parent__', None)
+    if context is None:
+        context = request.PARENTS[0]
+    return context
 
 
 def expandAbsolutePrefix(prefix):
@@ -185,17 +189,15 @@ def createExpressionContext(context, request):
     expressions.
     """
 
-    portal = getPortal()
-
     contextState = queryMultiAdapter(
         (context, request), name=u"plone_context_state")
     portalState = queryMultiAdapter(
-        (portal, request), name=u"plone_portal_state")
+        (context, request), name=u"plone_portal_state")
 
     data = {
         'context': context,
         'request': request,
-        'portal': portal,
+        'portal': portalState.portal(),
         'context_state': contextState,
         'portal_state': portalState,
         'nothing': None,

@@ -611,8 +611,8 @@ class TestCase(unittest.TestCase):
         # Not present in this request
         self.assertFalse('<script>request param on</script>' in browser.contents)
 
-        # Context wasn't available for parameter expressions
-        self.assertTrue('<script id="contextParam">no context</script>' in browser.contents)
+        # Context is the last found parent
+        self.assertTrue('<script id="contextParam">http://nohost/plone</script>' in browser.contents)
 
     def test_resource_condition_404(self):
         app = self.layer['app']
@@ -627,7 +627,7 @@ class TestCase(unittest.TestCase):
         thirdLastResource.setRendering('link')
         thirdLastResource.setEnabled(True)
         thirdLastResource.setConditionalcomment('')
-        
+
 
         # only show in theme
         secondToLastResource = portal_css.resources[-2]
@@ -635,7 +635,7 @@ class TestCase(unittest.TestCase):
         secondToLastResource.setRendering('link')
         secondToLastResource.setEnabled(True)
         secondToLastResource.setConditionalcomment('')
-        
+
 
         # only show when theme is disabled
         lastResource = portal_css.resources[-1]
@@ -643,7 +643,7 @@ class TestCase(unittest.TestCase):
         lastResource.setRendering('link')
         lastResource.setEnabled(True)
         lastResource.setConditionalcomment('')
-        
+
 
         portal_css.cookResources()
 
