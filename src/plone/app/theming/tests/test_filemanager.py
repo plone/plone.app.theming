@@ -8,7 +8,7 @@ from plone.app.testing import setRoles, TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import TEST_USER_PASSWORD
 
-from plone.app.theming.utils import getZODBThemes, getTheme
+from plone.app.theming.utils import createThemeFromTemplate
 
 
 class TestControlPanel(unittest.TestCase):
@@ -19,7 +19,7 @@ class TestControlPanel(unittest.TestCase):
         portal = self.layer['portal']
         setRoles(portal, TEST_USER_ID, ['Manager'])
 
-        name = createThemeFromTemplate('Foobar', '', 'template')
+        createThemeFromTemplate('Foobar', '', 'template')
 
         import transaction
         transaction.commit()
@@ -44,5 +44,3 @@ class TestControlPanel(unittest.TestCase):
             )
              + '')
 
-    def test_add_folder(self):
-        pass
