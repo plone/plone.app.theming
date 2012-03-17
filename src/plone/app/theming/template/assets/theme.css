@@ -1,0 +1,35 @@
+/* Theme-specific styling
+ */
+
+/* 60px to make the container go all the way to the bottom of the topbar */
+
+body {
+    padding-top: 60px;
+}
+
+/* Tabs */
+
+#tabs .selected > a {
+    color: white;
+    text-decoration: none;
+    background-color: #222;
+}
+
+/* Footer */
+
+#footer {
+    text-align: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: solid #eee 1px;
+}
+
+#footer li {
+    list-style: none;
+}
+
+#portal-siteactions li {
+    display: inline;
+    margin: 0 5px;
+}
+
