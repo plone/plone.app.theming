@@ -87,7 +87,7 @@
                             i18n:translate="label_other">Other (see advanced tab)</option>
                         <option
                             tal:repeat="theme view/availableThemes"
-                            tal:content="string:${theme/title} (${theme/__name__})"
+                            tal:content="string:${theme/title} [${theme/__name__}]"
                             tal:attributes="value theme/__name__;
                                             title theme/description;
                                             selected python:theme.__name__ == selected and 'selected' or None"
@@ -439,7 +439,7 @@
                         id="description"
                         tal:content="request/description | nothing"></textarea>
                 </div>
-                
+
                 <div class="field">
                     <label for="baseOn" i18n:translate="label_new_theme_base_on">Base on</label>
                     <div class="formHelp" i18n:translate="help_new_theme_base_on">
@@ -451,14 +451,14 @@
                             tal:attributes="value theme/name;
                                             title theme/description;
                                             selected python:theme['name'] == selected and 'selected' or None"
-                            tal:content="string:${theme/title} (${theme/name})"
+                            tal:content="string:${theme/title} [${theme/name}]"
                             />
                     </select>
                 </div>
 
                 <div
                     class="field"
-                    tal:define="selected python:request.get('enableImmediately', True)">
+                    tal:define="selected python:request.get('enableImmediately', False)">
                     <input type="hidden" value="" name="enableImmediately:boolean:default" />
                     <input type="checkbox" value="1" name="enableImmediately:boolean" id="enableImmediately"
                         tal:attributes="checked python:'enableImmediately' if selected else None"
