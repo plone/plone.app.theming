@@ -73,9 +73,9 @@
 <script type="text/javascript" tal:content="view/jsVariables"></script>
 
 <script type="text/javascript">
-    
+
     jQuery(function($) {
-        
+
         $(document).ready(function() {
 
             var WINDOW_BASE = window.location.protocol + '//' + window.location.host;
@@ -124,19 +124,19 @@
 
             // Rules editor
             (function() {
-                
+
                 var editor = new SourceEditor('editor', extensionModes.html, $("#file-contents").text(), false,
                     function() {
                         dirties['rules.xml'] = true;
                     }
                 );
                 var overlay = null;
-                
+
                 function updateRule(ruleBuilder) {
                     $("#new-rule-output").val(ruleBuilder.buildRule(
-                        $('#new-rule-content-children').is(':checked'), 
+                        $('#new-rule-content-children').is(':checked'),
                         $('#new-rule-theme-children').is(':checked')
-                    ));   
+                    ));
                 }
 
                 ruleBuilder = new RuleBuilder(function(ruleBuilder) {
@@ -150,8 +150,8 @@
 
                         $("#new-rule-text-select-content").css('display', 'inline-block');
                         $("#view-content-preview").click();
-                        $("#content-split, .wizard-text").expose();
-                    
+                        $("#content-panel, .wizard-text").expose();
+
                     } else if(ruleBuilder.currentScope == 'theme') {
                         if(overlay.isOpened()) {
                             overlay.close();
@@ -159,7 +159,7 @@
 
                         $("#new-rule-text-select-theme").css('display', 'inline-block');
                         $("#view-theme-preview").click();
-                        $("#theme-split, .wizard-text").expose();
+                        $("#theme-panel, .wizard-text").expose();
 
                     } else if(ruleBuilder.rule != null && ruleBuilder.currentScope == null) {
                         $("#new-rule-step-1").hide();
@@ -167,7 +167,7 @@
                         updateRule(ruleBuilder);
 
                         if(!overlay.isOpened()) {
-                            overlay.load();    
+                            overlay.load();
                         }
 
                     } else { // end
@@ -190,7 +190,6 @@
                     onBeforeClose: function() {
                         if(ruleBuilder.active && $("#new-rule-step-2").is(":visible")) {
                             ruleBuilder.end();
-                            $(".hideDuringWizard").fadeIn();
                             editor.focus();
                         }
                     }
@@ -199,7 +198,7 @@
                 var overlay = $(triggers[0]).data('overlay');
 
                 $("#rules-save").click(function() {
-                    
+
                     var data = editor.getValue();
                     $("#file-contents").val(data);
 
@@ -222,8 +221,6 @@
                 $("#new-rule-step-1 button.next").click(function() {
                     var ruleType = $("input[name='new-rule-type']:checked").val();
                     ruleBuilder.start(ruleType);
-
-                    $(".hideDuringWizard").fadeOut('slow');
                 });
 
                 // The insert wizard doesn't work well in IE where we use plain
@@ -237,7 +234,7 @@
                 } else {
                     $("#new-rule-step-2 button.copy").hide();
                     $("#new-rule-step-2 button.insert").click(function() {
-                        
+
                         var rule = $("#new-rule-output").val();
 
                         // Get the underlying ACE editor: no IE support for this anyway
@@ -288,7 +285,7 @@
                                 aceEditor.navigateDown();
                             }
 
-                        } 
+                        }
 
                         var indentation = aceEditor.getSelectionRange().start.column;
 
@@ -303,7 +300,7 @@
                         aceEditor.insert(indent(rule, indentation));
                         aceEditor.navigateTo(cursorPosition.row, 0);
                         aceEditor.getSelection().selectTo(cursorPosition.row + rows + 1, 0);
-                        
+
                         overlay.close();
                     });
                 }
@@ -311,7 +308,7 @@
 
             // Preview panel
             (function() {
-                
+
                 var previewSource = new SourceEditor('preview-source', extensionModes.html, "", true);
 
                 $("#preview-frame").ready(function() {
@@ -340,11 +337,35 @@
                     previewSource.focus();
                 });
                 $("#view-preview-source").click(function() { $(this).change(); });
+
+                $("#preview-panel .fullscreen").click(function(event) {
+                    event.preventDefault();
+
+                    if($("#preview-panel").is(".width-full")) {
+                        $("#editor-area").show();
+                        $("#theme-content-row").show();
+                        $("#preview-panel").removeClass('width-full')
+                                           .removeClass('position-0')
+                                           .addClass('width-1:2')
+                                           .addClass('position-1:2');
+                        $("#preview-panel iframe").removeClass('fullscreen-frame');
+                    } else {
+                        $("#editor-area").hide();
+                        $("#theme-content-row").hide();
+                        $("#preview-panel").removeClass('width-1:2')
+                                           .removeClass('position-1:2')
+                                           .addClass('width-full')
+                                           .addClass('position-0');
+                        $("#preview-panel iframe").addClass('fullscreen-frame');
+                    }
+
+                    return false;
+                });
             })();
 
             // Content panel
             (function() {
-                
+
                 var contentSource = new SourceEditor('content-source', extensionModes.html, "", true);
 
                 $("#content-frame").ready(function() {
@@ -375,87 +396,44 @@
                     contentSource.focus();
                 });
                 $("#view-content-source").click(function() { $(this).change(); });
+
+                $("#content-panel .fullscreen").click(function(event) {
+                    event.preventDefault();
+
+                    if($("#content-panel").is(".width-full")) {
+                        $("#theme-panel").show();
+                        $("#rules-results-row").show();
+
+                        $("#content-panel").removeClass('width-full')
+                                           .removeClass('position-0')
+                                           .addClass('width-1:2')
+                                           .addClass('position-1:2');
+
+                        $("#content-panel iframe").removeClass('fullscreen-frame');
+                    } else {
+                        $("#theme-panel").hide();
+                        $("#rules-results-row").hide();
+
+                        $("#content-panel").removeClass('width-1:2')
+                                           .removeClass('position-1:2')
+                                           .addClass('width-full')
+                                           .addClass('position-0');
+
+                        $("#content-panel iframe").addClass('fullscreen-frame');
+                   }
+
+                    return false;
+                });
+
             })();
 
             // Theme panel
             (function() {
-                
-                var sourceManager = new SourceManager();
-                var themeSource = new SourceEditor('theme-source', defaultMode, "", false,
-                    function() {
-                        if(sourceManager.currentPath != null) {
-                            var label = $("#file-selector option:selected").text();
-                            if(!label.match(/ \*$/)) {
-                                $("#file-selector option:selected").text(label + " *");
-                            }
-                            dirties[sourceManager.currentPath] = true;
-                            sourceManager.markDirty();   
-                        }
-                    }
-                );
 
-                function savePrevious() {
-                    if(sourceManager.currentPath != null && themeSource != null) {
-                        sourceManager.setSource(themeSource.getValue());
-                    }
-                }
-                
                 function reloadFrame() {
                     var path = $("#file-selector option:selected").val();
                     var fetch = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + path + "&amp;theme=off";
                     $("#theme-frame").attr('src', fetch);
-                }
-
-                function updateSource() {
-                    var path = $("#file-selector option:selected").attr('data-path');
-
-                    function initThemeSourceEditor(extension, data) {
-                        var mode = defaultMode;
-                        if(extension in extensionModes) {
-                            mode = extensionModes[extension];
-                        }
-                        
-                        themeSource.setMode(mode);
-                        themeSource.setValue(data);
-                    }
-
-                    function updateView() {
-                        $("#theme-frame").hide();
-                        $("#theme-source").show();
-                        themeSource.resize();
-                        $("#theme-save").enable(true);
-                    }
-
-                    // Fetch the new source from the cached (possibly edited) copy or the server
-                    if(sourceManager.hasSource(path)) {
-                        savePrevious();
-                        sourceManager.currentPath = null;
-
-                        initThemeSourceEditor(getExtension(path), sourceManager.getSource(path));
-
-                        updateView();
-                        sourceManager.currentPath = path;
-
-                        themeSource.focus();
-                    } else {
-                        $.ajax({
-                            url: THEME_BASE_URL + '/@@plone.resourceeditor.getfile',
-                            data: {path: path},
-                            dataType: 'json',
-                            success: function(data){
-                                savePrevious();
-                                sourceManager.currentPath = null;
-
-                                initThemeSourceEditor(data.ext, data.contents);
-                                sourceManager.setSource(path, data.contents);
-                                
-                                updateView();
-                                sourceManager.currentPath = path;
-
-                                themeSource.focus();
-                            }
-                        });                               
-                    }
                 }
 
                 $("#theme-frame").ready(function() {
@@ -468,53 +446,28 @@
                 });
 
                 $("#file-selector").change(function() {
-                    if($("#view-theme-preview").is(":checked")) {
-                        reloadFrame();
-                    } else if ($("#view-theme-source").is(":checked")) {
-                        updateSource();
-                    }
-                });
-
-                $("#view-theme-preview").change(function() {
-
-                    savePrevious();
                     reloadFrame();
-
-                    $("#theme-frame").show();
-                    $("#theme-source").hide();
-                    $("#theme-save").enable(false);
                 });
-                $("#view-theme-preview").click();
-                $("#view-theme-preview").click(function() { $(this).change(); });
 
-                $("#view-theme-source").change(function() {
-                    updateSource();
-                });
-                $("#view-theme-source").click(function() { $(this).change(); });
+                $("#theme-panel .fullscreen").click(function(event) {
+                    event.preventDefault();
 
-                $("#theme-save").click(function() {
-                    var path = sourceManager.currentPath;
-                    $.ajax({
-                        url: THEME_BASE_URL + '/@@plone.resourceeditor.savefile',
-                        data: {path: path, value: themeSource.getValue()},
-                        type: 'POST',
-                        success: function(){
-                            var label = $("#file-selector option:selected").text();
-                            if(label.match(/ \*$/)) {
-                                $("#file-selector option:selected").text(label.substr(0, label.length - 2));
-                            }
 
-                            savePrevious();
-                            dirties[path] = false;
-                            sourceManager.markClean(path);
-                            refreshPreview();
-                            themeSource.focus();
-                        }
-                    });
+                    if($("#theme-panel").is(".width-full")) {
+                        $("#content-panel").show();
+                        $("#rules-results-row").show();
+                        $("#theme-panel").removeClass('width-full').addClass('width-1:2');
+                        $("#theme-panel iframe").removeClass('fullscreen-frame');
+                    } else {
+                        $("#content-panel").hide();
+                        $("#rules-results-row").hide();
+                        $("#theme-panel").removeClass('width-1:2').addClass('width-full');
+                        $("#theme-panel iframe").addClass('fullscreen-frame');
+                    }
 
                     return false;
                 });
-                
+
             })();
 
             // Key bindings
@@ -562,7 +515,7 @@
                 });
 
             })();
-            
+
         });
 
     });
@@ -577,9 +530,9 @@
 <div metal:fill-slot="prefs_configlet_main">
 
     <h1 class="documentFirstHeading"
-        i18n:translate="heading_theme_mapper">Map theme: 
+        i18n:translate="heading_theme_mapper">Edit
         <span i18n:name="name" tal:content="view/title">name</span></h1>
-    
+
     <a href=""
         class="link-parent"
         tal:attributes="href string:${portal_url}/@@theming-controlpanel"
@@ -587,22 +540,20 @@
             Back to Diazo theme control panel
     </a>
 
-    |
-
-    <a class="link-parent"
-       tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-filemanager"
-       i18n:translate="label_up_to_theming_filemanager">
-            File manager
-    </a>    
 
     <p class="discreet" i18n:translate="help_theme_mapper">
-        Below, you will find four panels: The Diazo rules, a preview of the themed
-        site using these rules, the unthemed content and the raw theme.
+        Below, you will find four panels: The raw theme, the unthemed content,
+        a file manager for the theme's rules and other files, and a preview of
+        the result of applying the theme to the content.
         You can navigate the content, theme or preview, and change to
-        a different theme file if you wish. You can edit the rules and any
-        HTML, CSS or JavaScript resources in the theme. When they are saved,
-        the preview will reload to show the effects of your changes. Click
-        <strong>New rule</strong> to create a new rule using a guided wizard.
+        a different theme file if you wish.
+    </p>
+    <p class="discreet" i18n:translate="help_theme_mapper_details">
+        Click <strong>New rule</strong> to create a new rule using a guided wizard.
+        In the <em>Raw theme</em> and <em>Unthemed content</em> panels, you can
+        hover over an element to see its selector in the status bar at the bottom
+        of the panel. Press Esc to move the selection to its parent. Press
+        Enter to save or confirm the selection.
     </p>
 
     <dl style="display: none" class="ie-warning portalMessage warning">
@@ -614,16 +565,72 @@
         </dd>
     </dl>
 
-    <div class="row">
-        <div id="editor-area" class="cell width-full position-0">
+    <div id="theme-content-row" class="row splitview">
+        <div id="theme-panel" class="mapper-box cell width-1:2 position-0">
 
-            <h2 i18n:translate="heading_rules">Rules</h2>
+            <div class="panel-toolbar">
 
-            <p class="discreet" i18n:translate="help_split_content">
-                The rules that apply the theme to the content
-            </p>
+                <select size="1" name="file-selector" id="file-selector">
+                    <option
+                        tal:repeat="f view/themeFiles"
+                        tal:attributes="value string:${view/themeBasePathEncoded}/${f/path};
+                                        data-path f/path;
+                                        data-extension f/extension;
+                                        selected python:f['path'] == view.defaultThemeFile and 'selected' or None"
+                        tal:content="f/path"
+                        />
+                </select>
 
-            <div id="mapper-toolbar">
+            </div>
+
+            <label i18n:translate="heading_theme">Raw theme</label>
+            <a class="fullscreen" href="#" i18n:translate="toggle_fullscreen">Zoom</a>
+
+            <iframe id="theme-frame"
+                tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off"></iframe>
+            <pre class="source-editor" id="theme-source"></pre>
+
+            <div class="frame-info">
+                <div class="frame-shelf">
+                    <span i18n:translate="theming_mapper_shelf_label">Last saved:</span>
+                    <span id="theme-frame-shelf" i18n:translate="">(none)</span>
+                </div>
+                <span id="theme-frame-info"></span>
+            </div>
+
+        </div>
+        <div id="content-panel" class="mapper-box cell width-1:2 position-1:2">
+
+            <div class="panel-toolbar">
+                <input type="radio" name="view-content" id="view-content-preview" value="preview" checked="checked" />
+                <label for="view-content-preview" i18n:translate="">Preview</label>
+
+                <input type="radio" name="view-content" id="view-content-source" value="source" />
+                <label for="view-content-source" i18n:translate="">Source</label>
+            </div>
+
+            <label i18n:translate="heading_content">Unthemed content</label>
+            <a class="fullscreen" href="#" i18n:translate="toggle_fullscreen">Zoom</a>
+
+            <iframe id="content-frame"
+                tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=off"></iframe>
+            <pre class="source-editor" id="content-source"></pre>
+
+            <div class="frame-info">
+                <div class="frame-shelf">
+                    <span i18n:translate="theming_mapper_shelf_label">Last saved:</span>
+                    <span id="content-frame-shelf" i18n:translate="">(none)</span>
+                </div>
+                <span id="content-frame-info"></span>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="rules-results-row" class="row splitview">
+        <div id="editor-area" class="mapper-box cell width-1:2 position-0">
+
+            <div id="mapper-toolbar" class="panel-toolbar">
                 <button
                     id="rules-save"
                     name="form.button.Save"
@@ -650,26 +657,24 @@
                     i18n:attributes="title"
                     i18n:translate=""
                     >New rule</button>
-                
+
                 <span class="wizard-text" id="new-rule-text-select-content" i18n:translate="theming_mapper_select_content">
                     Select an element in the content panel.
                 </span>
                 <span class="wizard-text" id="new-rule-text-select-theme" i18n:translate="theming_mapper_select_theme">
                     Select an element in the theme panel.
                 </span>
-            
+
             </div>
 
-            <pre class="hideDuringWizard" id="editor"></pre>
+            <label i18n:translate="heading_rules">Rules</label>
+
+            <pre id="editor"></pre>
             <textarea id="file-contents" class="hiddenStructure" name="rules"
                 tal:content="view/rules"></textarea>
 
         </div>
-    </div>
-
-    <div class="row hideDuringWizard">
-        <div id="preview" class="cell width-full position-0">
-            <h2 i18n:translate="heading_merged">Preview</h2>
+        <div id="preview-panel" class="mapper-box cell width-1:2 position-1:2">
 
             <div class="panel-toolbar">
                 <input type="radio" name="view-preview" id="view-preview-preview" value="preview" checked="checked" />
@@ -678,107 +683,13 @@
                 <input type="radio" name="view-preview" id="view-preview-source" value="source" />
                 <label for="view-preview-source" i18n:translate="">Source</label>
             </div>
-            
-            <p class="discreet" i18n:translate="help_split_merged">
-                The result of applying the rules can be seen below
-            </p>
+
+            <label i18n:translate="heading_result">Result</label>
+            <a class="fullscreen" href="#" i18n:translate="toggle_fullscreen">Zoom</a>
 
             <iframe id="preview-frame"
                 tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply"></iframe>
             <pre class="source-editor" id="preview-source"></pre>
-
-        </div>
-    </div>
-
-    <div id="splitview" class="row">
-        <div id="content-split" class="cell width-1:2 position-0">
-            <h2 i18n:translate="heading_content">Content</h2>
-
-            <div class="panel-toolbar">
-                <input type="radio" name="view-content" id="view-content-preview" value="preview" checked="checked" />
-                <label for="view-content-preview" i18n:translate="">Preview</label>
-
-                <input type="radio" name="view-content" id="view-content-source" value="source" />
-                <label for="view-content-source" i18n:translate="">Source</label>
-            </div>
-
-             <p class="discreet" i18n:translate="help_split_content">
-                The raw content.
-            </p>
-
-            <iframe id="content-frame"
-                tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=off"></iframe>
-            <pre class="source-editor" id="content-source"></pre>
-
-            <div class="frame-info">
-                <div class="frame-shelf">
-                    <span i18n:translate="theming_mapper_shelf_label">Last saved:</span>
-                    <span id="content-frame-shelf" i18n:translate="">(none)</span>
-                </div>
-                <span id="content-frame-info"></span>
-            </div>
-
-            <p class="discreet" span:translate="help_hover_select">
-                Hover over an element to see its selector.
-                Press <code>Esc</code> to move the selection to its parent.
-                Press <code>Enter</code> to save or confirm the selection.
-            </p>
-
-        </div>
-        <div id="theme-split" class="cell width-1:2 position-1:2">
-            <h2 i18n:translate="heading_theme">Theme</h2>
-
-            <div class="panel-toolbar">
-
-                <select size="1" name="file-selector" id="file-selector">
-                    <option
-                        tal:repeat="f view/themeFiles"
-                        tal:attributes="value string:${view/themeBasePathEncoded}/${f/path};
-                                        data-path f/path;
-                                        data-extension f/extension;
-                                        selected python:f['path'] == view.defaultThemeFile and 'selected' or None"
-                        tal:content="f/path"
-                        />
-                </select>
-
-                <button
-                    id="theme-save"
-                    class="save-button"
-                    type="button"
-                    disabled="disabled"
-                    title="Ctrl+S (Windows/Linux) or Cmd+S (Mac)"
-                    i18n:attributes="title"
-                    i18n:translate="">Save</button>
-
-                <input type="radio" name="view-theme" id="view-theme-preview" value="preview" checked="checked" />
-                <label for="view-theme-preview" i18n:translate="">Preview</label>
-
-                <input type="radio" name="view-theme" id="view-theme-source" value="source" />
-                <label for="view-theme-source" i18n:translate="">Source</label>
-
-            </div>
-
-            <p class="discreet" i18n:translate="help_split_theme">
-                The pristine theme.
-            </p>
-
-            <iframe id="theme-frame"
-                tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off"></iframe>
-            <pre class="source-editor" id="theme-source"></pre>
-
-            <div class="frame-info">
-                <div class="frame-shelf">
-                    <span i18n:translate="theming_mapper_shelf_label">Last saved:</span>
-                    <span id="theme-frame-shelf" i18n:translate="">(none)</span>
-                </div>
-                <span id="theme-frame-info"></span>
-            </div>
-
-            <p class="discreet" span:translate="help_hover_select">
-                Hover over an element to see its selector.
-                Press <code>Esc</code> to move the selection to its parent.
-                Press <code>Enter</code> to save or confirm the selection.
-            </p>
 
         </div>
     </div>
@@ -909,14 +820,14 @@
 </pre>
                 <h5><a name="help_theme_notheme"><code>theme</code> and <code>notheme</code></a></h5>
 <pre>
-&lt;theme href="theme.html" /&gt; 
+&lt;theme href="theme.html" /&gt;
 &lt;theme href="news.html" if-path="/news" /&gt;
 &lt;notheme if="$host = 'admin.example.org'" /&gt;
 </pre>
                 <p>
                     Choose the theme file to be used. The <code>href</code> is a
                     path relative to the rules file. If multiple <code>&lt;theme /&gt;</code>
-                    elements are present, at most one may be given without a condition. 
+                    elements are present, at most one may be given without a condition.
                     The first theme with a condition that is true will be used, with the
                     unconditional theme, if any, used as a fallback.
                 </p>
@@ -955,7 +866,7 @@
     /&gt;
 </pre>
                 <p>
-                    Inserts the matched element(s) from the content before or after the 
+                    Inserts the matched element(s) from the content before or after the
                     matched element(s) in the theme. By using <code>theme-children</code>,
                     you can insert the matched content element(s) as the first (prepend) or last
                     (append) element(s) inside the matched theme element(s).
@@ -1017,7 +928,7 @@
                 <p>
                     Instead of selecting markup to insert into the theme from the
                     content, you can place markup directly into the rules file,
-                    as child nodes of the relevant rule element: 
+                    as child nodes of the relevant rule element:
                 </p>
 <pre>
 &lt;after css:theme="head"&gt;
@@ -1143,7 +1054,7 @@
                                 <label for="new-rule-theme-children" i18n:translate="">Use children of the theme</label>
                             </div>
                         </div>
-                        
+
                     </form>
 
                     <div class="new-rule-actions">
@@ -1153,7 +1064,7 @@
                     </div>
                 </div>
 
-                
+
             </div>
         </div>
     </div>

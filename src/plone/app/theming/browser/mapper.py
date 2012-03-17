@@ -20,7 +20,7 @@ from plone.subrequest import subrequest
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.interfaces import RULE_FILENAME
-from plone.app.theming.interfaces import KNOWN_EXTENSIONS
+from plone.app.theming.interfaces import THEME_EXTENSIONS
 
 from plone.app.theming.utils import getPortal
 from plone.app.theming.utils import findContext
@@ -44,16 +44,16 @@ class ThemeMapper(BrowserView):
             self.context = getSite()
             return self.index()
         return ''
-    
+
     def setup(self):
         self.request.response.setHeader('X-Theme-Disabled', '1')
         processInputs(self.request)
-        
+
         self.resourceDirectory = self.context
         self.theme = getThemeFromResourceDirectory(self.context)
         self.name = self.resourceDirectory.__name__
         self.title = self.theme.title
-        
+
         self.portalUrl = getToolByName(self.context, 'portal_url')()
         self.themeBasePath = "++%s++%s" % (THEME_RESOURCE_NAME, self.name,)
         self.themeBasePathEncoded = urllib.quote_plus(self.themeBasePath)
@@ -64,7 +64,7 @@ class ThemeMapper(BrowserView):
                 self.request.get('file-selector') or '',
                 self.themeBaseUrl,
             );
-    
+
     def update(self):
         rulesFile = RULE_FILENAME
 
@@ -72,7 +72,7 @@ class ThemeMapper(BrowserView):
             self.rules = "(%s not found)" % rulesFile
         else:
             self.rules = self.resourceDirectory.readFile(rulesFile)
-        
+
         self.themeFiles = self.findThemeFiles(self.resourceDirectory)
 
         self.defaultThemeFile = None
@@ -82,18 +82,18 @@ class ThemeMapper(BrowserView):
             if t['extension'] in ('html', 'htm'):
                 self.defaultThemeFile = t['path']
                 break
-        
+
         return True
-    
+
     def authorize(self):
         authenticator = getMultiAdapter((self.context, self.request), name=u"authenticator")
         if not authenticator.verify():
             raise Unauthorized
-    
+
     def redirect(self, message):
         IStatusMessage(self.request).add(message)
         self.request.response.redirect("%s/@@theming-controlpanel" % self.portalUrl)
-    
+
     def findThemeFiles(self, directory, files=None, prefix=''):
         """Depth-first search of files with known extensions.
         Returns a list of dicts with keys path, filename and extension.
@@ -101,13 +101,13 @@ class ThemeMapper(BrowserView):
 
         if files is None:
             files = []
-        
+
         dirs = []
 
         for f in directory.listDirectory():
             if not f or f == RULE_FILENAME:
                 continue
-            
+
             if directory.isDirectory(f):
                 dirs.append(f)
             else:
@@ -118,13 +118,13 @@ class ThemeMapper(BrowserView):
 
                 basename, ext = os.path.splitext(f)
                 ext = ext[1:].lower()
-                if ext in KNOWN_EXTENSIONS:
+                if ext in THEME_EXTENSIONS:
                     files.append({
                         'path': path,
                         'filename': f,
                         'extension': ext,
                     })
-        
+
         # Do directories last
         for f in dirs:
             path = f
@@ -133,7 +133,7 @@ class ThemeMapper(BrowserView):
             self.findThemeFiles(directory[f], files=files, prefix=path)
 
         return files
-    
+
     def getFrame(self):
         """AJAX method to load a frame's contents
 
@@ -148,8 +148,8 @@ class ThemeMapper(BrowserView):
         theme = self.request.form.get('theme', 'off')
 
         if not path:
-            return "<html><head></head><body></body></html>" 
-        
+            return "<html><head></head><body></body></html>"
+
         portal = getPortal()
         response = subrequest(path, root=portal)
 
@@ -163,7 +163,7 @@ class ThemeMapper(BrowserView):
         else:
             # e.g. charset=utf-8
             encoding = encoding.split('=', 1)[1].strip()
-        
+
         # Not HTML? Return as-is
         if content_type is None or not content_type.startswith('text/html'):
             if len(result) == 0:
@@ -173,7 +173,7 @@ class ThemeMapper(BrowserView):
         result = result.decode(encoding).encode('ascii', 'xmlcharrefreplace')
         if len(result) == 0:
             result = ' ' # Zope does not deal well with empty responses
-        
+
         if theme == 'off':
             self.request.response.setHeader('X-Theme-Disabled', '1')
         elif theme == 'apply':
@@ -188,9 +188,9 @@ class ThemeMapper(BrowserView):
                 context = findContext(portal.restrictedTraverse(path))
             except (KeyError, NotFound,):
                 pass
-            
+
             serializer = getHTMLSerializer([result], pretty_print=False)
-            
+
             transform = compileThemeTransform(theme.rules, theme.absolutePrefix, settings.readNetwork, theme.parameterExpressions or {})
             params = prepareThemeParameters(context, self.request, theme.parameterExpressions or {})
 
@@ -202,12 +202,12 @@ class ThemeMapper(BrowserView):
                 serializer.doctype = theme.doctype
                 if not serializer.doctype.endswith('\n'):
                     serializer.doctype += '\n'
-            
+
             serializer.tree = transform(serializer.tree, **params)
             result = ''.join(serializer)
 
         return result
-    
+
     def save(self, value):
         """Save the rules file (AJAX request)
         """

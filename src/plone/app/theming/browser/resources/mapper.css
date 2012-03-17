@@ -29,8 +29,7 @@
 }
 
 
-#splitview iframe,
-#preview iframe,
+.splitview iframe,
 #content .source-editor {
     width: 100%;
     height: 300px;
@@ -38,12 +37,12 @@
     position: relative;
 }
 
-#splitview {
-    margin: 20px 0;
+.splitview iframe.fullscreen-frame {
+    height: 600px;
 }
 
-#preview {
-    margin-top: 20px;
+.splitview {
+    margin-left: -1em;
 }
 
 .panel-toolbar {
@@ -60,7 +59,46 @@
     vertical-align: middle !important;
 }
 
+/* Dividing lines */
+
+#theme-panel {
+    border-right: solid 1px #EEE;
+    padding-right: 1em;
+    padding-bottom: 1em;
+}
+
+#rules-results-row {
+    border-top: solid #EEE 1px;
+    margin-top: 0;
+}
+
+#editor-area {
+    border-right: solid #EEE 1px;
+    padding-right: 1em;
+    padding-top: 1em;
+}
+
+#preview-panel {
+    padding-top: 1em;
+}
+
+a.fullscreen {
+    display: inline-block;
+    padding-left: 18px;
+    margin: 0 5px;
+    background-image: url('../search_icon.png');
+    background-repeat: no-repeat;
+    text-decoration: none;
+    border-bottom: none !important;
+    color: #333 !important;
+    font-size: 90%;
+}
+
 /* Wizard */
+
+#new-rule-wizard {
+    font-size: 100%;
+}
 
  .wizard-text {
      display: none;
@@ -115,6 +153,7 @@
 /* Help */
 #rules-help-text {
     max-width: 55%;
+    font-size: 100%;
 }
 
 #rules-help-text .help {
