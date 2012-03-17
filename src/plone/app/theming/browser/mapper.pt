@@ -537,7 +537,7 @@
         class="link-parent"
         tal:attributes="href string:${portal_url}/@@theming-controlpanel"
         i18n:translate="label_up_to_theming_controlpanel">
-            Back to Diazo theme control panel
+            Back to the control panel
     </a>
 
 
@@ -684,7 +684,7 @@
                 <label for="view-preview-source" i18n:translate="">Source</label>
             </div>
 
-            <label i18n:translate="heading_result">Result</label>
+            <label i18n:translate="heading_result">Themed content</label>
             <a class="fullscreen" href="#" i18n:translate="toggle_fullscreen">Zoom</a>
 
             <iframe id="preview-frame"

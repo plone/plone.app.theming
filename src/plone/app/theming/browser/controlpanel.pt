@@ -407,7 +407,11 @@
                 tal:attributes="action request/URL">
 
                 <p i18n:translate="description_new_theme">
-                    Use the form below to create a new theme from scratch.
+                    To create a new theme, enter a title and description below,
+                    and choose an existing theme that you would like to base the
+                    new theme on. The <em>Example theme [template]</em> theme
+                    is a reasonably simple theme that illustrates the main aspects
+                    of building a Diazo theme for Plone.
                 </p>
 
                 <div
@@ -486,7 +490,7 @@
             </form>
 
         </dd>
-        
+
         <dt id="fieldsetlegend-manage" tal:condition="view/availableThemes">Manage themes</dt>
         <dd id="fieldset-manage" tal:condition="view/availableThemes">
 
@@ -532,13 +536,9 @@
                                     >Download</a>
                                 <tal:block condition="theme/editable">
                                     |
-                                    <a  tal:attributes="href string:${context/absolute_url}/++theme++${theme/name}/@@theming-controlpanel-filemanager"
-                                        i18n:translate="option_theme_manage_files"
-                                        >Edit</a>
-                                    |
                                     <a  tal:attributes="href string:${context/absolute_url}/++theme++${theme/name}/@@theming-controlpanel-mapper"
                                         i18n:translate="option_theme_map_theme"
-                                        >Map</a>
+                                        >Edit</a>
                                 </tal:block>
                             </td>
                         </tr>
