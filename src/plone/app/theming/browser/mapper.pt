@@ -143,16 +143,7 @@
                     $(".wizard-text").css('display', 'none');
                     $.mask.close();
 
-                    if(ruleBuilder.currentScope == 'content') {
-                        if(overlay.isOpened()) {
-                            overlay.close();
-                        }
-
-                        $("#new-rule-text-select-content").css('display', 'inline-block');
-                        $("#view-content-preview").click();
-                        $("#content-panel, .wizard-text").expose();
-
-                    } else if(ruleBuilder.currentScope == 'theme') {
+                    if(ruleBuilder.currentScope == 'theme') {
                         if(overlay.isOpened()) {
                             overlay.close();
                         }
@@ -160,6 +151,14 @@
                         $("#new-rule-text-select-theme").css('display', 'inline-block');
                         $("#view-theme-preview").click();
                         $("#theme-panel, .wizard-text").expose();
+                    } else if(ruleBuilder.currentScope == 'content') {
+                        if(overlay.isOpened()) {
+                            overlay.close();
+                        }
+
+                        $("#new-rule-text-select-content").css('display', 'inline-block');
+                        $("#view-content-preview").click();
+                        $("#content-panel, .wizard-text").expose();
 
                     } else if(ruleBuilder.rule != null && ruleBuilder.currentScope == null) {
                         $("#new-rule-step-1").hide();

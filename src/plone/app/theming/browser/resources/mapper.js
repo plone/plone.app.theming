@@ -15,18 +15,18 @@ var RuleBuilder = function(callback) {
 };
 
 RuleBuilder.prototype.select = function(element) {
-        if(this.currentScope == "content") {
-            this._contentElement = element;
-        } else if(this.currentScope == "theme") {
+        if(this.currentScope == "theme") {
             this._themeElement = element;
+        } else if(this.currentScope == "content") {
+            this._contentElement = element;
         }
     };
 
 RuleBuilder.prototype.start = function(rule) {
         this._contentElement = null;
         this._themeElement = null;
-        this.currentScope = "content";
-        
+        this.currentScope = "theme";
+
         // Drop rules get e.g. drop:content or drop:theme,
         // which predetermines the scope
         var ruleSplit = rule.split(':');
@@ -36,7 +36,7 @@ RuleBuilder.prototype.start = function(rule) {
             this.currentScope = this.subtype;
         } else{
             this.rule = rule;
-            this.subtype = null;    
+            this.subtype = null;
         }
 
         this.active = true;
@@ -51,9 +51,9 @@ RuleBuilder.prototype.next = function() {
             this.currentScope = null;
         } else {
             // Other rules have content and theme
-            if(this.currentScope == "content") {
-                this.currentScope = "theme";
-            } else if (this.currentScope == "theme") {
+            if(this.currentScope == "theme") {
+                this.currentScope = "content";
+            } else if (this.currentScope == "content") {
                 this.currentScope = null;
             }
         }
@@ -82,19 +82,19 @@ RuleBuilder.prototype.buildRule = function(contentChildren, themeChildren) {
         if(this.subtype != null) {
 
             if(this.subtype == 'content') {
-                return "<" + this.rule + "\n    " + 
+                return "<" + this.rule + "\n    " +
                         this.calculateDiazoSelector(this._contentElement, 'content', contentChildren) +
                         "\n    />";
             } else if(this.subtype == 'theme') {
-                return "<" + this.rule + "\n    " + 
-                        this.calculateDiazoSelector(this._themeElement, 'theme', themeChildren) + 
+                return "<" + this.rule + "\n    " +
+                        this.calculateDiazoSelector(this._themeElement, 'theme', themeChildren) +
                         "\n    />";
             }
-        
+
         } else {
-            return "<" + this.rule + "\n    " + 
-                        this.calculateDiazoSelector(this._contentElement, 'content', contentChildren) + "\n    " + 
-                        this.calculateDiazoSelector(this._themeElement, 'theme', themeChildren) + 
+            return "<" + this.rule + "\n    " +
+                        this.calculateDiazoSelector(this._themeElement, 'theme', themeChildren) + "\n    " +
+                        this.calculateDiazoSelector(this._contentElement, 'content', contentChildren) +
                         "\n    />";
         }
 
@@ -104,7 +104,7 @@ RuleBuilder.prototype.buildRule = function(contentChildren, themeChildren) {
 
 RuleBuilder.prototype.calculateCSSSelector = function(element) {
         var selector = element.tagName.toLowerCase();
-        
+
         if (element.id) {
             selector += "#" + element.id;
         } else {
@@ -150,7 +150,7 @@ RuleBuilder.prototype.calculateUniqueCSSSelector = function(element) {
 RuleBuilder.prototype.calculateUniqueXPathExpression = function(element) {
         var pathElements = [];
         var parents = $(element).parents();
-        
+
         function elementIndex(e) {
             var siblings = $(e).siblings(e.tagName.toLowerCase());
             if(siblings.length > 0) {
@@ -183,7 +183,7 @@ RuleBuilder.prototype.calculateUniqueXPathExpression = function(element) {
     };
 
 RuleBuilder.prototype.calculateDiazoSelector = function(element, scope, children) {
-            
+
         var selectorType = scope;
         if(children) {
             selectorType += "-children";
@@ -235,7 +235,7 @@ FrameHighlighter.prototype.clearOutline = function(element) {
 
         this.currentOutline = null;
     };
-    
+
 FrameHighlighter.prototype.setupElements = function() {
         var highlighter = this;
 
@@ -256,7 +256,7 @@ FrameHighlighter.prototype.setupElements = function() {
             },
             function(event) {
                 if($(this).hasClass(highlighter.activeClass)) {
-                    highlighter.clearOutline(this); 
+                    highlighter.clearOutline(this);
                     $(highlighter.infoPanel).text("");
                 }
             }
@@ -264,7 +264,7 @@ FrameHighlighter.prototype.setupElements = function() {
             if(highlighter.ruleBuilder.active && highlighter.ruleBuilder.currentScope == highlighter.scope) {
                 event.stopPropagation();
                 event.preventDefault();
-                 
+
                 highlighter.ruleBuilder.select(this);
                 highlighter.ruleBuilder.next();
 
@@ -276,7 +276,7 @@ FrameHighlighter.prototype.setupElements = function() {
         });
 
         $(this.frame).contents().keyup(function (event) {
-            
+
             // ESC -> Move selection to parent node
             if(event.keyCode == 27 && highlighter.currentOutline != null) {
                 event.stopPropagation();
@@ -291,7 +291,7 @@ FrameHighlighter.prototype.setupElements = function() {
 
             // Enter -> Equivalent to clicking on selected node
             if(event.keyCode == 13 && highlighter.currentOutline != null) {
-                
+
                 event.stopPropagation();
                 event.preventDefault();
 
@@ -300,7 +300,7 @@ FrameHighlighter.prototype.setupElements = function() {
                 if(highlighter.ruleBuilder.active && highlighter.ruleBuilder.currentScope == highlighter.scope) {
                     highlighter.ruleBuilder.select(highlighter.currentOutline);
                     highlighter.ruleBuilder.next();
-                    highlighter.clearOutline(); 
+                    highlighter.clearOutline();
                 }
             }
         });
@@ -343,7 +343,7 @@ LinkManager.prototype.setupLinks = function() {
                     });
                 }
             }
-        });    
+        });
     };
 
 LinkManager.prototype.setupForms = function() {
@@ -357,7 +357,7 @@ LinkManager.prototype.setupForms = function() {
                     return false;
                 });
             }
-        }); 
+        });
     };
 
 // Source manager
