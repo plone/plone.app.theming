@@ -343,6 +343,7 @@
                     if($("#preview-panel").is(".width-full")) {
                         $("#editor-area").show();
                         $("#theme-content-row").show();
+                        $("#page-intro").show();
                         $("#preview-panel").removeClass('width-full')
                                            .removeClass('position-0')
                                            .addClass('width-1:2')
@@ -351,6 +352,7 @@
                     } else {
                         $("#editor-area").hide();
                         $("#theme-content-row").hide();
+                        $("#page-intro").hide();
                         $("#preview-panel").removeClass('width-1:2')
                                            .removeClass('position-1:2')
                                            .addClass('width-full')
@@ -402,7 +404,7 @@
                     if($("#content-panel").is(".width-full")) {
                         $("#theme-panel").show();
                         $("#rules-results-row").show();
-
+                        $("#page-intro").show();
                         $("#content-panel").removeClass('width-full')
                                            .removeClass('position-0')
                                            .addClass('width-1:2')
@@ -412,7 +414,7 @@
                     } else {
                         $("#theme-panel").hide();
                         $("#rules-results-row").hide();
-
+                        $("#page-intro").hide();
                         $("#content-panel").removeClass('width-1:2')
                                            .removeClass('position-1:2')
                                            .addClass('width-full')
@@ -455,11 +457,13 @@
                     if($("#theme-panel").is(".width-full")) {
                         $("#content-panel").show();
                         $("#rules-results-row").show();
+                        $("#page-intro").show();
                         $("#theme-panel").removeClass('width-full').addClass('width-1:2');
                         $("#theme-panel iframe").removeClass('fullscreen-frame');
                     } else {
                         $("#content-panel").hide();
                         $("#rules-results-row").hide();
+                        $("#page-intro").hide();
                         $("#theme-panel").removeClass('width-1:2').addClass('width-full');
                         $("#theme-panel iframe").addClass('fullscreen-frame');
                     }
@@ -528,41 +532,46 @@
 <body>
 <div metal:fill-slot="prefs_configlet_main">
 
-    <h1 class="documentFirstHeading"
-        i18n:translate="heading_theme_mapper">Edit
-        <span i18n:name="name" tal:content="view/title">name</span></h1>
 
-    <a href=""
-        class="link-parent"
-        tal:attributes="href string:${portal_url}/@@theming-controlpanel"
-        i18n:translate="label_up_to_theming_controlpanel">
+    <div id="page-intro">
+
+        <h1 class="documentFirstHeading"
+            i18n:translate="heading_theme_mapper">Edit
+            <span i18n:name="name" tal:content="view/title">name</span></h1>
+
+        <a href=""
+            class="link-parent"
+            tal:attributes="href string:${portal_url}/@@theming-controlpanel"
+            i18n:translate="label_up_to_theming_controlpanel">
             Back to the control panel
-    </a>
+        </a>
 
 
-    <p class="discreet" i18n:translate="help_theme_mapper">
-        Below, you will find four panels: The raw theme, the unthemed content,
-        a file manager for the theme's rules and other files, and a preview of
-        the result of applying the theme to the content.
-        You can navigate the content, theme or preview, and change to
-        a different theme file if you wish.
-    </p>
-    <p class="discreet" i18n:translate="help_theme_mapper_details">
-        Click <strong>New rule</strong> to create a new rule using a guided wizard.
-        In the <em>Raw theme</em> and <em>Unthemed content</em> panels, you can
-        hover over an element to see its selector in the status bar at the bottom
-        of the panel. Press Esc to move the selection to its parent. Press
-        Enter to save or confirm the selection.
-    </p>
+        <p class="discreet" i18n:translate="help_theme_mapper">
+            Below, you will find four panels: The raw theme, the unthemed content,
+            a file manager for the theme's rules and other files, and a preview of
+            the result of applying the theme to the content.
+            You can navigate the content, theme or preview, and change to
+            a different theme file if you wish.
+        </p>
+        <p class="discreet" i18n:translate="help_theme_mapper_details">
+            Click <strong>New rule</strong> to create a new rule using a guided wizard.
+            In the <em>Raw theme</em> and <em>Unthemed content</em> panels, you can
+            hover over an element to see its selector in the status bar at the bottom
+            of the panel. Press Esc to move the selection to its parent. Press
+            Enter to save or confirm the selection.
+        </p>
 
-    <dl style="display: none" class="ie-warning portalMessage warning">
-        <dt i18n:translate="">Warning</dt>
-        <dd i18n:translate="theming_mapper_warning_ie">
-            You are using Internet Explorer. The theme mapper will work,
-            but some functionality will not be available. We recommend that
-            you use Mozilla Firefox or Google Chrome instead.
-        </dd>
-    </dl>
+        <dl style="display: none" class="ie-warning portalMessage warning">
+            <dt i18n:translate="">Warning</dt>
+            <dd i18n:translate="theming_mapper_warning_ie">
+                You are using Internet Explorer. The theme mapper will work,
+                but some functionality will not be available. We recommend that
+                you use Mozilla Firefox or Google Chrome instead.
+            </dd>
+        </dl>
+
+    </div>
 
     <div id="theme-content-row" class="row splitview">
         <div id="theme-panel" class="mapper-box cell width-1:2 position-0">
@@ -583,7 +592,7 @@
             </div>
 
             <label i18n:translate="heading_theme">Raw theme</label>
-            <a class="fullscreen" href="#" i18n:translate="toggle_fullscreen">Zoom</a>
+            <a class="fullscreen" href="#" i18n:translate="toggle_fullscreen">Toggle fullscreen</a>
 
             <iframe id="theme-frame"
                 tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off"></iframe>
@@ -609,7 +618,7 @@
             </div>
 
             <label i18n:translate="heading_content">Unthemed content</label>
-            <a class="fullscreen" href="#" i18n:translate="toggle_fullscreen">Zoom</a>
+            <a class="fullscreen" href="#" i18n:translate="toggle_fullscreen">Toggle fullscreen</a>
 
             <iframe id="content-frame"
                 tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=off"></iframe>
@@ -684,7 +693,7 @@
             </div>
 
             <label i18n:translate="heading_result">Themed content</label>
-            <a class="fullscreen" href="#" i18n:translate="toggle_fullscreen">Zoom</a>
+            <a class="fullscreen" href="#" i18n:translate="toggle_fullscreen">Toggle fullscreen</a>
 
             <iframe id="preview-frame"
                 tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply"></iframe>
