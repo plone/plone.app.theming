@@ -110,6 +110,22 @@
                 $('#preview-frame').attr("src", $('#preview-frame').attr("src"));
             }
 
+            // See http://stackoverflow.com/questions/1694295/jquery-background-color-animate-not-working/5718151
+            function animateHighlight(node, highlightColor, duration) {
+                var highlightBg = highlightColor || "#FFFFE3";
+                var animateMs = duration || 2000;
+                var originalBg = $(node).css("background-color");
+
+                if (!originalBg || originalBg == highlightBg)
+                    originalBg = "#FFFFFF"; // default to white
+
+                $(node)
+                    .css("backgroundColor", highlightBg)
+                    .animate({ backgroundColor: originalBg }, animateMs, null, function () {
+                        $(node).css("backgroundColor", originalBg);
+                    });
+            };
+
             window.onbeforeunload = function() {
                 for(key in dirties) {
                     if(dirties[key]) {
@@ -370,7 +386,10 @@
                 var contentSource = new SourceEditor('content-source', extensionModes.html, "", true);
 
                 $("#content-frame").ready(function() {
-                    var frameHighlighter = new FrameHighlighter("#content-frame", "#content-frame-info", "#content-frame-shelf", 'content', ruleBuilder);
+                    var frameHighlighter = new FrameHighlighter("#content-frame", "#content-frame-info", "#content-frame-shelf", "content",
+                            ruleBuilder, function(node) {
+                                animateHighlight($("#content-panel .frame-info"));
+                            });
                     var linkManager = new LinkManager("#content-frame", 'off',  WINDOW_BASE, THEME_BASE_URL);
                     function setup() {
                         frameHighlighter.setupElements();
@@ -438,7 +457,10 @@
                 }
 
                 $("#theme-frame").ready(function() {
-                    var frameHighlighter = new FrameHighlighter("#theme-frame", "#theme-frame-info", "#theme-frame-shelf", 'theme', ruleBuilder);
+                    var frameHighlighter = new FrameHighlighter("#theme-frame", "#theme-frame-info", "#theme-frame-shelf", "theme",
+                            ruleBuilder, function(node) {
+                                animateHighlight($("#theme-panel .frame-info"));
+                            });
                     function setup() {
                         frameHighlighter.setupElements();
                     }

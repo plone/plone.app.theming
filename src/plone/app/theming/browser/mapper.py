@@ -77,9 +77,13 @@ class ThemeMapper(BrowserView):
 
         self.defaultThemeFile = None
         for t in self.themeFiles:
+
+            # Select the first .html theme file
             if self.defaultThemeFile is None:
                 self.defaultThemeFile = t['path']
-            if t['extension'] in ('html', 'htm'):
+
+            # Prefer the first index.html or theme.html
+            if t['filename'].lower() in ('index.html', 'index.htm', 'theme.html', 'theme.htm',):
                 self.defaultThemeFile = t['path']
                 break
 

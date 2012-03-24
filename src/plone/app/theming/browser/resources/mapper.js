@@ -201,12 +201,13 @@ RuleBuilder.prototype.calculateDiazoSelector = function(element, scope, children
 
 // Outline / highlight management
 
-var FrameHighlighter = function(frame, infoPanel, shelf, scope, ruleBuilder) {
+var FrameHighlighter = function(frame, infoPanel, shelf, scope, ruleBuilder, onsave) {
     this.frame = frame;
     this.infoPanel = infoPanel;
     this.shelf = shelf;
     this.scope = scope;
     this.ruleBuilder = ruleBuilder;
+    this.onsave = onsave || null;
 
     this.currentOutline = null;
     this.activeClass = '_theming-highlighted';
@@ -296,6 +297,9 @@ FrameHighlighter.prototype.setupElements = function() {
                 event.preventDefault();
 
                 $(highlighter.shelf).text(bestSelector(highlighter.currentOutline));
+                if(highlighter.onsave != null) {
+                    highlighter.onsave(highlighter.shelf);
+                }
 
                 if(highlighter.ruleBuilder.active && highlighter.ruleBuilder.currentScope == highlighter.scope) {
                     highlighter.ruleBuilder.select(highlighter.currentOutline);
