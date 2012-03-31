@@ -1,10 +1,7 @@
 from zope.site.hooks import getSite
 from zope.publisher.browser import BrowserView
 
-from plone.resource.manifest import MANIFEST_FILENAME
-from plone.resource.manifest import getManifest
-
-from plone.app.theming.interfaces import MANIFEST_FORMAT
+from plone.app.theming.utils import getThemeFromResourceDirectory
 
 from Products.CMFCore.utils import getToolByName
 
@@ -24,13 +21,9 @@ class FileManager(BrowserView):
 
         self.resourceDirectory = self.context
         self.name = self.resourceDirectory.__name__
+        self.theme = getThemeFromResourceDirectory(self.context)
+        self.title = self.theme.title
 
         self.portalUrl = getToolByName(self.context, 'portal_url')()
 
         return True
-
-    def title(self):
-        if MANIFEST_FILENAME in self.resourceDirectory:
-            fi = self.resourceDirectory.openFile(MANIFEST_FILENAME)
-            self.manifest = getManifest(fi, MANIFEST_FORMAT)
-            self.title = self.manifest.get('title') or self.title

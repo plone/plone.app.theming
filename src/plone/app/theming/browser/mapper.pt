@@ -164,7 +164,7 @@
                             overlay.close();
                         }
 
-                        $("#new-rule-text-select-theme").css('display', 'inline-block');
+                        $("#new-rule-text-select-theme").show();
                         $("#view-theme-preview").click();
                         $("#theme-panel, .wizard-text").expose();
                     } else if(ruleBuilder.currentScope == 'content') {
@@ -172,7 +172,7 @@
                             overlay.close();
                         }
 
-                        $("#new-rule-text-select-content").css('display', 'inline-block');
+                        $("#new-rule-text-select-content").show();
                         $("#view-content-preview").click();
                         $("#content-panel, .wizard-text").expose();
 
@@ -196,6 +196,11 @@
 
 
                     }
+                });
+
+                $(".wizard-cancel").click(function() {
+                    ruleBuilder.end();
+                    return false;
                 });
 
                 $("#rules-help").overlay();
@@ -319,6 +324,29 @@
                         overlay.close();
                     });
                 }
+
+                $("#editor-area .fullscreen").click(function(event) {
+                    event.preventDefault();
+
+                    if($("#editor-area").is(".width-full")) {
+                        $("#preview-panel").show();
+                        $("#theme-content-row").show();
+                        $("#page-intro").show();
+                        $("#editor-area").removeClass('width-full')
+                                           .addClass('width-1:2');
+                        $("#new-rule").show();
+
+                    } else {
+                        $("#preview-panel").hide();
+                        $("#theme-content-row").hide();
+                        $("#page-intro").hide();
+                        $("#editor-area").removeClass('width-1:2')
+                                           .addClass('width-full');
+                       $("#new-rule").hide();
+                    }
+
+                    return false;
+                });
             })();
 
             // Preview panel
@@ -558,7 +586,7 @@
     <div id="page-intro">
 
         <h1 class="documentFirstHeading"
-            i18n:translate="heading_theme_mapper">Edit
+            i18n:translate="heading_theme_mapper">Build rules for
             <span i18n:name="name" tal:content="view/title">name</span></h1>
 
         <a href=""
@@ -567,6 +595,29 @@
             i18n:translate="label_up_to_theming_controlpanel">
             Back to the control panel
         </a>
+
+        |
+
+        <a class="link-parent"
+           tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-filemanager"
+           i18n:translate="label_up_to_theming_filemanager">
+                Manage theme files
+        </a>
+
+        <dl class="portalMessage info wizard-text" id="new-rule-text-select-theme">
+            <dt i18n:translate="">Rules wizard</dt>
+            <dd i18n:translate="theming_mapper_select_theme">
+                Please select an element in the "Raw theme" panel.
+                <button class="wizard-cancel allowMultiSubmit">Cancel</button>
+            </dd>
+        </dl>
+        <dl class="portalMessage info wizard-text" id="new-rule-text-select-content">
+            <dt i18n:translate="">Rules wizard</dt>
+            <dd i18n:translate="theming_mapper_select_content">
+                Please select an element in the "Unthemed content" panel.
+                <button class="wizard-cancel allowMultiSubmit">Cancel</button>
+            </dd>
+        </dl>
 
 
         <p class="discreet" i18n:translate="help_theme_mapper">
@@ -688,16 +739,10 @@
                     i18n:translate=""
                     >New rule</button>
 
-                <span class="wizard-text" id="new-rule-text-select-content" i18n:translate="theming_mapper_select_content">
-                    Select an element in the content panel.
-                </span>
-                <span class="wizard-text" id="new-rule-text-select-theme" i18n:translate="theming_mapper_select_theme">
-                    Select an element in the theme panel.
-                </span>
-
             </div>
 
             <label i18n:translate="heading_rules">Rules</label>
+            <a class="fullscreen" href="#" i18n:translate="toggle_fullscreen">Toggle fullscreen</a>
 
             <pre id="editor"></pre>
             <textarea id="file-contents" class="hiddenStructure" name="rules"

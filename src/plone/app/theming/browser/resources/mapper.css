@@ -102,9 +102,11 @@ a.fullscreen {
 
  .wizard-text {
      display: none;
-     background-color: #FFFFE3;
-     padding: 0 5px;
- }
+}
+
+.wizard-cancel {
+    float: right;
+}
 
 #new-rule-type-panel {
     white-space: nowrap;

@@ -536,7 +536,7 @@
                                     >Download</a>
                                 <tal:block condition="theme/editable">
                                     |
-                                    <a  tal:attributes="href string:${context/absolute_url}/++theme++${theme/name}/@@theming-controlpanel-mapper"
+                                    <a  tal:attributes="href string:${context/absolute_url}/++theme++${theme/name}/@@theming-controlpanel-filemanager"
                                         i18n:translate="option_theme_map_theme"
                                         >Edit</a>
                                 </tal:block>
