@@ -4,19 +4,21 @@ plone.app.theming to-do
 UI review
 ---------
 
-[ ] Add 'toggle fullscreen' for theme
+[x] Add 'toggle fullscreen' for theme
 [ ] Restore theme source editor and management of CSS and JS files (for now)
+[ ] Add preview in file manager?
 [x] Add ability to cancel rule builder mid-flight
 [ ] Warning when editing current/live theme
 [ ] Style file manager and preview as tabs (still have page reload)
+
 
 File manager
 ------------
 
 [ ] Make Ctrl+W/Cmd+W work for tabs opened as images / files(will need to key bind differently)
-[ ] Cmd-Shift-] and Cmd-Shift-[
+[ ] Cmd-Shift-] and Cmd-Shift-[ to move right/left between tabs
 [ ] Style right-click menu more like Plone
-[ ] Need a way to cut/paste or drag/drop to move files(HTML5)
+[ ] Need a way to cut/paste or drag/drop to move files
 [ ] Fix the styling with the filemanager--it's ugly
 [ ] IE support - may need to use the SourceEditor abstraction from mapper.js (can move out)
 

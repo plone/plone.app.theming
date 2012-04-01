@@ -17,35 +17,55 @@
 </head>
 
 <body>
-<div metal:fill-slot="prefs_configlet_main">
+<div metal:fill-slot="prefs_configlet_content" class="documentEditable">
 
-    <h1 class="documentFirstHeading"
-        i18n:translate="heading_edit_theme">Manage files for
-        <span i18n:name="name" tal:content="view/title">name</span></h1>
+    <!-- simulating views on the groups/user pages until we have real objects. -->
+    <div id="edit-bar">
+        <ul class="contentViews" id="content-views">
+          <li class="selected">
+            <a tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-filemanager"
+               i18n:translate="label_up_to_file_manager">
+               Manage theme files
+            </a>
+          </li>
+          <li>
+            <a tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper"
+               i18n:translate="label_up_to_theming_mapper">
+               Preview and build
+            </a>
+          </li>
+        </ul>
 
-    <a href=""
-        class="link-parent"
-        tal:attributes="href string:${portal_url}/@@theming-controlpanel"
-        i18n:translate="label_up_to_theming_controlpanel">
-            Back to the control panel
-    </a>
+        <div class="contentActions">&nbsp;</div>
+    </div>
 
-    |
+    <div metal:use-macro="context/global_statusmessage/macros/portal_message">
+      Portal status message
+    </div>
 
-    <a class="link-parent"
-       tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper"
-       i18n:translate="label_up_to_theming_mapper">
-            Preview theme and build rules
-    </a>
+    <div id="content">
 
-    <p class="discreet" i18n:translate="help_theme_filemanager">
-        You can edit files in the theme by opening them from the file
-        tree. Use the buttons on the toolbar to create new folders and
-        files. You can right-click on items in the file tree to download,
-        delete or rename them.
-    </p>
+      <h1 class="documentFirstHeading"
+          i18n:translate="heading_edit_theme">Manage files for
+          <span i18n:name="name" tal:content="view/title">name</span></h1>
 
-    <tal:block replace="structure view/resourceDirectory/@@plone.resourceeditor.filemanager" />
+      <a href=""
+          class="link-parent"
+          tal:attributes="href string:${portal_url}/@@theming-controlpanel"
+          i18n:translate="label_up_to_theming_controlpanel">
+              Back to the control panel
+      </a>
+
+      <p class="discreet" i18n:translate="help_theme_filemanager">
+          You can edit files in the theme by opening them from the file
+          tree. Use the buttons on the toolbar to create new folders and
+          files. You can right-click on items in the file tree to download,
+          delete or rename them.
+      </p>
+
+      <tal:block replace="structure view/resourceDirectory/@@plone.resourceeditor.filemanager" />
+
+  </div>
 
 </div>
 </body>
