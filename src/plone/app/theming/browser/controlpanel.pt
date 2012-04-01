@@ -306,7 +306,7 @@
 
         </dd>
 
-        <dt id="fieldsetlegend-import">Import theme</dt>
+        <dt id="fieldsetlegend-import">Import</dt>
         <dd id="fieldset-import">
 
             <p i18n:translate="description_import">
@@ -397,7 +397,7 @@
 
         </dd>
 
-        <dt id="fieldsetlegend-create">Create theme</dt>
+        <dt id="fieldsetlegend-create">Create new theme</dt>
         <dd id="fieldset-create">
 
         <form
