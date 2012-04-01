@@ -4,17 +4,16 @@ plone.app.theming to-do
 UI review
 ---------
 
-[x] Add 'toggle fullscreen' for theme
-[ ] Restore theme source editor and management of CSS and JS files (for now)
-[ ] Add preview in file manager?
-[x] Add ability to cancel rule builder mid-flight
-[ ] Warning when editing current/live theme
-[ ] Style file manager and preview as tabs (still have page reload)
-
+[ ] Warning when editing current/live theme (file manager and mapper)
+[ ] Button to apply theme to site if not active
+[ ] Add preview in file manager (iframe under file manager, update on save/switch)
+[ ] Allow read-only use of mapper for filesystem themes?
+[ ] Allow source view for theme in mapper
 
 File manager
 ------------
 
+[ ] Remove 'current folder' stateful variable and do new file/new folder/upload based on right-click only?
 [ ] Make Ctrl+W/Cmd+W work for tabs opened as images / files(will need to key bind differently)
 [ ] Cmd-Shift-] and Cmd-Shift-[ to move right/left between tabs
 [ ] Style right-click menu more like Plone

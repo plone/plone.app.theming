@@ -24,14 +24,14 @@
         <ul class="contentViews" id="content-views">
           <li class="selected">
             <a tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-filemanager"
-               i18n:translate="label_up_to_file_manager">
+               i18n:translate="label_tab_file_manager">
                Manage theme files
             </a>
           </li>
           <li>
             <a tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper"
-               i18n:translate="label_up_to_theming_mapper">
-               Preview and build
+               i18n:translate="label_tab_theming_mapper">
+               Preview and map rules
             </a>
           </li>
         </ul>

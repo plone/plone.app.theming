@@ -335,6 +335,7 @@
 
                     if($("#editor-area").is(".width-full")) {
                         $("#preview-panel").show();
+                        $("#edit-bar").show();
                         $("#theme-content-row").show();
                         $("#page-intro").show();
                         $("#editor-area").removeClass('width-full')
@@ -345,6 +346,7 @@
 
                     } else {
                         $("#preview-panel").hide();
+                        $("#edit-bar").hide();
                         $("#theme-content-row").hide();
                         $("#page-intro").hide();
                         $("#editor-area").removeClass('width-1:2')
@@ -395,6 +397,7 @@
 
                     if($("#preview-panel").is(".width-full")) {
                         $("#editor-area").show();
+                        $("#edit-bar").show();
                         $("#theme-content-row").show();
                         $("#page-intro").show();
                         $("#preview-panel").removeClass('width-full')
@@ -407,6 +410,7 @@
 
                     } else {
                         $("#editor-area").hide();
+                        $("#edit-bar").hide();
                         $("#theme-content-row").hide();
                         $("#page-intro").hide();
                         $("#preview-panel").removeClass('width-1:2')
@@ -464,6 +468,7 @@
 
                     if($("#content-panel").is(".width-full")) {
                         $("#theme-panel").show();
+                        $("#edit-bar").show();
                         $("#rules-results-row").show();
                         $("#page-intro").show();
                         $("#content-panel").removeClass('width-full')
@@ -476,6 +481,7 @@
                         contentSource.resize();
                     } else {
                         $("#theme-panel").hide();
+                        $("#edit-bar").hide();
                         $("#rules-results-row").hide();
                         $("#page-intro").hide();
                         $("#content-panel").removeClass('width-1:2')
@@ -496,10 +502,18 @@
             // Theme panel
             (function() {
 
+                var themeSource = new SourceEditor('theme-source', extensionModes.html, "", true);
+
                 function reloadFrame() {
                     var path = $("#file-selector option:selected").val();
                     var fetch = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + path + "&amp;theme=off";
                     $("#theme-frame").attr('src', fetch);
+                }
+
+                function reloadSource() {
+                    var html = $("#theme-frame").contents().find(":root").html();
+                    themeSource.setValue("<" + "html>\n" + html + '\n<' + '/html>');
+                    themeSource.resize();
                 }
 
                 $("#theme-frame").ready(function() {
@@ -509,6 +523,7 @@
                             });
                     function setup() {
                         frameHighlighter.setupElements();
+                        reloadSource();
                     }
                     setup();
                     $("#theme-frame").load(setup);
@@ -518,22 +533,42 @@
                     reloadFrame();
                 });
 
+                $("#view-theme-preview").change(function() {
+                    $("#theme-frame").show();
+                    $("#theme-source").hide();
+                });
+                $("#view-theme-preview").click();
+                $("#view-theme-preview").click(function() { $(this).change(); });
+
+                $("#view-theme-source").change(function() {
+                    $("#theme-frame").hide();
+                    $("#theme-source").show();
+                    reloadSource();
+                    themeSource.focus();
+                });
+                $("#view-theme-source").click(function() { $(this).change(); });
+
                 $("#theme-panel .fullscreen").click(function(event) {
                     event.preventDefault();
 
-
                     if($("#theme-panel").is(".width-full")) {
                         $("#content-panel").show();
+                        $("#edit-bar").show();
                         $("#rules-results-row").show();
                         $("#page-intro").show();
                         $("#theme-panel").removeClass('width-full').addClass('width-1:2');
                         $("#theme-panel iframe").removeClass('fullscreen-frame');
+                        $("#theme-source").css('height', WINDOWED_HEIGHT);
+                        themeSource.resize();
                     } else {
                         $("#content-panel").hide();
+                        $("#edit-bar").hide();
                         $("#rules-results-row").hide();
                         $("#page-intro").hide();
                         $("#theme-panel").removeClass('width-1:2').addClass('width-full');
                         $("#theme-panel iframe").addClass('fullscreen-frame');
+                        $("#theme-source").css('height', FULLSCREEN_HEIGHT);
+                        themeSource.resize();
                     }
 
                     return false;
@@ -605,14 +640,14 @@
         <ul class="contentViews" id="content-views">
           <li>
             <a tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-filemanager"
-               i18n:translate="label_up_to_file_manager">
+               i18n:translate="label_tab_file_manager">
                Manage theme files
             </a>
           </li>
           <li class="selected">
             <a tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper"
-               i18n:translate="label_up_to_theming_mapper">
-               Preview and build
+               i18n:translate="label_tab_theming_mapper">
+               Preview and map rules
             </a>
           </li>
         </ul>
@@ -641,32 +676,34 @@
             </a>
 
             <dl class="portalMessage info wizard-text" id="new-rule-text-select-theme">
-                <dt i18n:translate="">New rule</dt>
+                <dt i18n:translate="">Build rule</dt>
                 <dd i18n:translate="theming_mapper_select_theme">
                     Please select an element in the "Raw theme" panel.
                     <button class="wizard-cancel allowMultiSubmit">Cancel</button>
                 </dd>
             </dl>
             <dl class="portalMessage info wizard-text" id="new-rule-text-select-content">
-                <dt i18n:translate="">New rule</dt>
+                <dt i18n:translate="">Build rule</dt>
                 <dd i18n:translate="theming_mapper_select_content">
                     Please select an element in the "Unthemed content" panel.
                     <button class="wizard-cancel allowMultiSubmit">Cancel</button>
                 </dd>
             </dl>
 
-
-            <p class="discreet" i18n:translate="help_theme_mapper">
-                Below, you will find four panels: The raw theme, the unthemed content,
-                a file manager for the theme's rules and other files, and a preview of
-                the result of applying the theme to the content.
-                You can navigate the content, theme or preview, and change to
-                a different theme file if you wish.
+            <p class="discreet" i18n:translate="help_theme_mapper_overview">
+                Below you will find four panels: The raw theme, which you can
+                edit from the
+                <a i18n:name="link_file_manager"
+                   i18n:translate="label_tab_file_manager"
+                   tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-filemanager">Manage theme files</a>
+                tab; the unthemed content, i.e. Plone; the rules file, which
+                you can modify; and a preview of the theme being applied to
+                the content using these rules. Use the <strong>Build rule</strong>
+                button to build new theming rules using an interactive wizard.
             </p>
+
             <p class="discreet" i18n:translate="help_theme_mapper_details">
-                Click <strong>New rule</strong> to create a new rule using a guided wizard.
-                In the <em>Raw theme</em> and <em>Unthemed content</em> panels, you can
-                hover over an element to see its selector in the status bar at the bottom
+                Hover over an element to see its selector in the status bar at the bottom
                 of the panel. Press Esc to move the selection to its parent. Press
                 Enter to save or confirm the selection.
             </p>
@@ -697,6 +734,12 @@
                             tal:content="f/path"
                             />
                     </select>
+
+                    <input type="radio" name="view-theme" id="view-theme-preview" value="preview" checked="checked" />
+                    <label for="view-theme-preview" i18n:translate="">Preview</label>
+
+                    <input type="radio" name="view-theme" id="view-theme-source" value="source" />
+                    <label for="view-theme-source" i18n:translate="">Source</label>
 
                 </div>
 
@@ -773,7 +816,7 @@
                         title="Ctrl+N (Windows/Linux) or Cmd+N (Mac)"
                         i18n:attributes="title"
                         i18n:translate=""
-                        >New rule</button>
+                        >Build rule</button>
 
                 </div>
 
@@ -827,7 +870,7 @@
                     <p>
                         The <strong>theme mapper</strong> you are using now can help you write your
                         rules by showing you the content, theme, rules and a preview of the results
-                        on one page. You can also use the <strong>New rule</strong> button to
+                        on one page. You can also use the <strong>Build rule</strong> button to
                         create rules using a point-and-click interface.
                     </p>
                     <h3><a name="help_syntax">Syntax</a></h3>
@@ -1096,7 +1139,7 @@
             </div>
             <div class="pb-ajax">
                 <div class="new-rule">
-                    <h2 i18n:translate="theming_mapper_heading_newrule">New rule</h2>
+                    <h2 i18n:translate="theming_mapper_heading_newrule">Build rule</h2>
 
                     <div id="new-rule-step-1">
                         <p i18n:translate="theming_mapper_wizard_step1">
