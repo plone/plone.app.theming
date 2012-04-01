@@ -17,6 +17,8 @@ from plone.registry.interfaces import IRegistry
 
 from plone.subrequest import subrequest
 
+from plone.resource.interfaces import IWritableResourceDirectory
+
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.interfaces import RULE_FILENAME
@@ -59,16 +61,19 @@ class ThemeMapper(BrowserView):
         self.themeBasePathEncoded = urllib.quote_plus(self.themeBasePath)
         self.themeBaseUrl = "%s/%s" % (self.portalUrl, self.themeBasePath,)
 
-        self.jsVariables="var BASE_URL='%s'; var CURRENT_SELECTION='%s'; var THEME_BASE_URL='%s';" % (
+        self.editable = IWritableResourceDirectory.providedBy(self.resourceDirectory)
+
+        self.jsVariables="var BASE_URL='%s'; var CURRENT_SELECTION='%s'; var THEME_BASE_URL='%s'; var EDITABLE=%s" % (
                 self.request['URL'],
                 self.request.get('file-selector') or '',
                 self.themeBaseUrl,
+                str(self.editable).lower(),
             );
 
     def update(self):
         rulesFile = RULE_FILENAME
 
-        if rulesFile not in self.resourceDirectory:
+        if not self.resourceDirectory.isFile(rulesFile):
             self.rules = "(%s not found)" % rulesFile
         else:
             self.rules = self.resourceDirectory.readFile(rulesFile)

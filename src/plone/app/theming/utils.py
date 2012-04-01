@@ -326,7 +326,7 @@ def getThemeFromResourceDirectory(resourceDirectory):
     params = {}
     doctype = ""
 
-    if MANIFEST_FILENAME in resourceDirectory:
+    if resourceDirectory.isFile(MANIFEST_FILENAME):
         manifest = getManifest(
             resourceDirectory.openFile(MANIFEST_FILENAME), MANIFEST_FORMAT)
 

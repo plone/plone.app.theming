@@ -144,7 +144,7 @@
             // Rules editor
             (function() {
 
-                var editor = new SourceEditor('editor', extensionModes.html, $("#file-contents").text(), false,
+                var editor = new SourceEditor('editor', extensionModes.html, $("#file-contents").text(), !EDITABLE,
                     function() {
                         dirties['rules.xml'] = true;
                     }
@@ -636,7 +636,7 @@
 <div metal:fill-slot="prefs_configlet_content" class="documentEditable">
 
     <!-- simulating views on the groups/user pages until we have real objects. -->
-    <div id="edit-bar">
+    <div id="edit-bar" tal:condition="view/editable">
         <ul class="contentViews" id="content-views">
           <li>
             <a tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-filemanager"
@@ -665,7 +665,7 @@
         <div id="page-intro">
 
             <h1 class="documentFirstHeading"
-                i18n:translate="heading_theme_mapper">Build rules for
+                i18n:translate="heading_theme_mapper">Preview and map rules for
                 <span i18n:name="name" tal:content="view/title">name</span></h1>
 
             <a href=""
@@ -690,7 +690,9 @@
                 </dd>
             </dl>
 
-            <p class="discreet" i18n:translate="help_theme_mapper_overview">
+            <p class="discreet"
+                i18n:translate="help_theme_mapper_overview_editable"
+                tal:condition="view/editable">
                 Below you will find four panels: The raw theme, which you can
                 edit from the
                 <a i18n:name="link_file_manager"
@@ -700,6 +702,18 @@
                 you can modify; and a preview of the theme being applied to
                 the content using these rules. Use the <strong>Build rule</strong>
                 button to build new theming rules using an interactive wizard.
+            </p>
+
+            <p class="discreet"
+                i18n:translate="help_theme_mapper_overview_not_editable"
+                tal:condition="not:view/editable">
+                Below you will find four panels: The raw theme; the unthemed
+                content, i.e. Plone; the rules file; and a preview of the theme
+                being applied to the content using these rules. Use the
+                <strong>Build rule</strong> button to build new theming rules
+                using an interactive wizard. Changes made to the theme or rules
+                on the filesystem are reflected immediately after the page
+                is reloaded so long as Zope is running <em>development mode</em>.
             </p>
 
             <p class="discreet" i18n:translate="help_theme_mapper_details">
@@ -792,6 +806,7 @@
 
                 <div id="mapper-toolbar" class="panel-toolbar">
                     <button
+                        tal:condition="view/editable"
                         id="rules-save"
                         name="form.button.Save"
                         class="allowMultiSubmit"
@@ -1210,7 +1225,7 @@
                         </form>
 
                         <div class="new-rule-actions">
-                            <button type="button" class="insert" i18n:translate="">Insert</button>
+                            <button type="button" class="insert" i18n:translate="" tal:condition="view/editable">Insert</button>
                             <button type="button" class="copy" i18n:translate="">Copy to clipboard</button>
                             <button type="button" class="close" i18n:translate="">Close</button>
                         </div>

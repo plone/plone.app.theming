@@ -538,7 +538,13 @@
                                     |
                                     <a  tal:attributes="href string:${context/absolute_url}/++theme++${theme/name}/@@theming-controlpanel-filemanager"
                                         i18n:translate="option_theme_map_theme"
-                                        >Edit</a>
+                                        >Manage files</a>
+                                </tal:block>
+                                <tal:block condition="not:theme/editable">
+                                    |
+                                    <a  tal:attributes="href string:${context/absolute_url}/++theme++${theme/name}/@@theming-controlpanel-mapper"
+                                        i18n:translate="option_theme_map_theme"
+                                        >Preview and map</a>
                                 </tal:block>
                             </td>
                         </tr>

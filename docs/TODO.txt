@@ -7,8 +7,6 @@ UI review
 [ ] Warning when editing current/live theme (file manager and mapper)
 [ ] Button to apply theme to site if not active
 [ ] Add preview in file manager (iframe under file manager, update on save/switch)
-[ ] Allow read-only use of mapper for filesystem themes?
-[ ] Allow source view for theme in mapper
 
 File manager
 ------------
