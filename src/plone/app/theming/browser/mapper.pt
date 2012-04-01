@@ -80,6 +80,9 @@
 
             var WINDOW_BASE = window.location.protocol + '//' + window.location.host;
 
+            var WINDOWED_HEIGHT = '300px';
+            var FULLSCREEN_HEIGHT = '600px';
+
             // Editor management
 
             var HTMLMode = require("ace/mode/html").Mode;
@@ -335,6 +338,8 @@
                         $("#editor-area").removeClass('width-full')
                                            .addClass('width-1:2');
                         $("#new-rule").show();
+                        $("#editor").css('height', WINDOWED_HEIGHT);
+                        editor.resize();
 
                     } else {
                         $("#preview-panel").hide();
@@ -343,6 +348,8 @@
                         $("#editor-area").removeClass('width-1:2')
                                            .addClass('width-full');
                        $("#new-rule").hide();
+                       $("#editor").css('height', FULLSCREEN_HEIGHT);
+                        editor.resize();
                     }
 
                     return false;
@@ -393,6 +400,9 @@
                                            .addClass('width-1:2')
                                            .addClass('position-1:2');
                         $("#preview-panel iframe").removeClass('fullscreen-frame');
+                        $("#preview-source").css('height', WINDOWED_HEIGHT);
+                        previewSource.resize();
+
                     } else {
                         $("#editor-area").hide();
                         $("#theme-content-row").hide();
@@ -402,6 +412,8 @@
                                            .addClass('width-full')
                                            .addClass('position-0');
                         $("#preview-panel iframe").addClass('fullscreen-frame');
+                        $("#preview-source").css('height', FULLSCREEN_HEIGHT);
+                        previewSource.resize();
                     }
 
                     return false;
@@ -458,6 +470,8 @@
                                            .addClass('position-1:2');
 
                         $("#content-panel iframe").removeClass('fullscreen-frame');
+                        $("#content-source").css('height', WINDOWED_HEIGHT);
+                        contentSource.resize();
                     } else {
                         $("#theme-panel").hide();
                         $("#rules-results-row").hide();
@@ -468,6 +482,8 @@
                                            .addClass('position-0');
 
                         $("#content-panel iframe").addClass('fullscreen-frame');
+                        $("#content-source").css('height', FULLSCREEN_HEIGHT);
+                        contentSource.resize();
                    }
 
                     return false;
