@@ -1,3 +1,5 @@
+import urllib
+
 from zope.component import getUtility
 from zope.site.hooks import getSite
 from zope.publisher.browser import BrowserView
@@ -5,6 +7,7 @@ from zope.publisher.browser import BrowserView
 from plone.registry.interfaces import IRegistry
 
 from plone.app.theming.interfaces import IThemeSettings
+from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.utils import getThemeFromResourceDirectory
 from plone.app.theming.utils import getCurrentTheme
 
@@ -33,5 +36,12 @@ class FileManager(BrowserView):
         self.active = (settings.enabled and self.name == getCurrentTheme())
 
         self.portalUrl = getToolByName(self.context, 'portal_url')()
+        self.themeBasePath = "++%s++%s" % (THEME_RESOURCE_NAME, self.name,)
+        self.themeBasePathEncoded = urllib.quote_plus(self.themeBasePath)
+        self.themeBaseUrl = "%s/%s" % (self.portalUrl, self.themeBasePath,)
+
+        self.jsVariables="var THEME_BASE_URL='%s';" % (
+                self.themeBaseUrl,
+            );
 
         return True

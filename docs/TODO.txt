@@ -1,24 +1,23 @@
 plone.app.theming to-do
 =======================
 
-UI review
----------
-
-[ ] Add preview in file manager (iframe under file manager, update on save/switch)
-
 File manager
 ------------
 
-[ ] Remove 'current folder' stateful variable and do new file/new folder/upload based on right-click only?
-[ ] Make Ctrl+W/Cmd+W work for tabs opened as images / files(will need to key bind differently)
-[ ] Cmd-Shift-] and Cmd-Shift-[ to move right/left between tabs
+[ ] Remove 'current folder' stateful variable
+    - Use right click for add/upload operations
+    - Select folder from within add/upload dialogues
+
+[ ] Improve styling overall
 [ ] Style right-click menu more like Plone
-[ ] Need a way to cut/paste or drag/drop to move files
-[ ] Fix the styling with the filemanager--it's ugly
-[ ] IE support - may need to use the SourceEditor abstraction from mapper.js (can move out)
+
+[ ] Cmd-Shift-] and Cmd-Shift-[ to move right/left between tabs
+[ ] IE support - may need to use the SourceEditor abstraction from mapper.js
 
 Mapper
 ------
+
+[ ] Improve styling overall
 
 [ ] Working copy editing
 [ ] Table-based visual rules list viewer/editor instead of source (unless rules source too complex)
