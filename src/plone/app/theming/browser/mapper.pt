@@ -659,6 +659,14 @@
       Portal status message
     </div>
 
+    <dl class="portalMessage warning" tal:condition="python:view.active and view.editable">
+        <dt i18n:translate="">Warning</dt>
+        <dd i18n:translate="theming_mapper_warning_live">
+            This theme is currently active. Any changes made will be immediately
+            reflected on the live site.
+        </dd>
+    </dl>
+
     <div id="content">
 
 

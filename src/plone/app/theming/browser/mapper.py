@@ -12,6 +12,7 @@ from zope.publisher.browser import BrowserView
 from repoze.xmliter.utils import getHTMLSerializer
 from plone.app.theming.utils import compileThemeTransform
 from plone.app.theming.utils import prepareThemeParameters
+from plone.app.theming.utils import getCurrentTheme
 
 from plone.registry.interfaces import IRegistry
 
@@ -62,6 +63,9 @@ class ThemeMapper(BrowserView):
         self.themeBaseUrl = "%s/%s" % (self.portalUrl, self.themeBasePath,)
 
         self.editable = IWritableResourceDirectory.providedBy(self.resourceDirectory)
+
+        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        self.active = (settings.enabled and self.name == getCurrentTheme())
 
         self.jsVariables="var BASE_URL='%s'; var CURRENT_SELECTION='%s'; var THEME_BASE_URL='%s'; var EDITABLE=%s" % (
                 self.request['URL'],

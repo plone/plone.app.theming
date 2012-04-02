@@ -1,7 +1,12 @@
+from zope.component import getUtility
 from zope.site.hooks import getSite
 from zope.publisher.browser import BrowserView
 
+from plone.registry.interfaces import IRegistry
+
+from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.utils import getThemeFromResourceDirectory
+from plone.app.theming.utils import getCurrentTheme
 
 from Products.CMFCore.utils import getToolByName
 
@@ -23,6 +28,9 @@ class FileManager(BrowserView):
         self.name = self.resourceDirectory.__name__
         self.theme = getThemeFromResourceDirectory(self.context)
         self.title = self.theme.title
+
+        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        self.active = (settings.enabled and self.name == getCurrentTheme())
 
         self.portalUrl = getToolByName(self.context, 'portal_url')()
 

@@ -4,8 +4,6 @@ plone.app.theming to-do
 UI review
 ---------
 
-[ ] Warning when editing current/live theme (file manager and mapper)
-[ ] Button to apply theme to site if not active
 [ ] Add preview in file manager (iframe under file manager, update on save/switch)
 
 File manager
