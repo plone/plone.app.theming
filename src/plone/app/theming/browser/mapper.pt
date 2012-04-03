@@ -76,7 +76,7 @@
 
     jQuery(function($) {
 
-        $(document).ready(function() {
+        $().ready(function() {
 
             var WINDOW_BASE = window.location.protocol + '//' + window.location.host;
 
@@ -140,6 +140,22 @@
             if($.browser.msie) {
                 $(".ie-warning").show();
             }
+
+            // Fullscreen
+
+            $(".fullscreen").click(function(event) {
+                event.preventDefault();
+                $(this).toggleClass("fullscreenActive");
+                return false;
+            });
+
+            // View source
+
+            $(".source").click(function(event) {
+                event.preventDefault();
+                $(this).toggleClass("sourceActive");
+                return false;
+            });
 
             // Rules editor
             (function() {
@@ -343,7 +359,6 @@
                         $("#new-rule").show();
                         $("#editor").css('height', WINDOWED_HEIGHT);
                         editor.resize();
-
                     } else {
                         $("#preview-panel").hide();
                         $("#edit-bar").hide();
@@ -375,22 +390,23 @@
                     $("#preview-frame").load(setup);
                 });
 
-                $("#view-preview-preview").change(function() {
-                    $("#preview-frame").show();
-                    $("#preview-source").hide();
-                });
-                $("#view-preview-preview").click();
-                $("#view-preview-preview").click(function() { $(this).change(); });
+                $("#preview-frame").show();
+                $("#preview-source").hide();
 
-                $("#view-preview-source").change(function() {
-                    var html = $("#preview-frame").contents().find(":root").html();
-                    previewSource.setValue("\n<" + "html>" + html + '\n<' + '/html>');
-                    $("#preview-frame").hide();
-                    $("#preview-source").show();
-                    previewSource.resize();
-                    previewSource.focus();
+                $("#preview-panel .source").click(function() {
+                    if($("#preview-frame").is(":visible")) {
+                        var html = $("#preview-frame").contents().find(":root").html();
+                        previewSource.setValue("\n<" + "html>" + html + '\n<' + '/html>');
+                        $("#preview-frame").hide();
+                        $("#preview-source").show();
+                        previewSource.resize();
+                        previewSource.focus();
+                    } else {
+                        $("#preview-frame").show();
+                        $("#preview-source").hide();
+                    }
                 });
-                $("#view-preview-source").click(function() { $(this).change(); });
+
 
                 $("#preview-panel .fullscreen").click(function(event) {
                     event.preventDefault();
@@ -446,22 +462,22 @@
                     $("#content-frame").load(setup);
                 });
 
-                $("#view-content-preview").change(function() {
-                    $("#content-frame").show();
-                    $("#content-source").hide();
-                });
-                $("#view-content-preview").click();
-                $("#view-content-preview").click(function() { $(this).change(); });
+                $("#content-frame").show();
+                $("#content-source").hide();
 
-                $("#view-content-source").change(function() {
-                    var html = $("#content-frame").contents().find(":root").html();
-                    contentSource.setValue("<" + "html>\n" + html + '\n<' + '/html>');
-                    $("#content-frame").hide();
-                    $("#content-source").show();
-                    contentSource.resize();
-                    contentSource.focus();
+                $("#content-panel .source").click(function() {
+                    if($("#content-frame").is(":visible")) {
+                        var html = $("#content-frame").contents().find(":root").html();
+                        contentSource.setValue("<" + "html>\n" + html + '\n<' + '/html>');
+                        $("#content-frame").hide();
+                        $("#content-source").show();
+                        contentSource.resize();
+                        contentSource.focus();
+                    } else {
+                        $("#content-frame").show();
+                        $("#content-source").hide();
+                    }
                 });
-                $("#view-content-source").click(function() { $(this).change(); });
 
                 $("#content-panel .fullscreen").click(function(event) {
                     event.preventDefault();
@@ -533,20 +549,20 @@
                     reloadFrame();
                 });
 
-                $("#view-theme-preview").change(function() {
-                    $("#theme-frame").show();
-                    $("#theme-source").hide();
-                });
-                $("#view-theme-preview").click();
-                $("#view-theme-preview").click(function() { $(this).change(); });
+                $("#theme-frame").show();
+                $("#theme-source").hide();
 
-                $("#view-theme-source").change(function() {
-                    $("#theme-frame").hide();
-                    $("#theme-source").show();
-                    reloadSource();
-                    themeSource.focus();
+                $("#theme-panel .source").click(function() {
+                    if($("#theme-frame").is(":visible")) {
+                        $("#theme-frame").hide();
+                        $("#theme-source").show();
+                        reloadSource();
+                        themeSource.focus();
+                    } else {
+                        $("#theme-frame").show();
+                        $("#theme-source").hide();
+                    }
                 });
-                $("#view-theme-source").click(function() { $(this).change(); });
 
                 $("#theme-panel .fullscreen").click(function(event) {
                     event.preventDefault();
@@ -684,14 +700,14 @@
             </a>
 
             <dl class="portalMessage info wizard-text" id="new-rule-text-select-theme">
-                <dt i18n:translate="">Build rule</dt>
+                <dt i18n:translate="">New rule</dt>
                 <dd i18n:translate="theming_mapper_select_theme">
                     Please select an element in the "Raw theme" panel.
                     <button class="wizard-cancel allowMultiSubmit">Cancel</button>
                 </dd>
             </dl>
             <dl class="portalMessage info wizard-text" id="new-rule-text-select-content">
-                <dt i18n:translate="">Build rule</dt>
+                <dt i18n:translate="">New rule</dt>
                 <dd i18n:translate="theming_mapper_select_content">
                     Please select an element in the "Unthemed content" panel.
                     <button class="wizard-cancel allowMultiSubmit">Cancel</button>
@@ -708,7 +724,7 @@
                    tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-filemanager">Manage theme files</a>
                 tab; the unthemed content, i.e. Plone; the rules file, which
                 you can modify; and a preview of the theme being applied to
-                the content using these rules. Use the <strong>Build rule</strong>
+                the content using these rules. Use the <strong>New rule</strong>
                 button to build new theming rules using an interactive wizard.
             </p>
 
@@ -718,7 +734,7 @@
                 Below you will find four panels: The raw theme; the unthemed
                 content, i.e. Plone; the rules file; and a preview of the theme
                 being applied to the content using these rules. Use the
-                <strong>Build rule</strong> button to build new theming rules
+                <strong>New rule</strong> button to build new theming rules
                 using an interactive wizard. Changes made to the theme or rules
                 on the filesystem are reflected immediately after the page
                 is reloaded so long as Zope is running <em>development mode</em>.
@@ -757,16 +773,18 @@
                             />
                     </select>
 
-                    <input type="radio" name="view-theme" id="view-theme-preview" value="preview" checked="checked" />
+                    <!-- <input type="radio" name="view-theme" id="view-theme-preview" value="preview" checked="checked" />
                     <label for="view-theme-preview" i18n:translate="">Preview</label>
 
                     <input type="radio" name="view-theme" id="view-theme-source" value="source" />
-                    <label for="view-theme-source" i18n:translate="">Source</label>
+                    <label for="view-theme-source" i18n:translate="">Source</label> -->
+
+                    <a class="source" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
+                    <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
 
                 </div>
 
                 <label i18n:translate="heading_theme">Raw theme</label>
-                <a class="fullscreen" href="#" i18n:translate="toggle_fullscreen">Toggle fullscreen</a>
 
                 <iframe id="theme-frame"
                     tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off"></iframe>
@@ -784,15 +802,11 @@
             <div id="content-panel" class="mapper-box cell width-1:2 position-1:2">
 
                 <div class="panel-toolbar">
-                    <input type="radio" name="view-content" id="view-content-preview" value="preview" checked="checked" />
-                    <label for="view-content-preview" i18n:translate="">Preview</label>
-
-                    <input type="radio" name="view-content" id="view-content-source" value="source" />
-                    <label for="view-content-source" i18n:translate="">Source</label>
+                    <a class="source" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
+                    <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
                 </div>
 
                 <label i18n:translate="heading_content">Unthemed content</label>
-                <a class="fullscreen" href="#" i18n:translate="toggle_fullscreen">Toggle fullscreen</a>
 
                 <iframe id="content-frame"
                     tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=off"></iframe>
@@ -839,12 +853,13 @@
                         title="Ctrl+N (Windows/Linux) or Cmd+N (Mac)"
                         i18n:attributes="title"
                         i18n:translate=""
-                        >Build rule</button>
+                        >New rule</button>
+
+                    <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
 
                 </div>
 
                 <label i18n:translate="heading_rules">Theme rules</label>
-                <a class="fullscreen" href="#" i18n:translate="toggle_fullscreen">Toggle fullscreen</a>
 
                 <pre id="editor"></pre>
                 <textarea id="file-contents" class="hiddenStructure" name="rules"
@@ -854,15 +869,11 @@
             <div id="preview-panel" class="mapper-box cell width-1:2 position-1:2">
 
                 <div class="panel-toolbar">
-                    <input type="radio" name="view-preview" id="view-preview-preview" value="preview" checked="checked" />
-                    <label for="view-preview-preview" i18n:translate="">Preview</label>
-
-                    <input type="radio" name="view-preview" id="view-preview-source" value="source" />
-                    <label for="view-preview-source" i18n:translate="">Source</label>
+                    <a class="source" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
+                    <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
                 </div>
 
                 <label i18n:translate="heading_result">Themed content</label>
-                <a class="fullscreen" href="#" i18n:translate="toggle_fullscreen">Toggle fullscreen</a>
 
                 <iframe id="preview-frame"
                     tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply"></iframe>
@@ -893,7 +904,7 @@
                     <p>
                         The <strong>theme mapper</strong> you are using now can help you write your
                         rules by showing you the content, theme, rules and a preview of the results
-                        on one page. You can also use the <strong>Build rule</strong> button to
+                        on one page. You can also use the <strong>New rule</strong> button to
                         create rules using a point-and-click interface.
                     </p>
                     <h3><a name="help_syntax">Syntax</a></h3>
@@ -1162,7 +1173,7 @@
             </div>
             <div class="pb-ajax">
                 <div class="new-rule">
-                    <h2 i18n:translate="theming_mapper_heading_newrule">Build rule</h2>
+                    <h2 i18n:translate="theming_mapper_heading_newrule">New rule</h2>
 
                     <div id="new-rule-step-1">
                         <p i18n:translate="theming_mapper_wizard_step1">

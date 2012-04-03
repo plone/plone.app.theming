@@ -4,6 +4,8 @@ plone.app.theming to-do
 File manager
 ------------
 
+[ ] Refactor JavaScript to make it more maintainable
+
 [ ] Remove 'current folder' stateful variable
     - Use right click for add/upload operations
     - Select folder from within add/upload dialogues
@@ -16,6 +18,8 @@ File manager
 
 Mapper
 ------
+
+[ ] Make 'save' act on click, not (just) Enter; use shift+click to navigate
 
 [ ] Improve styling overall
 

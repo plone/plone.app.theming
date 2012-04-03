@@ -10,10 +10,6 @@
 
 /* Panels */
 
-#mapper-toolbar {
-    margin-bottom: 1em;
-}
-
 #content #editor,
 #content .source-editor {
     margin: 0;
@@ -47,6 +43,7 @@
 
 .panel-toolbar {
     float: right;
+    margin: 0 -10px 5px 0;
 }
 
 .panel-toolbar label {
@@ -83,15 +80,39 @@
 }
 
 a.fullscreen {
+    vertical-align: middle;
     display: inline-block;
-    padding-left: 18px;
-    margin: 0 5px;
-    background-image: url('../search_icon.png');
+    line-height: 1.2em;
+    padding: 0 0 0 18px;
+    margin: 0 0 0 5px;
+    background-image: url('./full.png');
     background-repeat: no-repeat;
     text-decoration: none;
     border-bottom: none !important;
     color: #333 !important;
     font-size: 90%;
+    content: none;
+}
+a.fullscreenActive {
+    background-image: url('./small.png');
+}
+
+a.source {
+    vertical-align: middle;
+    display: inline-block;
+    line-height: 1.2em;
+    padding: 0 0 0 20px;
+    margin: 0 0 0 10px;
+    background-image: url('./source.png');
+    background-repeat: no-repeat;
+    text-decoration: none;
+    border-bottom: none !important;
+    color: #333 !important;
+    font-size: 90%;
+    content: none;
+}
+a.sourceActive {
+    background-image: url('./preview.png');
 }
 
 /* Wizard */
