@@ -7,26 +7,73 @@
     i18n:domain="plone">
 
 <head>
-<metal:block fill-slot="top_slot">
+<metal:block fill-slot="top_slot" tal:define="resourceDirectory nocall:view/resourceDirectory">
 
 <tal:defines define="dummy python:request.set('disable_border',1);
                      disable_column_one python:request.set('disable_plone.leftcolumn',1);
                      disable_column_two python:request.set('disable_plone.rightcolumn',1);" />
 
-<link
-    rel="stylesheet"
-    type="text/css"
-    tal:attributes="href string:${view/portalUrl}/++resource++plone.app.theming/mapper.css"
-    />
+<link rel="stylesheet" type="text/css"
+  tal:attributes="href string:${view/portalUrl}/++resource++plone.app.theming/mapper.css"
+  />
 
+<metal:block use-macro="resourceDirectory/@@plone.resourceeditor.filemanager/macros/resources" />
 <script type="text/javascript" tal:content="view/jsVariables"></script>
+<script type="text/javascript">
+jQuery(function($) {
 
+  $().ready(function() {
+
+    function normalizePath(path) {
+      if(path[0] == '/') {
+          path = path.slice(1, path.length);
+        }
+        return path;
+    }
+
+    function isPreviewable(path) {
+      return path.match(/.+\.html?$/i);
+    }
+
+    function reloadFrame() {
+      $("#editor-preview-frame").attr('src', $("#editor-preview-frame").attr('src'));
+    }
+
+    $("#filemanager").bind('resourceeditor.selected', function(event, path) {
+      if(isPreviewable(path)) {
+        path = normalizePath(path);
+        var fetch = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + path + "&amp;theme=off";
+        $("#editor-preview-frame").attr('src', fetch);
+        $("#editor-preview-frame").data('current', path);
+        $("#theme-preview-filename").text(path);
+
+        if(!$("#theme-preview").is(":visible")) {
+          $("#theme-preview").show();
+        }
+      }
+    });
+
+    $("#filemanager").bind('resourceeditor.closed', function(event, path) {
+      path = normalizePath(path);
+      if($("#editor-preview-frame").data('current') == path) {
+        $("#theme-preview").hide();
+      }
+    });
+
+    $("#filemanager").bind('resourceeditor.saved', function(event, path) {
+      reloadFrame();
+    });
+
+  });
+
+});
+</script>
 
 </metal:block>
 </head>
 
 <body>
-<div metal:fill-slot="prefs_configlet_content" class="documentEditable">
+<div metal:fill-slot="prefs_configlet_content" class="documentEditable" tal:define="resourceDirectory nocall:view/resourceDirectory">
 
     <!-- simulating views on the groups/user pages until we have real objects. -->
     <div id="edit-bar">
@@ -80,7 +127,7 @@
           delete or rename them.
       </p>
 
-      <tal:block replace="structure view/resourceDirectory/@@plone.resourceeditor.filemanager" />
+      <metal:block use-macro="resourceDirectory/@@plone.resourceeditor.filemanager/macros/filemanager" />
 
       <div id="theme-preview">
         <h2 i18n:translate="label_theme_preview">Preview of
@@ -89,57 +136,7 @@
         <iframe id="editor-preview-frame" src=""></iframe>
     </div>
 
-<script type="text/javascript">
 
-jQuery(function($) {
-
-  $().ready(function() {
-
-    function normalizePath(path) {
-      if(path[0] == '/') {
-          path = path.slice(1, path.length);
-        }
-        return path;
-    }
-
-    function isPreviewable(path) {
-      return path.match(/.+\.html?$/i);
-    }
-
-    function reloadFrame() {
-      $("#editor-preview-frame").attr('src', $("#editor-preview-frame").attr('src'));
-    }
-
-    $("#filemanager").bind('resourceeditor.selected', function(event, path) {
-      if(isPreviewable(path)) {
-        path = normalizePath(path);
-        var fetch = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + path + "&amp;theme=off";
-        $("#editor-preview-frame").attr('src', fetch);
-        $("#editor-preview-frame").data('current', path);
-        $("#theme-preview-filename").text(path);
-
-        if(!$("#theme-preview").is(":visible")) {
-          $("#theme-preview").show();
-        }
-      }
-    });
-
-    $("#filemanager").bind('resourceeditor.closed', function(event, path) {
-      path = normalizePath(path);
-      if($("#editor-preview-frame").data('current') == path) {
-        $("#theme-preview").hide();
-      }
-    });
-
-    $("#filemanager").bind('resourceeditor.saved', function(event, path) {
-      reloadFrame();
-    });
-
-  });
-
-});
-
-</script>
 
   </div>
 
