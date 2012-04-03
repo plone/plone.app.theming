@@ -117,10 +117,10 @@ jQuery(function($) {
         $("#editor-preview-frame").attr('src', fetch);
         $("#editor-preview-frame").data('current', path);
         $("#theme-preview-filename").text(path);
-      }
 
-      if(!$("#theme-preview").is(":visible")) {
-        $("#theme-preview").show();
+        if(!$("#theme-preview").is(":visible")) {
+          $("#theme-preview").show();
+        }
       }
     });
 
