@@ -273,6 +273,34 @@ FrameHighlighter.prototype.setupElements = function() {
                 $(highlighter.infoPanel).text("");
 
                 return false;
+            } else if(!event.altKey) {
+                event.stopPropagation();
+                event.preventDefault();
+
+                $(highlighter.shelf).text(bestSelector(highlighter.currentOutline));
+                if(highlighter.onsave != null) {
+                    highlighter.onsave(highlighter.shelf);
+                }
+
+                if(highlighter.ruleBuilder.active && highlighter.ruleBuilder.currentScope == highlighter.scope) {
+                    highlighter.ruleBuilder.select(highlighter.currentOutline);
+                    highlighter.ruleBuilder.next();
+                    highlighter.clearOutline();
+                }
+
+                return false;
+            } else if(event.altKey) {
+                event.preventDefault();
+
+                // XXX: This doesn't work well when clicking on e.g. the Plone logo
+                if($(this).is("a")) {
+                    var href = $(this).attr('href');
+                    if(href.length > 0 && href[0] != '#') {
+                        $(highlighter.frame).attr('src', href);
+                    }
+                }
+
+                return false;
             }
         });
 

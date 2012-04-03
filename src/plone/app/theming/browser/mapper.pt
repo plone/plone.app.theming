@@ -743,7 +743,8 @@
             <p class="discreet" i18n:translate="help_theme_mapper_details">
                 Hover over an element to see its selector in the status bar at the bottom
                 of the panel. Press Esc to move the selection to its parent. Press
-                Enter to save or confirm the selection.
+                Enter or left-click to save or confirm the selection. Hold down
+                the Alt key whilst clicking to follow links.
             </p>
 
             <dl style="display: none" class="ie-warning portalMessage warning">

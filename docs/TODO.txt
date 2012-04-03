@@ -19,7 +19,9 @@ File manager
 Mapper
 ------
 
-[ ] Make 'save' act on click, not (just) Enter; use shift+click to navigate
+[ ] Make alt-click-to-navigate work better
+    - fails to work when clicking on the portal logo
+    - incorrect behaviour for anchor links
 
 [ ] Improve styling overall
 
