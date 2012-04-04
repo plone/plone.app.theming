@@ -151,9 +151,17 @@
 
             // View source
 
-            $(".source").click(function(event) {
+            $(".sourceToggle").click(function(event) {
                 event.preventDefault();
                 $(this).toggleClass("sourceActive");
+                return false;
+            });
+
+            // Enable/disable highlighter
+
+            $(".highlighterToggle").click(function(event) {
+                event.preventDefault();
+                $(this).toggleClass("highlighterDisabled");
                 return false;
             });
 
@@ -393,7 +401,7 @@
                 $("#preview-frame").show();
                 $("#preview-source").hide();
 
-                $("#preview-panel .source").click(function() {
+                $("#preview-panel .sourceToggle").click(function() {
                     if($("#preview-frame").is(":visible")) {
                         var html = $("#preview-frame").contents().find(":root").html();
                         previewSource.setValue("\n<" + "html>" + html + '\n<' + '/html>');
@@ -446,9 +454,10 @@
             (function() {
 
                 var contentSource = new SourceEditor('content-source', extensionModes.html, "", true);
+                var frameHighlighter = null;
 
                 $("#content-frame").ready(function() {
-                    var frameHighlighter = new FrameHighlighter("#content-frame", "#content-frame-info", "#content-frame-shelf", "content",
+                    frameHighlighter = new FrameHighlighter("#content-frame", "#content-frame-info", "#content-frame-shelf", "content",
                             ruleBuilder, function(node) {
                                 animateHighlight($("#content-panel .frame-info"));
                             });
@@ -465,7 +474,7 @@
                 $("#content-frame").show();
                 $("#content-source").hide();
 
-                $("#content-panel .source").click(function() {
+                $("#content-panel .sourceToggle").click(function() {
                     if($("#content-frame").is(":visible")) {
                         var html = $("#content-frame").contents().find(":root").html();
                         contentSource.setValue("<" + "html>\n" + html + '\n<' + '/html>');
@@ -477,6 +486,10 @@
                         $("#content-frame").show();
                         $("#content-source").hide();
                     }
+                });
+
+                $("#content-panel .highlighterToggle").click(function() {
+                    frameHighlighter.enabled = ! frameHighlighter.enabled;
                 });
 
                 $("#content-panel .fullscreen").click(function(event) {
@@ -519,6 +532,7 @@
             (function() {
 
                 var themeSource = new SourceEditor('theme-source', extensionModes.html, "", true);
+                var frameHighlighter = null;
 
                 function reloadFrame() {
                     var path = $("#file-selector option:selected").val();
@@ -533,7 +547,7 @@
                 }
 
                 $("#theme-frame").ready(function() {
-                    var frameHighlighter = new FrameHighlighter("#theme-frame", "#theme-frame-info", "#theme-frame-shelf", "theme",
+                    frameHighlighter = new FrameHighlighter("#theme-frame", "#theme-frame-info", "#theme-frame-shelf", "theme",
                             ruleBuilder, function(node) {
                                 animateHighlight($("#theme-panel .frame-info"));
                             });
@@ -552,7 +566,7 @@
                 $("#theme-frame").show();
                 $("#theme-source").hide();
 
-                $("#theme-panel .source").click(function() {
+                $("#theme-panel .sourceToggle").click(function() {
                     if($("#theme-frame").is(":visible")) {
                         $("#theme-frame").hide();
                         $("#theme-source").show();
@@ -562,6 +576,10 @@
                         $("#theme-frame").show();
                         $("#theme-source").hide();
                     }
+                });
+
+                $("#theme-panel .highlighterToggle").click(function() {
+                    frameHighlighter.enabled = ! frameHighlighter.enabled;
                 });
 
                 $("#theme-panel .fullscreen").click(function(event) {
@@ -742,9 +760,10 @@
 
             <p class="discreet" i18n:translate="help_theme_mapper_details">
                 Hover over an element to see its selector in the status bar at the bottom
-                of the panel. Press Esc to move the selection to its parent. Press
-                Enter or left-click to save or confirm the selection. Hold down
-                the Alt key whilst clicking to follow links.
+                of the panel. Press <em>Esc</em> to move the selection to its parent. Press
+                <em>Enter</em> or left-click to save or confirm the selection. If you wish
+                to navigate the theme or content by clicking links, you can disable
+                the element selector using the toggle icon above the panel.
             </p>
 
             <dl style="display: none" class="ie-warning portalMessage warning">
@@ -774,15 +793,9 @@
                             />
                     </select>
 
-                    <!-- <input type="radio" name="view-theme" id="view-theme-preview" value="preview" checked="checked" />
-                    <label for="view-theme-preview" i18n:translate="">Preview</label>
-
-                    <input type="radio" name="view-theme" id="view-theme-source" value="source" />
-                    <label for="view-theme-source" i18n:translate="">Source</label> -->
-
-                    <a class="source" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
+                    <a class="sourceToggle" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
+                    <a class="highlighterToggle" href="#" title="Toggle highlighter" i18n:attributes="title">&nbsp;</a>
                     <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
-
                 </div>
 
                 <label i18n:translate="heading_theme">Raw theme</label>
@@ -803,7 +816,8 @@
             <div id="content-panel" class="mapper-box cell width-1:2 position-1:2">
 
                 <div class="panel-toolbar">
-                    <a class="source" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
+                    <a class="sourceToggle" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
+                    <a class="highlighterToggle" href="#" title="Toggle highlighter" i18n:attributes="title">&nbsp;</a>
                     <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
                 </div>
 
@@ -870,7 +884,7 @@
             <div id="preview-panel" class="mapper-box cell width-1:2 position-1:2">
 
                 <div class="panel-toolbar">
-                    <a class="source" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
+                    <a class="sourceToggle" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
                     <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
                 </div>
 

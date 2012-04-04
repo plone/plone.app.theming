@@ -80,11 +80,11 @@
 }
 
 a.fullscreen {
-    vertical-align: middle;
+    vertical-align: top;
     display: inline-block;
-    line-height: 1.2em;
+    line-height: 12px;
     padding: 0 0 0 18px;
-    margin: 0 0 0 5px;
+    margin: 5px 0 0 2px;
     background-image: url('./full.png');
     background-repeat: no-repeat;
     text-decoration: none;
@@ -97,13 +97,13 @@ a.fullscreenActive {
     background-image: url('./small.png');
 }
 
-a.source {
-    vertical-align: middle;
+a.sourceToggle {
+    vertical-align: top;
     display: inline-block;
-    line-height: 1.2em;
+    line-height: 12px;
     padding: 0 0 0 20px;
-    margin: 0 0 0 10px;
-    background-image: url('./source.png');
+    margin: 5px 0 0 5px;
+    background-image: url('./preview.png');
     background-repeat: no-repeat;
     text-decoration: none;
     border-bottom: none !important;
@@ -112,7 +112,25 @@ a.source {
     content: none;
 }
 a.sourceActive {
-    background-image: url('./preview.png');
+    background-image: url('./source.png');
+}
+
+a.highlighterToggle {
+    vertical-align: top;
+    display: inline-block;
+    line-height: 12px;
+    padding: 0 0 0 14px;
+    margin: 5px 0 0 5px;
+    background-image: url('./enable.png');
+    background-repeat: no-repeat;
+    text-decoration: none;
+    border-bottom: none !important;
+    color: #333 !important;
+    font-size: 90%;
+    content: none;
+}
+a.highlighterDisabled {
+    background-image: url('./disable.png');
 }
 
 /* Wizard */

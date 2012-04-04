@@ -208,6 +208,7 @@ var FrameHighlighter = function(frame, infoPanel, shelf, scope, ruleBuilder, ons
     this.scope = scope;
     this.ruleBuilder = ruleBuilder;
     this.onsave = onsave || null;
+    this.enabled = true;
 
     this.currentOutline = null;
     this.activeClass = '_theming-highlighted';
@@ -248,12 +249,12 @@ FrameHighlighter.prototype.setupElements = function() {
         $(this.frame).contents().find("*").hover(
             function(event) {
 
-                $(highlighter.frame).focus();
-
-                highlighter.setOutline(this);
-                event.stopPropagation();
-
-                $(highlighter.infoPanel).text(bestSelector(this));
+                if(highlighter.enabled) {
+                    $(highlighter.frame).focus();
+                    highlighter.setOutline(this);
+                    event.stopPropagation();
+                    $(highlighter.infoPanel).text(bestSelector(this));
+                }
             },
             function(event) {
                 if($(this).hasClass(highlighter.activeClass)) {
@@ -273,7 +274,7 @@ FrameHighlighter.prototype.setupElements = function() {
                 $(highlighter.infoPanel).text("");
 
                 return false;
-            } else if(!event.altKey) {
+            } else if(highlighter.enabled) {
                 event.stopPropagation();
                 event.preventDefault();
 
@@ -289,19 +290,9 @@ FrameHighlighter.prototype.setupElements = function() {
                 }
 
                 return false;
-            } else if(event.altKey) {
-                event.preventDefault();
-
-                // XXX: This doesn't work well when clicking on e.g. the Plone logo
-                if($(this).is("a")) {
-                    var href = $(this).attr('href');
-                    if(href.length > 0 && href[0] != '#') {
-                        $(highlighter.frame).attr('src', href);
-                    }
-                }
-
-                return false;
             }
+
+            return true;
         });
 
         $(this.frame).contents().keyup(function (event) {
