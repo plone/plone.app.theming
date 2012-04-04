@@ -249,7 +249,7 @@ FrameHighlighter.prototype.setupElements = function() {
         $(this.frame).contents().find("*").hover(
             function(event) {
 
-                if(highlighter.enabled) {
+                if(highlighter.enabled || highlighter.ruleBuilder.active) {
                     $(highlighter.frame).focus();
                     highlighter.setOutline(this);
                     event.stopPropagation();
