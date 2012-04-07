@@ -4,11 +4,7 @@ plone.app.theming to-do
 Control panel
 -------------
 
-[ ] Move Advanced Settings last
-[ ] Put import and create new at the bottom of Manage theme?
 [ ] Clone action?
-[ ] Call the action in Manage themes, "Preview and map rules"
-[ ] Allow rules wizard to work with preselected rules and only prompt if none made?
 
 File manager
 ------------
@@ -21,6 +17,9 @@ File manager
 
 Mapper
 ------
+
+[ ] Allow rules wizard to work with preselected rules and only prompt if none made?
+[ ] Catch validation errors in rules.xml more meaningfully
 
 [ ] Working copy editing
 [ ] Table-based visual rules list viewer/editor instead of source (unless rules source too complex)

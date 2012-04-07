@@ -212,7 +212,7 @@ class ThemingControlpanel(BrowserView):
                 IStatusMessage(self.request).add(
                         _(u"There were errors"), "error"
                     )
-                self.redirectToFieldset('import')
+                self.redirectToFieldset('manage')
                 return False
 
         if 'form.button.CreateTheme' in form:
