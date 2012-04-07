@@ -4,17 +4,17 @@ plone.app.theming to-do
 File manager
 ------------
 
-[ ] Refactor JavaScript to make it more maintainable
+[ ] Show current path when adding/uploading file/folder
+[ ] Add right-click options to add file, folder and upload
 
-[ ] Remove 'current folder' stateful variable
-    - Use right click for add/upload operations
-    - Select folder from within add/upload dialogues
+[ ] Bug: If an open file is moved and then saved, saves to wrong location
+[ ] Bug: It is possible to rename a file to something with a slash in it
+[ ] Bug: Download in right-click menu does nothing
 
-[ ] Improve styling overall
-[ ] Style right-click menu more like Plone
+[ ] Improve layout of prompt overlay
+[ ] Let user choose different target folder for add/upload file/folder from within overlay prompt
 
 [ ] Cmd-Shift-] and Cmd-Shift-[ to move right/left between tabs
-[ ] IE support - may need to use the SourceEditor abstraction from mapper.js
 
 Mapper
 ------
