@@ -1,25 +1,26 @@
 plone.app.theming to-do
 =======================
 
+Control panel
+-------------
+
+[ ] Move Advanced Settings last
+[ ] Put import and create new at the bottom of Manage theme?
+[ ] Clone action?
+[ ] Call the action in Manage themes, "Preview and map rules"
+[ ] Allow rules wizard to work with preselected rules and only prompt if none made?
+
 File manager
 ------------
 
 [ ] Show current path when adding/uploading file/folder
-[ ] Add right-click options to add file, folder and upload
+[ ] Let user choose different target folder for add/upload file/folder from within overlay prompt
 
 [ ] Bug: If an open file is moved and then saved, saves to wrong location
 [ ] Bug: It is possible to rename a file to something with a slash in it
-[ ] Bug: Download in right-click menu does nothing
-
-[ ] Improve layout of prompt overlay
-[ ] Let user choose different target folder for add/upload file/folder from within overlay prompt
-
-[ ] Cmd-Shift-] and Cmd-Shift-[ to move right/left between tabs
 
 Mapper
 ------
-
-[ ] Improve styling overall
 
 [ ] Working copy editing
 [ ] Table-based visual rules list viewer/editor instead of source (unless rules source too complex)
