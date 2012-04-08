@@ -4,16 +4,15 @@ plone.app.theming to-do
 Control panel
 -------------
 
-[ ] Clone action?
+[ ] Clone action on 'Manage theme'?
 
 File manager
 ------------
 
-[ ] Show current path when adding/uploading file/folder
-[ ] Let user choose different target folder for add/upload file/folder from within overlay prompt
+[ ] Show current path when adding/uploading file/folder?
+[ ] Let user choose different target folder for add/upload file/folder from within overlay prompt?
 
-[ ] Bug: If an open file is moved and then saved, saves to wrong location
-[ ] Bug: It is possible to rename a file to something with a slash in it
+[ ] Server-side validation of file name for new file/new folder/upload
 
 Mapper
 ------

@@ -136,7 +136,7 @@ a.highlighterDisabled {
 /* Wizard */
 
 #new-rule-wizard {
-    font-size: 100%;
+    width: auto;
 }
 
  .wizard-text {
@@ -171,6 +171,37 @@ a.highlighterDisabled {
     clear: both;
     margin-top: 1em;
 }
+
+#new-rule-wizard label {
+    font-size: 120%;
+}
+
+#new-rule-wizard .pb-ajax .documentDescription{
+    padding: 0 0 5px 0;
+    white-space: nowrap;
+    font-weight: normal;
+}
+
+#new-rule-wizard .pb-ajax .input{
+    padding: 5px 5px 5px 0;
+    min-width: 280px;
+}
+
+#new-rule-wizard .pb-ajax .input input{
+    width: 100%;
+    padding-left: 0;
+}
+
+
+#new-rule-wizard .pb-ajax .formControls{
+    margin:0;
+    padding: 5px 5px 5px 0;
+}
+
+#new-rule-wizard .pb-ajax .formControls input{
+    margin-right: 5px;
+}
+
 
 /* Preview */
 .source-editor {

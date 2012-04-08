@@ -265,7 +265,7 @@
                     updateRule(ruleBuilder);
                 });
 
-                $("#new-rule-step-1 button.next").click(function() {
+                $("#new-rule-step-1 .next").click(function() {
                     var ruleType = $("input[name='new-rule-type']:checked").val();
                     ruleBuilder.start(ruleType);
                 });
@@ -273,14 +273,14 @@
                 // The insert wizard doesn't work well in IE where we use plain
                 // textareas, but we offer a copy-to-clipboard button instead
                 if($.browser.msie) {
-                    $("#new-rule-step-2 button.insert").hide();
-                    $("#new-rule-step-2 button.copy").click(function() {
+                    $("#new-rule-step-2 .insert").hide();
+                    $("#new-rule-step-2 .copy").click(function() {
                         window.clipboardData.setData('Text', $("#new-rule-output").val());
                         overlay.close();
                     });
                 } else {
-                    $("#new-rule-step-2 button.copy").hide();
-                    $("#new-rule-step-2 button.insert").click(function() {
+                    $("#new-rule-step-2 .copy").hide();
+                    $("#new-rule-step-2 .insert").click(function() {
 
                         var rule = $("#new-rule-output").val();
 
@@ -1182,18 +1182,18 @@
         </div>
 
         <!-- Wizard overlay -->
-        <div id="new-rule-wizard" class="overlay">
+        <div id="new-rule-wizard" class="overlay overlay-ajax">
             <div class="close">
                 <span i18n:translate="">Close</span>
             </div>
             <div class="pb-ajax">
                 <div class="new-rule">
-                    <h2 i18n:translate="theming_mapper_heading_newrule">New rule</h2>
+                    <h1 class="documentFirstHeading" i18n:translate="theming_mapper_heading_newrule">New rule</h1>
 
                     <div id="new-rule-step-1">
-                        <p i18n:translate="theming_mapper_wizard_step1">
-                            Choose the operation you would like to perform:
-                        </p>
+                        <div class="documentDescription" i18n:translate="theming_mapper_wizard_step1">
+                            Choose the operation you would like to perform
+                        </div>
 
                         <form>
                             <div id="new-rule-type-panel">
@@ -1230,38 +1230,38 @@
                             </div>
                         </form>
 
-                        <div class=" ">
-                            <button type="button" class="next" i18n:translate="">Next</button>
-                            <button type="button" class="close" i18n:translate="">Cancel</button>
+                        <div class="formControls new-rule-actions">
+                            <input type="submit" class="context next" i18n:attributes="value" value="Next" />
+                            <input type="submit" class="standalone close" i18n:attributes="value" value="Cancel" />
                         </div>
 
                     </div>
                     <div id="new-rule-step-2" style="display:none">
-                        <p i18n:translate="theming_mapper_wizard_step2">
+                        <div class="documentDescription" i18n:translate="theming_mapper_wizard_step2">
                             The rule can be found below. Use the checkboxes
                             to further refine it.
-                        </p>
+                        </div>
                         <form>
                             <div id="new-rule-output-panel">
                                 <textarea name="new-rule-output" id="new-rule-output"></textarea>
                             </div>
                             <div id="new-rule-selector-panel">
                                 <div>
-                                    <input type="checkbox" class="rule-modifier" name="new-rule-content-children" value="replace" id="new-rule-content-children" />
-                                    <label for="new-rule-content-children" i18n:translate="">Use children of the content</label>
+                                    <input type="checkbox" class="rule-modifier" name="new-rule-theme-children" value="replace" id="new-rule-theme-children" />
+                                    <label for="new-rule-theme-children" i18n:translate="">Apply rule to children of the matched theme node(s)</label>
                                 </div>
                                 <div>
-                                    <input type="checkbox" class="rule-modifier" name="new-rule-theme-children" value="replace" id="new-rule-theme-children" />
-                                    <label for="new-rule-theme-children" i18n:translate="">Use children of the theme</label>
+                                    <input type="checkbox" class="rule-modifier" name="new-rule-content-children" value="replace" id="new-rule-content-children" />
+                                    <label for="new-rule-content-children" i18n:translate="">Apply rule to children of the matched content node(s)</label>
                                 </div>
                             </div>
 
                         </form>
 
-                        <div class="new-rule-actions">
-                            <button type="button" class="insert" i18n:translate="" tal:condition="view/editable">Insert</button>
-                            <button type="button" class="copy" i18n:translate="">Copy to clipboard</button>
-                            <button type="button" class="close" i18n:translate="">Close</button>
+                        <div class="formControls new-rule-actions">
+                            <input type="submit" class="context insert" i18n:attributes="value" tal:condition="view/editable" value="Insert" />
+                            <input type="submit" class="context copy" i18n:attributes="value" value="Copy to clipboard" />
+                            <input type="submit" class="standalone close" i18n:attributes="value" value="Close" />
                         </div>
                     </div>
 
