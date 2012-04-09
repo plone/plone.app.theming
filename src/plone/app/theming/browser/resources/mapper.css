@@ -46,6 +46,10 @@
     margin: 0 -10px 5px 0;
 }
 
+.panel-toolbar button {
+    padding: 3px;
+}
+
 .panel-toolbar label {
     font-weight: normal;
 }
