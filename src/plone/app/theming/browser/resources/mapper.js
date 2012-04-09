@@ -201,18 +201,23 @@ RuleBuilder.prototype.calculateDiazoSelector = function(element, scope, children
 
 // Outline / highlight management
 
-var FrameHighlighter = function(frame, infoPanel, shelf, scope, ruleBuilder, onsave) {
+var FrameHighlighter = function(frame, scope, ruleBuilder, onselect, onsave) {
     this.frame = frame;
-    this.infoPanel = infoPanel;
-    this.shelf = shelf;
     this.scope = scope;
     this.ruleBuilder = ruleBuilder;
+    this.onselect = onselect || null;
     this.onsave = onsave || null;
     this.enabled = true;
+    this.saved = null;
 
     this.currentOutline = null;
     this.activeClass = '_theming-highlighted';
 };
+
+FrameHighlighter.prototype.bestSelector = function(element) {
+        return this.ruleBuilder.calculateUniqueCSSSelector(element) ||
+               this.ruleBuilder.calculateUniqueXPathExpression(element);
+    };
 
 FrameHighlighter.prototype.setOutline = function(element) {
         $(element).data('old-outline', $(element).css('outline'));
@@ -238,12 +243,24 @@ FrameHighlighter.prototype.clearOutline = function(element) {
         this.currentOutline = null;
     };
 
+FrameHighlighter.prototype.save = function(element) {
+        this.saved = element;
+        if(this.onsave != null) {
+            this.onsave(element, this.bestSelector(element));
+        }
+    };
+
 FrameHighlighter.prototype.setupElements = function() {
         var highlighter = this;
 
-        function bestSelector(element) {
-            return highlighter.ruleBuilder.calculateUniqueCSSSelector(element) ||
-                   highlighter.ruleBuilder.calculateUniqueXPathExpression(element);
+        function save(element) {
+            highlighter.setOutline(element);
+            highlighter.save(element);
+            if(highlighter.ruleBuilder.active && highlighter.ruleBuilder.currentScope == highlighter.scope) {
+                highlighter.ruleBuilder.select(element);
+                highlighter.ruleBuilder.next();
+                highlighter.clearOutline();
+            }
         }
 
         $(this.frame).contents().find("*").hover(
@@ -253,13 +270,18 @@ FrameHighlighter.prototype.setupElements = function() {
                     $(highlighter.frame).focus();
                     highlighter.setOutline(this);
                     event.stopPropagation();
-                    $(highlighter.infoPanel).text(bestSelector(this));
+
+                    if(highlighter.onselect != null) {
+                        highlighter.onselect(this, highlighter.bestSelector(this));
+                    }
                 }
             },
             function(event) {
                 if($(this).hasClass(highlighter.activeClass)) {
                     highlighter.clearOutline(this);
-                    $(highlighter.infoPanel).text("");
+                    if(highlighter.onselect != null) {
+                        highlighter.onselect(null, null);
+                    }
                 }
             }
         ).click(function (event) {
@@ -271,23 +293,16 @@ FrameHighlighter.prototype.setupElements = function() {
                 highlighter.ruleBuilder.next();
 
                 highlighter.clearOutline();
-                $(highlighter.infoPanel).text("");
+                if(highlighter.onselect != null) {
+                    highlighter.onselect(null, null);
+                }
 
                 return false;
             } else if(highlighter.enabled) {
                 event.stopPropagation();
                 event.preventDefault();
 
-                $(highlighter.shelf).text(bestSelector(highlighter.currentOutline));
-                if(highlighter.onsave != null) {
-                    highlighter.onsave(highlighter.shelf);
-                }
-
-                if(highlighter.ruleBuilder.active && highlighter.ruleBuilder.currentScope == highlighter.scope) {
-                    highlighter.ruleBuilder.select(highlighter.currentOutline);
-                    highlighter.ruleBuilder.next();
-                    highlighter.clearOutline();
-                }
+                save(this);
 
                 return false;
             }
@@ -297,6 +312,9 @@ FrameHighlighter.prototype.setupElements = function() {
 
         $(this.frame).contents().keyup(function (event) {
 
+            if(!highlighter.enabled)
+                return true;
+
             // ESC -> Move selection to parent node
             if(event.keyCode == 27 && highlighter.currentOutline != null) {
                 event.stopPropagation();
@@ -305,7 +323,9 @@ FrameHighlighter.prototype.setupElements = function() {
                 var parent = highlighter.currentOutline.parentNode;
                 if(parent != null && parent.tagName != undefined) {
                     highlighter.setOutline(parent);
-                    $(highlighter.infoPanel).text(bestSelector(parent));
+                    if(highlighter.onselect != null) {
+                        highlighter.onselect(parent, highlighter.bestSelector(parent));
+                    }
                 }
             }
 
@@ -315,16 +335,9 @@ FrameHighlighter.prototype.setupElements = function() {
                 event.stopPropagation();
                 event.preventDefault();
 
-                $(highlighter.shelf).text(bestSelector(highlighter.currentOutline));
-                if(highlighter.onsave != null) {
-                    highlighter.onsave(highlighter.shelf);
-                }
+                save(highlighter.currentOutline);
 
-                if(highlighter.ruleBuilder.active && highlighter.ruleBuilder.currentScope == highlighter.scope) {
-                    highlighter.ruleBuilder.select(highlighter.currentOutline);
-                    highlighter.ruleBuilder.next();
-                    highlighter.clearOutline();
-                }
+                return false;
             }
         });
     };
