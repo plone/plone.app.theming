@@ -164,6 +164,49 @@
                 }
             );
 
+            themeFrameHighlighter = new FrameHighlighter("#theme-frame",
+                function(highlighter, node) { // onselect
+                    $("#theme-frame-info").text(node == null? "" : ruleBuilder.bestSelector(node));
+                },
+                function(highlighter, node) { // onsave
+                    if(node == null) {
+                        $("#theme-frame-shelf-container").hide();
+                    } else {
+                        $("#theme-frame-shelf-container").show();
+                    }
+
+                    animateHighlight($("#theme-panel .frame-info"));
+                    $("#theme-frame-shelf").text(node == null? "" : ruleBuilder.bestSelector(node));
+
+                    if(ruleBuilder.active && ruleBuilder.currentScope == "theme") {
+                        ruleBuilder.select(node);
+                        ruleBuilder.next();
+                    }
+
+                }
+            );
+
+            contentFrameHighlighter = new FrameHighlighter("#content-frame",
+                function(highlighter, node) { // onselect
+                    $("#content-frame-info").text(node == null? "" : ruleBuilder.bestSelector(node));
+                },
+                function(highlighter, node) { // onsave
+                    if(node == null) {
+                        $("#content-frame-shelf-container").hide();
+                    } else {
+                        $("#content-frame-shelf-container").show();
+                    }
+
+                    animateHighlight($("#content-panel .frame-info"));
+                    $("#content-frame-shelf").text(node == null? "" : ruleBuilder.bestSelector(node));
+
+                    if(ruleBuilder.active && ruleBuilder.currentScope == "content") {
+                        ruleBuilder.select(node);
+                        ruleBuilder.next();
+                    }
+                }
+            );
+
             ruleBuilder = new RuleBuilder(function(ruleBuilder) {
                 $(".wizard-text").css('display', 'none');
                 $.mask.close();
@@ -328,37 +371,6 @@
                 });
             }
 
-            themeFrameHighlighter = new FrameHighlighter("#theme-frame",
-                function(highlighter, node) { // onselect
-                    $("#theme-frame-info").text(node == null? "" : ruleBuilder.bestSelector(node));
-                },
-                function(highlighter, node) { // onsave
-                    animateHighlight($("#theme-panel .frame-info"));
-                    $("#theme-frame-shelf").text(node == null? "" : ruleBuilder.bestSelector(node));
-
-                    if(ruleBuilder.active && ruleBuilder.currentScope == "theme") {
-                        ruleBuilder.select(node);
-                        ruleBuilder.next();
-                    }
-
-                }
-            );
-
-            contentFrameHighlighter = new FrameHighlighter("#content-frame",
-                function(highlighter, node) { // onselect
-                    $("#content-frame-info").text(node == null? "" : ruleBuilder.bestSelector(node));
-                },
-                function(highlighter, node) { // onsave
-                    animateHighlight($("#content-panel .frame-info"));
-                    $("#content-frame-shelf").text(node == null? "" : ruleBuilder.bestSelector(node));
-
-                    if(ruleBuilder.active && ruleBuilder.currentScope == "content") {
-                        ruleBuilder.select(node);
-                        ruleBuilder.next();
-                    }
-                }
-            );
-
             // Fullscreen
 
             $(".fullscreen").click(function(event) {
@@ -511,6 +523,11 @@
                     return false;
                 });
 
+                $("#theme-frame-shelf-clear").click(function() {
+                    themeFrameHighlighter.save(null);
+                    return false;
+                });
+
             })();
 
             // Content panel
@@ -581,6 +598,11 @@
                         contentSource.resize();
                    }
 
+                    return false;
+                });
+
+                $("#content-frame-shelf-clear").click(function() {
+                    contentFrameHighlighter.save(null);
                     return false;
                 });
 
@@ -847,9 +869,11 @@
                 <pre class="source-editor" id="theme-source"></pre>
 
                 <div class="frame-info">
-                    <div class="frame-shelf">
+                    <div id="theme-frame-shelf-container" class="frame-shelf" style="display:none">
                         <span i18n:translate="theming_mapper_shelf_label">Selected:</span>
-                        <span id="theme-frame-shelf" i18n:translate="">(none)</span>
+                        <span class="shelf" id="theme-frame-shelf"></span>
+                        <a class="clear-shelf" id="theme-frame-shelf-clear" href="#clear"
+                            title="Clear selection" i18n:attributes="title">x</a>
                     </div>
                     <span id="theme-frame-info"></span>
                 </div>
@@ -873,9 +897,11 @@
                 <pre class="source-editor" id="content-source"></pre>
 
                 <div class="frame-info">
-                    <div class="frame-shelf">
+                    <div id="content-frame-shelf-container" class="frame-shelf" style="display:none">
                         <span i18n:translate="theming_mapper_shelf_label">Selected:</span>
-                        <span id="content-frame-shelf" i18n:translate="">(none)</span>
+                        <span class="shelf" id="content-frame-shelf">(none)</span>
+                        <a class="clear-shelf" id="content-frame-shelf-clear" href="#clear"
+                            title="Clear selection" i18n:attributes="title">x</a>
                     </div>
                     <span id="content-frame-info"></span>
                 </div>

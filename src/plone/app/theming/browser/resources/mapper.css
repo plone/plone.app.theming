@@ -226,6 +226,13 @@ a.highlighterDisabled {
     float: right;
 }
 
+.clear-shelf {
+    font-size: 85%;
+    vertical-align: top;
+    text-decoration: none;
+    border-bottom: none !important;
+}
+
 /* Help */
 #rules-help-text {
     max-width: 55%;
