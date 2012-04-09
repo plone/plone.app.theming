@@ -99,9 +99,7 @@
                 xml: new XMLMode()
             };
             var defaultMode = new TextMode();
-
-            var ruleBuilder = null; // initialised in the closure for the rule editor
-            var dirties = {}; // which things are dirty?
+            var dirties = {}; // which files are dirty?
 
             function getExtension(path) {
                 var m = path.match(/.(\w+)$/);
@@ -141,6 +139,217 @@
                 $(".ie-warning").show();
             }
 
+            // Rule builder and highlighters
+
+            var ruleBuilder = null;
+            var rulesEditor = null;
+            var themeFrameHighlighter = null;
+            var contentFrameHighlighter = null;
+
+            $("#new-rule").overlay({
+                closeOnClick: false,
+                onBeforeClose: function() {
+                    if(ruleBuilder.active && $("#new-rule-step-2").is(":visible")) {
+                        ruleBuilder.end();
+                        rulesEditor.focus();
+                    }
+                }
+            });
+            var ruleBuilderOverlay = $("#new-rule").data('overlay');
+
+            var rulesEditor = new SourceEditor('editor', extensionModes.html, $("#file-contents").text(), !EDITABLE,
+                function() {
+                    dirties['rules.xml'] = true;
+                    $("#rules-editor .dirtyMarker").show();
+                }
+            );
+
+            ruleBuilder = new RuleBuilder(function(ruleBuilder) {
+                $(".wizard-text").css('display', 'none');
+                $.mask.close();
+
+                if(ruleBuilder.currentScope == 'theme') {
+                    if(ruleBuilderOverlay.isOpened()) {
+                        ruleBuilderOverlay.close();
+                    }
+
+                    if(themeFrameHighlighter.saved != null) {
+                        // Use saved rule
+                        ruleBuilder.select(themeFrameHighlighter.saved);
+                        ruleBuilder.next();
+                    } else {
+                        // Let the frame highlighter perform a selection
+                        $("#new-rule-text-select-theme").show();
+                        $("#view-theme-preview").click();
+                        $("#theme-panel, .wizard-text").expose();
+                    }
+
+                } else if(ruleBuilder.currentScope == 'content') {
+                    if(ruleBuilderOverlay.isOpened()) {
+                        ruleBuilderOverlay.close();
+                    }
+
+                    if(contentFrameHighlighter.saved != null) {
+                        // Use saved rule
+                        ruleBuilder.select(contentFrameHighlighter.saved);
+                        ruleBuilder.next();
+                    } else {
+                        // Let the frame highlighter perform a selection
+                        $("#new-rule-text-select-content").show();
+                        $("#view-content-preview").click();
+                        $("#content-panel, .wizard-text").expose();
+                    }
+
+                } else if(ruleBuilder.ruleType != null && ruleBuilder.currentScope == null) {
+                    $("#new-rule-step-1").hide();
+                    $("#new-rule-step-2").show();
+                    updateRule(ruleBuilder);
+
+                    if(!ruleBuilderOverlay.isOpened()) {
+                        ruleBuilderOverlay.load();
+                    }
+
+                } else { // end
+
+                    if(ruleBuilderOverlay.isOpened()) {
+                        ruleBuilderOverlay.close();
+                    }
+
+                    $("#new-rule-step-1").show();
+                    $("#new-rule-step-2").hide();
+
+
+                }
+            });
+
+            function updateRule(ruleBuilder) {
+                $("#new-rule-output").val(
+                    ruleBuilder.buildRule(
+                        $('#new-rule-content-children').is(':checked'),
+                        $('#new-rule-theme-children').is(':checked')
+                    )
+                );
+            }
+
+            $(".wizard-cancel").click(function() {
+                ruleBuilder.end();
+                return false;
+            });
+
+            $(".rule-modifier").change(function() {
+                updateRule(ruleBuilder);
+            });
+
+            $("#new-rule-step-1 .next").click(function() {
+                var ruleType = $("input[name='new-rule-type']:checked").val();
+                ruleBuilder.start(ruleType);
+            });
+
+            // The insert wizard doesn't work well in IE where we use plain
+            // textareas, but we offer a copy-to-clipboard button instead
+            if($.browser.msie) {
+                $("#new-rule-step-2 .insert").hide();
+                $("#new-rule-step-2 .copy").click(function() {
+                    window.clipboardData.setData('Text', $("#new-rule-output").val());
+                    ruleBuilderOverlay.close();
+                });
+            } else {
+                $("#new-rule-step-2 .copy").hide();
+                $("#new-rule-step-2 .insert").click(function() {
+
+                    var rule = $("#new-rule-output").val();
+
+                    // Get the underlying ACE editor: no IE support for this anyway
+                    var aceEditor = rulesEditor.ace;
+
+                    function findStartTag(backwards) {
+                        aceEditor.find("<\\w+", {
+                            backwards: backwards,
+                            wrap: false,
+                            wholeWord: false,
+                            regExp: true
+                        });
+                    }
+
+                    function indent(string, amount) {
+                        var padding = '';
+                        for(var i = 0; i < amount; ++i) {
+                            padding += ' ';
+                        }
+                        return padding + string.replace(/\n/g, '\n' + padding) + '\n\n';
+                    }
+
+                    // Go to the next opening tag - we want to insert before this
+                    findStartTag(false);
+                    if(aceEditor.getCursorPosition().row <= 1) {
+                        // Probably the opening rules tag
+                        findStartTag(false);
+                    }
+
+                    var selectionText = aceEditor.getSession().getTextRange(aceEditor.getSelectionRange());
+
+                    // If we didn't find anything, look for the end of the current tag
+                    if(selectionText == "") {
+
+                        aceEditor.find("(/>|<" + "/)", {
+                            backwards: false,
+                            wrap: false,
+                            wholeWord: false,
+                            regExp: true
+                        });
+
+                        var selectionText = aceEditor.getSession().getTextRange(aceEditor.getSelectionRange());
+                        if(selectionText == "") {
+                            // Still nothing? Go to the end
+                            aceEditor.navigateFileEnd();
+                        } else {
+                            // Go one past the end tag, but first figure out how far we should i
+                            aceEditor.navigateDown();
+                        }
+
+                    }
+
+                    var indentation = aceEditor.getSelectionRange().start.column;
+
+                    var cursorPosition = aceEditor.getCursorPosition();
+                    var newlines = rule.match(/\n/g);
+                    var rows = 0;
+                    if(newlines != null) {
+                        rows = newlines.length;
+                    }
+
+                    aceEditor.navigateTo(cursorPosition.row, 0);
+                    aceEditor.insert(indent(rule, indentation));
+                    aceEditor.navigateTo(cursorPosition.row, 0);
+                    aceEditor.getSelection().selectTo(cursorPosition.row + rows + 1, 0);
+                    rulesEditor.focus();
+                    dirties['rules.xml'] = true;
+                    $("#rules-editor .dirtyMarker").show();
+
+                    ruleBuilderOverlay.close();
+                });
+            }
+
+            themeFrameHighlighter = new FrameHighlighter("#theme-frame", "theme", ruleBuilder,
+                function(node, selector) { // onselect
+                    $("#theme-frame-info").text(selector || "");
+                },
+                function(node, selector) { // onsave
+                    animateHighlight($("#theme-panel .frame-info"));
+                    $("#theme-frame-shelf").text(selector || "");
+                }
+            );
+
+            contentFrameHighlighter = new FrameHighlighter("#content-frame", "content", ruleBuilder,
+                function(node, selector) { // onselect
+                    $("#content-frame-info").text(selector || "");
+                },
+                function(node, selector) { // onsave
+                    animateHighlight($("#content-panel .frame-info"));
+                    $("#content-frame-shelf").text(selector || "");
+                }
+            );
+
             // Fullscreen
 
             $(".fullscreen").click(function(event) {
@@ -165,89 +374,15 @@
                 return false;
             });
 
-            // Rules editor and rule builder (must come first)
+            // Rules editor
 
             (function() {
 
-                var editor = new SourceEditor('editor', extensionModes.html, $("#file-contents").text(), !EDITABLE,
-                    function() {
-                        dirties['rules.xml'] = true;
-                    }
-                );
-                var overlay = null;
-
-                function updateRule(ruleBuilder) {
-                    $("#new-rule-output").val(ruleBuilder.buildRule(
-                        $('#new-rule-content-children').is(':checked'),
-                        $('#new-rule-theme-children').is(':checked')
-                    ));
-                }
-
-                ruleBuilder = new RuleBuilder(function(ruleBuilder) {
-                    $(".wizard-text").css('display', 'none');
-                    $.mask.close();
-
-                    if(ruleBuilder.currentScope == 'theme') {
-                        if(overlay.isOpened()) {
-                            overlay.close();
-                        }
-
-                        $("#new-rule-text-select-theme").show();
-                        $("#view-theme-preview").click();
-                        $("#theme-panel, .wizard-text").expose();
-                    } else if(ruleBuilder.currentScope == 'content') {
-                        if(overlay.isOpened()) {
-                            overlay.close();
-                        }
-
-                        $("#new-rule-text-select-content").show();
-                        $("#view-content-preview").click();
-                        $("#content-panel, .wizard-text").expose();
-
-                    } else if(ruleBuilder.rule != null && ruleBuilder.currentScope == null) {
-                        $("#new-rule-step-1").hide();
-                        $("#new-rule-step-2").show();
-                        updateRule(ruleBuilder);
-
-                        if(!overlay.isOpened()) {
-                            overlay.load();
-                        }
-
-                    } else { // end
-
-                        if(overlay.isOpened()) {
-                            overlay.close();
-                        }
-
-                        $("#new-rule-step-1").show();
-                        $("#new-rule-step-2").hide();
-
-
-                    }
-                });
-
-                $(".wizard-cancel").click(function() {
-                    ruleBuilder.end();
-                    return false;
-                });
-
                 $("#rules-help").overlay();
-
-                var triggers = $("#new-rule").overlay({
-                    closeOnClick: false,
-                    onBeforeClose: function() {
-                        if(ruleBuilder.active && $("#new-rule-step-2").is(":visible")) {
-                            ruleBuilder.end();
-                            editor.focus();
-                        }
-                    }
-                });
-
-                var overlay = $(triggers[0]).data('overlay');
 
                 $("#rules-save").click(function() {
 
-                    var data = editor.getValue();
+                    var data = rulesEditor.getValue();
                     $("#file-contents").val(data);
 
                     $.ajax({
@@ -257,127 +392,35 @@
                         success: function(){
                             refreshPreview();
                             dirties['rules.xml'] = false;
-                            editor.focus();
+                            $("#rules-editor .dirtyMarker").hide();
+                            rulesEditor.focus();
                         }
                     });
                 });
 
-                $(".rule-modifier").change(function() {
-                    updateRule(ruleBuilder);
-                });
-
-                $("#new-rule-step-1 .next").click(function() {
-                    var ruleType = $("input[name='new-rule-type']:checked").val();
-                    ruleBuilder.start(ruleType);
-                });
-
-                // The insert wizard doesn't work well in IE where we use plain
-                // textareas, but we offer a copy-to-clipboard button instead
-                if($.browser.msie) {
-                    $("#new-rule-step-2 .insert").hide();
-                    $("#new-rule-step-2 .copy").click(function() {
-                        window.clipboardData.setData('Text', $("#new-rule-output").val());
-                        overlay.close();
-                    });
-                } else {
-                    $("#new-rule-step-2 .copy").hide();
-                    $("#new-rule-step-2 .insert").click(function() {
-
-                        var rule = $("#new-rule-output").val();
-
-                        // Get the underlying ACE editor: no IE support for this anyway
-                        var aceEditor = editor.ace;
-
-                        function findStartTag(backwards) {
-                            aceEditor.find("<\\w+", {
-                                backwards: backwards,
-                                wrap: false,
-                                wholeWord: false,
-                                regExp: true
-                            });
-                        }
-
-                        function indent(string, amount) {
-                            var padding = '';
-                            for(var i = 0; i < amount; ++i) {
-                                padding += ' ';
-                            }
-                            return padding + string.replace(/\n/g, '\n' + padding) + '\n\n';
-                        }
-
-                        // Go to the next opening tag - we want to insert before this
-                        findStartTag(false);
-                        if(aceEditor.getCursorPosition().row <= 1) {
-                            // Probably the opening rules tag
-                            findStartTag(false);
-                        }
-
-                        var selectionText = aceEditor.getSession().getTextRange(aceEditor.getSelectionRange());
-
-                        // If we didn't find anything, look for the end of the current tag
-                        if(selectionText == "") {
-
-                            aceEditor.find("(/>|<" + "/)", {
-                                backwards: false,
-                                wrap: false,
-                                wholeWord: false,
-                                regExp: true
-                            });
-
-                            var selectionText = aceEditor.getSession().getTextRange(aceEditor.getSelectionRange());
-                            if(selectionText == "") {
-                                // Still nothing? Go to the end
-                                aceEditor.navigateFileEnd();
-                            } else {
-                                // Go one past the end tag, but first figure out how far we should i
-                                aceEditor.navigateDown();
-                            }
-
-                        }
-
-                        var indentation = aceEditor.getSelectionRange().start.column;
-
-                        var cursorPosition = aceEditor.getCursorPosition();
-                        var newlines = rule.match(/\n/g);
-                        var rows = 0;
-                        if(newlines != null) {
-                            rows = newlines.length;
-                        }
-
-                        aceEditor.navigateTo(cursorPosition.row, 0);
-                        aceEditor.insert(indent(rule, indentation));
-                        aceEditor.navigateTo(cursorPosition.row, 0);
-                        aceEditor.getSelection().selectTo(cursorPosition.row + rows + 1, 0);
-                        editor.focus();
-                        dirties['rules.xml'] = true;
-
-                        overlay.close();
-                    });
-                }
-
-                $("#editor-area .fullscreen").click(function(event) {
+                $("#rules-editor .fullscreen").click(function(event) {
                     event.preventDefault();
 
-                    if($("#editor-area").is(".width-full")) {
+                    if($("#rules-editor").is(".width-full")) {
                         $("#preview-panel").show();
                         $("#edit-bar").show();
                         $("#theme-content-row").show();
                         $("#page-intro").show();
-                        $("#editor-area").removeClass('width-full')
+                        $("#rules-editor").removeClass('width-full')
                                            .addClass('width-1:2');
                         $("#new-rule").show();
                         $("#editor").css('height', WINDOWED_HEIGHT);
-                        editor.resize();
+                        rulesEditor.resize();
                     } else {
                         $("#preview-panel").hide();
                         $("#edit-bar").hide();
                         $("#theme-content-row").hide();
                         $("#page-intro").hide();
-                        $("#editor-area").removeClass('width-1:2')
+                        $("#rules-editor").removeClass('width-1:2')
                                            .addClass('width-full');
                        $("#new-rule").hide();
                        $("#editor").css('height', FULLSCREEN_HEIGHT);
-                        editor.resize();
+                        rulesEditor.resize();
                     }
 
                     return false;
@@ -388,7 +431,6 @@
             (function() {
 
                 var themeSource = new SourceEditor('theme-source', extensionModes.html, "", true);
-                var frameHighlighter = null;
 
                 function reloadFrame() {
                     var path = $("#file-selector option:selected").val();
@@ -403,17 +445,8 @@
                 }
 
                 $("#theme-frame").ready(function() {
-                    frameHighlighter = new FrameHighlighter("#theme-frame", "theme", ruleBuilder,
-                        function(node, selector) { // onselect
-                            $("#theme-frame-info").text(selector || "");
-                        },
-                        function(node, selector) { // onsave
-                            animateHighlight($("#theme-panel .frame-info"));
-                            $("#theme-frame-shelf").text(selector || "");
-                        }
-                    );
                     function setup() {
-                        frameHighlighter.setupElements();
+                        themeFrameHighlighter.setupElements();
                         reloadSource();
                     }
                     setup();
@@ -440,7 +473,7 @@
                 });
 
                 $("#theme-panel .highlighterToggle").click(function() {
-                    frameHighlighter.enabled = ! frameHighlighter.enabled;
+                    themeFrameHighlighter.enabled = ! themeFrameHighlighter.enabled;
                 });
 
                 $("#theme-panel .fullscreen").click(function(event) {
@@ -475,21 +508,11 @@
             (function() {
 
                 var contentSource = new SourceEditor('content-source', extensionModes.html, "", true);
-                var frameHighlighter = null;
 
                 $("#content-frame").ready(function() {
-                    frameHighlighter = new FrameHighlighter("#content-frame", "content", ruleBuilder,
-                        function(node, selector) { // onselect
-                            $("#content-frame-info").text(selector || "");
-                        },
-                        function(node, selector) { // onsave
-                            animateHighlight($("#content-panel .frame-info"));
-                            $("#content-frame-shelf").text(selector || "");
-                        }
-                    );
                     var linkManager = new LinkManager("#content-frame", 'off',  WINDOW_BASE, THEME_BASE_URL);
                     function setup() {
-                        frameHighlighter.setupElements();
+                        contentFrameHighlighter.setupElements();
                         linkManager.setupLinks();
                         linkManager.setupForms();
                     }
@@ -515,7 +538,7 @@
                 });
 
                 $("#content-panel .highlighterToggle").click(function() {
-                    frameHighlighter.enabled = ! frameHighlighter.enabled;
+                    contentFrameHighlighter.enabled = ! contentFrameHighlighter.enabled;
                 });
 
                 $("#content-panel .fullscreen").click(function(event) {
@@ -591,7 +614,7 @@
                     event.preventDefault();
 
                     if($("#preview-panel").is(".width-full")) {
-                        $("#editor-area").show();
+                        $("#rules-editor").show();
                         $("#edit-bar").show();
                         $("#theme-content-row").show();
                         $("#page-intro").show();
@@ -604,7 +627,7 @@
                         previewSource.resize();
 
                     } else {
-                        $("#editor-area").hide();
+                        $("#rules-editor").hide();
                         $("#edit-bar").hide();
                         $("#theme-content-row").hide();
                         $("#page-intro").hide();
@@ -816,7 +839,7 @@
 
                 <div class="frame-info">
                     <div class="frame-shelf">
-                        <span i18n:translate="theming_mapper_shelf_label">Last saved:</span>
+                        <span i18n:translate="theming_mapper_shelf_label">Selected:</span>
                         <span id="theme-frame-shelf" i18n:translate="">(none)</span>
                     </div>
                     <span id="theme-frame-info"></span>
@@ -842,7 +865,7 @@
 
                 <div class="frame-info">
                     <div class="frame-shelf">
-                        <span i18n:translate="theming_mapper_shelf_label">Last saved:</span>
+                        <span i18n:translate="theming_mapper_shelf_label">Selected:</span>
                         <span id="content-frame-shelf" i18n:translate="">(none)</span>
                     </div>
                     <span id="content-frame-info"></span>
@@ -855,7 +878,7 @@
         </div>
 
         <div id="rules-results-row" class="row splitview">
-            <div id="editor-area" class="mapper-box cell width-1:2 position-0">
+            <div id="rules-editor" class="mapper-box cell width-1:2 position-0">
 
                 <div id="mapper-toolbar" class="panel-toolbar">
                     <button
@@ -891,6 +914,7 @@
                 </div>
 
                 <label i18n:translate="heading_rules">Theme rules</label>
+                <span class="dirtyMarker" style="display:none" title="Unsaved changes" i18n:attributes="title">*</span>
 
                 <pre id="editor"></pre>
                 <textarea id="file-contents" class="hiddenStructure" name="rules"
@@ -1247,8 +1271,8 @@
                         </form>
 
                         <div class="formControls new-rule-actions">
-                            <input type="submit" class="context next" i18n:attributes="value" value="Next" />
-                            <input type="submit" class="standalone close" i18n:attributes="value" value="Cancel" />
+                            <input type="submit" class="allowMultiSubmit context next" i18n:attributes="value" value="Next" />
+                            <input type="submit" class="allowMultiSubmit standalone close" i18n:attributes="value" value="Cancel" />
                         </div>
 
                     </div>
@@ -1275,9 +1299,9 @@
                         </form>
 
                         <div class="formControls new-rule-actions">
-                            <input type="submit" class="context insert" i18n:attributes="value" tal:condition="view/editable" value="Insert" />
-                            <input type="submit" class="context copy" i18n:attributes="value" value="Copy to clipboard" />
-                            <input type="submit" class="standalone close" i18n:attributes="value" value="Close" />
+                            <input type="submit" class="allowMultiSubmit context insert" i18n:attributes="value" tal:condition="view/editable" value="Insert" />
+                            <input type="submit" class="allowMultiSubmit context copy" i18n:attributes="value" value="Copy to clipboard" />
+                            <input type="submit" class="allowMultiSubmit standalone close" i18n:attributes="value" value="Close" />
                         </div>
                     </div>
 

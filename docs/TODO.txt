@@ -18,6 +18,9 @@ Mapper
 ------
 
 [ ] Allow rules wizard to work with preselected rules and only prompt if none made?
+    - may need to allow user to override this
+    - or just default selection to this?
+
 [ ] Catch validation errors in rules.xml more meaningfully
 
 [ ] Working copy editing

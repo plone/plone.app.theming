@@ -7,7 +7,7 @@ var RuleBuilder = function(callback) {
     this.active = false;
     this.currentScope = null;
 
-    this.rule = null;
+    this.ruleType = null;
     this.subtype = null;
 
     this._contentElement = null;
@@ -22,20 +22,20 @@ RuleBuilder.prototype.select = function(element) {
         }
     };
 
-RuleBuilder.prototype.start = function(rule) {
+RuleBuilder.prototype.start = function(ruleType) {
         this._contentElement = null;
         this._themeElement = null;
         this.currentScope = "theme";
 
         // Drop rules get e.g. drop:content or drop:theme,
         // which predetermines the scope
-        var ruleSplit = rule.split(':');
+        var ruleSplit = ruleType.split(':');
         if(ruleSplit.length >= 2) {
-            this.rule = ruleSplit[0];
+            this.ruleType = ruleSplit[0];
             this.subtype = ruleSplit[1];
             this.currentScope = this.subtype;
         } else{
-            this.rule = rule;
+            this.ruleType = ruleType;
             this.subtype = null;
         }
 
@@ -67,7 +67,7 @@ RuleBuilder.prototype.end = function() {
         this._themeElement = null;
         this.currentScope = null;
         this.active = false;
-        this.rule = null;
+        this.ruleType = null;
         this.subtype = null;
 
         this.callback(this);
@@ -75,24 +75,24 @@ RuleBuilder.prototype.end = function() {
 
 RuleBuilder.prototype.buildRule = function(contentChildren, themeChildren) {
 
-        if(this.rule == null) {
+        if(this.ruleType == null) {
             return "";
         }
 
         if(this.subtype != null) {
 
             if(this.subtype == 'content') {
-                return "<" + this.rule + "\n    " +
+                return "<" + this.ruleType + "\n    " +
                         this.calculateDiazoSelector(this._contentElement, 'content', contentChildren) +
                         "\n    />";
             } else if(this.subtype == 'theme') {
-                return "<" + this.rule + "\n    " +
+                return "<" + this.ruleType + "\n    " +
                         this.calculateDiazoSelector(this._themeElement, 'theme', themeChildren) +
                         "\n    />";
             }
 
         } else {
-            return "<" + this.rule + "\n    " +
+            return "<" + this.ruleType + "\n    " +
                         this.calculateDiazoSelector(this._themeElement, 'theme', themeChildren) + "\n    " +
                         this.calculateDiazoSelector(this._contentElement, 'content', contentChildren) +
                         "\n    />";
