@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    lang="en"
+    i18n:domain="plone">
+
+    <head>
+    </head>
+    <body>
+        <h1 i18n:translate="theme_mapper_error_heading">Invalid rules</h1>
+        <p i18n:translate="theme_mapper_error_heading">An error occurred trying to parse the rules file:</p>
+        <pre tal:content="options/error"></pre>
+    </body>
+
+</html>

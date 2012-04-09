@@ -1,6 +1,8 @@
 import urllib
 import os.path
 
+import lxml.etree
+
 from diazo.utils import quote_param
 
 from zope.component import getMultiAdapter
@@ -33,10 +35,13 @@ from AccessControl import Unauthorized
 from zExceptions import NotFound
 
 from Products.Five.browser.decode import processInputs
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from Products.CMFCore.utils import getToolByName
 
 class ThemeMapper(BrowserView):
+
+    theme_error_template = ViewPageTemplateFile("theme-error.pt")
 
     def __call__(self):
         self.setup()
@@ -204,7 +209,11 @@ class ThemeMapper(BrowserView):
 
             serializer = getHTMLSerializer([result], pretty_print=False)
 
-            transform = compileThemeTransform(theme.rules, theme.absolutePrefix, settings.readNetwork, theme.parameterExpressions or {})
+            try:
+                transform = compileThemeTransform(theme.rules, theme.absolutePrefix, settings.readNetwork, theme.parameterExpressions or {})
+            except lxml.etree.XMLSyntaxError, e:
+                return self.theme_error_template(error=e.msg)
+
             params = prepareThemeParameters(context, self.request, theme.parameterExpressions or {})
 
             # Fix url and path since the request gave us this view
