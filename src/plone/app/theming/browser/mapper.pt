@@ -165,7 +165,8 @@
                 return false;
             });
 
-            // Rules editor
+            // Rules editor and rule builder (must come first)
+
             (function() {
 
                 var editor = new SourceEditor('editor', extensionModes.html, $("#file-contents").text(), !EDITABLE,
@@ -383,71 +384,91 @@
                 });
             })();
 
-            // Preview panel
+            // Theme panel
             (function() {
 
-                var previewSource = new SourceEditor('preview-source', extensionModes.html, "", true);
+                var themeSource = new SourceEditor('theme-source', extensionModes.html, "", true);
+                var frameHighlighter = null;
 
-                $("#preview-frame").ready(function() {
-                    var linkManager = new LinkManager("#preview-frame", 'apply', WINDOW_BASE, THEME_BASE_URL);
+                function reloadFrame() {
+                    var path = $("#file-selector option:selected").val();
+                    var fetch = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + path + "&amp;theme=off";
+                    $("#theme-frame").attr('src', fetch);
+                }
+
+                function reloadSource() {
+                    var html = $("#theme-frame").contents().find(":root").html();
+                    themeSource.setValue("<" + "html>\n" + html + '\n<' + '/html>');
+                    themeSource.resize();
+                }
+
+                $("#theme-frame").ready(function() {
+                    frameHighlighter = new FrameHighlighter("#theme-frame", "theme", ruleBuilder,
+                        function(node, selector) { // onselect
+                            $("#theme-frame-info").text(selector || "");
+                        },
+                        function(node, selector) { // onsave
+                            animateHighlight($("#theme-panel .frame-info"));
+                            $("#theme-frame-shelf").text(selector || "");
+                        }
+                    );
                     function setup() {
-                        linkManager.setupLinks();
-                        linkManager.setupForms();
+                        frameHighlighter.setupElements();
+                        reloadSource();
                     }
                     setup();
-                    $("#preview-frame").load(setup);
+                    $("#theme-frame").load(setup);
                 });
 
-                $("#preview-frame").show();
-                $("#preview-source").hide();
+                $("#file-selector").change(function() {
+                    reloadFrame();
+                });
 
-                $("#preview-panel .sourceToggle").click(function() {
-                    if($("#preview-frame").is(":visible")) {
-                        var html = $("#preview-frame").contents().find(":root").html();
-                        previewSource.setValue("\n<" + "html>" + html + '\n<' + '/html>');
-                        $("#preview-frame").hide();
-                        $("#preview-source").show();
-                        previewSource.resize();
-                        previewSource.focus();
+                $("#theme-frame").show();
+                $("#theme-source").hide();
+
+                $("#theme-panel .sourceToggle").click(function() {
+                    if($("#theme-frame").is(":visible")) {
+                        $("#theme-frame").hide();
+                        $("#theme-source").show();
+                        reloadSource();
+                        themeSource.focus();
                     } else {
-                        $("#preview-frame").show();
-                        $("#preview-source").hide();
+                        $("#theme-frame").show();
+                        $("#theme-source").hide();
                     }
                 });
 
+                $("#theme-panel .highlighterToggle").click(function() {
+                    frameHighlighter.enabled = ! frameHighlighter.enabled;
+                });
 
-                $("#preview-panel .fullscreen").click(function(event) {
+                $("#theme-panel .fullscreen").click(function(event) {
                     event.preventDefault();
 
-                    if($("#preview-panel").is(".width-full")) {
-                        $("#editor-area").show();
+                    if($("#theme-panel").is(".width-full")) {
+                        $("#content-panel").show();
                         $("#edit-bar").show();
-                        $("#theme-content-row").show();
+                        $("#rules-results-row").show();
                         $("#page-intro").show();
-                        $("#preview-panel").removeClass('width-full')
-                                           .removeClass('position-0')
-                                           .addClass('width-1:2')
-                                           .addClass('position-1:2');
-                        $("#preview-panel iframe").removeClass('fullscreen-frame');
-                        $("#preview-source").css('height', WINDOWED_HEIGHT);
-                        previewSource.resize();
-
+                        $("#theme-panel").removeClass('width-full').addClass('width-1:2');
+                        $("#theme-panel iframe").removeClass('fullscreen-frame');
+                        $("#theme-source").css('height', WINDOWED_HEIGHT);
+                        themeSource.resize();
                     } else {
-                        $("#editor-area").hide();
+                        $("#content-panel").hide();
                         $("#edit-bar").hide();
-                        $("#theme-content-row").hide();
+                        $("#rules-results-row").hide();
                         $("#page-intro").hide();
-                        $("#preview-panel").removeClass('width-1:2')
-                                           .removeClass('position-1:2')
-                                           .addClass('width-full')
-                                           .addClass('position-0');
-                        $("#preview-panel iframe").addClass('fullscreen-frame');
-                        $("#preview-source").css('height', FULLSCREEN_HEIGHT);
-                        previewSource.resize();
+                        $("#theme-panel").removeClass('width-1:2').addClass('width-full');
+                        $("#theme-panel iframe").addClass('fullscreen-frame');
+                        $("#theme-source").css('height', FULLSCREEN_HEIGHT);
+                        themeSource.resize();
                     }
 
                     return false;
                 });
+
             })();
 
             // Content panel
@@ -457,10 +478,15 @@
                 var frameHighlighter = null;
 
                 $("#content-frame").ready(function() {
-                    frameHighlighter = new FrameHighlighter("#content-frame", "#content-frame-info", "#content-frame-shelf", "content",
-                            ruleBuilder, function(node) {
-                                animateHighlight($("#content-panel .frame-info"));
-                            });
+                    frameHighlighter = new FrameHighlighter("#content-frame", "content", ruleBuilder,
+                        function(node, selector) { // onselect
+                            $("#content-frame-info").text(selector || "");
+                        },
+                        function(node, selector) { // onsave
+                            animateHighlight($("#content-panel .frame-info"));
+                            $("#content-frame-shelf").text(selector || "");
+                        }
+                    );
                     var linkManager = new LinkManager("#content-frame", 'off',  WINDOW_BASE, THEME_BASE_URL);
                     function setup() {
                         frameHighlighter.setupElements();
@@ -528,86 +554,71 @@
 
             })();
 
-            // Theme panel
+            // Preview panel
             (function() {
 
-                var themeSource = new SourceEditor('theme-source', extensionModes.html, "", true);
-                var frameHighlighter = null;
+                var previewSource = new SourceEditor('preview-source', extensionModes.html, "", true);
 
-                function reloadFrame() {
-                    var path = $("#file-selector option:selected").val();
-                    var fetch = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + path + "&amp;theme=off";
-                    $("#theme-frame").attr('src', fetch);
-                }
-
-                function reloadSource() {
-                    var html = $("#theme-frame").contents().find(":root").html();
-                    themeSource.setValue("<" + "html>\n" + html + '\n<' + '/html>');
-                    themeSource.resize();
-                }
-
-                $("#theme-frame").ready(function() {
-                    frameHighlighter = new FrameHighlighter("#theme-frame", "#theme-frame-info", "#theme-frame-shelf", "theme",
-                            ruleBuilder, function(node) {
-                                animateHighlight($("#theme-panel .frame-info"));
-                            });
+                $("#preview-frame").ready(function() {
+                    var linkManager = new LinkManager("#preview-frame", 'apply', WINDOW_BASE, THEME_BASE_URL);
                     function setup() {
-                        frameHighlighter.setupElements();
-                        reloadSource();
+                        linkManager.setupLinks();
+                        linkManager.setupForms();
                     }
                     setup();
-                    $("#theme-frame").load(setup);
+                    $("#preview-frame").load(setup);
                 });
 
-                $("#file-selector").change(function() {
-                    reloadFrame();
-                });
+                $("#preview-frame").show();
+                $("#preview-source").hide();
 
-                $("#theme-frame").show();
-                $("#theme-source").hide();
-
-                $("#theme-panel .sourceToggle").click(function() {
-                    if($("#theme-frame").is(":visible")) {
-                        $("#theme-frame").hide();
-                        $("#theme-source").show();
-                        reloadSource();
-                        themeSource.focus();
+                $("#preview-panel .sourceToggle").click(function() {
+                    if($("#preview-frame").is(":visible")) {
+                        var html = $("#preview-frame").contents().find(":root").html();
+                        previewSource.setValue("\n<" + "html>" + html + '\n<' + '/html>');
+                        $("#preview-frame").hide();
+                        $("#preview-source").show();
+                        previewSource.resize();
+                        previewSource.focus();
                     } else {
-                        $("#theme-frame").show();
-                        $("#theme-source").hide();
+                        $("#preview-frame").show();
+                        $("#preview-source").hide();
                     }
                 });
 
-                $("#theme-panel .highlighterToggle").click(function() {
-                    frameHighlighter.enabled = ! frameHighlighter.enabled;
-                });
 
-                $("#theme-panel .fullscreen").click(function(event) {
+                $("#preview-panel .fullscreen").click(function(event) {
                     event.preventDefault();
 
-                    if($("#theme-panel").is(".width-full")) {
-                        $("#content-panel").show();
+                    if($("#preview-panel").is(".width-full")) {
+                        $("#editor-area").show();
                         $("#edit-bar").show();
-                        $("#rules-results-row").show();
+                        $("#theme-content-row").show();
                         $("#page-intro").show();
-                        $("#theme-panel").removeClass('width-full').addClass('width-1:2');
-                        $("#theme-panel iframe").removeClass('fullscreen-frame');
-                        $("#theme-source").css('height', WINDOWED_HEIGHT);
-                        themeSource.resize();
+                        $("#preview-panel").removeClass('width-full')
+                                           .removeClass('position-0')
+                                           .addClass('width-1:2')
+                                           .addClass('position-1:2');
+                        $("#preview-panel iframe").removeClass('fullscreen-frame');
+                        $("#preview-source").css('height', WINDOWED_HEIGHT);
+                        previewSource.resize();
+
                     } else {
-                        $("#content-panel").hide();
+                        $("#editor-area").hide();
                         $("#edit-bar").hide();
-                        $("#rules-results-row").hide();
+                        $("#theme-content-row").hide();
                         $("#page-intro").hide();
-                        $("#theme-panel").removeClass('width-1:2').addClass('width-full');
-                        $("#theme-panel iframe").addClass('fullscreen-frame');
-                        $("#theme-source").css('height', FULLSCREEN_HEIGHT);
-                        themeSource.resize();
+                        $("#preview-panel").removeClass('width-1:2')
+                                           .removeClass('position-1:2')
+                                           .addClass('width-full')
+                                           .addClass('position-0');
+                        $("#preview-panel iframe").addClass('fullscreen-frame');
+                        $("#preview-source").css('height', FULLSCREEN_HEIGHT);
+                        previewSource.resize();
                     }
 
                     return false;
                 });
-
             })();
 
             // Key bindings
@@ -759,11 +770,10 @@
             </p>
 
             <p class="discreet" i18n:translate="help_theme_mapper_details">
-                Hover over an element to see its selector in the status bar at the bottom
-                of the panel. Press <em>Esc</em> to move the selection to its parent. Press
-                <em>Enter</em> or left-click to save or confirm the selection. If you wish
-                to navigate the theme or content by clicking links, you can disable
-                the element selector using the toggle icon above the panel.
+                Hover over an element in the "Raw theme" or "Unthemed content"
+                panel to see its selector in the status bar at the bottom
+                of the panel. If you wish to navigate the theme or content by clicking links,
+                you can disable the element selector using the toggle icon above the panel.
             </p>
 
             <dl style="display: none" class="ie-warning portalMessage warning">
@@ -811,6 +821,9 @@
                     </div>
                     <span id="theme-frame-info"></span>
                 </div>
+                <div class="discreet" i18n:translate="help_highlighter_selection">
+                    Left-click or press <em>Enter</em> to save. Press <em>Esc</em> to select parent.
+                </div>
 
             </div>
             <div id="content-panel" class="mapper-box cell width-1:2 position-1:2">
@@ -833,6 +846,9 @@
                         <span id="content-frame-shelf" i18n:translate="">(none)</span>
                     </div>
                     <span id="content-frame-info"></span>
+                </div>
+                <div class="discreet" i18n:translate="help_highlighter_selection">
+                    Left-click or press <em>Enter</em> to save. Press <em>Esc</em> to select parent.
                 </div>
 
             </div>
