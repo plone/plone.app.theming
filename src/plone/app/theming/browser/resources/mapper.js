@@ -289,6 +289,8 @@ FrameHighlighter.prototype.setupElements = function() {
                 event.stopPropagation();
                 event.preventDefault();
 
+                highlighter.save(this);
+
                 highlighter.ruleBuilder.select(this);
                 highlighter.ruleBuilder.next();
 
