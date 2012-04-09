@@ -4,14 +4,12 @@ plone.app.theming to-do
 Control panel
 -------------
 
-[ ] Update ACE bundle
 [ ] Clone action on 'Manage theme'?
 
 File manager
 ------------
 
-[ ] Show current path when adding/uploading file/folder?
-[ ] Let user choose different target folder for add/upload file/folder from within overlay prompt?
+[ ] Focus input field when loading overlay
 
 [ ] Server-side validation of file name for new file/new folder/upload
 
