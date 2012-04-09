@@ -114,7 +114,7 @@
             // See http://stackoverflow.com/questions/1694295/jquery-background-color-animate-not-working/5718151
             function animateHighlight(node, highlightColor, duration) {
                 var highlightBg = highlightColor || "#FFFFE3";
-                var animateMs = duration || 2000;
+                var animateMs = duration || 750;
                 var originalBg = $(node).css("background-color");
 
                 if (!originalBg || originalBg == highlightBg)
@@ -180,7 +180,6 @@
                     } else {
                         // Let the frame highlighter perform a selection
                         $("#new-rule-text-select-theme").show();
-                        $("#view-theme-preview").click();
                         $("#theme-panel, .wizard-text").expose();
                     }
 
@@ -196,7 +195,6 @@
                     } else {
                         // Let the frame highlighter perform a selection
                         $("#new-rule-text-select-content").show();
-                        $("#view-content-preview").click();
                         $("#content-panel, .wizard-text").expose();
                     }
 
@@ -225,8 +223,8 @@
             function updateRule(ruleBuilder) {
                 $("#new-rule-output").val(
                     ruleBuilder.buildRule(
-                        $('#new-rule-content-children').is(':checked'),
-                        $('#new-rule-theme-children').is(':checked')
+                        $('#new-rule-theme-children').is(':checked'),
+                        $('#new-rule-content-children').is(':checked')
                     )
                 );
             }
@@ -330,23 +328,34 @@
                 });
             }
 
-            themeFrameHighlighter = new FrameHighlighter("#theme-frame", "theme", ruleBuilder,
-                function(node, selector) { // onselect
-                    $("#theme-frame-info").text(selector || "");
+            themeFrameHighlighter = new FrameHighlighter("#theme-frame",
+                function(highlighter, node) { // onselect
+                    $("#theme-frame-info").text(node == null? "" : ruleBuilder.bestSelector(node));
                 },
-                function(node, selector) { // onsave
+                function(highlighter, node) { // onsave
                     animateHighlight($("#theme-panel .frame-info"));
-                    $("#theme-frame-shelf").text(selector || "");
+                    $("#theme-frame-shelf").text(node == null? "" : ruleBuilder.bestSelector(node));
+
+                    if(ruleBuilder.active && ruleBuilder.currentScope == "theme") {
+                        ruleBuilder.select(node);
+                        ruleBuilder.next();
+                    }
+
                 }
             );
 
-            contentFrameHighlighter = new FrameHighlighter("#content-frame", "content", ruleBuilder,
-                function(node, selector) { // onselect
-                    $("#content-frame-info").text(selector || "");
+            contentFrameHighlighter = new FrameHighlighter("#content-frame",
+                function(highlighter, node) { // onselect
+                    $("#content-frame-info").text(node == null? "" : ruleBuilder.bestSelector(node));
                 },
-                function(node, selector) { // onsave
+                function(highlighter, node) { // onsave
                     animateHighlight($("#content-panel .frame-info"));
-                    $("#content-frame-shelf").text(selector || "");
+                    $("#content-frame-shelf").text(node == null? "" : ruleBuilder.bestSelector(node));
+
+                    if(ruleBuilder.active && ruleBuilder.currentScope == "content") {
+                        ruleBuilder.select(node);
+                        ruleBuilder.next();
+                    }
                 }
             );
 
