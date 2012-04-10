@@ -290,7 +290,7 @@
                 <legend i18n:translate="heading_import_theme">Import</legend>
 
                 <p i18n:translate="description_import">
-                   You may import a ZIP file containing and existing theme.
+                   You can import a ZIP file containing an existing theme.
                    This should contain a single top level directory, which will be used as
                     the theme identifier. This directory must contain a
                     <code>rules.xml</code> file or a <code>manifest.cfg</code> file
