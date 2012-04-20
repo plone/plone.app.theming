@@ -92,6 +92,11 @@ class InternalResolver(etree.Resolver):
         else:
             root = portalState.navigation_root()
 
+        if not system_url.startswith('/'):  # only for relative urls
+            root_path = root.getPhysicalPath()
+            context_path = context.getPhysicalPath()[len(root_path):]
+            system_url = '/%s/%s' % ('/'.join(context_path), system_url)
+
         response = subrequest(system_url, root=root)
         if response.status != 200:
             return None
