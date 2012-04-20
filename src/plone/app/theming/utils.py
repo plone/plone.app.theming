@@ -95,7 +95,10 @@ class InternalResolver(etree.Resolver):
         if not system_url.startswith('/'):  # only for relative urls
             root_path = root.getPhysicalPath()
             context_path = context.getPhysicalPath()[len(root_path):]
-            system_url = '/%s/%s' % ('/'.join(context_path), system_url)
+            if len(context_path) == 0:
+                system_url = '/' + system_url
+            else:
+                system_url = '/%s/%s' % ('/'.join(context_path), system_url)
 
         response = subrequest(system_url, root=root)
         if response.status != 200:
