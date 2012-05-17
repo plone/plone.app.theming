@@ -564,7 +564,7 @@ class TestCase(unittest.TestCase):
             browser.open('%s/404_page' % portal.absolute_url())
         except HTTPError, e:
             error = e
-        self.assertEquals(error.code, 404)
+        self.assertEqual(error.code, 404)
 
         # The theme
         self.assertTrue("This is the theme" in browser.contents)
@@ -590,7 +590,7 @@ class TestCase(unittest.TestCase):
             browser.open('%s/404_page' % portal.absolute_url())
         except HTTPError, e:
             error = e
-        self.assertEquals(error.code, 404)
+        self.assertEqual(error.code, 404)
 
         # Title - pulled in with rules.xml
         self.assertTrue(portal.title in browser.contents)
@@ -656,7 +656,7 @@ class TestCase(unittest.TestCase):
             browser.open('%s/404_page' % portal.absolute_url())
         except HTTPError, e:
             error = e
-        self.assertEquals(error.code, 404)
+        self.assertEqual(error.code, 404)
 
         self.assertTrue(thirdLastResource.getId() in browser.contents)
         self.assertTrue(secondToLastResource.getId() in browser.contents)
