@@ -53,7 +53,7 @@
     <!-- Set X-Theme-Enabled header in the request if theming is enabled -->
     <subscriber
         for="Products.CMFCore.interfaces.ISiteRoot
-             zope.app.publication.interfaces.IBeforeTraverseEvent"
+             zope.traversing.interfaces.IBeforeTraverseEvent"
         handler=".header.setHeader"
         />
 

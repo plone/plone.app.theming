@@ -35,6 +35,7 @@ setup(name='plone.app.theming',
           'repoze.xmliter>=0.3',
           'five.globalrequest',
           'Products.CMFPlone',
+          'zope.traversing',
       ],
       extras_require={
         'test': ['plone.app.testing'],

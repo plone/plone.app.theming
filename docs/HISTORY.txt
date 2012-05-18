@@ -4,8 +4,8 @@ Changelog
 1.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Update IBeforeTraverseEvent import to zope.traversing.
+  [hannosch]
 
 1.0 (2012-04-15)
 ----------------
