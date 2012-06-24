@@ -3,7 +3,8 @@ Diazo theming
 
 This guide provides an overview of Diazo theming in Plone.
 
-.. contents:: Table of contents
+.. contents:: Contents
+    :local:
 
 What is a Diazo theme?
 ----------------------
@@ -79,8 +80,49 @@ to build a simple yet functional theme exposing most of Plone's core
 functionality. You are advised to study it - in particular the ``rules.xml``
 file - to learn more about how Diazo themes work.
 
+Using the control panel
+-----------------------
+
+TODO
+
+Selecting a theme
+~~~~~~~~~~~~~~~~~
+
+TODO: Describe how to enable a theme in the control panel
+
+Creating a new theme
+~~~~~~~~~~~~~~~~~~~~
+
+TODO: Describe actions: cloning and creating anew
+
+Uploading an existing theme
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+TODO: Describe uploading a theme - with or without rules.xml file to start with
+
+The file manager
+~~~~~~~~~~~~~~~~
+
+TODO: Describe purpose and UI
+
+The rule builder
+~~~~~~~~~~~~~~~~
+
+TODO: Describe purpose and UI - filesystem and ZODB themes
+
+Advanced settings
+~~~~~~~~~~~~~~~~~
+
+TODO: Describe the available settings at a high level
+
+Reference
+---------
+
+The remainder of this guide contains reference materials useful for theme
+builders.
+
 Deploying and testing themes
-----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To build and test a theme, you must first create a static HTML mockup of the
 look and feel you want, and then build a rules file to describe how Plone's
@@ -219,37 +261,6 @@ to change the absolute path prefix (see *Advanced settings*).
 
 Extensions to the Diazo theming engine can add support for additional blocks of
 configurable parameters.
-
-Selecting a theme
-------------------
-
-TODO: Describe how to enable a theme in the control panel
-
-Creating a new theme
----------------------
-
-TODO: Describe actions: cloning and creating anew
-
-The file manager
-----------------
-
-TODO: Describe purpose and UI
-
-The rule builder
-----------------
-
-TODO: Describe purpose and UI - filesystem and ZODB themes
-
-Advanced settings
------------------
-
-TODO: Describe the available settings at a high level
-
-Reference
----------
-
-The remainder of this guide contains reference materials useful for theme
-builders.
 
 Rules syntax
 ~~~~~~~~~~~~
