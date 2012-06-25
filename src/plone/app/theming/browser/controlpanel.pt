@@ -232,7 +232,7 @@
                         themed, you can list them here, one per line. This is
                         useful during theme development, so that you can
                         compare the themed and unthemed sites. In some cases,
-                        you may also want to provided an unthemed host alias
+                        you may also want to provide an unthemed host alias
                         for content administrators to be able to use 'plain'
                         Plone.
                     </div>
