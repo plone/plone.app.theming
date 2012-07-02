@@ -136,7 +136,7 @@ class IThemeSettings(Interface):
             description=_('doctype_description',
                 u'You can specify a Doctype string which will be set on the '
                 u'output, for example "<!DOCTYPE html>". '
-                u'If left blank the default XHTML 1.0 transistional Doctype '
+                u'If left blank the default XHTML 1.0 transitional Doctype '
                 u'or that set in the Diazo theme is used.'),
             required=False,
             default="",
