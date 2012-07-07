@@ -356,7 +356,7 @@ class TestCase(unittest.TestCase):
         import transaction; transaction.commit()
 
         browser = Browser(app)
-        browser.open(portal.absolute_url() + '/document_icon.gif')
+        browser.open(portal.absolute_url() + '/document_icon.png')
         # The theme
         self.assertFalse("This is the theme" in browser.contents)
 
