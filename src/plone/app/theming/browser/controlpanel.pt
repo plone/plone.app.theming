@@ -417,7 +417,7 @@
                         <thead>
                             <tr>
                                 <th />
-                                <th i18n:translate="heading_theme_title">Title</th>
+                                <th i18n:translate="heading_theme_title">Title (id)</th>
                                 <th i18n:translate="heading_theme_description">Description</th>
                             </tr>
                         </thead>
