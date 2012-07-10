@@ -7,6 +7,10 @@ Changelog
 - Update IBeforeTraverseEvent import to zope.traversing.
   [hannosch]
 
+- On tab "Manage themes", change table header to
+  better describe what's actually listed.
+  [kleist]
+
 1.0 (2012-04-15)
 ----------------
 
