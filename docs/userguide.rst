@@ -640,3 +640,110 @@ JavaScript functions and styles to work properly)::
 
     <!-- Body -->
     <merge attributes="class" css:theme="body" css:content="body" />
+
+Advanced: Using portal_css to manage your CSS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Plone's "resource registries", including the ``portal_css`` tool, can be used
+to manage CSS stylesheets. This offers several advantages over simply linking
+to your stylesheets in the template, such as:
+
+* Detailed control over the ordering of stylesheets
+* Merging of stylesheets to reduce the number of downloads required to render
+  your page
+* On-the-fly stylesheet compression (e.g. whitespace removal)
+* The ability to include or exclude a stylesheet based on an expression
+
+It is usually desirable (and sometimes completely necessary) to leave the
+theme file untouched, but you can still use ``portal_css`` to manage your
+stylesheets. The trick is to:
+
+* Register your theme's styles with Plone's ``portal_css`` tool (this is
+  normally best done when you ship a theme in a Pyton package - there is
+  currently no way to automate this for a theme imported from a Zip file or
+  created through the web)
+* Drop the theme's styles with a rule, and then
+* Include all styles from Plone
+
+For example, you could add the following rules::
+
+    <drop theme="/html/head/link" />
+    <drop theme="/html/head/style" />
+
+    <!-- Pull in Plone CSS -->
+    <after theme-children="/html/head" content="/html/head/link | /html/head/style" />
+
+The use of an "or" expression for the content in the ``after />`` rule means
+that the relative ordering of link and style elements is maintained.
+
+To register stylesheets upon product installation using GenericSetup, use the
+``cssregistry.xml`` import step in your GenericSetup ``profiles/default``
+directory::
+
+    <?xml version="1.0"?>
+    <object name="portal_css">
+
+     <!-- Set conditions on stylesheets we don't want to pull in -->
+     <stylesheet
+         expression="not:request/HTTP_X_THEME_ENABLED | nothing"
+         id="public.css"
+         />
+
+     <!-- Add new stylesheets -->
+     <stylesheet title="" authenticated="False" cacheable="True"
+        compression="safe" conditionalcomment="" cookable="True" enabled="on"
+        expression="request/HTTP_X_THEME_ENABLED | nothing"
+        id="++theme++my.theme/css/styles.css" media="" rel="stylesheet"
+        rendering="link"
+        applyPrefix="True"
+        />
+
+    </object>
+
+There is one important caveat, however. Your stylesheet may include relative
+URL references of the following form:
+
+    background-image: url(../images/bg.jpg);
+
+If your stylesheet lives in a resource directory (e.g. it is registered in
+``portal_css`` with the id ``++theme++my.theme/css/styles.css``), this
+will work fine so long as the registry (and Zope) is in debug mode. The
+relative URL will be resolved by the browser to
+``++theme++my.theme/images/bg.jpg``.
+
+However, you may find that the relative URL breaks when the registry is put
+into production mode. This is because resource merging also changes the URL
+of the stylesheet to be something like::
+
+    /plone-site/portal_css/Suburst+Theme/merged-cachekey-1234.css
+
+To correct for this, you must set the ``applyPrefix`` flag to ``true`` when
+installing your CSS resource using ``cssregistry.xml``. There is a
+corresponding flag in the ``portal_css`` user interface.
+
+It is sometimes useful to show some of Plone's CSS in the styled site. You
+can achieve this by using an Diazo ``<after />`` rule or similar to copy the
+CSS from Plone's generated ``<head />`` into the theme. You can use the
+``portal_css`` tool to turn off the style sheets you do not want.
+
+However, if you also want the site to be usable in non-themed mode (e.g. on a
+separate URL), you may want to have a larger set of styles enabled when Diazo
+is not used. To make this easier, you can use the following expressions as
+conditions in the ``portal_css`` tool (and ``portal_javascripts`` if relevant),
+in ``portal_actions``, in page templates, and other places that use TAL
+expression syntax::
+
+    request/HTTP_X_THEME_ENABLED | nothing
+
+This expression will return True if Diazo is currently enabled, in which case
+an HTTP header "X-Theme-Enabled" will be set.
+
+If you later deploy the theme to a fronting web server such as nginx, you can
+set the same request header there to get the same effect, even if
+``plone.app.theming`` is uninstalled.
+
+Use::
+
+    not: request/HTTP_X_THEME_ENABLED | nothing
+
+to 'hide' a style sheet from the themed site.
