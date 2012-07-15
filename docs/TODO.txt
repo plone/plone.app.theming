@@ -5,6 +5,10 @@ Control panel
 -------------
 
 [ ] Clone action on 'Manage theme'?
+[ ] Hide the mapper for filesystem themes, but allow a simple 'preview' and an
+    optional action from there to get to the read-only mapper
+[ ] Incorporate fields from standard 'Theme' control panel under
+    'Advanced settings' and hide that on install
 
 File manager
 ------------

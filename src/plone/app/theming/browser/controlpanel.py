@@ -280,6 +280,8 @@ class ThemingControlpanel(BrowserView):
         zodbNames = [t.__name__ for t in self.zodbThemes]
 
         for theme in self.availableThemes:
+            if theme.__name__ == 'template':
+                continue
             themes.append({
                 'name': theme.__name__,
                 'title': theme.title,

@@ -66,12 +66,17 @@
         provides="zope.traversing.interfaces.ITraversable"
         factory=".traversal.ThemeTraverser"
         />
-    
-    <!-- Template theme -->
+
+    <!-- Themes -->
     <plone:static
-        directory="template"
         type="theme"
         name="template"
+        directory="themes/template"
+        />
+    <plone:static
+        type="theme"
+        name="example"
+        directory="themes/example"
         />
 
 </configure>

@@ -86,11 +86,11 @@
                             selected="selected"
                             i18n:translate="label_other">Other (see advanced tab)</option>
                         <option
-                            tal:repeat="theme view/availableThemes"
-                            tal:content="string:${theme/title} [${theme/__name__}]"
-                            tal:attributes="value theme/__name__;
+                            tal:repeat="theme view/themeList"
+                            tal:content="string:${theme/title} [${theme/name}]"
+                            tal:attributes="value theme/name;
                                             title theme/description;
-                                            selected python:theme.__name__ == selected and 'selected' or None"
+                                            selected python:theme['name'] == selected and 'selected' or None"
                             />
                     </select>
 
