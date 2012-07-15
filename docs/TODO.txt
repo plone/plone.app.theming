@@ -4,19 +4,34 @@ plone.app.theming to-do
 Control panel
 -------------
 
-[ ] Clone action on 'Manage theme'?
-[ ] Hide the mapper for filesystem themes, but allow a simple 'preview' and an
-    optional action from there to get to the read-only mapper
+[ ] Update layout and language to match revised mockups
+[ ] Use 'template' theme for Create action always (no 'based on')
+[ ] Let Upload action use rules.xml from 'template' theme if none provided
+[ ] Expose user guide
+[ ] Explicit activate/deactivate action per theme
+[ ] Explicit copy per theme
 [ ] Incorporate fields from standard 'Theme' control panel under
     'Advanced settings' and hide that on install
 
 File manager
 ------------
 
+[ ] Update layout and language to match revised mockups
+[ ] Move Preview to open in a new window/tab on explicit button action
+
+
 [ ] Server-side validation of file name for new file/new folder/upload
 
 Mapper
 ------
+
+[ ] Update layout and language to match revised mockups
+[ ] Make clear when readonly for filesystem themes; hide rules editor
+[ ] Make preview action open new window/tab
+[ ] Change buttons to show future state
+[ ] Make inspector on/off explicit action
+[ ] Show wizard steps more clearly
+[ ] Separate rules wizard from 'new rule' action (using saved selection)
 
 [ ] Working copy editing
 [ ] Table-based visual rules list viewer/editor instead of source (unless rules source too complex)
