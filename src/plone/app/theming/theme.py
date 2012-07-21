@@ -1,6 +1,7 @@
 from zope.interface import implements
 from plone.app.theming.interfaces import ITheme
 
+
 class Theme(object):
     """A theme, loaded from a resource directory
     """
@@ -13,6 +14,7 @@ class Theme(object):
             absolutePrefix=None,
             parameterExpressions=None,
             doctype=None,
+            preview=None,
     ):
 
         self.__name__ = name
@@ -22,6 +24,7 @@ class Theme(object):
         self.absolutePrefix = absolutePrefix
         self.parameterExpressions = parameterExpressions
         self.doctype = doctype
+        self.preview = preview
 
     def __repr__(self):
-        return '<Theme "%s"' % self.__name__
+        return '<Theme "%s">' % self.__name__

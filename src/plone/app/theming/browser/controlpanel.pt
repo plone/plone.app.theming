@@ -6,6 +6,21 @@
     metal:use-macro="context/prefs_main_template/macros/master"
     i18n:domain="plone">
 
+<metal:block fill-slot="top_slot">
+
+    <tal:defines tal:define="dummy python:request.set('disable_border',1);
+                             disable_column_one python:request.set('disable_plone.leftcolumn',0);
+                             disable_column_two python:request.set('disable_plone.rightcolumn',1);"/>
+
+    <link
+        rel="stylesheet"
+        type="text/css"
+        tal:attributes="href string:${context/portal_url}/++resource++plone.app.theming/controlpanel.css"
+        />
+
+
+</metal:block>
+
 <body>
 
 <div metal:fill-slot="prefs_configlet_main">
@@ -21,9 +36,7 @@
     </a>
 
     <p i18n:translate="description_theme_settings">
-        Use this control panel to enable a Diazo theme. You can either
-        select a pre-registered theme, or configure a theme directly by
-        specifying a rules file.
+        Use this control panel to import, enable or edit a Diazo theme.
     </p>
 
     <dl class="portalMessage info">
@@ -34,87 +47,83 @@
     </dl>
 
     <dl class="enableFormTabbing">
-        <dt id="fieldsetlegend-basic">Basic settings</dt>
+        <dt id="fieldsetlegend-basic">Themes</dt>
         <dd id="fieldset-basic">
 
             <p i18n:translate="description_basic_settings">
-                To enable a theme registered with Plone, choose it from the
-                list below and make sure <em>Enable theme</em> is selected.
-                It is also possible to use themes that are not pre-registered
-                with Plone. Use the <em>Advanced</em> tab to configure a
-                theme manually.
+                Use the buttons to create or upload a new Diazo theme,
+                or select an existing theme from a the list below.
             </p>
 
-            <form
-                name="basic"
-                method="post"
-                class="enableUnloadProtection"
-                tal:attributes="action request/URL"
-                tal:define="errors view/errors">
+            <div class="formControls">
+                <button
+                    id="form.button.Create"
+                    class="standalone"
+                    i18n:translate="">Create new</button>
 
-                <div
-                    class="field"
-                    tal:define="selected python:request.get('enabled', view.settings.enabled)">
+                <button
+                    id="form.button.Upload"
+                    class="standalone"
+                    i18n:translate="">Upload Zip file</button>
+            </div>
 
-                    <input type="hidden" value="" name="enabled:boolean:default" />
-                    <input type="checkbox" value="1" name="enabled:boolean" id="enabled"
-                        tal:attributes="checked python:'checked' if selected else None"
-                        />
-                    <label for="enabled" i18n:translate="label_enabled">Enable theme</label>
-                    <div class="formHelp" i18n:translate="help_enabled">
-                        If this option is disabled, no theme will be applied.
-                    </div>
+            <div id="themesList">
 
+                <h3 i18n:translate="">Available themes</h3>
+
+                <div class="themeEntry"
+                    tal:repeat="theme view/themeList"
+                    tal:attributes="class python:theme['selected'] and 'themeEntry activeThemeEntry' or 'themeEntry'">
+
+                    <div clas="themeEntryDetail">
+
+                        <span class="themeEntryTitle" tal:content="theme/title">
+                            Title
+                        </span>
+
+                        <div class="themeEntryWrapper">
+
+                            <a class="previewImageContainer"
+                                title="Click to view a live preview"
+                                i18n:translate="title"
+                                href="#">
+                                <img
+                                    tal:attributes="src theme/preview"
+                                    />
+                            </a>
+
+                            <div class="themeDescription" tal:content="theme/description" />
+
+                            <div class="themeEntryControls">
+
+                                <button tal:condition="not:theme/selected" i18n:translate="">Enable</button>
+                                <button tal:condition="theme/selected" i18n:translate="">Disable</button>
+
+                                <button i18n:translate="">Copy</button>
+                                <button i18n:translate="">Download</button>
+                                <button i18n:translate="">Map rules</button>
+
+                                <button tal:condition="theme/editable" i18n:translate="">Manage Files</button>
+                                <button
+                                    tal:condition="not:theme/editable"
+                                    disabled="disabled"
+                                    title="Themes located on the filesystem are read-only. Click Copy to create an editable copy."
+                                    i18n:translate=""
+                                    i18n:attributes="title">Manage Files</button>
+
+
+                                <a href="#">Delete</a>
+
+                            </div>
+
+                        </div>
+
+                     </div>
                 </div>
 
-                <div
-                    class="field"
-                    tal:define="selected python:request.get('selectedTheme', view.selectedTheme)">
+                <div class="visualClear"><!-- --></div>
 
-                    <label for="selectedTheme" i18n:translate="label_selected_theme">Select a theme</label>
-                    <div class="formHelp" i18n:translate="help_selected_theme">
-                        Select a theme from the list below to apply this theme.
-                    </div>
-
-                    <select size="1" id="selectedTheme" name="selectedTheme">
-                        <option
-                            value=""
-                            i18n:translate="label_please_select_theme">Please select</option>
-                        <option
-                            value="_other_"
-                            tal:condition="python:not selected and view.settings.rules is not None"
-                            selected="selected"
-                            i18n:translate="label_other">Other (see advanced tab)</option>
-                        <option
-                            tal:repeat="theme view/themeList"
-                            tal:content="string:${theme/title} [${theme/name}]"
-                            tal:attributes="value theme/name;
-                                            title theme/description;
-                                            selected python:theme['name'] == selected and 'selected' or None"
-                            />
-                    </select>
-
-                </div>
-
-                <div class="formControls">
-                    <input
-                        type="submit"
-                        name="form.button.BasicSave"
-                        class="context"
-                        value="Save"
-                        i18n:attributes="value" />
-
-                    <input
-                        type="submit"
-                        name="form.button.Cancel"
-                        class="context"
-                        value="Cancel"
-                        i18n:attributes="value" />
-                </div>
-
-                <input tal:replace="structure context/@@authenticator/authenticator" />
-
-            </form>
+            </div>
 
         </dd>
 

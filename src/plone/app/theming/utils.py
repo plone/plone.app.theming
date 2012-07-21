@@ -12,7 +12,6 @@ from lxml import etree
 from diazo.compiler import compile_theme
 from diazo.compiler import quote_param
 
-from zope.site.hooks import getSite
 from zope.component import getUtility
 from zope.component import queryUtility
 from zope.component import queryMultiAdapter
@@ -42,8 +41,6 @@ from plone.app.theming.theme import Theme
 from plone.app.theming.plugins.utils import getPlugins
 from plone.app.theming.plugins.utils import getPluginSettings
 
-from Acquisition import aq_parent
-from Products.CMFCore.utils import getToolByName
 from Products.PageTemplates.Expressions import getEngine
 
 
@@ -237,6 +234,7 @@ def extractThemeInfo(zipfile):
     description = None
     parameters = {}
     doctype = ""
+    preview = None
 
     if manifestDict is not None:
         rulesFile = manifestDict.get('rules', rulesFile)
@@ -245,6 +243,7 @@ def extractThemeInfo(zipfile):
         description = manifestDict.get('title', None)
         parameters = manifestDict.get('parameters', {})
         doctype = manifestDict.get('doctype', "")
+        preview = manifestDict.get('preview', None)
 
     if not rulesFile:
         try:
@@ -260,6 +259,7 @@ def extractThemeInfo(zipfile):
             absolutePrefix=absolutePrefix,
             parameterExpressions=parameters,
             doctype=doctype,
+            preview=preview,
         )
 
 
@@ -277,6 +277,7 @@ def getTheme(name, manifest=None, resources=None):
     prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
     params = {}
     doctype = ""
+    preview = None
 
     if manifest is not None:
         title = manifest['title'] or title
@@ -285,6 +286,7 @@ def getTheme(name, manifest=None, resources=None):
         prefix = manifest['prefix'] or prefix
         params = manifest['parameters'] or params
         doctype = manifest['doctype'] or doctype
+        preview = manifest['preview'] or preview
 
     if isinstance(rules, str):
         rules = rules.decode('utf-8')
@@ -297,6 +299,7 @@ def getTheme(name, manifest=None, resources=None):
             absolutePrefix=prefix,
             parameterExpressions=params,
             doctype=doctype,
+            preview=preview,
         )
 
 
@@ -497,12 +500,12 @@ def createThemeFromTemplate(title, description, baseOn='template'):
         while "%s-%d" % (themeName, idx,) in resources:
             idx += 1
         themeName = "%s-%d" % (themeName, idx,)
-    
+
     resources.makeDirectory(themeName)
     target = resources[themeName]
 
     cloneResourceDirectory(source, target)
-    
+
     manifest = SafeConfigParser()
 
     if MANIFEST_FILENAME in target:
@@ -511,10 +514,10 @@ def createThemeFromTemplate(title, description, baseOn='template'):
             manifest.readfp(fp)
         finally:
             fp.close()
-    
+
     if not manifest.has_section('theme'):
         manifest.add_section('theme')
-    
+
     manifest.set('theme', 'title', title)
     manifest.set('theme', 'description', description)
 
@@ -528,10 +531,10 @@ def createThemeFromTemplate(title, description, baseOn='template'):
 def compileThemeTransform(rules, absolutePrefix=None, readNetwork=False, parameterExpressions=None):
     """Prepare the theme transform by compiling the rules with the given options
     """
-    
+
     if parameterExpressions is None:
         parameterExpressions = {}
-    
+
     accessControl = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=readNetwork, write_network=False)
 
     if absolutePrefix:
@@ -539,7 +542,7 @@ def compileThemeTransform(rules, absolutePrefix=None, readNetwork=False, paramet
 
     params = set(parameterExpressions.keys() + ['url', 'base', 'path', 'scheme', 'host'])
     xslParams = dict((k, '') for k in params)
-    
+
     internalResolver = InternalResolver()
     pythonResolver = PythonResolver()
     if readNetwork:
@@ -604,7 +607,7 @@ def prepareThemeParameters(context, request, parameterExpressions, cache=None):
 
     # Add expression-based parameters
     if parameterExpressions:
-        
+
         # Compile and cache expressions
         expressions = None
         if cache is not None:
@@ -622,5 +625,5 @@ def prepareThemeParameters(context, request, parameterExpressions, cache=None):
         expressionContext = createExpressionContext(context, request)
         for name, expression in expressions.items():
             params[name] = quote_param(expression(expressionContext))
-    
+
     return params

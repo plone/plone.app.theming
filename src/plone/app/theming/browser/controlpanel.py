@@ -279,14 +279,23 @@ class ThemingControlpanel(BrowserView):
         themes = []
         zodbNames = [t.__name__ for t in self.zodbThemes]
 
+        portalUrl = getToolByName(self.context, 'portal_url')()
+
         for theme in self.availableThemes:
             if theme.__name__ == 'template':
                 continue
+
+            previewUrl = "++resource++plone.app.theming/defaultPreview.png"
+            if theme.preview:
+                previewUrl = "++theme++%s/%s" % (theme.__name__, theme.preview,)
+
             themes.append({
                 'name': theme.__name__,
                 'title': theme.title,
                 'description': theme.description,
                 'editable': theme.__name__ in zodbNames,
+                'preview': "%s/%s" % (portalUrl, previewUrl,),
+                'selected': theme.__name__ == self.selectedTheme,
             })
 
         themes.sort(key=lambda x: x['title'])
