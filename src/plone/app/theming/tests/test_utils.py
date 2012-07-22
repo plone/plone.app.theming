@@ -30,7 +30,7 @@ class TestIntegration(unittest.TestCase):
 
         themes = getAvailableThemes()
 
-        self.assertEqual(len(themes), 2)
+        self.assertEqual(len(themes), 3)
         theme = getTheme('plone.app.theming.tests')
         self.assertTrue(theme is not None)
         self.assertEqual(theme.__name__, 'plone.app.theming.tests')
@@ -175,6 +175,24 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(theme.rules, u'/++theme++manifest_default_rules/rules.xml')
         self.assertEqual(theme.absolutePrefix, '/++theme++manifest_default_rules')
         self.assertEqual(theme.title,  'Test theme')
+
+        f.close()
+
+    def test_extractThemeInfo_manifest_preview(self):
+        import zipfile
+        import os.path
+        from plone.app.theming.utils import extractThemeInfo
+
+        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_preview.zip'))
+        z = zipfile.ZipFile(f)
+
+        theme = extractThemeInfo(z)
+
+        self.assertEqual(theme.__name__, 'manifest_preview')
+        self.assertEqual(theme.rules, u'/++theme++manifest_preview/rules.xml')
+        self.assertEqual(theme.absolutePrefix, '/++theme++manifest_preview')
+        self.assertEqual(theme.title,  'Test theme')
+        self.assertEqual(theme.preview,  'preview.png')
 
         f.close()
 

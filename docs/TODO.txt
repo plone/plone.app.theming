@@ -4,8 +4,8 @@ plone.app.theming to-do
 General
 -------
 
-[ ] Add support for preview image in manifest.cfg, use in control panel
 [ ] Document doctype option in manifest.cfg
+[ ] Document preview option in manifest.cfg
 
 Control panel
 -------------
