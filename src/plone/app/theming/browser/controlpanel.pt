@@ -139,9 +139,15 @@
 
                                 <button i18n:translate="">Copy</button>
                                 <button i18n:translate="">Download</button>
-                                <button i18n:translate="">Map rules</button>
 
-                                <button tal:condition="theme/editable" i18n:translate="">Manage Files</button>
+                                <form method="get" tal:attributes="action string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-mapper">
+                                    <button i18n:translate="">Map rules</button>
+                                </form>
+
+                                <form method="get" tal:condition="theme/editable" tal:attributes="action string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-filemanager">
+                                    <button tal:condition="theme/editable" i18n:translate="">Manage Files</button>
+                                </form>
+
                                 <button
                                     tal:condition="not:theme/editable"
                                     disabled="disabled"
