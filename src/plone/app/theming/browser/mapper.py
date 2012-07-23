@@ -294,6 +294,7 @@ class ThemeMapper(BrowserView):
             if forms:
                 for n in tree.cssselect("form[action]"):
                     if forms == 'disable':
+                        n.attrib['action'] = '#'
                         n.attrib['onsubmit'] = 'javascript:return false;'
                     elif forms == 'replace':
                         n.attrib['action'] = encodeUrl(n.attrib['action'])
