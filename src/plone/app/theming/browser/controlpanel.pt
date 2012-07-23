@@ -110,7 +110,7 @@
                             <a class="previewImageContainer"
                                 title="Click to view a live preview"
                                 i18n:translate="title"
-                                tal:attributes="href string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=${theme/title}"
+                                tal:attributes="href string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${theme/title}"
                                 target="_new"
                                 href="#">
                                 <img
@@ -138,7 +138,10 @@
                                 </form>
 
                                 <button i18n:translate="">Copy</button>
-                                <button i18n:translate="">Download</button>
+
+                                <form method="get" target="_blank" tal:attributes="action string:${context/absolute_url}/++theme++${theme/name}/@@download-zip">
+                                    <button i18n:translate="">Download</button>
+                                </form>
 
                                 <form method="get" tal:attributes="action string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-mapper">
                                     <button i18n:translate="">Map rules</button>
