@@ -1,4 +1,6 @@
-button {
+#themeControlPanel button,
+#themeControlPanel input.context,
+#themeControlPanel input.standalone {
     padding: 4px;
     margin: 3px 6px 3px 0;
 }
@@ -72,4 +74,8 @@ button {
 .themeEntry .themeEntryControls {
     position: absolute;
     bottom: 5px;
+}
+
+.themeEntry input, .themeEntry form {
+    display: inline;
 }

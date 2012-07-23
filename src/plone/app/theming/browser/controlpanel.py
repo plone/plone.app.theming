@@ -73,18 +73,25 @@ class ThemingControlpanel(BrowserView):
 
             return False
 
-        if 'form.button.BasicSave' in form:
+        if 'form.button.Enable' in form:
             self.authorize()
 
-            self.settings.enabled = form.get('enabled', False)
-            themeSelection = form.get('selectedTheme', None)
+            themeSelection = form.get('themeName', None)
 
-            if themeSelection != "_other_":
-                themeData = self.getThemeData(self.availableThemes,
-                                              themeSelection)
+            if themeSelection:
+                themeData = self.getThemeData(self.availableThemes, themeSelection)
                 applyTheme(themeData)
 
-            IStatusMessage(self.request).add(_(u"Changes saved"))
+            IStatusMessage(self.request).add(_(u"Theme enabled. Note that this control panel page is never themed."))
+            self._setup()
+            return True
+
+        if 'form.button.Disable' in form:
+            self.authorize()
+
+            applyTheme(None)
+
+            IStatusMessage(self.request).add(_(u"Theme disabled."))
             self._setup()
             return True
 

@@ -1,7 +1,10 @@
 import urllib
+import urlparse
 import os.path
 
 import lxml.etree
+import lxml.html
+import lxml.html.builder
 
 from diazo.utils import quote_param
 
@@ -38,6 +41,7 @@ from Products.Five.browser.decode import processInputs
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from Products.CMFCore.utils import getToolByName
+
 
 class ThemeMapper(BrowserView):
 
@@ -77,7 +81,7 @@ class ThemeMapper(BrowserView):
                 self.request.get('file-selector') or '',
                 self.themeBaseUrl,
                 str(self.editable).lower(),
-            );
+            )
 
     def update(self):
         rulesFile = RULE_FILENAME
@@ -158,17 +162,34 @@ class ThemeMapper(BrowserView):
         Expects two query string parameters: ``path`` - the path to fetch - and
         ``theme``, which can be 'off', to disable the theme and 'apply' to
         apply the current theme to the response.
+
+        Additionally:
+
+        - a query string parameter ``links`` can be set to one of ``disable``
+          or ``replace``. The former will disable hyperlinks; the latter will
+          replace them with links using the ``@@themeing-controlpanel-getframe``
+          view.
+        - a query string parameter ``forms`` can be set to one of ``disable``
+          or ``replace``. The former will disable forms ; the latter will
+          replace them with links using the ``@@themeing-controlpanel-getframe``
+          view.
+        - a query string parameter ``title`` can be set to give a new page
+          title
         """
 
         processInputs(self.request)
 
         path = self.request.form.get('path', None)
         theme = self.request.form.get('theme', 'off')
+        links = self.request.form.get('links', None)
+        forms = self.request.form.get('forms', None)
+        title = self.request.form.get('title', None)
 
         if not path:
             return "<html><head></head><body></body></html>"
 
         portal = getPortal()
+        portal_url = portal.absolute_url()
         response = subrequest(path, root=portal)
 
         result = response.getBody()
@@ -185,18 +206,18 @@ class ThemeMapper(BrowserView):
         # Not HTML? Return as-is
         if content_type is None or not content_type.startswith('text/html'):
             if len(result) == 0:
-                result = ' ' # Zope does not deal well with empty responses
+                result = ' '  # Zope does not deal well with empty responses
             return result
 
         result = result.decode(encoding).encode('ascii', 'xmlcharrefreplace')
         if len(result) == 0:
-            result = ' ' # Zope does not deal well with empty responses
+            result = ' '  # Zope does not deal well with empty responses
 
         if theme == 'off':
             self.request.response.setHeader('X-Theme-Disabled', '1')
         elif theme == 'apply':
             self.request.response.setHeader('X-Theme-Disabled', '1')
-            theme = getThemeFromResourceDirectory(self.context)
+            themeInfo = getThemeFromResourceDirectory(self.context)
 
             registry = getUtility(IRegistry)
             settings = registry.forInterface(IThemeSettings, False)
@@ -210,23 +231,74 @@ class ThemeMapper(BrowserView):
             serializer = getHTMLSerializer([result], pretty_print=False)
 
             try:
-                transform = compileThemeTransform(theme.rules, theme.absolutePrefix, settings.readNetwork, theme.parameterExpressions or {})
+                transform = compileThemeTransform(themeInfo.rules, themeInfo.absolutePrefix, settings.readNetwork, themeInfo.parameterExpressions or {})
             except lxml.etree.XMLSyntaxError, e:
-                return self.theme_error_template(error=e.msg)
+                return self.themeInfo_error_template(error=e.msg)
 
-            params = prepareThemeParameters(context, self.request, theme.parameterExpressions or {})
+            params = prepareThemeParameters(context, self.request, themeInfo.parameterExpressions or {})
 
             # Fix url and path since the request gave us this view
-            params['url'] = quote_param("%s%s" % (portal.absolute_url(), path,))
+            params['url'] = quote_param("%s%s" % (portal_url, path,))
             params['path'] = quote_param("%s%s" % (portal.absolute_url_path(), path,))
 
-            if theme.doctype:
-                serializer.doctype = theme.doctype
+            if themeInfo.doctype:
+                serializer.doctype = themeInfo.doctype
                 if not serializer.doctype.endswith('\n'):
                     serializer.doctype += '\n'
 
             serializer.tree = transform(serializer.tree, **params)
             result = ''.join(serializer)
+
+        if title or links or forms:
+            tree = lxml.html.fromstring(result)
+
+            def encodeUrl(orig):
+                origUrl = urlparse.urlparse(orig)
+                newPath = origUrl.path
+                newQuery = urlparse.parse_qs(origUrl.query)
+
+                # relative?
+                if not origUrl.netloc:
+                    newPath = urlparse.urljoin(path.rstrip("/") + "/", newPath.lstrip("/"))
+                elif not orig.lower().startswith(portal_url.lower()):
+                    # Not an internal URL - ignore
+                    return orig
+
+                newQuery['path'] = newPath
+                newQuery['theme'] = theme
+                if links:
+                    newQuery['links'] = links
+                if forms:
+                    newQuery['forms'] = forms
+                if title:
+                    newQuery['title'] = title
+
+                return self.request.getURL() + '?' + urllib.urlencode(newQuery)
+
+            if title:
+                titleElement = tree.cssselect("html head title")
+                if titleElement:
+                    titleElement[0].text = title
+                else:
+                    headElement = tree.cssselect("html head")
+                    if headElement:
+                        headElement[0].append(lxml.html.builder.TITLE(title))
+
+            if links:
+                for n in tree.cssselect("a[href]"):
+                    if links == 'disable':
+                        n.attrib['href'] = '#'
+                    elif links == 'replace':
+                        n.attrib['href'] = encodeUrl(n.attrib['href'])
+
+            if forms:
+                for n in tree.cssselect("form[action]"):
+                    if forms == 'disable':
+                        n.attrib['onsubmit'] = 'javascript:return false;'
+                    elif forms == 'replace':
+                        n.attrib['action'] = encodeUrl(n.attrib['action'])
+
+            result = lxml.html.tostring(tree)
 
         return result
 
@@ -234,5 +306,5 @@ class ThemeMapper(BrowserView):
         """Save the rules file (AJAX request)
         """
         processInputs(self.request)
-        value = value.replace('\r\n', '\n');
+        value = value.replace('\r\n', '\n')
         self.context.writeFile(RULE_FILENAME, value.encode('utf-8'))

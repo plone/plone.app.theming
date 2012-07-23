@@ -18,12 +18,30 @@
         tal:attributes="href string:${context/portal_url}/++resource++plone.app.theming/controlpanel.css"
         />
 
+<script type="text/javascript" charset="utf-8">
+
+    jQuery(function($) {
+
+        $().ready(function() {
+
+            $('.previewImageContainer').click(function() {
+                window.open($(this).attr("href"), "preview");
+                return false;
+            });
+
+
+        });
+
+});
+
+</script>
+
 
 </metal:block>
 
 <body>
 
-<div metal:fill-slot="prefs_configlet_main">
+<div metal:fill-slot="prefs_configlet_main" id="themeControlPanel">
 
     <h1 class="documentFirstHeading"
         i18n:translate="heading_theme_settings">Theme settings</h1>
@@ -77,15 +95,23 @@
 
                     <div clas="themeEntryDetail">
 
-                        <span class="themeEntryTitle" tal:content="theme/title">
-                            Title
+                        <span class="themeEntryTitle">
+                            <span tal:replace="theme/title">Title</span>
+                            <span
+                                tal:condition="theme/selected"
+                                class="themeActive"
+                                i18n:translate="">(active)</span>
                         </span>
+
+
 
                         <div class="themeEntryWrapper">
 
                             <a class="previewImageContainer"
                                 title="Click to view a live preview"
                                 i18n:translate="title"
+                                tal:attributes="href string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=${theme/title}"
+                                target="_new"
                                 href="#">
                                 <img
                                     tal:attributes="src theme/preview"
@@ -96,8 +122,20 @@
 
                             <div class="themeEntryControls">
 
-                                <button tal:condition="not:theme/selected" i18n:translate="">Enable</button>
-                                <button tal:condition="theme/selected" i18n:translate="">Disable</button>
+                                <form method="post" tal:attributes="action request/URL">
+                                    <input tal:replace="structure context/@@authenticator/authenticator" />
+                                    <input type="hidden" name="themeName" tal:attributes="value theme/name" />
+                                    <button
+                                        tal:condition="not:theme/selected"
+                                        i18n:translate=""
+                                        type="submit"
+                                        name="form.button.Enable">Enable</button>
+                                    <button
+                                        tal:condition="theme/selected"
+                                        i18n:translate=""
+                                        type="submit"
+                                        name="form.button.Disable">Disable</button>
+                                </form>
 
                                 <button i18n:translate="">Copy</button>
                                 <button i18n:translate="">Download</button>
