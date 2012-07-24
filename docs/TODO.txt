@@ -6,18 +6,19 @@ General
 
 [ ] Document doctype option in manifest.cfg
 [ ] Document preview option in manifest.cfg
+[ ] Finish userguide.rst
 
 Control panel
 -------------
 
-[ ] Update layout and language to match revised mockups
+[x] Update layout and language to match revised mockups
 [ ] Expose user guide
 
-[ ] Explicit activate/deactivate action per theme
-[ ] Explicit copy per theme
+[x] Explicit activate/deactivate action per theme
+[x] Explicit copy per theme
 
-[ ] Use 'template' theme for Create action always (no 'based on')
-[ ] Let Upload action use rules.xml from 'template' theme if none provided
+[x] Use 'template' theme for Create action always (no 'based on')
+[x] Let Upload action use rules.xml from 'template' theme if none provided
 
 [ ] Incorporate fields from standard 'Theme' control panel under
     'Advanced settings' and hide that on install

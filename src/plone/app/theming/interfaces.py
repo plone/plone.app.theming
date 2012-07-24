@@ -8,6 +8,7 @@ _ = MessageFactory(u"plone")
 
 THEME_RESOURCE_NAME = 'theme'
 RULE_FILENAME = 'rules.xml'
+TEMPLATE_THEME = 'template'
 
 MANIFEST_FORMAT = ManifestFormat(THEME_RESOURCE_NAME,
         keys=['title', 'description', 'rules', 'prefix', 'doctype', 'preview'],

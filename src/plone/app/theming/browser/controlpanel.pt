@@ -29,6 +29,61 @@
                 return false;
             });
 
+            // move to top so overlay works
+            $(".overlay").appendTo("body");
+
+            // Create/copy overlay
+            $("#new-theme-overlay").overlay();
+
+            $("#createButton").click(function() {
+                $("#baseOn").val('template');
+                $("#overlayTitleNewTheme").show();
+                $("#overlayTitleCopyTheme").hide();
+                $("#new-theme-overlay").data('overlay').load();
+                return false;
+            });
+
+            $(".copyButton").click(function() {
+                $("#baseOn").val($(this).attr('data-theme'));
+                $("#overlayTitleNewTheme").hide();
+                $("#overlayTitleCopyTheme span").html($(this).attr('data-title'));
+                $("#overlayTitleCopyTheme").show();
+                $("#new-theme-overlay").data('overlay').load();
+                return false;
+            });
+
+            $("#new-theme-overlay input[name=form.button.Cancel]").click(function() {
+                $("#new-theme-overlay").data('overlay').close();
+                return false;
+            });
+
+            // Delete confirm overlay
+            $("#delete-confirm-overlay").overlay();
+
+            $(".deleteLink").click(function() {
+                $("#deleteConfirmTheme").val($(this).attr('data-theme'));
+                $("#overlayTitleDeleteConfirm span").html($(this).attr('data-title'));
+                $("#delete-confirm-overlay").data('overlay').load();
+                return false;
+            });
+
+            $("#delete-confirm-overlay input[name=form.button.Cancel]").click(function() {
+                $("#delete-confirm-overlay").data('overlay').close();
+                return false;
+            });
+
+            // Upload overlay
+            $("#upload-overlay").overlay();
+
+            $("#uploadButton").click(function() {
+                $("#upload-overlay").data('overlay').load();
+                return false;
+            });
+
+            $("#upload-overlay input[name=form.button.Cancel]").click(function() {
+                $("#upload-overlay").data('overlay').close();
+                return false;
+            });
 
         });
 
@@ -75,12 +130,12 @@
 
             <div class="formControls">
                 <button
-                    id="form.button.Create"
+                    id="createButton"
                     class="standalone"
                     i18n:translate="">Create new</button>
 
                 <button
-                    id="form.button.Upload"
+                    id="uploadButton"
                     class="standalone"
                     i18n:translate="">Upload Zip file</button>
             </div>
@@ -108,7 +163,7 @@
                         <div class="themeEntryWrapper">
 
                             <a class="previewImageContainer"
-                                title="Click to view a live preview. Forms in the preview will be disabled."
+                                title="Click to view a live preview. Forms will be disabled in the preview."
                                 i18n:translate="title [tooltip_theme_preview]"
                                 tal:attributes="href string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${theme/title}"
                                 target="_new"
@@ -137,7 +192,7 @@
                                         name="form.button.Disable">Deactivate</button>
                                 </form>
 
-                                <button i18n:translate="">Copy</button>
+                                <button class="copyButton" tal:attributes="data-theme theme/name; data-title theme/title" i18n:translate="">Copy</button>
 
                                 <form method="get" target="_blank" tal:attributes="action string:${context/absolute_url}/++theme++${theme/name}/@@download-zip">
                                     <button i18n:translate="">Download</button>
@@ -159,7 +214,9 @@
                                     i18n:attributes="title">Manage Files</button>
 
 
-                                <a href="#">Delete</a>
+                                <a href="#" class="deleteLink"
+                                    tal:condition="theme/editable"
+                                    tal:attributes="data-theme theme/name; data-title theme/title" i18n:translate="">Delete</a>
 
                             </div>
 
@@ -171,263 +228,6 @@
                 <div class="visualClear"><!-- --></div>
 
             </div>
-
-        </dd>
-
-        <dt id="fieldsetlegend-create">Create theme</dt>
-        <dd id="fieldset-create">
-
-        <form
-                name="create"
-                method="post"
-                tal:define="errors view/errors"
-                tal:attributes="action request/URL">
-
-                <p i18n:translate="description_new_theme">
-                    To create a new theme, enter a title and description below,
-                    and choose an existing theme that you would like to base the
-                    new theme on. The <em>Example theme [template]</em> theme
-                    is a reasonably simple theme that illustrates the main aspects
-                    of building a Diazo theme for Plone.
-                </p>
-
-                <div
-                    tal:define="error errors/title | nothing"
-                    tal:attributes="class python:'field error' if error else 'field'">
-
-                    <label for="title" i18n:translate="label_new_theme_title">Title</label>
-                    <div class="formHelp" i18n:translate="help_new_theme_title">
-                        Enter a short, descriptive title for your theme
-                    </div>
-
-                    <div tal:content="error" tal:condition="error" />
-
-                    <input
-                        type="text"
-                        name="title"
-                        id="title"
-                        tal:attributes="value request/title | nothing"
-                        />
-                </div>
-
-                <div class="field">
-                    <label for="description" i18n:translate="label_new_theme_description">Description</label>
-                    <div class="formHelp" i18n:translate="help_new_theme_description">
-                        You may also provide a longer description for your theme.
-                    </div>
-                    <textarea
-                        name="description"
-                        id="description"
-                        tal:content="request/description | nothing"></textarea>
-                </div>
-
-                <div class="field">
-                    <label for="baseOn" i18n:translate="label_new_theme_base_on">Base on</label>
-                    <div class="formHelp" i18n:translate="help_new_theme_base_on">
-                        Choose an existing theme to base your theme on.
-                    </div>
-                    <select size="1" name="baseOn" id="baseOn" tal:define="selected request/baseOn | string:template">
-                        <option
-                            tal:repeat="theme view/themeList"
-                            tal:attributes="value theme/name;
-                                            title theme/description;
-                                            selected python:theme['name'] == selected and 'selected' or None"
-                            tal:content="string:${theme/title} [${theme/name}]"
-                            />
-                    </select>
-                </div>
-
-                <div
-                    class="field"
-                    tal:define="selected python:request.get('enableImmediately', False)">
-                    <input type="hidden" value="" name="enableImmediately:boolean:default" />
-                    <input type="checkbox" value="1" name="enableImmediately:boolean" id="enableImmediately"
-                        tal:attributes="checked python:'enableImmediately' if selected else None"
-                        />
-                    <label for="enableImmediately" i18n:translate="label_enable_immediately">Immediately enable new theme</label>
-                    <div class="formHelp" i18n:translate="help_enable_immediately">
-                        Select this option to enable the newly created theme
-                        immediately.
-                    </div>
-                </div>
-
-
-                <div class="formControls">
-                    <input
-                        type="submit"
-                        name="form.button.CreateTheme"
-                        class="standalone"
-                        value="Create"
-                        i18n:attributes="value"
-                        />
-                </div>
-
-                <input tal:replace="structure context/@@authenticator/authenticator" />
-
-            </form>
-
-        </dd>
-
-        <dt id="fieldsetlegend-manage" tal:condition="view/availableThemes">Manage themes</dt>
-        <dd id="fieldset-manage" tal:condition="view/availableThemes">
-
-            <form
-                name="manage"
-                method="post"
-                class="enableUnloadProtection"
-                tal:attributes="action request/URL"
-                tal:define="errors view/errors">
-
-                <p i18n:translate="description_manage">
-                   You can use the table below to manage themes that have been
-                   uploaded or created through the web. Themes loaded from the
-                   filesystem are shown as well, but cannot be edited or deleted
-                   here.
-                </p>
-
-                <table class="listing">
-                    <thead>
-                        <tr>
-                            <th />
-                            <th i18n:translate="heading_theme_title">Title</th>
-                            <th i18n:translate="heading_theme_description">Description</th>
-                            <th i18n:translate="heading_theme_action">Actions   </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr tal:repeat="theme view/themeList">
-                            <td>
-                                <input
-                                    tal:condition="theme/editable"
-                                    type="checkbox"
-                                    name="themes:list"
-                                    tal:attributes="value theme/name"
-                                    />
-                            </td>
-                            <td tal:content="string:${theme/title} (${theme/name})" />
-                            <td tal:content="theme/description" />
-                            <td style="white-space: nowrap">
-                                <a  target="_new"
-                                    tal:attributes="href string:${context/absolute_url}/++theme++${theme/name}/@@download-zip"
-                                    i18n:translate="option_theme_download"
-                                    >Download</a>
-                                <tal:block condition="theme/editable">
-                                    |
-                                    <a  tal:attributes="href string:${context/absolute_url}/++theme++${theme/name}/@@theming-controlpanel-filemanager"
-                                        i18n:translate="option_theme_map_theme"
-                                        >Manage files</a>
-                                </tal:block>
-                                <tal:block condition="not:theme/editable">
-                                    |
-                                    <a  tal:attributes="href string:${context/absolute_url}/++theme++${theme/name}/@@theming-controlpanel-mapper"
-                                        i18n:translate="option_theme_map_theme"
-                                        >Preview and map rules</a>
-                                </tal:block>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="formControls">
-                    <input
-                        type="submit"
-                        name="form.button.DeleteSelected"
-                        class="destructive"
-                        value="Delete selected"
-                        i18n:attributes="value"
-                        />
-                </div>
-
-                <input tal:replace="structure context/@@authenticator/authenticator" />
-
-            </form>
-
-            <fieldset>
-                <legend i18n:translate="heading_import_theme">Import</legend>
-
-                <p i18n:translate="description_import">
-                   You can import a ZIP file containing an existing theme.
-                   This should contain a single top level directory, which will be used as
-                    the theme identifier. This directory must contain a
-                    <code>rules.xml</code> file or a <code>manifest.cfg</code> file
-                    indicating an alternative Diazo rules file.
-                </p>
-
-                <form
-                    name="import"
-                    method="post"
-                    enctype="multipart/form-data"
-                    class="enableUnloadProtection"
-                    tal:attributes="action request/URL"
-                    tal:define="errors view/errors">
-
-                    <div
-                        class="field"
-                        tal:define="error errors/themeArchive | nothing"
-                        tal:attributes="class python:'field error' if error else 'field'">
-
-                        <div class="formHelp" i18n:translate="help_theme_archive">
-                            Select a file to upload.
-                        </div>
-
-                        <div tal:content="error" tal:condition="error" />
-
-                        <input
-                            type="file"
-                            name="themeArchive"
-                            id="themeArchive"
-                            />
-
-                    </div>
-
-                    <div
-                        class="field"
-                        tal:define="selected python:request.get('enableNewTheme', True)">
-                        <input type="hidden" value="" name="enableNewTheme:boolean:default" />
-                        <input type="checkbox" value="1" name="enableNewTheme:boolean" id="enableNewTheme"
-                            tal:attributes="checked python:'enableNewTheme' if selected else None"
-                            />
-                        <label for="enableNewTheme" i18n:translate="label_enable_new_theme">Immediately enable new theme</label>
-                        <div class="formHelp" i18n:translate="help_enable_new_theme">
-                            Select this option to enable the newly uploaded theme
-                            immediately.
-                        </div>
-                    </div>
-
-                    <div
-                        class="field"
-                        tal:define="selected python:request.get('replaceExisting', False)">
-                        <input type="hidden" value="" name="replaceExisting:boolean:default" />
-                        <input type="checkbox" value="" name="replaceExisting:boolean" id="replaceExisting"
-                            tal:attributes="checked python:'replaceExisting' if selected else None"
-                            />
-                        <label for="replaceExisting" i18n:translate="label_replace_existing">Replace existing theme</label>
-                        <div class="formHelp" i18n:translate="help_replace_existing">
-                            Select this option to replace any existing theme that
-                            may have been uploaded previously.
-                        </div>
-                    </div>
-
-                    <div class="formControls">
-                        <input
-                            type="submit"
-                            name="form.button.Import"
-                            class="context"
-                            value="Import"
-                            i18n:attributes="value" />
-
-                        <input
-                            type="submit"
-                            name="form.button.Cancel"
-                            class="context"
-                            value="Cancel"
-                            i18n:attributes="value" />
-                    </div>
-
-                    <input tal:replace="structure context/@@authenticator/authenticator" />
-
-                </form>
-            </fieldset>
 
         </dd>
 
@@ -620,6 +420,204 @@
         </dd>
 
     </dl>
+
+    <!-- Delete confirmation overlay -->
+    <div id="delete-confirm-overlay" class="overlay overlay-ajax">
+        <div class="close"><span i18n:translate="">Close</span></div>
+        <div class="pb-ajax">
+            <div>
+                <h1 id="overlayTitleDeleteConfirm" class="documentFirstHeading" i18n:translate="theming_controlpanel_delete_confirm">
+                    Are you sure you want to delete <span i18n:name="theme_name"></span>
+                </h1>
+
+                <p class="documentDescription" i18n:translate="theming_controlpanel_delete_confirm_description">
+                    This operation cannot be undone. Note that filesystem themes
+                    cannot be deleted from within Plone.
+                </p>
+
+                <form name="delete" method="post" tal:attributes="action request/URL">
+                    <input tal:replace="structure context/@@authenticator/authenticator" />
+                    <input type="hidden" name="themes:list" id="deleteConfirmTheme" value="" />
+                    <div class="formControls">
+                        <input
+                            type="submit"
+                            name="form.button.DeleteSelected"
+                            class="destructive"
+                            value="Delete"
+                            i18n:attributes="value"
+                            />
+                        <input
+                            type="submit"
+                            class="standalone allowMultiSubmit"
+                            type="submit"
+                            name="form.button.Cancel"
+                            value="Cancel"
+                            i18n:attributes="value"
+                            />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- New/copy overlay -->
+    <div id="new-theme-overlay" class="overlay overlay-ajax">
+        <div class="close">
+            <span i18n:translate="">Close</span>
+        </div>
+        <div class="pb-ajax">
+            <div>
+                <h1 id="overlayTitleNewTheme"  class="documentFirstHeading" i18n:translate="theming_controlpanel_new_theme">New theme</h1>
+                <h1 id="overlayTitleCopyTheme" class="documentFirstHeading" i18n:translate="theming_controlpanel_copy_theme">Create copy of <span i18n:name="theme_name"></span></h1>
+
+                <p class="documentDescription" i18n:translate="theming_controlpanel_new_theme_description">
+                    Please enter the details of your new theme
+                </p>
+
+                <form name="create" method="post" tal:attributes="action request/URL">
+
+                    <div class="field">
+
+                        <label for="title" i18n:translate="label_new_theme_title">Title</label>
+                        <div class="formHelp" i18n:translate="help_new_theme_title">
+                            Enter a short, descriptive title for your theme
+                        </div>
+
+                        <input
+                            type="text"
+                            name="title"
+                            id="title"
+                            />
+                    </div>
+
+                    <div class="field">
+                        <label for="description" i18n:translate="label_new_theme_description">Description</label>
+                        <div class="formHelp" i18n:translate="help_new_theme_description">
+                            You may also provide a longer description for your theme.
+                        </div>
+                        <textarea
+                            name="description"
+                            id="description"></textarea>
+                    </div>
+
+                    <input type="hidden" name="baseOn" id="baseOn" value="template" />
+
+                    <div class="field">
+                        <input type="hidden" value="" name="enableImmediately:boolean:default" />
+                        <input type="checkbox" value="1" name="enableImmediately:boolean" id="enableImmediately" />
+                        <label for="enableImmediately" i18n:translate="label_enable_immediately">Immediately enable new theme</label>
+                        <div class="formHelp" i18n:translate="help_enable_immediately">
+                            Select this option to enable the newly created theme
+                            immediately.
+                        </div>
+                    </div>
+
+
+                    <div class="formControls">
+                        <input
+                            type="submit"
+                            name="form.button.CreateTheme"
+                            class="standalone"
+                            value="Create"
+                            i18n:attributes="value"
+                            />
+                        <input
+                            type="submit"
+                            name="form.button.Cancel"
+                            class="standalone allowMultiSubmit"
+                            value="Cancel"
+                            i18n:attributes="value"
+                            />
+                    </div>
+
+                    <input tal:replace="structure context/@@authenticator/authenticator" />
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload overlay -->
+    <div id="upload-overlay" class="overlay overlay-ajax">
+        <div class="close">
+            <span i18n:translate="">Close</span>
+        </div>
+        <div class="pb-ajax">
+            <div>
+                <h1 class="documentFirstHeading" i18n:translate="theming_controlpanel_upload">Upload theme</h1>
+
+                <p class="documentDescription" i18n:translate="description_import">
+                   You can import a ZIP file containing an existing theme.
+                   This should contain a single top level directory, which will be used as
+                   the theme identifier. If no Diazo <code>rules.xml</code> or
+                   <code>manifest.cfg</code> file is found in this directory, a
+                   default rules file will be created.
+                </p>
+
+                <form
+                    name="import"
+                    method="post"
+                    enctype="multipart/form-data"
+                    class="enableUnloadProtection"
+                    tal:attributes="action request/URL">
+
+                    <div class="field">
+
+                        <div class="formHelp" i18n:translate="help_theme_archive">
+                            Select a file to upload.
+                        </div>
+
+                        <input
+                            type="file"
+                            name="themeArchive"
+                            id="themeArchive"
+                            />
+
+                    </div>
+
+                    <div class="field">
+                        <input type="hidden" value="" name="enableNewTheme:boolean:default" />
+                        <input type="checkbox" value="1" name="enableNewTheme:boolean" id="enableNewTheme" />
+                        <label for="enableNewTheme" i18n:translate="label_enable_new_theme">Immediately enable new theme</label>
+                        <div class="formHelp" i18n:translate="help_enable_new_theme">
+                            Select this option to enable the newly uploaded theme immediately.
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <input type="hidden" value="" name="replaceExisting:boolean:default" />
+                        <input type="checkbox" value="1" name="replaceExisting:boolean" id="replaceExisting" />
+                        <label for="replaceExisting" i18n:translate="label_replace_existing">Replace existing theme</label>
+                        <div class="formHelp" i18n:translate="help_replace_existing">
+                            Select this option to replace any existing theme that may have been uploaded previously
+                            containing the same top level theme directory.
+                        </div>
+                    </div>
+
+                    <div class="formControls">
+                        <input
+                            type="submit"
+                            name="form.button.Import"
+                            class="context"
+                            value="Import"
+                            i18n:attributes="value" />
+
+                        <input
+                            type="submit"
+                            name="form.button.Cancel"
+                            class="context allowMultiSubmit"
+                            value="Cancel"
+                            i18n:attributes="value" />
+                    </div>
+
+                    <input tal:replace="structure context/@@authenticator/authenticator" />
+
+                </form>
+
+            </div>
+        </div>
+    </div>
 
 </div>
 

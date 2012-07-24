@@ -13,6 +13,8 @@ from plone.memoize.instance import memoize
 from plone.app.theming.interfaces import _
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
+from plone.app.theming.interfaces import RULE_FILENAME
+from plone.app.theming.interfaces import TEMPLATE_THEME
 
 from plone.app.theming.utils import extractThemeInfo
 from plone.app.theming.utils import getZODBThemes
@@ -50,8 +52,7 @@ class ThemingControlpanel(BrowserView):
                                                 IThemeSettings, False)
         self.zodbThemes = getZODBThemes()
         self.availableThemes = getAvailableThemes()
-        self.selectedTheme = self.getSelectedTheme(
-                                self.availableThemes, self.settings.rules)
+        self.selectedTheme = self.getSelectedTheme(self.availableThemes, self.settings.rules)
 
         # Set response header to make sure control panel is never themed
         self.request.response.setHeader('X-Theme-Disabled', '1')
@@ -166,7 +167,7 @@ class ThemingControlpanel(BrowserView):
             if themeZip:
 
                 try:
-                    themeData = extractThemeInfo(themeZip)
+                    themeData = extractThemeInfo(themeZip, checkRules=False)
                 except (ValueError, KeyError,), e:
                     logger.warn(str(e))
                     self.errors['themeArchive'] = _('error_no_rules_file',
@@ -195,10 +196,15 @@ class ThemingControlpanel(BrowserView):
             if performImport:
                 themeContainer.importZip(themeZip)
 
-                themeDirectory = queryResourceDirectory(
-                        THEME_RESOURCE_NAME, themeData.__name__
-                    )
+                themeDirectory = queryResourceDirectory(THEME_RESOURCE_NAME, themeData.__name__)
                 if themeDirectory is not None:
+
+                    # If we don't have a rules file, use the template
+                    if themeData.rules == u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, themeData.__name__, RULE_FILENAME,):
+                        if not themeDirectory.isFile(RULE_FILENAME):
+                            templateThemeDirectory = queryResourceDirectory(THEME_RESOURCE_NAME, TEMPLATE_THEME)
+                            themeDirectory.writeFile(RULE_FILENAME, templateThemeDirectory.readFile(RULE_FILENAME))
+
                     plugins = getPlugins()
                     pluginSettings = getPluginSettings(themeDirectory, plugins)
                     if pluginSettings is not None:
@@ -212,22 +218,22 @@ class ThemingControlpanel(BrowserView):
                     self.settings.enabled = True
 
             if not self.errors:
-                IStatusMessage(self.request).add(_(u"Changes saved"))
+                IStatusMessage(self.request).add(_(u"Theme uploaded"))
                 self._setup()
                 return True
             else:
                 IStatusMessage(self.request).add(
                         _(u"There were errors"), "error"
                     )
-                self.redirectToFieldset('manage')
-                return False
+                self._setup()
+                return True
 
         if 'form.button.CreateTheme' in form:
             self.authorize()
 
             title = form.get('title')
             description = form.get('description') or ''
-            baseOn = form.get('baseOn', 'template')
+            baseOn = form.get('baseOn', TEMPLATE_THEME)
             enableImmediately = form.get('enableImmediately', True)
 
             if not title:
@@ -235,8 +241,8 @@ class ThemingControlpanel(BrowserView):
 
                 IStatusMessage(self.request).add(
                     _(u"There were errors"), 'error')
-                self.redirectToFieldset('create')
-                return False
+                self._setup()
+                return True
 
             else:
                 name = createThemeFromTemplate(title, description, baseOn)
@@ -264,8 +270,8 @@ class ThemingControlpanel(BrowserView):
             for theme in toDelete:
                 del themeDirectory[theme]
 
-            self.redirectToFieldset('manage')
-            return False
+            self._setup()
+            return True
 
         return True
 
@@ -289,7 +295,7 @@ class ThemingControlpanel(BrowserView):
         portalUrl = getToolByName(self.context, 'portal_url')()
 
         for theme in self.availableThemes:
-            if theme.__name__ == 'template':
+            if theme.__name__ == TEMPLATE_THEME:
                 continue
 
             previewUrl = "++resource++plone.app.theming/defaultPreview.png"

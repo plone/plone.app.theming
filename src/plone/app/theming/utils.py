@@ -218,15 +218,16 @@ def isValidThemeDirectory(directory):
            directory.isFile(RULE_FILENAME)
 
 
-def extractThemeInfo(zipfile):
+def extractThemeInfo(zipfile, checkRules=True):
     """Return an ITheme based on the information in the given zipfile.
 
     Will throw a ValueError if the theme directory does not contain a single
     top level directory or the rules file cannot be found.
+
+    Set checkRules=False to disable the rules check.
     """
 
-    resourceName, manifestDict = extractManifestFromZipFile(
-        zipfile, MANIFEST_FORMAT)
+    resourceName, manifestDict = extractManifestFromZipFile(zipfile, MANIFEST_FORMAT)
 
     rulesFile = None
     absolutePrefix = '/++%s++%s' % (THEME_RESOURCE_NAME, resourceName)
@@ -246,12 +247,12 @@ def extractThemeInfo(zipfile):
         preview = manifestDict.get('preview', None)
 
     if not rulesFile:
-        try:
-            zipfile.getinfo("%s/%s" % (resourceName, RULE_FILENAME,))
-        except KeyError:
-            raise ValueError("Could not find theme name and rules file")
-        rulesFile = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, resourceName,
-                                       RULE_FILENAME,)
+        if checkRules:
+            try:
+                zipfile.getinfo("%s/%s" % (resourceName, RULE_FILENAME,))
+            except KeyError:
+                raise ValueError("Could not find theme name and rules file")
+        rulesFile = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, resourceName, RULE_FILENAME,)
 
     return Theme(resourceName, rulesFile,
             title=title,

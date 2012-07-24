@@ -253,9 +253,10 @@ Only the ``[theme]`` header is required - all other keys are optional.
 
 You can also set::
 
-    rules = myrules.xml
+    rules = http://example.org/myrules.xml
 
-to use a different rule file name than ``rules.xml``, and::
+to use a different rule file name than ``rules.xml`` (you should provide a URL
+or relative path), and::
 
     prefix = /some/prefix
 
