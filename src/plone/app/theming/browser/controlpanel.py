@@ -1,3 +1,6 @@
+import pkg_resources
+import docutils.core
+
 import logging
 import zipfile
 
@@ -48,11 +51,11 @@ class ThemingControlpanel(BrowserView):
         return ''
 
     def _setup(self):
-        self.settings = getUtility(IRegistry).forInterface(
-                                                IThemeSettings, False)
+        self.settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
         self.zodbThemes = getZODBThemes()
         self.availableThemes = getAvailableThemes()
         self.selectedTheme = self.getSelectedTheme(self.availableThemes, self.settings.rules)
+        self.overlay = ''
 
         # Set response header to make sure control panel is never themed
         self.request.response.setHeader('X-Theme-Disabled', '1')
@@ -225,7 +228,8 @@ class ThemingControlpanel(BrowserView):
                 IStatusMessage(self.request).add(
                         _(u"There were errors"), "error"
                     )
-                self._setup()
+
+                self.renderOverlay('upload')
                 return True
 
         if 'form.button.CreateTheme' in form:
@@ -241,7 +245,8 @@ class ThemingControlpanel(BrowserView):
 
                 IStatusMessage(self.request).add(
                     _(u"There were errors"), 'error')
-                self._setup()
+
+                self.renderOverlay('new-theme')
                 return True
 
             else:
@@ -320,5 +325,13 @@ class ThemingControlpanel(BrowserView):
         self.redirect("%s/%s#fieldsetlegend-%s" % (
             portalUrl, self.__name__, fieldset,))
 
+    def renderOverlay(self, overlay):
+        self.overlay = overlay
+
     def authorize(self):
         return authorize(self.context, self.request)
+
+    def render_userguide(self):
+        rstSource = pkg_resources.resource_string('plone.app.theming.browser', 'resources/userguide.rst')
+        parts = docutils.core.publish_parts(source=rstSource, writer_name='html')
+        return parts['body_pre_docinfo'] + parts['fragment']

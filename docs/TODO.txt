@@ -11,8 +11,13 @@ General
 Control panel
 -------------
 
+[ ] Handle errors in new/copy dialogue properly
+    - remove error when clicking button
+    - maintain title in copy overlay
+[ ] Fix anchor links in use guide (base tag problem)
+
 [x] Update layout and language to match revised mockups
-[ ] Expose user guide
+[x] Expose user guide
 
 [x] Explicit activate/deactivate action per theme
 [x] Explicit copy per theme
