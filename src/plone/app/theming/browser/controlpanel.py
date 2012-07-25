@@ -240,8 +240,7 @@ class ThemingControlpanel(BrowserView):
             if not title:
                 self.errors['title'] = _(u"Title is required")
 
-                IStatusMessage(self.request).add(
-                    _(u"There were errors"), 'error')
+                IStatusMessage(self.request).add(_(u"There were errors"), 'error')
 
                 self.renderOverlay('new-theme')
                 return True
@@ -271,6 +270,8 @@ class ThemingControlpanel(BrowserView):
 
             for theme in toDelete:
                 del themeDirectory[theme]
+
+            IStatusMessage(self.request).add(_(u"Theme deleted"), 'info')
 
             self._setup()
             return True
