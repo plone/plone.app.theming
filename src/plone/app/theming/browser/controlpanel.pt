@@ -48,15 +48,24 @@
                 $("#overlayTitleNewTheme").show();
                 $("#overlayTitleCopyTheme").hide();
                 $("#overlay-new-theme").data('overlay').load();
+
+
+                $("#overlay-new-theme .field.error").removeClass('error');
+                $("#overlay-new-theme .errorMessage").remove();
+
                 return false;
             });
 
             $(".copyButton").click(function() {
-                $("#baseOn").val($(this).attr('data-theme'));
+                $("#baseOn").val($(this).parents(".themeEntry").attr('data-theme'));
                 $("#overlayTitleNewTheme").hide();
-                $("#overlayTitleCopyTheme span").html($(this).attr('data-title'));
+                $("#overlayTitleCopyTheme span").html($(this).parents(".themeEntry").attr('data-theme-title'));
                 $("#overlayTitleCopyTheme").show();
                 $("#overlay-new-theme").data('overlay').load();
+
+                $("#overlay-new-theme .field.error").removeClass('error');
+                $("#overlay-new-theme .errorMessage").remove();
+
                 return false;
             });
 
@@ -69,8 +78,8 @@
             $("#overlay-delete-confirm").overlay();
 
             $(".deleteLink").click(function() {
-                $("#deleteConfirmTheme").val($(this).attr('data-theme'));
-                $("#overlayTitleDeleteConfirm span").html($(this).attr('data-title'));
+                $("#deleteConfirmTheme").val($(this).parents(".themeEntry").attr('data-theme'));
+                $("#overlayTitleDeleteConfirm span").html($(this).parents(".themeEntry").attr('data-theme-title'));
                 $("#overlay-delete-confirm").data('overlay').load();
                 return false;
             });
@@ -84,6 +93,10 @@
             $("#overlay-upload").overlay();
 
             $("#uploadButton").click(function() {
+
+                $("#overlay-upload .field.error").removeClass('error');
+                $("#overlay-upload .errorMessage").remove();
+
                 $("#overlay-upload").data('overlay').load();
                 return false;
             });
@@ -93,8 +106,18 @@
                 return false;
             });
 
-            // Open overlay if the window hash told us to
+            // Open overlay if there was an error
             if(OPEN_OVERLAY) {
+
+                if(OPEN_OVERLAY == 'new-theme') {
+                    var baseOn = $("#baseOn").val();
+                    if(baseOn != 'template') { // operation was a copy
+                        $("#overlayTitleNewTheme").hide();
+                        $("#overlayTitleCopyTheme span").html($("#themeEntry-" + baseOn).attr('data-theme-title'));
+                        $("#overlayTitleCopyTheme").show();
+                    }
+                }
+
                 var triggeredOverlay = $("#overlay-" + OPEN_OVERLAY).data('overlay');
                 if(triggeredOverlay) triggeredOverlay.load();
             }
@@ -167,7 +190,10 @@
 
                 <div class="themeEntry"
                     tal:repeat="theme view/themeList"
-                    tal:attributes="class python:theme['selected'] and 'themeEntry activeThemeEntry' or 'themeEntry'">
+                    tal:attributes="class python:theme['selected'] and 'themeEntry activeThemeEntry' or 'themeEntry';
+                                    id string:themeEntry-${theme/name};
+                                    data-theme theme/name;
+                                    data-theme-title theme/title;">
 
                     <div clas="themeEntryDetail">
 
@@ -211,7 +237,7 @@
                                         name="form.button.Disable">Deactivate</button>
                                 </form>
 
-                                <button class="copyButton" tal:attributes="data-theme theme/name; data-title theme/title" i18n:translate="">Copy</button>
+                                <button class="copyButton" i18n:translate="">Copy</button>
 
                                 <form method="get" target="_blank" tal:attributes="action string:${context/absolute_url}/++theme++${theme/name}/@@download-zip">
                                     <button i18n:translate="">Download</button>
@@ -235,7 +261,7 @@
 
                                 <a href="#" class="deleteLink"
                                     tal:condition="theme/editable"
-                                    tal:attributes="data-theme theme/name; data-title theme/title" i18n:translate="">Delete</a>
+                                    i18n:translate="">Delete</a>
 
                             </div>
 
@@ -276,7 +302,7 @@
                         Enter a path or URL for the theme rules file.
                     </div>
 
-                    <div tal:content="error" tal:condition="error" />
+                    <div class="errorMessage" tal:content="error" tal:condition="error" />
 
                     <input
                         name="rules"
@@ -301,7 +327,7 @@
                         Plone is rendering.
                     </div>
 
-                    <div tal:content="error" tal:condition="error" />
+                    <div class="errorMessage" tal:content="error" tal:condition="error" />
 
                     <input
                         name="absolutePrefix"
@@ -326,7 +352,7 @@
                         that set in the Diazo theme is used.
                     </div>
 
-                    <div tal:content="error" tal:condition="error" />
+                    <div class="errorMessage" tal:content="error" tal:condition="error" />
 
                     <input
                         name="doctype"
@@ -370,7 +396,7 @@
                         Plone.
                     </div>
 
-                    <div tal:content="error" tal:condition="error" />
+                    <div class="errorMessage" tal:content="error" tal:condition="error" />
 
                     <textarea
                         name="hostnameBlacklist:lines"
@@ -403,7 +429,7 @@
                         per line, in the format <code>name = expression</code>.
                     </div>
 
-                    <div tal:content="error" tal:condition="error" />
+                    <div class="errorMessage" tal:content="error" tal:condition="error" />
 
                     <textarea
                         name="parameterExpressions:lines"
@@ -504,7 +530,7 @@
                             Enter a short, descriptive title for your theme
                         </div>
 
-                        <div tal:content="error" tal:condition="error" />
+                        <div class="errorMessage" tal:content="error" tal:condition="error" />
 
                         <input
                             type="text"
@@ -600,7 +626,7 @@
                             Select a file to upload.
                         </div>
 
-                        <div tal:content="error" tal:condition="error" />
+                        <div class="errorMessage" tal:content="error" tal:condition="error" />
 
                         <input
                             type="file"
