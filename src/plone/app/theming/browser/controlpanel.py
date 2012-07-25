@@ -1,6 +1,3 @@
-import pkg_resources
-import docutils.core
-
 import logging
 import zipfile
 
@@ -330,8 +327,3 @@ class ThemingControlpanel(BrowserView):
 
     def authorize(self):
         return authorize(self.context, self.request)
-
-    def render_userguide(self):
-        rstSource = pkg_resources.resource_string('plone.app.theming.browser', 'resources/userguide.rst')
-        parts = docutils.core.publish_parts(source=rstSource, writer_name='html')
-        return parts['body_pre_docinfo'] + parts['fragment']

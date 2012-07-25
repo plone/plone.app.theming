@@ -33,6 +33,11 @@
             // move to top so overlays work
             $(".overlay").appendTo("body");
 
+            // Help overlay
+            $("#helpButtonForm").prepOverlay({
+                subtype: 'iframe'
+            });
+
             // Create/copy overlay
             $("#overlay-new-theme").overlay();
             $("#overlayTitleNewTheme").show();
@@ -147,6 +152,13 @@
                     id="uploadButton"
                     class="standalone"
                     i18n:translate="">Upload Zip file</button>
+
+                <form id="helpButtonForm" method="get" tal:attributes="action string:${portal_url}/@@theming-controlpanel-help">
+                    <button
+                        class="standalone"
+                        i18n:translate="">Help</button>
+                </form>
+
             </div>
 
             <div id="themesList">
@@ -423,11 +435,6 @@
                 <input tal:replace="structure context/@@authenticator/authenticator" />
 
             </form>
-
-        </dd>
-
-        <dt id="fieldsetlegend-help" i18n:translate="">User guide</dt>
-        <dd id="fieldset-help" tal:content="structure view/render_userguide">
 
         </dd>
 

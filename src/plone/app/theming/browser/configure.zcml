@@ -21,7 +21,14 @@
         template="controlpanel.pt"
         permission="cmf.ManagePortal"
         />
-    
+
+    <browser:page
+        name="theming-controlpanel-help"
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        class=".help.Help"
+        permission="zope2.View"
+        />
+
     <browser:page
         name="theming-controlpanel-filemanager"
         for="plone.resource.interfaces.IResourceDirectory"
@@ -29,7 +36,7 @@
         template="filemanager.pt"
         permission="cmf.ManagePortal"
         />
-    
+
     <browser:page
         name="theming-controlpanel-mapper"
         for="plone.resource.interfaces.IResourceDirectory"
@@ -37,7 +44,7 @@
         template="mapper.pt"
         permission="cmf.ManagePortal"
         />
-    
+
     <browser:page
         name="theming-controlpanel-mapper-getframe"
         for="plone.resource.interfaces.IResourceDirectory"
@@ -45,7 +52,7 @@
         attribute="getFrame"
         permission="cmf.ManagePortal"
         />
-    
+
     <browser:page
         name="theming-controlpanel-mapper-save"
         for="plone.resource.interfaces.IResourceDirectory"
