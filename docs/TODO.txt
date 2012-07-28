@@ -28,8 +28,7 @@ File manager
 
 [x] Update layout and language to match revised mockups
 [x] Move Preview to open in a new window/tab on explicit button action
-
-[ ] Server-side validation of file name for new file/new folder/upload
+[x] Server-side validation of file name for new file/new folder/upload
 
 Mapper
 ------

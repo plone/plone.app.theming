@@ -1,6 +1,7 @@
 *.pyc
 .DS_Store
 *.egg-info
+*.graffle
 .installed.cfg
 .mr.developer.cfg
 bin/

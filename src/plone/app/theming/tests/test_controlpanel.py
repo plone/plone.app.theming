@@ -69,4 +69,3 @@ class TestControlPanel(unittest.TestCase):
 
         self.assertTrue('foobar' in [t.__name__ for t in getZODBThemes()])
         self.assertTrue(getTheme('foobar') is not None)
-
