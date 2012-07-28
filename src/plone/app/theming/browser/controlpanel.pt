@@ -169,7 +169,7 @@
                 <button
                     id="createButton"
                     class="standalone"
-                    i18n:translate="">Create new</button>
+                    i18n:translate="">New theme</button>
 
                 <button
                     id="uploadButton"

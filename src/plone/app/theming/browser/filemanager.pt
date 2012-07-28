@@ -35,33 +35,35 @@ jQuery(function($) {
       return path.match(/.+\.html?$/i);
     }
 
-    function reloadFrame() {
-      $("#editor-preview-frame").attr('src', $("#editor-preview-frame").attr('src'));
-    }
+    // Preview overlay
+    $("#preview").click(function() {
+      window.open($(this).attr("data-href"), "preview");
+      return false;
+    });
+
+    // View mockup overlay
+    $("#viewMockup").click(function() {
+      window.open($(this).attr('data-href'), "mockup");
+      return false;
+    });
+
+    // Help overlay
+    $("#helpButtonForm").prepOverlay({
+        subtype: 'iframe'
+    });
 
     $("#filemanager").bind('resourceeditor.selected', function(event, path) {
       if(isPreviewable(path)) {
-        path = normalizePath(path);
-        var fetch = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + path + "&amp;theme=off";
-        $("#editor-preview-frame").attr('src', fetch);
-        $("#editor-preview-frame").data('current', path);
-        $("#theme-preview-filename").text(path);
-
-        if(!$("#theme-preview").is(":visible")) {
-          $("#theme-preview").show();
-        }
+        $("#viewMockup").removeAttr('disabled');
+        var fetch = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + normalizePath(path) + "&amp;theme=off";
+        $("#viewMockup").attr('data-href', fetch);
+      } else {
+        $("#viewMockup").attr('disabled', 'disabled');
       }
     });
 
     $("#filemanager").bind('resourceeditor.closed', function(event, path) {
-      path = normalizePath(path);
-      if($("#editor-preview-frame").data('current') == path) {
-        $("#theme-preview").hide();
-      }
-    });
-
-    $("#filemanager").bind('resourceeditor.saved', function(event, path) {
-      reloadFrame();
+      $("#viewMockup").attr('disabled', 'disabled');
     });
 
   });
@@ -74,26 +76,6 @@ jQuery(function($) {
 
 <body>
 <div metal:fill-slot="prefs_configlet_content" class="documentEditable" tal:define="resourceDirectory nocall:view/resourceDirectory">
-
-    <!-- simulating views on the groups/user pages until we have real objects. -->
-    <div id="edit-bar">
-        <ul class="contentViews" id="content-views">
-          <li class="selected">
-            <a tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-filemanager"
-               i18n:translate="label_tab_file_manager">
-               Manage theme files
-            </a>
-          </li>
-          <li>
-            <a tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper"
-               i18n:translate="label_tab_theming_mapper">
-               Preview and map rules
-            </a>
-          </li>
-        </ul>
-
-        <div class="contentActions">&nbsp;</div>
-    </div>
 
     <div metal:use-macro="context/global_statusmessage/macros/portal_message">
       Portal status message
@@ -119,23 +101,37 @@ jQuery(function($) {
           i18n:translate="label_up_to_theming_controlpanel">
               Back to the control panel
       </a>
+      |
+      <a href=""
+          class="link-parent"
+          tal:attributes="href string:${portal_url}/++theme++${view/name}/@@theming-controlpanel-mapper"
+          i18n:translate="label_up_to_theming_mapper">
+              Launch theme mapper
+      </a>
 
       <p class="discreet" i18n:translate="help_theme_filemanager">
           You can edit files in the theme by opening them from the file
           tree. Use the buttons on the toolbar to create new folders and
-          files. You can right-click on items in the file tree to download,
+          files. Right-click on items in the file tree to download,
           delete or rename them.
       </p>
 
-      <metal:block use-macro="resourceDirectory/@@plone.resourceeditor.filemanager/macros/filemanager" />
-
-      <div id="theme-preview">
-        <h2 i18n:translate="label_theme_preview">Preview of
-          <span i18n:name="filename" id="theme-preview-filename"></span>
-        </h2>
-        <iframe id="editor-preview-frame" src=""></iframe>
-    </div>
-
+      <metal:block use-macro="resourceDirectory/@@plone.resourceeditor.filemanager/macros/filemanager">
+        <metal:block fill-slot="extraButtons">
+          <button id="preview" name="preview" type="button" i18n:translate="filemanager_preview_theme"
+              title="Open a preview of the theme in a new window. Forms will be disabled in the preview." i18n:attributes="title [filemanager_preview_theme_help]"
+              tal:attributes="data-href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${view/title}">Preview theme</button>
+          <form id="helpButtonForm" method="get" tal:attributes="action string:${portal_url}/@@theming-controlpanel-help">
+                <button
+                  class="standalone"
+                  i18n:translate="">Help</button>
+          </form>
+        </metal:block>
+        <metal:block fill-slot="extraContextButtons">
+          <button id="viewMockup" name="viewMockup" type="button" disabled="disabled" i18n:translate="filemanager_view_mockup"
+            title="Click this button when editing an HTML file to show it in a new window" i18n:attributes="title [filemanager_view_mockup_help]">Show mockup</button>
+        </metal:block>
+      </metal:block>
 
 
   </div>
