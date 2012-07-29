@@ -8,6 +8,22 @@
     display: none;
 }
 
+/* Buttons */
+#themeMapper button,
+#themeMapper input.context,
+#themeMapper input.standalone {
+    padding: 4px;
+    margin: 3px 6px 3px 0;
+}
+
+#helpButtonForm {
+    display: inline;
+}
+
+.globalToolbar {
+    margin: 1em 0;
+}
+
 /* Panels */
 
 #content #editor,
@@ -54,10 +70,26 @@
     font-weight: normal;
 }
 
+.inspector-switch {
+    float: right;
+}
+
+.panel-footer label {
+    vertical-align: middle;
+}
+
+.footer-help {
+    margin-top: 7px;
+}
+
 #file-selector,
 .save-button {
     margin-right: 5px;
     vertical-align: middle !important;
+}
+
+#theme-panel, #content-panel {
+    height: 390px;
 }
 
 /* Dividing lines */
@@ -107,7 +139,7 @@ a.sourceToggle {
     line-height: 12px;
     padding: 0 0 0 20px;
     margin: 5px 0 0 5px;
-    background-image: url('./preview.png');
+    background-image: url('./source.png');
     background-repeat: no-repeat;
     text-decoration: none;
     border-bottom: none !important;
@@ -116,7 +148,7 @@ a.sourceToggle {
     content: none;
 }
 a.sourceActive {
-    background-image: url('./source.png');
+    background-image: url('./preview.png');
 }
 
 a.highlighterToggle {

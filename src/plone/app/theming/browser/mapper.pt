@@ -135,6 +135,16 @@
                 $(".ie-warning").show();
             }
 
+            // Help and preview
+            $("#preview").click(function() {
+              window.open($(this).attr("data-href"), "preview");
+              return false;
+            });
+
+            $("#helpButtonForm").prepOverlay({
+                subtype: 'iframe'
+            });
+
             // Rule builder and highlighters
 
             var ruleBuilder = null;
@@ -147,18 +157,21 @@
                 onBeforeClose: function() {
                     if(ruleBuilder.active && $("#new-rule-step-2").is(":visible")) {
                         ruleBuilder.end();
-                        rulesEditor.focus();
+                        if(rulesEditor !== null)
+                            rulesEditor.focus();
                     }
                 }
             });
             var ruleBuilderOverlay = $("#new-rule").data('overlay');
 
-            var rulesEditor = new SourceEditor('editor', extensionModes.html, $("#file-contents").text(), !EDITABLE,
-                function() {
-                    dirties['rules.xml'] = true;
-                    $("#rules-editor .dirtyMarker").show();
-                }
-            );
+            if($("#file-contents").length > 0) {
+                rulesEditor = new SourceEditor('editor', extensionModes.html, $("#file-contents").text(), !EDITABLE,
+                    function() {
+                        dirties['rules.xml'] = true;
+                        $("#rules-editor .dirtyMarker").show();
+                    }
+                );
+            }
 
             themeFrameHighlighter = new FrameHighlighter("#theme-frame",
                 function(highlighter, node) { // onselect
@@ -383,19 +396,9 @@
                 return false;
             });
 
-            // Enable/disable highlighter
-
-            $(".highlighterToggle").click(function(event) {
-                event.preventDefault();
-                $(this).toggleClass("highlighterDisabled");
-                return false;
-            });
-
             // Rules editor
 
             (function() {
-
-                $("#rules-help").overlay();
 
                 $("#rules-save").click(function() {
 
@@ -420,13 +423,11 @@
                     if($("#editor").css('height') == FULLSCREEN_HEIGHT) {
                         $("#theme-content-row").show();
                         $("#page-intro").show();
-                        $("#new-rule").show();
                         $("#editor").css('height', WINDOWED_HEIGHT);
                         rulesEditor.resize();
                     } else {
                         $("#theme-content-row").hide();
                         $("#page-intro").hide();
-                        $("#new-rule").hide();
                         $("#editor").css('height', FULLSCREEN_HEIGHT);
                         rulesEditor.resize();
                     }
@@ -480,8 +481,17 @@
                     }
                 });
 
-                $("#theme-panel .highlighterToggle").click(function() {
-                    themeFrameHighlighter.enabled = ! themeFrameHighlighter.enabled;
+                $("#theme-inspector-on").click(function() {
+                    themeFrameHighlighter.enabled = true;
+                    $("#theme-inspector-on").attr('disabled', 'disabled');
+                    $("#theme-inspector-off").removeAttr('disabled');
+                    $("#theme-footer-help").show();
+                });
+                $("#theme-inspector-off").click(function() {
+                    themeFrameHighlighter.enabled = false;
+                    $("#theme-inspector-off").attr('disabled', 'disabled');
+                    $("#theme-inspector-on").removeAttr('disabled');
+                    $("#theme-footer-help").hide();
                 });
 
                 $("#theme-panel .fullscreen").click(function(event) {
@@ -548,8 +558,17 @@
                     }
                 });
 
-                $("#content-panel .highlighterToggle").click(function() {
-                    contentFrameHighlighter.enabled = ! contentFrameHighlighter.enabled;
+                $("#content-inspector-on").click(function() {
+                    contentFrameHighlighter.enabled = true;
+                    $("#content-inspector-on").attr('disabled', 'disabled');
+                    $("#content-inspector-off").removeAttr('disabled');
+                    $("#content-footer-help").show();
+                });
+                $("#content-inspector-off").click(function() {
+                    contentFrameHighlighter.enabled = false;
+                    $("#content-inspector-off").attr('disabled', 'disabled');
+                    $("#content-inspector-on").removeAttr('disabled');
+                    $("#content-footer-help").hide();
                 });
 
                 $("#content-panel .fullscreen").click(function(event) {
@@ -595,21 +614,24 @@
             (function() {
 
                 var canon = require('pilot/canon');
-                canon.addCommand({
-                    name: 'saveEditor',
-                    bindKey: {
-                        mac: 'Command-S',
-                        win: 'Ctrl+S',
-                        sender: 'editor'
-                    },
-                    exec: function(env, args, request) {
-                        if($(env.editor.container).is("#theme-source")) {
-                            $("#theme-save").click();
-                        } else if($(env.editor.container).is("#editor")) {
-                            $("#rules-save").click();
+
+                if(rulesEditor !== null) {
+                    canon.addCommand({
+                        name: 'saveEditor',
+                        bindKey: {
+                            mac: 'Command-S',
+                            win: 'Ctrl+S',
+                            sender: 'editor'
+                        },
+                        exec: function(env, args, request) {
+                            if($(env.editor.container).is("#theme-source")) {
+                                $("#theme-save").click();
+                            } else if($(env.editor.container).is("#editor")) {
+                                $("#rules-save").click();
+                            }
                         }
-                    }
-                });
+                    });
+                }
 
                 canon.addCommand({
                     name: 'newRule',
@@ -631,7 +653,7 @@
                         sender: 'editor'
                     },
                     exec: function(env, args, request) {
-                        $("#rules-help").click();
+                        $("#helpButtonForm").submit();
                     }
                 });
 
@@ -648,7 +670,7 @@
 </head>
 
 <body>
-<div metal:fill-slot="prefs_configlet_content" class="documentEditable">
+<div metal:fill-slot="prefs_configlet_content" class="documentEditable" id="themeMapper">
 
     <div metal:use-macro="context/global_statusmessage/macros/portal_message">
       Portal status message
@@ -669,7 +691,9 @@
 
             <h1 class="documentFirstHeading"
                 i18n:translate="heading_theme_mapper">Map rules for
-                <span i18n:name="name" tal:content="view/title">name</span></h1>
+                <span i18n:name="name" tal:content="view/title">name</span>
+                <span i18n:name="readonly" i18n:translate="" tal:condition="not:view/editable">(read-only)</span>
+            </h1>
 
             <a href=""
                 class="link-parent"
@@ -705,34 +729,21 @@
             <p class="discreet"
                 i18n:translate="help_theme_mapper_overview_editable"
                 tal:condition="view/editable">
-                Below you will find four panels: The raw theme, which you can
-                edit from the
-                <a i18n:name="link_file_manager"
-                   i18n:translate="label_tab_file_manager"
-                   tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-filemanager">Manage theme files</a>
-                tab; the unthemed content, i.e. Plone; the rules file, which
-                you can modify; and a preview of the theme being applied to
-                the content using these rules. Use the <strong>New rule</strong>
-                button to build new theming rules using an interactive wizard.
+                Use the rules editor at the bottom of this screen to edit theme
+                rules. Hover over elements in the <strong>HTML mockup</strong> or
+                <strong>Unthemed content</strong> panels to discover theme
+                selectors. Click <strong>New rule</strong> to
+                create and insert rules using a point-and-click wizard.
             </p>
 
             <p class="discreet"
                 i18n:translate="help_theme_mapper_overview_not_editable"
                 tal:condition="not:view/editable">
-                Below you will find four panels: The raw theme; the unthemed
-                content, i.e. Plone; the rules file; and a preview of the theme
-                being applied to the content using these rules. Use the
-                <strong>New rule</strong> button to build new theming rules
-                using an interactive wizard. Changes made to the theme or rules
-                on the filesystem are reflected immediately after the page
-                is reloaded so long as Zope is running <em>development mode</em>.
-            </p>
-
-            <p class="discreet" i18n:translate="help_theme_mapper_details">
-                Hover over an element in the "HTML mockup" or "Unthemed content"
-                panel to see its selector in the status bar at the bottom
-                of the panel. If you wish to navigate the theme or content by clicking links,
-                you can disable the element selector using the toggle icon above the panel.
+                Hover over elements in the <strong>HTML mockup</strong> or
+                <strong>Unthemed content</strong> panels to discover theme
+                selectors. Click <strong>New rule</strong> to
+                create rules using a point-and-click wizard, which you can copy
+                into a <code>rules.xml</code> file on the filesystem.
             </p>
 
             <dl style="display: none" class="ie-warning portalMessage warning">
@@ -744,6 +755,30 @@
                 </dd>
             </dl>
 
+            <div class="globalToolbar">
+
+                <button
+                    id="new-rule"
+                    name="form.button.BuildRule"
+                    class="allowMultiSubmit"
+                    rel="#new-rule-wizard"
+                    title="Ctrl+N (Windows/Linux) or Cmd+N (Mac)"
+                    i18n:attributes="title"
+                    i18n:translate=""
+                    >New rule</button>
+
+                <button id="preview" name="preview" type="button" i18n:translate="filemanager_preview_theme"
+                    title="Open a preview of the theme in a new window. Forms will be disabled in the preview." i18n:attributes="title [filemanager_preview_theme_help]"
+                    tal:attributes="data-href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${view/title}">Preview theme</button>
+
+                <form id="helpButtonForm" method="get" tal:attributes="action string:${portal_url}/@@theming-controlpanel-help">
+                    <button
+                        class="standalone"
+                        i18n:translate="">Help</button>
+                </form>
+
+            </div>
+
         </div>
 
         <div id="theme-content-row" class="row splitview">
@@ -751,19 +786,7 @@
 
                 <div class="panel-toolbar">
 
-                    <select size="1" name="file-selector" id="file-selector">
-                        <option
-                            tal:repeat="f view/themeFiles"
-                            tal:attributes="value string:${view/themeBasePathEncoded}/${f/path};
-                                            data-path f/path;
-                                            data-extension f/extension;
-                                            selected python:f['path'] == view.defaultThemeFile and 'selected' or None"
-                            tal:content="f/path"
-                            />
-                    </select>
-
                     <a class="sourceToggle" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
-                    <a class="highlighterToggle" href="#" title="Toggle highlighter" i18n:attributes="title">&nbsp;</a>
                     <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
                 </div>
 
@@ -782,8 +805,31 @@
                     </div>
                     <span id="theme-frame-info"></span>
                 </div>
-                <div class="discreet" i18n:translate="help_highlighter_selection">
-                    Left-click or press <em>Enter</em> to save. Press <em>Esc</em> to select parent.
+
+                <div class="panel-footer">
+                    <div class="inspector-switch">
+                        <button id="theme-inspector-on" disabled="disabled">Inspector on</button>
+                        <button id="theme-inspector-off">Inspector off</button>
+                    </div>
+                    <tal:block condition="python:len(view.themeFiles) > 0">
+                        <label for="file-selector">Switch file:</label>
+                        <select size="1" name="file-selector" id="file-selector">
+                            <option
+                                tal:repeat="f view/themeFiles"
+                                tal:attributes="value string:${view/themeBasePathEncoded}/${f/path};
+                                                data-path f/path;
+                                                data-extension f/extension;
+                                                selected python:f['path'] == view.defaultThemeFile and 'selected' or None"
+                                tal:content="f/path"
+                                />
+                        </select>
+                    </tal:block>
+                </div>
+
+                <div id="theme-footer-help" class="discreet footer-help" i18n:translate="help_highlighter_selection">
+                    Hover over an element to see its selector.
+                    Left-click or press <em>Enter</em> to save.
+                    Press <em>Esc</em> to select parent.
                 </div>
 
             </div>
@@ -791,7 +837,6 @@
 
                 <div class="panel-toolbar">
                     <a class="sourceToggle" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
-                    <a class="highlighterToggle" href="#" title="Toggle highlighter" i18n:attributes="title">&nbsp;</a>
                     <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
                 </div>
 
@@ -810,14 +855,24 @@
                     </div>
                     <span id="content-frame-info"></span>
                 </div>
-                <div class="discreet" i18n:translate="help_highlighter_selection">
-                    Left-click or press <em>Enter</em> to save. Press <em>Esc</em> to select parent.
+
+                <div class="panel-footer">
+                    <div class="inspector-switch">
+                        <button id="content-inspector-on" disabled="disabled">Inspector on</button>
+                        <button id="content-inspector-off">Inspector off</button>
+                    </div>
+                </div>
+
+                <div id="content-footer-help" class="discreet footer-help" i18n:translate="help_highlighter_selection">
+                    Hover over an element to see its selector.
+                    Left-click or press <em>Enter</em> to save.
+                    Press <em>Esc</em> to select parent.
                 </div>
 
             </div>
         </div>
 
-        <div id="rules-results-row" class="row splitview">
+        <div id="rules-results-row" class="row splitview" tal:condition="view/editable">
             <div id="rules-editor" class="mapper-box cell width-full position-0">
 
                 <div id="mapper-toolbar" class="panel-toolbar">
@@ -830,15 +885,6 @@
                         i18n:attributes="title"
                         i18n:translate=""
                         >Save</button>
-                    <button
-                        id="new-rule"
-                        name="form.button.BuildRule"
-                        class="allowMultiSubmit"
-                        rel="#new-rule-wizard"
-                        title="Ctrl+N (Windows/Linux) or Cmd+N (Mac)"
-                        i18n:attributes="title"
-                        i18n:translate=""
-                        >New rule</button>
 
                     <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
 
