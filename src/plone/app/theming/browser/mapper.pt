@@ -107,10 +107,6 @@
                 return m[1];
             }
 
-            function refreshPreview() {
-                $('#preview-frame').attr("src", $('#preview-frame').attr("src"));
-            }
-
             // See http://stackoverflow.com/questions/1694295/jquery-background-color-animate-not-working/5718151
             function animateHighlight(node, highlightColor, duration) {
                 var highlightBg = highlightColor || "#FFFFE3";
@@ -411,7 +407,6 @@
                         data: {value: data},
                         type: 'POST',
                         success: function(){
-                            refreshPreview();
                             dirties['rules.xml'] = false;
                             $("#rules-editor .dirtyMarker").hide();
                             rulesEditor.focus();
@@ -422,25 +417,17 @@
                 $("#rules-editor .fullscreen").click(function(event) {
                     event.preventDefault();
 
-                    if($("#rules-editor").is(".width-full")) {
-                        $("#preview-panel").show();
-                        $("#edit-bar").show();
+                    if($("#editor").css('height') == FULLSCREEN_HEIGHT) {
                         $("#theme-content-row").show();
                         $("#page-intro").show();
-                        $("#rules-editor").removeClass('width-full')
-                                           .addClass('width-1:2');
                         $("#new-rule").show();
                         $("#editor").css('height', WINDOWED_HEIGHT);
                         rulesEditor.resize();
                     } else {
-                        $("#preview-panel").hide();
-                        $("#edit-bar").hide();
                         $("#theme-content-row").hide();
                         $("#page-intro").hide();
-                        $("#rules-editor").removeClass('width-1:2')
-                                           .addClass('width-full');
-                       $("#new-rule").hide();
-                       $("#editor").css('height', FULLSCREEN_HEIGHT);
+                        $("#new-rule").hide();
+                        $("#editor").css('height', FULLSCREEN_HEIGHT);
                         rulesEditor.resize();
                     }
 
@@ -502,7 +489,6 @@
 
                     if($("#theme-panel").is(".width-full")) {
                         $("#content-panel").show();
-                        $("#edit-bar").show();
                         $("#rules-results-row").show();
                         $("#page-intro").show();
                         $("#theme-panel").removeClass('width-full').addClass('width-1:2');
@@ -511,7 +497,6 @@
                         themeSource.resize();
                     } else {
                         $("#content-panel").hide();
-                        $("#edit-bar").hide();
                         $("#rules-results-row").hide();
                         $("#page-intro").hide();
                         $("#theme-panel").removeClass('width-1:2').addClass('width-full');
@@ -572,7 +557,6 @@
 
                     if($("#content-panel").is(".width-full")) {
                         $("#theme-panel").show();
-                        $("#edit-bar").show();
                         $("#rules-results-row").show();
                         $("#page-intro").show();
                         $("#content-panel").removeClass('width-full')
@@ -585,7 +569,6 @@
                         contentSource.resize();
                     } else {
                         $("#theme-panel").hide();
-                        $("#edit-bar").hide();
                         $("#rules-results-row").hide();
                         $("#page-intro").hide();
                         $("#content-panel").removeClass('width-1:2')
@@ -606,73 +589,6 @@
                     return false;
                 });
 
-            })();
-
-            // Preview panel
-            (function() {
-
-                var previewSource = new SourceEditor('preview-source', extensionModes.html, "", true);
-
-                $("#preview-frame").ready(function() {
-                    var linkManager = new LinkManager("#preview-frame", 'apply', WINDOW_BASE, THEME_BASE_URL);
-                    function setup() {
-                        linkManager.setupLinks();
-                        linkManager.setupForms();
-                    }
-                    setup();
-                    $("#preview-frame").load(setup);
-                });
-
-                $("#preview-frame").show();
-                $("#preview-source").hide();
-
-                $("#preview-panel .sourceToggle").click(function() {
-                    if($("#preview-frame").is(":visible")) {
-                        var html = $("#preview-frame").contents().find(":root").html();
-                        previewSource.setValue("\n<" + "html>" + html + '\n<' + '/html>');
-                        $("#preview-frame").hide();
-                        $("#preview-source").show();
-                        previewSource.resize();
-                        previewSource.focus();
-                    } else {
-                        $("#preview-frame").show();
-                        $("#preview-source").hide();
-                    }
-                });
-
-
-                $("#preview-panel .fullscreen").click(function(event) {
-                    event.preventDefault();
-
-                    if($("#preview-panel").is(".width-full")) {
-                        $("#rules-editor").show();
-                        $("#edit-bar").show();
-                        $("#theme-content-row").show();
-                        $("#page-intro").show();
-                        $("#preview-panel").removeClass('width-full')
-                                           .removeClass('position-0')
-                                           .addClass('width-1:2')
-                                           .addClass('position-1:2');
-                        $("#preview-panel iframe").removeClass('fullscreen-frame');
-                        $("#preview-source").css('height', WINDOWED_HEIGHT);
-                        previewSource.resize();
-
-                    } else {
-                        $("#rules-editor").hide();
-                        $("#edit-bar").hide();
-                        $("#theme-content-row").hide();
-                        $("#page-intro").hide();
-                        $("#preview-panel").removeClass('width-1:2')
-                                           .removeClass('position-1:2')
-                                           .addClass('width-full')
-                                           .addClass('position-0');
-                        $("#preview-panel iframe").addClass('fullscreen-frame');
-                        $("#preview-source").css('height', FULLSCREEN_HEIGHT);
-                        previewSource.resize();
-                    }
-
-                    return false;
-                });
             })();
 
             // Key bindings
@@ -734,26 +650,6 @@
 <body>
 <div metal:fill-slot="prefs_configlet_content" class="documentEditable">
 
-    <!-- simulating views on the groups/user pages until we have real objects. -->
-    <div id="edit-bar" tal:condition="view/editable">
-        <ul class="contentViews" id="content-views">
-          <li>
-            <a tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-filemanager"
-               i18n:translate="label_tab_file_manager">
-               Manage theme files
-            </a>
-          </li>
-          <li class="selected">
-            <a tal:attributes="href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper"
-               i18n:translate="label_tab_theming_mapper">
-               Preview and map rules
-            </a>
-          </li>
-        </ul>
-
-        <div class="contentActions">&nbsp;</div>
-    </div>
-
     <div metal:use-macro="context/global_statusmessage/macros/portal_message">
       Portal status message
     </div>
@@ -772,20 +668,29 @@
         <div id="page-intro">
 
             <h1 class="documentFirstHeading"
-                i18n:translate="heading_theme_mapper">Preview and map rules for
+                i18n:translate="heading_theme_mapper">Map rules for
                 <span i18n:name="name" tal:content="view/title">name</span></h1>
 
             <a href=""
                 class="link-parent"
                 tal:attributes="href string:${portal_url}/@@theming-controlpanel"
                 i18n:translate="label_up_to_theming_controlpanel">
-                Back to the control panel
+                    Back to the control panel
             </a>
+            <tal:block condition="view/editable">
+                |
+                <a href=""
+                    class="link-parent"
+                    tal:attributes="href string:${portal_url}/++theme++${view/name}/@@theming-controlpanel-filemanager"
+                    i18n:translate="label_up_to_theming_mapper">
+                        Launch file manager
+                </a>
+            </tal:block>
 
             <dl class="portalMessage info wizard-text" id="new-rule-text-select-theme">
                 <dt i18n:translate="">New rule</dt>
                 <dd i18n:translate="theming_mapper_select_theme">
-                    Please select an element in the "Raw theme" panel.
+                    Please select an element in the "HTML mockup" panel.
                     <button class="wizard-cancel allowMultiSubmit">Cancel</button>
                 </dd>
             </dl>
@@ -824,7 +729,7 @@
             </p>
 
             <p class="discreet" i18n:translate="help_theme_mapper_details">
-                Hover over an element in the "Raw theme" or "Unthemed content"
+                Hover over an element in the "HTML mockup" or "Unthemed content"
                 panel to see its selector in the status bar at the bottom
                 of the panel. If you wish to navigate the theme or content by clicking links,
                 you can disable the element selector using the toggle icon above the panel.
@@ -862,7 +767,7 @@
                     <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
                 </div>
 
-                <label i18n:translate="heading_theme">Raw theme</label>
+                <label i18n:translate="heading_theme">HTML mockup</label>
 
                 <iframe id="theme-frame"
                     tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off"></iframe>
@@ -913,7 +818,7 @@
         </div>
 
         <div id="rules-results-row" class="row splitview">
-            <div id="rules-editor" class="mapper-box cell width-1:2 position-0">
+            <div id="rules-editor" class="mapper-box cell width-full position-0">
 
                 <div id="mapper-toolbar" class="panel-toolbar">
                     <button
@@ -925,15 +830,6 @@
                         i18n:attributes="title"
                         i18n:translate=""
                         >Save</button>
-                    <button
-                        id="rules-help"
-                        name="form.button.RulesHelp"
-                        class="allowMultiSubmit"
-                        rel="#rules-help-text"
-                        title="Ctrl+H (Windows/Linux) or Cmd+H (Mac)"
-                        i18n:attributes="title"
-                        i18n:translate=""
-                        >Help</button>
                     <button
                         id="new-rule"
                         name="form.button.BuildRule"
@@ -956,305 +852,9 @@
                     tal:content="view/rules"></textarea>
 
             </div>
-            <div id="preview-panel" class="mapper-box cell width-1:2 position-1:2">
-
-                <div class="panel-toolbar">
-                    <a class="sourceToggle" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
-                    <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
-                </div>
-
-                <label i18n:translate="heading_result">Themed content</label>
-
-                <iframe id="preview-frame"
-                    tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply"></iframe>
-                <pre class="source-editor" id="preview-source"></pre>
-
-            </div>
         </div>
 
         <div id="unload-warning-text" class="hiddenStructure" i18n:translate="theming_mapper_unload_warning">Are you sure you want to leave this page? Unsaved changes will be lost.</div>
-
-        <!-- Help text overlay -->
-        <div id="rules-help-text" class="overlay">
-            <div class="close">
-                <span i18n:translate="">Close</span>
-            </div>
-            <div class="pb-ajax help">
-                <h2 i18n:translate="theming_mapper_heading_rules_help">Diazo cheat sheet</h2>
-                <div i18n:translate="theming_mapper_help_text">
-                    <p>
-                        A <a target="_blank" href="http://diazo.org">Diazo</a> theme consists of:
-                    </p>
-                    <ul>
-                        <li>A <strong>theme</strong> - a static HTML mock-up of the end result</li>
-                        <li>The <strong>content</strong> to be themed, i.e. the content generated by Plone</li>
-                        <li>A set of <strong>rules</strong> that describe how elements in the content
-                            are mapped into the theme.</li>
-                    </ul>
-                    <p>
-                        The <strong>theme mapper</strong> you are using now can help you write your
-                        rules by showing you the content, theme, rules and a preview of the results
-                        on one page. You can also use the <strong>New rule</strong> button to
-                        create rules using a point-and-click interface.
-                    </p>
-                    <h3><a name="help_syntax">Syntax</a></h3>
-                    <p>
-                        The various aspects of the Diazo rules syntax are described below. Please
-                        refer to <a target="_blank" href="http://diazo.org">diazo.org</a> for more details.
-                    </p>
-                    <h4><a name="help_selectors">Selectors</a></h4>
-                    <p>
-                        Each rule is represented by an XML tag that operates on one or more
-                        HTML elements in the content and/or theme. The elements to operate on
-                        are indicated using attributes of the rules known as <strong>selectors</strong>.
-                    </p>
-                    <p>
-                        The easiest way to select elements is to use a CSS expression selector, such as:
-                        <code>css:content="#content"</code> or <code>css:theme="#main .content"</code>.
-                        Any valid CSS 3 expression (including pseudo-selectors like
-                        <code>:first-child</code>) may be used.
-                    </p>
-                    <p>
-                        The standard selectors operate on the element(s) that are matched. If
-                        you want to operate on the children of the matched element instead, use
-                        <code>css:theme-children="..."</code> or <code>css:content-children="..."</code>
-                        instead.
-                    </p>
-                    <p>
-                        If you cannot construct a suitable CSS 3 expression, you can use XPath
-                        expressions such as
-                        <code>content="/head/link"</code> or <code>theme="//div[@id='main']"</code>
-                        (note the lack of a <code>css:</code> prefix when using XPath expressions).
-                        The two approaches are equivalent, and you can mix and match freely, but
-                        you cannot have e.g. both a <code>css:theme</code> and a <code>theme</code>
-                        attribute on a single rule.
-                    </p>
-                    <h4><a name="help_conditions">Conditions</a></h4>
-                    <p>
-                        By default, every rule is executed, though rules that do not match any elements
-                        in the theme are ignored. You can make a rule, set of rules or
-                        theme reference (see below) conditional upon an element appearing
-                        in the content by adding an attribute to the rule like
-                        <code>css:if-content="#some-element"</code> (to use an XPath expression
-                        instead, drop the <code>css:</code> prefix). If no elements match the
-                        expression, the rule is ignored.
-                    </p>
-                    <p class="tip">
-                        <strong>Tip:</strong> if a <code>&lt;replace /&gt;</code> rule matches
-                        an element in the theme but not in the content, the theme node will be
-                        dropped (replaced with nothing). If you do not want this behavior and
-                        you are unsure if the content will contain the relevant element(s),
-                        you can use <code>css:if-content</code> conditional rule. Since this is a
-                        common scenario, there is a shortcut: <code>css:if-content=""</code> means
-                        "use the expression from the <code>css:content</code> attribute".
-                    </p>
-                    <p>
-                        Similarly, you can construct a condition based on the path of the current request
-                        by using an attribute like <code>if-path="/news"</code> (note that there is
-                        no <code>css:if-path</code>). If the path starts with a slash, it will match
-                        from the root of the Plone site. If it ends with a slash, it will
-                        match to the end of the URL. You can set an absolute path by using
-                        a leading and a trailing slash.
-                    </p>
-                    <p>
-                        Finally, you can use arbitrary XPath expressions against any
-                        defined variable using an attribute like <code>if="$host = 'localhost'"</code>.
-                        By default, the variables <code>url</code>, <code>scheme</code>,
-                        <code>host</code> and <code>base</code> are available, representing
-                        the current URL. Themes may define additional variables in their
-                        manifests.
-                    </p>
-                    <h4><a name="help_element">Available rules</a></h4>
-                    <p>
-                        The standard Diazo rules are summarized below. Please refer to
-                        <a target="_blank" href="http://diazo.org">diazo.org</a> for more
-                        details and examples.
-                    </p>
-                    <h5><a name="help_rules"><code>rules</code></a></h5>
-    <pre>
-    &lt;rules&gt;
-        ...
-    &lt;/rules&gt;
-    </pre>
-                    <p>
-                        Wraps a set of rules. Must be used as the root element of the
-                        rules file. Nested <code>&lt;rules /&gt;</code> can be used with
-                        a <a href="#help_conditions">condition</a> to apply a single
-                        condition to a set of rules.
-                    </p>
-                    <p>
-                        When used as the root element of the rules file, the various
-                        XML namespaces must be declared:
-                    </p>
-    <pre>
-    &lt;rules
-        xmlns="http://namespaces.plone.org/diazo"
-        xmlns:css="http://namespaces.plone.org/diazo/css"
-        xmlns:xsl="http://www.w3.org/1999/XSL/Transform"&gt;
-        ...
-    &lt;/rules&gt;
-    </pre>
-                    <h5><a name="help_theme_notheme"><code>theme</code> and <code>notheme</code></a></h5>
-    <pre>
-    &lt;theme href="theme.html" /&gt;
-    &lt;theme href="news.html" if-path="/news" /&gt;
-    &lt;notheme if="$host = 'admin.example.org'" /&gt;
-    </pre>
-                    <p>
-                        Choose the theme file to be used. The <code>href</code> is a
-                        path relative to the rules file. If multiple <code>&lt;theme /&gt;</code>
-                        elements are present, at most one may be given without a condition.
-                        The first theme with a condition that is true will be used, with the
-                        unconditional theme, if any, used as a fallback.
-                    </p>
-                    <p>
-                        <code>&lt;notheme /&gt;</code> can be used to specify a condition
-                        under which no theme should be used. <code>&lt;notheme /&gt;</code>
-                        takes precedence over <code>&lt;theme /&gt;</code>.
-                    </p>
-                    <p class="tip">
-                        <strong>Tip:</strong> To ensure you do not accidentally style
-                        non-Plone pages, add a condition like
-                        <code>css:if-condition="#visual-portal-wrapper"</code> to the
-                        last theme listed, and do not have any unconditional themes.
-                    </p>
-                    <h5><a name="help_replace"><code>replace</code></a></h5>
-    <pre>
-    &lt;replace
-        css:content="#content"
-        css:theme="#main"
-        /&gt;
-    </pre>
-                    <p>
-                        Replaces the matched element(s) in the theme with the matched
-                        element(s) from the content.
-                    </p>
-                    <h5><a name="help_before_after"><code>before</code> and <code>after</code></a></h5>
-    <pre>
-    &lt;before
-        css:content-children="#portal-column-one"
-        css:theme-children="#portlets"
-        /&gt;
-
-    &lt;after
-        css:content-children="#portal-column-two"
-        css:theme-children="#portlets"
-        /&gt;
-    </pre>
-                    <p>
-                        Inserts the matched element(s) from the content before or after the
-                        matched element(s) in the theme. By using <code>theme-children</code>,
-                        you can insert the matched content element(s) as the first (prepend) or last
-                        (append) element(s) inside the matched theme element(s).
-                    </p>
-                    <h5><a name="help_drop_strip"><code>drop</code> and <code>strip</code></a></h5>
-    <pre>
-    &lt;drop css:content=".documentByLine" /&gt;
-    &lt;drop theme="/head/link" /&gt;
-    &lt;drop css:theme="#content *" attributes="onclick onmouseup" /&gt;
-
-    &lt;strip css:content="#parent-fieldname-text" /&gt;
-    </pre>
-                    <p>
-                        Remove element(s) from the theme or content. Note that unlike most other
-                        rules, a <code>&lt;drop /&gt;</code> or <code>&lt;strip /&gt;</code> rule
-                        can operate on the <code>theme</code> or <code>content</code>, but not both.
-                        <code>&lt;drop /&gt;</code> removes the matched element(s) and any children,
-                        whereas <code>&lt;strip /&gt;</code> removes the matched element(s), but
-                        leaves any children in place.
-                    </p>
-                    <p>
-                        <code>&lt;drop /&gt;</code> may be given a whitespace-separated list of
-                        <code>attributes</code> to drop. In this case, the matched element(s)
-                        themselves will not be removed. Use <code>attributes="*"</code> to
-                        drop all attributes.
-                    </p>
-                    <h5><a name="help_merge"><code>merge</code> and <code>copy</code></a></h5>
-    <pre>
-    &lt;merge
-        attributes="class"
-        css:content="body"
-        css:theme="body"
-        /&gt;
-
-    &lt;copy
-        attributes="class"
-        css:content="#content"
-        css:theme="#main"
-        /&gt;
-    </pre>
-                    <p>
-                        These rules operate on attributes. <code>&lt;merge /&gt;</code> will
-                        add the contents of the named attribute(s) in the theme to the value(s) of
-                        any existing attributes with the same name(s) in the content, separated by
-                        whitespace. It is mainly used to merge CSS classes.
-                    </p>
-                    <p>
-                        <code>&lt;copy /&gt;</code> will copy attributes
-                        from the matched element(s) in the content to the matched element(s)
-                        in the theme, fully replacing any attributes with the same name that
-                        may already be in the theme.
-                    </p>
-                    <p>
-                        The <code>attributes</code> attribute can contain a whitespace-separated
-                        list of attributes, or the special value <code>*</code> to operate on
-                        all attributes of the matched theme element.
-                    </p>
-                    <h4><a name="help_advanced">Advanced modification</a></h4>
-                    <p>
-                        Instead of selecting markup to insert into the theme from the
-                        content, you can place markup directly into the rules file,
-                        as child nodes of the relevant rule element:
-                    </p>
-    <pre>
-    &lt;after css:theme="head"&gt;
-        &lt;style type="text/css"&gt;
-            body > h1 { color: red; }
-        &lt;/style&gt;
-    &lt;/after&gt;
-    </pre>
-                    <p>
-                        This also works on the content, allowing you to modify it
-                        on the fly before any rules are applied:
-                    </p>
-    <pre>
-    &lt;replace css:content="#portal-searchbox input.searchButton"&gt;
-        &lt;button type="submit"&gt;
-            &lt;img src="images/search.png" alt="Search" /&gt;
-        &lt;/button&gt;
-    &lt;/replace&gt;
-    </pre>
-                    <p>
-                        In addition to including static HTML in this manner, you can use
-                        XSLT instructions that operate on the content. You can even use
-                        <code>css:</code> selectors directly in the XSLT.
-                    </p>
-    <pre>
-    &lt;replace css:theme="#details"&gt;
-        &lt;dl id="details"&gt;
-            &lt;xsl:for-each css:select="table#details &gt; tr"&gt;
-                &lt;dt&gt;&lt;xsl:copy-of select="td[1]/text()"/&gt;&lt;/dt&gt;
-                &lt;dd&gt;&lt;xsl:copy-of select="td[2]/node()"/&gt;&lt;/dd&gt;
-            &lt;/xsl:for-each&gt;
-        &lt;/dl&gt;
-    &lt;/replace&gt;
-    </pre>
-                    <p>
-                        Rules may operate on content that is fetched from somewhere
-                        other than the current page being rendered by Plone, by using
-                        the <code>href</code> attribute to specify a path of a resource
-                        relative to the root of the Plone site:
-                    </p>
-    <pre>
-    &lt;after
-        css:theme-children="#leftnav"
-        css:content=".navitem"
-        href="/@@extra-nav"
-        /&gt;
-    </pre>
-                </div>
-            </div>
-        </div>
 
         <!-- Wizard overlay -->
         <div id="new-rule-wizard" class="overlay overlay-ajax">
