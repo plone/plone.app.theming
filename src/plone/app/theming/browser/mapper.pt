@@ -473,11 +473,15 @@
                     if($("#theme-frame").is(":visible")) {
                         $("#theme-frame").hide();
                         $("#theme-source").show();
+                        $("#theme-footer-help").hide();
+                        $("#theme-panel .inspector-switch").hide();
                         reloadSource();
                         themeSource.focus();
                     } else {
                         $("#theme-frame").show();
                         $("#theme-source").hide();
+                        $("#theme-footer-help").show();
+                        $("#theme-panel .inspector-switch").show();
                     }
                 });
 
@@ -550,11 +554,15 @@
                         contentSource.setValue("<" + "html>\n" + html + '\n<' + '/html>');
                         $("#content-frame").hide();
                         $("#content-source").show();
+                        $("#content-footer-help").hide();
+                        $("#content-panel .inspector-switch").hide();
                         contentSource.resize();
                         contentSource.focus();
                     } else {
                         $("#content-frame").show();
                         $("#content-source").hide();
+                        $("#content-footer-help").show();
+                        $("#content-panel .inspector-switch").show();
                     }
                 });
 
@@ -811,7 +819,7 @@
                         <button id="theme-inspector-on" disabled="disabled">Inspector on</button>
                         <button id="theme-inspector-off">Inspector off</button>
                     </div>
-                    <tal:block condition="python:len(view.themeFiles) > 0">
+                    <tal:block condition="python:len(view.themeFiles) > 1">
                         <label for="file-selector">Switch file:</label>
                         <select size="1" name="file-selector" id="file-selector">
                             <option
