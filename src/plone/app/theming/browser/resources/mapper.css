@@ -170,6 +170,11 @@ a.sourceActive {
     width: 50em;
 }
 
+#new-rule-reuse-panel {
+    margin-top: 10px;
+    max-width: 450px;
+}
+
 .new-rule-actions {
     clear: both;
     margin-top: 1em;
@@ -203,6 +208,10 @@ a.sourceActive {
 
 #new-rule-wizard .pb-ajax .formControls input{
     margin-right: 5px;
+}
+
+#themeMapper .wizard-cancel {
+    margin-top: -3px;
 }
 
 

@@ -274,8 +274,6 @@ var FrameHighlighter = function(frame, onselect, onsave) {
  * Apply the outline to the given element
  */
 FrameHighlighter.prototype.setOutline = function(element) {
-        $(element).data('old-outline', $(element).css('outline'));
-        $(element).data('old-cursor', $(element).css('cursor'));
         $(element).css('outline', 'solid red 1px');
         $(element).css('cursor', 'crosshair');
 
@@ -296,8 +294,8 @@ FrameHighlighter.prototype.setOutline = function(element) {
  * Clear the outline from the given element
  */
 FrameHighlighter.prototype.clearOutline = function(element) {
-        $(element).css('outline', $(element).data('old-outline'));
-        $(element).css('cursor', $(element).data('old-cursor'));
+        $(element).css('outline', "");
+        $(element).css('cursor', "");
 
         $(element).removeClass(this.activeClass);
 

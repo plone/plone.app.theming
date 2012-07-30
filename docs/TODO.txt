@@ -33,15 +33,21 @@ File manager
 Mapper
 ------
 
-[ ] Update layout and language to match revised mockups
-[ ] Make clear when readonly for filesystem themes; hide rules editor
-[ ] Change buttons to show future state
-[ ] Make inspector on/off explicit action
+[x] Update layout and language to match revised mockups
+[x] Make clear when readonly for filesystem themes; hide rules editor
+[x] Change buttons to show future state
+[x] Make inspector on/off explicit action
 
-[ ] Make preview action open new window/tab
+[x] Make preview action open new window/tab
+[ ] Make preview show current path from content?
 
-[ ] Show wizard steps more clearly
-[ ] Separate rules wizard from 'new rule' action (using saved selection)
+
+[x] Show wizard steps more clearly (styling)
+[x] Fix sticky highlither after click
+[x] Separate rules wizard from 'new rule' action (using saved selection)
+    [x] switch on first screen for "use saved selection"
+    [x] default to on if one or both selections made
+    [x] clear on insert
 
 [ ] Working copy editing
 [ ] Table-based visual rules list viewer/editor instead of source (unless rules source too complex)

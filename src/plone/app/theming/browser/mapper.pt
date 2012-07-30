@@ -154,7 +154,19 @@
 
             $("#new-rule").overlay({
                 closeOnClick: false,
-                onBeforeClose: function() {
+                onBeforeLoad: function() {
+
+                    // Do we have a selection?
+                    var themeSelection = $("#theme-frame-shelf").text();
+                    var contentSelection = $("#content-frame-shelf").text();
+
+                    if(themeSelection == "" && contentSelection == "") {
+                        $("#new-rule-reuse-panel").hide();
+                    } else {
+                        $("#new-rule-reuse-panel").show();
+                    }
+
+                }, onBeforeClose: function() {
                     if(ruleBuilder.active && $("#new-rule-step-2").is(":visible")) {
                         ruleBuilder.end();
                         if(rulesEditor !== null)
@@ -217,7 +229,7 @@
             );
 
             ruleBuilder = new RuleBuilder(function(ruleBuilder) {
-                $(".wizard-text").css('display', 'none');
+                $(".wizard-text").hide();
                 $.mask.close();
 
                 if(ruleBuilder.currentScope == 'theme') {
@@ -225,7 +237,7 @@
                         ruleBuilderOverlay.close();
                     }
 
-                    if(themeFrameHighlighter.saved != null) {
+                    if(themeFrameHighlighter.saved != null && $("#new-rule-reuse-selectors").is(":checked")) {
                         // Use saved rule
                         ruleBuilder.select(themeFrameHighlighter.saved);
                         ruleBuilder.next();
@@ -235,7 +247,7 @@
                         $("#theme-panel, .wizard-text").expose();
                     }
 
-                } else if(ruleBuilder.currentScope == 'content') {
+                } else if(ruleBuilder.currentScope == 'content' && $("#new-rule-reuse-selectors").is(":checked")) {
                     if(ruleBuilderOverlay.isOpened()) {
                         ruleBuilderOverlay.close();
                     }
@@ -375,8 +387,13 @@
                     rulesEditor.focus();
                     dirties['rules.xml'] = true;
                     $("#rules-editor .dirtyMarker").show();
+                    animateHighlight($("#rules-editor"));
 
                     ruleBuilderOverlay.close();
+
+                    // Clear the selection now that we're done with it
+                    contentFrameHighlighter.save(null);
+                    themeFrameHighlighter.save(null);
                 });
             }
 
@@ -719,28 +736,13 @@
                 </a>
             </tal:block>
 
-            <dl class="portalMessage info wizard-text" id="new-rule-text-select-theme">
-                <dt i18n:translate="">New rule</dt>
-                <dd i18n:translate="theming_mapper_select_theme">
-                    Please select an element in the "HTML mockup" panel.
-                    <button class="wizard-cancel allowMultiSubmit">Cancel</button>
-                </dd>
-            </dl>
-            <dl class="portalMessage info wizard-text" id="new-rule-text-select-content">
-                <dt i18n:translate="">New rule</dt>
-                <dd i18n:translate="theming_mapper_select_content">
-                    Please select an element in the "Unthemed content" panel.
-                    <button class="wizard-cancel allowMultiSubmit">Cancel</button>
-                </dd>
-            </dl>
-
             <p class="discreet"
                 i18n:translate="help_theme_mapper_overview_editable"
                 tal:condition="view/editable">
                 Use the rules editor at the bottom of this screen to edit theme
                 rules. Hover over elements in the <strong>HTML mockup</strong> or
                 <strong>Unthemed content</strong> panels to discover theme
-                selectors. Click <strong>New rule</strong> to
+                selectors. Click <strong>Build rule</strong> to
                 create and insert rules using a point-and-click wizard.
             </p>
 
@@ -749,7 +751,7 @@
                 tal:condition="not:view/editable">
                 Hover over elements in the <strong>HTML mockup</strong> or
                 <strong>Unthemed content</strong> panels to discover theme
-                selectors. Click <strong>New rule</strong> to
+                selectors. Click <strong>Build rule</strong> to
                 create rules using a point-and-click wizard, which you can copy
                 into a <code>rules.xml</code> file on the filesystem.
             </p>
@@ -773,7 +775,7 @@
                     title="Ctrl+N (Windows/Linux) or Cmd+N (Mac)"
                     i18n:attributes="title"
                     i18n:translate=""
-                    >New rule</button>
+                    >Build rule</button>
 
                 <button id="preview" name="preview" type="button" i18n:translate="filemanager_preview_theme"
                     title="Open a preview of the theme in a new window. Forms will be disabled in the preview." i18n:attributes="title [filemanager_preview_theme_help]"
@@ -786,6 +788,22 @@
                 </form>
 
             </div>
+
+            <dl class="portalMessage info wizard-text" id="new-rule-text-select-theme">
+                <dt i18n:translate="">New rule wizard</dt>
+                <dd i18n:translate="theming_mapper_select_theme">
+                    Please select an element in the <strong>HTML mockup</strong> panel.
+                    <button class="wizard-cancel allowMultiSubmit">Quit wizard</button>
+                </dd>
+            </dl>
+            <dl class="portalMessage info wizard-text" id="new-rule-text-select-content">
+                <dt i18n:translate="">New rule wizard</dt>
+                <dd i18n:translate="theming_mapper_select_content">
+                    Please select an element in the <strong>Unthemed content</strong> panel.
+                    <button class="wizard-cancel allowMultiSubmit">Quit wizard</button>
+                </dd>
+            </dl>
+
 
         </div>
 
@@ -857,7 +875,7 @@
                 <div class="frame-info">
                     <div id="content-frame-shelf-container" class="frame-shelf" style="display:none">
                         <span i18n:translate="theming_mapper_shelf_label">Selected:</span>
-                        <span class="shelf" id="content-frame-shelf">(none)</span>
+                        <span class="shelf" id="content-frame-shelf"></span>
                         <a class="clear-shelf" id="content-frame-shelf-clear" href="#clear"
                             title="Clear selection" i18n:attributes="title">x</a>
                     </div>
@@ -917,7 +935,7 @@
             </div>
             <div class="pb-ajax">
                 <div class="new-rule">
-                    <h1 class="documentFirstHeading" i18n:translate="theming_mapper_heading_newrule">New rule</h1>
+                    <h1 class="documentFirstHeading" i18n:translate="theming_mapper_heading_newrule">Build rule</h1>
 
                     <div id="new-rule-step-1">
                         <div class="documentDescription" i18n:translate="theming_mapper_wizard_step1">
@@ -955,6 +973,17 @@
                                     <label for="new-rule-drop-theme" i18n:translate="theming_mapping_wizard_drop_theme">
                                         <strong>Drop</strong> an element in the <strong>theme</strong>
                                     </label>
+                                </div>
+                            </div>
+                            <div class="field" id="new-rule-reuse-panel">
+                                <input type="checkbox" name="new-rule-reuse-selectors" value="yes" id="new-rule-reuse-selectors" checked="checked" />
+                                <label for="new-rule-reuse-selectors" i18n:translate="theming_mapping_wizard_reuse_selectors">
+                                    Use selected elements
+                                </label>
+                                <div class="formHelp">
+                                    If selected, the rule builder will use the elements you have currently selected
+                                    in the <strong>HTML mockup</strong> and/or <strong>Unthemed content</strong>
+                                    panels instead of promting you to select new ones.
                                 </div>
                             </div>
                         </form>
