@@ -243,21 +243,23 @@
                         ruleBuilder.next();
                     } else {
                         // Let the frame highlighter perform a selection
+                        $("#theme-inspector-on").click();
                         $("#new-rule-text-select-theme").show();
                         $("#theme-panel, .wizard-text").expose();
                     }
 
-                } else if(ruleBuilder.currentScope == 'content' && $("#new-rule-reuse-selectors").is(":checked")) {
+                } else if(ruleBuilder.currentScope == 'content') {
                     if(ruleBuilderOverlay.isOpened()) {
                         ruleBuilderOverlay.close();
                     }
 
-                    if(contentFrameHighlighter.saved != null) {
+                    if(contentFrameHighlighter.saved != null && $("#new-rule-reuse-selectors").is(":checked")) {
                         // Use saved rule
                         ruleBuilder.select(contentFrameHighlighter.saved);
                         ruleBuilder.next();
                     } else {
                         // Let the frame highlighter perform a selection
+                        $("#content-inspector-on").click();
                         $("#new-rule-text-select-content").show();
                         $("#content-panel, .wizard-text").expose();
                     }
@@ -279,8 +281,6 @@
 
                     $("#new-rule-step-1").show();
                     $("#new-rule-step-2").hide();
-
-
                 }
             });
 

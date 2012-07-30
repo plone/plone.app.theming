@@ -48,6 +48,7 @@ Mapper
     [x] switch on first screen for "use saved selection"
     [x] default to on if one or both selections made
     [x] clear on insert
+[x] Enable the inspector during the wizard
 
 [ ] Working copy editing
 [ ] Table-based visual rules list viewer/editor instead of source (unless rules source too complex)
