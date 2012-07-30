@@ -314,6 +314,10 @@
                 $("#new-rule-step-2 .copy").click(function() {
                     window.clipboardData.setData('Text', $("#new-rule-output").val());
                     ruleBuilderOverlay.close();
+
+                    // Clear the selection now that we're done with it
+                    contentFrameHighlighter.save(null);
+                    themeFrameHighlighter.save(null);
                 });
             } else {
                 $("#new-rule-step-2 .copy").hide();
