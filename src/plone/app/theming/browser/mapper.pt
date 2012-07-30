@@ -743,7 +743,8 @@
                 rules. Hover over elements in the <strong>HTML mockup</strong> or
                 <strong>Unthemed content</strong> panels to discover theme
                 selectors. Click <strong>Build rule</strong> to
-                create and insert rules using a point-and-click wizard.
+                create and insert rules using a point-and-click wizard. Turn off
+                the inspectors to navigate in the HTML mockup or unthemed content.
             </p>
 
             <p class="discreet"
@@ -753,7 +754,8 @@
                 <strong>Unthemed content</strong> panels to discover theme
                 selectors. Click <strong>Build rule</strong> to
                 create rules using a point-and-click wizard, which you can copy
-                into a <code>rules.xml</code> file on the filesystem.
+                into a <code>rules.xml</code> file on the filesystem.  Turn off
+                the inspectors to navigate in the HTML mockup or unthemed content.
             </p>
 
             <dl style="display: none" class="ie-warning portalMessage warning">
