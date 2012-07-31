@@ -3,6 +3,7 @@ import zipfile
 
 from zope.component import getUtility
 from zope.component import getMultiAdapter
+from zope.schema.interfaces import IVocabularyFactory
 from zope.publisher.browser import BrowserView
 
 from plone.resource.utils import queryResourceDirectory
@@ -25,6 +26,8 @@ from plone.app.theming.utils import createThemeFromTemplate
 
 from plone.app.theming.plugins.utils import getPluginSettings
 from plone.app.theming.plugins.utils import getPlugins
+
+from plone.app.controlpanel.skins import ISkinsSchema
 
 from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
@@ -53,6 +56,9 @@ class ThemingControlpanel(BrowserView):
         self.availableThemes = getAvailableThemes()
         self.selectedTheme = self.getSelectedTheme(self.availableThemes, self.settings.rules)
         self.overlay = ''
+
+        self.skinsSettings = ISkinsSchema(self.context)
+        self.skinsVocabulary = getUtility(IVocabularyFactory, name='plone.app.vocabularies.Skins')(self.context)
 
         # Set response header to make sure control panel is never themed
         self.request.response.setHeader('X-Theme-Disabled', '1')
@@ -101,6 +107,7 @@ class ThemingControlpanel(BrowserView):
 
             self.settings.readNetwork = form.get('readNetwork', False)
 
+            themeEnabled = form.get('themeEnabled', False)
             rules = form.get('rules', None)
             prefix = form.get('absolutePrefix', None)
             doctype = str(form.get('doctype', ""))
@@ -123,6 +130,12 @@ class ThemingControlpanel(BrowserView):
                                 u"format <name> = <expression>."
                     )
 
+            themeBase = form.get('themeBase', None)
+            markSpecialLinks = form.get('markSpecialLinks', None)
+            extLinksOpenInNewWindow = form.get('extLinksOpenInNewWindow', None)
+            usePopups = form.get('usePopups', None)
+            iconVisibility = form.get('iconVisibility', None)
+
             if not self.errors:
 
                 # Trigger onDisabled() on plugins if theme was active
@@ -131,11 +144,25 @@ class ThemingControlpanel(BrowserView):
                 if self.settings.rules != rules:
                     applyTheme(None)
 
+                self.settings.enabled = themeEnabled
                 self.settings.rules = rules
                 self.settings.absolutePrefix = prefix
                 self.settings.parameterExpressions = parameterExpressions
                 self.settings.hostnameBlacklist = hostnameBlacklist
                 self.settings.doctype = doctype
+
+                # Theme base settings
+
+                if themeBase is not None:
+                    self.skinsSettings.theme = themeBase.encode('utf-8')
+                if markSpecialLinks is not None:
+                    self.skinsSettings.mark_special_links = markSpecialLinks
+                if extLinksOpenInNewWindow is not None:
+                    self.skinsSettings.ext_links_open_new_window = extLinksOpenInNewWindow
+                if usePopups is not None:
+                    self.skinsSettings.use_popups = usePopups
+                if iconVisibility is not None:
+                    self.skinsSettings.icon_visibility = iconVisibility.encode('utf-8')
 
                 IStatusMessage(self.request).add(_(u"Changes saved"))
                 self._setup()

@@ -84,3 +84,7 @@
 .themeEntry input, .themeEntry form {
     display: inline;
 }
+
+.radioLabel {
+    font-weight: normal;
+}

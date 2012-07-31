@@ -4,9 +4,9 @@ plone.app.theming to-do
 General
 -------
 
-[ ] Finish userguide.rst
 [ ] Document doctype option in manifest.cfg
 [ ] Document preview option in manifest.cfg
+[ ] Document control panel UI
 
 Control panel
 -------------
@@ -20,8 +20,16 @@ Control panel
 [x] Use 'template' theme for Create action always (no 'based on')
 [x] Let Upload action use rules.xml from 'template' theme if none provided
 
-[ ] Incorporate fields from standard 'Theme' control panel under
+[x] Incorporate fields from standard 'Theme' control panel under
     'Advanced settings' and hide that on install
+
+[ ] Improve test coverage
+    [ ] Create
+    [ ] Copy
+    [ ] Delete
+    [ ] Enable
+    [ ] Disable
+    [ ] Advanced save
 
 File manager
 ------------

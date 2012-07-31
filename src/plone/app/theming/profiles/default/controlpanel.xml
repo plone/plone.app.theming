@@ -6,7 +6,7 @@
     purge="False">
 
     <configlet
-        title="Diazo theme"
+        title="Theming"
         action_id="plone.app.theming"
         appId="plone.app.theming"
         category="Plone"
@@ -16,6 +16,19 @@
         visible="True"
         i18n:attributes="title">
             <permission>Manage portal</permission>
+    </configlet>
+
+    <configlet
+        title="Themes"
+        action_id="PortalSkin"
+        appId="PortalSkin"
+        category="Plone"
+        condition_expr=""
+        icon_expr="string:$portal_url/skins_icon.png"
+        url_expr="string:${portal_url}/@@skins-controlpanel"
+        visible="False"
+        i18n:attributes="title">
+        <permission>Plone Site Setup: Themes</permission>
     </configlet>
 
 </object>
