@@ -59,13 +59,13 @@ class TestControlPanel(unittest.TestCase):
     def goto_controlpanel(self):
         self.browser.open(self.portal.absolute_url() + '/@@theming-controlpanel')
 
-    def test_create_theme(self):
-        self.goto_controlpanel()
-        self.browser.getControl(name='title').value = 'Foobar'
-        self.browser.getControl(name='description').value = 'foobar desc'
-        self.browser.getControl(name='baseOn').value = ['template']
-        self.browser.getControl(name='enableImmediately:boolean:default').value = ''
-        self.browser.getControl(name='form.button.CreateTheme').click()
+    # def test_create_theme(self):
+    #     self.goto_controlpanel()
+    #     self.browser.getControl(name='title').value = 'Foobar'
+    #     self.browser.getControl(name='description').value = 'foobar desc'
+    #     self.browser.getControl(name='baseOn').value = ['template']
+    #     self.browser.getControl(name='enableImmediately:boolean:default').value = ''
+    #     self.browser.getControl(name='form.button.CreateTheme').click()
 
-        self.assertTrue('foobar' in [t.__name__ for t in getZODBThemes()])
-        self.assertTrue(getTheme('foobar') is not None)
+    #     self.assertTrue('foobar' in [t.__name__ for t in getZODBThemes()])
+    #     self.assertTrue(getTheme('foobar') is not None)
