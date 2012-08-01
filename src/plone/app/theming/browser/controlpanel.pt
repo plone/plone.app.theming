@@ -150,7 +150,7 @@
     </p>
 
     <dl class="portalMessage info">
-        <dt>info</dt>
+        <dt i18n:translate="">Note</dt>
         <dd i18n:translate="description_notheme_controlpanel">
             Please note that this control panel page will never be themed.
         </dd>
@@ -185,8 +185,6 @@
             </div>
 
             <div id="themesList">
-
-                <h3 i18n:translate="">Available themes</h3>
 
                 <div class="themeEntry"
                     tal:repeat="theme view/themeList"
