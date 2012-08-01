@@ -21,8 +21,8 @@ Diazo themes may be a little different to themes you have created in other
 systems, and indeed to themes you may have created for earlier versions of
 Plone. A Diazo theme is really about transforming some content - in this case
 the output from "vanilla" Plone - into a different set of HTML markup by
-applying a set of rules to combine a static mock-up of the end result you want
-with the dynamic content coming from Plone.
+applying a set of rules to combine a static HTML mock-up of the end result you
+want with the dynamic content coming from Plone.
 
 In comparison, the previous way to theme a Plone site (like the way many other
 content management systems are themed) relies on selectively overriding the
@@ -83,37 +83,206 @@ file - to learn more about how Diazo themes work.
 Using the control panel
 -----------------------
 
-TODO
+After installation of the *Diazo theme support* package in a Plone site, the
+*Theming* control panel will appear in Plone's *Site setup*.
+
+The main tab of this control panel, *Themes*, will show all available themes,
+with buttons to activate/deactivate, modify, copy or delete each, as well as
+buttons to create new themes or bring up this help text.
+
+Click on a theme preview image to open a preview of that theme in a new tab
+or window. The preview is navigable, but form submissions and some advanced
+features will not work.
 
 Selecting a theme
 ~~~~~~~~~~~~~~~~~
 
-TODO: Describe how to enable a theme in the control panel
+To apply an existing theme, simply click the *Activate* button underneath the
+theme preview. The currently active theme will be highlighted in yellow. If
+you deactivate the currently active theme, no Diazo theme will be applied, i.e.
+"vanilla" Plone theming will apply.
+
+*Note*: The *Theming* control panel is never theemd, ensuring that you can
+always deactivate an errant theme that could render the control panel unusable.
+Thus, you may not see any difference immediately after enabling a theme. Simply
+navigate to another page in the Plone site, though, and you should see the
+theme applied.
 
 Creating a new theme
 ~~~~~~~~~~~~~~~~~~~~
 
-TODO: Describe actions: cloning and creating anew
+New themes can be created in one of two ways:
+
+* Click the *New theme* button at the top of the *Themes* tab in the *Theming*
+  control panel and enter a title and description in the form that appears.
+  A bare-bones theme will be created, and you will be taken to the file manager
+  (see below), where you can edit or create theme and rules files.
+* Click the *Copy* button underneath any existing theme and enter a title and
+  description in the form that appears. A new theme will be created as a copy
+  of the existing theme, and you will be taken to the file manager (see below),
+  where you can edit or create theme and rules files.
 
 Uploading an existing theme
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-TODO: Describe uploading a theme - with or without rules.xml file to start with
+Themes can be distributed as Zip files, containing the HTML mockup and rules
+file. To download an existing theme, click the *Download* button underneath the
+theme on the *Themes* tab of the *Theming* control panel.
+
+To upload such a Zip file into another site, use the *Upload Zip file* button
+on the *Themes* tab of the *Theming* control panel. You can choose whether or
+not to replace any existing theme with the same name (based on the name of the
+top-level directory contained within the Zip file).
+
+You can also upload a Zip file of a static HTML mockup that does not contain a
+rules file, such as a design provided by a Plone-agnostic web designer.
+
+In this case, a basic ``rules.xml`` file will be added for you to start building
+up a theme from, either in the file manager or the rule mapper (see below). The
+generated rules file will assume the main HTML mockup file is called
+``index.html``, but you can change this in ``rules.xml``.
+
+Once you have successfully uploaded a theme Zip file, you will be taken to the
+file manager (see below), where you can editor or create theme files.
 
 The file manager
 ~~~~~~~~~~~~~~~~
 
-TODO: Describe purpose and UI
+You can launch the file manager for a theme by clicking *Manage files*
+underneath a theme in the *Themes* tab of the *Theming* control panel. The file
+manager is also launched automatically when you create or upload a new theme.
 
-The rule builder
+*Note:* The file manager is only available for themes created or uploaded
+through the *Theming* control panel. Themes installed by third-party add-ons
+or distributed on the filesystem cannot be modified through Plone, although
+changes made on the filesystem will be reflected immediately if Zope is running
+in debug mode. To modify a filesystem theme, you can copy it to a new in-Plone
+theme and modifiy that.
+
+The file manager shows a file tree on the left and an editor on the right. Click
+on a file in the file tree to open an editor or preview: HTML, CSS, JavaScript
+and other text files can be edited directly through the editor. Other files
+(e.g. images) will be rendered as a preview.
+
+Click *New folder* to create a new folder. You can also right-click on a folder
+in the file tree to bring up this action.
+
+Click *New file* to create a new text file. You can also right-click on a folder
+in the file tree to bring up this action.
+
+Click *Upload file* to upload a file from your computer. You can also right-
+click on a folder in the file tree to bring up this action.
+
+Click *Preview theme* to preview the theme as it will be applied with the mockup
+and rules as currently saved. The preview is navigable, but forms and certain
+advanced features will not work.
+
+To save the file currently being edited, click the *Save file* button, or use the
+keyboard shortcut ``Ctrl+S`` (Windows/Linux) or ``Cmd+S`` (Mac).
+
+When viewing an HTML file, you can click *Show mockup* to preview it in a new
+tab or window.
+
+To rename or delete a file or folder, right-click on it in the file tree and
+select the appropriate action.
+
+The rule mapper
 ~~~~~~~~~~~~~~~~
 
-TODO: Describe purpose and UI - filesystem and ZODB themes
+The rule mapper provides an advanced interface for building up the rules of a
+Diazo theme. You can launch the rule mapper by clicking *Map rules* underneath
+any theme on the *Themes* tab of the *Theming* control panel.
+
+*Note*: Unlike the file manager, the theme mapper is also available for
+filesystem themes, but in readonly mode: you can build rules and inspect the
+HTML mockup and theme, but not change the ``rules.xml`` file. In this case,
+the *Insert* button of the rules wizard (see below) will not be available
+either.
+
+The theme mapper shows three panels (two in read-only mode):
+
+* The *HTML mockup*. If there are several HTML files in the theme, you can switch
+  between them using the drop-down list underneath the *HTML mockup* panel.
+* The *Unthemed content*. This shows Plone without any theme applied.
+* The *Theme rules*. This is an editable view of the ``rules.xml`` file. Not
+  avaialble in read-only mode (for filesystem themes).
+
+Any panel can be maximised by clicking the arrows icon at the top right of each.
+
+The *HTML mockups* and *Unthemed content* panesl can be switch to source view,
+showing their underlying HTML markup, by clicking the tags icon at the top right
+of either.
+
+The rules file can be saved by clicking the *Save* button at the top right of
+the *Theme rules* panel, using the keyboard shortcut ``Ctrl+S`` (Windows/Linux)
+or ``Cmd+S`` (Mac).
+
+As you hover over elements in the *HTML mockup* or *Unthemed content* panels,
+you will see:
+
+* An outline showing the element under the cursor.
+* A CSS or XPath selector in the status bar at the bottom if the panel which
+  would uniquely identify this element in a Diazo rule.
+
+Click on an element or press ``Enter`` whilst hovering oveer an element to
+select it. The most recently selected element in each panel is shown in the
+bottom right of the relevant status bar.
+
+Press ``Esc`` whilst hovering over an element to select its parent. This is
+useful when trying to select "invisible" container elements. Press ``Enter``
+to save this selection.
+
+The contents of the *HTML mockup* or (more commonly) *Unthemed content* panels
+can be navigated, for example to get to a content page that requires specific
+theme rules, by disabling the inspector. Use the toggle switches at the bottom
+right of the relevant panel to enable or disable the selector.
+
+Click the *Build rule* button near the top of the theme mapper interface to
+launch an interactive rule building wizard. You will be asked which type of
+rule to build, and then prompted to select the relevant elements in the *HTML
+mockup* and/or *Unthemed content* panels as required. By default, this will use
+any saved selections, unless you untick the *Use selected elements* box on the
+first page if the wizard.
+
+Once the wizard completes, you will be shown the generated rule. You can edit
+this if you wish. If you click *Insert*, the newly generated rule will be
+inserted into the ``rules.xml`` editor at or near your current cursor position.
+You can move it around or edit it further as you wish.
+
+Click *Preview theme* to preview the theme in a new tab or window. Don't forget
+to save the ``rules.xml`` file if you have made changes.
 
 Advanced settings
 ~~~~~~~~~~~~~~~~~
 
-TODO: Describe the available settings at a high level
+The *Theming* control panel also contains a tab named *Advanced settings*. Here
+be dragons.
+
+The *Advanced setings* tab is divided into two areas. The first, *Theme
+details*, contains the underlying settings that are modified when a theme is
+applied from the *Themes* control panel. These are:
+
+* Whether or not Diazo themes are enabled at all.
+* The path to the rules file, conventionally called ``rules.xml``, either
+  relative to the Plone site root or as an absolute path to an external
+  server.
+* The prefix to apply when turning relative paths in themes (e.g. references to
+  images in an ``<img />`` tag's ``src`` attribute) into absolute ones at
+  rendering time.
+* The HTML ``DOCTYPE`` to apply to the rendered output, if different to the default
+  ``XHTML 1.0 Transitional``.
+* Whether or not to allow theme resources (likes ``rules.xml``) to be read from
+  the network. Disabling this gives a modest performance boost.
+* A list of host names for which a theme is never applied. Most commonly, this
+  contains ``127.0.0.1``, allowing you to view an unthemed site through
+  ``http://127.0.0.1:8080`` and a themed one at ``http://localhost:8080`` during
+  development, say.
+* A list of theme parameters and the TALES expressions to generate them
+  (see below).
+
+The second, *Theme base*, controls the presentation of the unthemed content, and
+apply even if no Diazo theme is being applied. These are the settings that used
+to be found in the *Themes* control panel in previous versions of Plone.
 
 Reference
 ---------
@@ -179,17 +348,17 @@ If you prefer (or do not have filesystem access), you can create themes entirely
 through the Plone control panel, either by duplicating an existing theme, or
 starting from scratch with a near-empty theme.
 
-TODO: Describe specific UI to do this
+See the instructions on using the control panel above for more details.
 
 Once a theme has been created, you can modify it through the in-Plone theme
-file manager or rule builder. See below for more details.
+file manager or rule mapper. See above for more details.
 
 3. As a zip file
 
 Themes can be downloaded from Plone as Zip files, which can then be uploaded
 into other sites.
 
-TODO: Describe specific UI to do this
+See the instructions on using the control panel above for more details.
 
 In fact, you can create valid theme zip archives by compressing a theme
 directory on the filesystem using a standard compression tool such as *7-Zip* or
@@ -256,11 +425,24 @@ You can also set::
     rules = http://example.org/myrules.xml
 
 to use a different rule file name than ``rules.xml`` (you should provide a URL
-or relative path), and::
+or relative path).
+
+To change the absolute path prefix (see *Advanced settings*), use::
 
     prefix = /some/prefix
 
-to change the absolute path prefix (see *Advanced settings*).
+To emply a ``DOCTYPE`` in the themed content other than ``XHTML 1.0
+Transitional``, add e.g.::
+
+    doctype = html
+
+To provide a user-friendly preview of your theme in the *Theming* control panel,
+add::
+
+    preview = preview.png
+
+Here, ``preview.png`` is an image file relative to the location of the
+``manifest.cfg`` file.
 
 Extensions to the Diazo theming engine can add support for additional blocks of
 configurable parameters.

@@ -4,9 +4,9 @@ plone.app.theming to-do
 General
 -------
 
-[ ] Document doctype option in manifest.cfg
-[ ] Document preview option in manifest.cfg
-[ ] Document control panel UI
+[x] Document doctype option in manifest.cfg
+[x] Document preview option in manifest.cfg
+[x] Document control panel UI
 
 Control panel
 -------------
@@ -22,6 +22,10 @@ Control panel
 
 [x] Incorporate fields from standard 'Theme' control panel under
     'Advanced settings' and hide that on install
+
+[ ] Make Zip uploader more forgiving
+    [ ] If no top level directory, create one
+    [ ] Use Zip file name as theme name
 
 [ ] Improve test coverage
     [ ] Create
