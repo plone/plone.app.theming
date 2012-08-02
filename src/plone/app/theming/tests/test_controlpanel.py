@@ -59,7 +59,8 @@ class TestControlPanel(unittest.TestCase):
     def goto_controlpanel(self):
         self.browser.open(self.portal.absolute_url() + '/@@theming-controlpanel')
 
-    # def test_create_theme(self):
+    def test_create_theme(self):
+        pass
     #     self.goto_controlpanel()
     #     self.browser.getControl(name='title').value = 'Foobar'
     #     self.browser.getControl(name='description').value = 'foobar desc'
