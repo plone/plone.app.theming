@@ -100,7 +100,6 @@
                 xml: new XMLMode()
             };
             var defaultMode = new TextMode();
-            var dirties = {}; // which files are dirty?
 
             function getExtension(path) {
                 var m = path.match(/.(\w+)$/);
@@ -122,14 +121,6 @@
                     .animate({ backgroundColor: originalBg }, animateMs, null, function () {
                         $(node).css("backgroundColor", originalBg);
                     });
-            };
-
-            window.onbeforeunload = function() {
-                for(key in dirties) {
-                    if(dirties[key]) {
-                        return $("#unload-warning-text").text();
-                    }
-                }
             };
 
             if($.browser.msie) {
@@ -176,15 +167,6 @@
                 }
             });
             var ruleBuilderOverlay = $("#new-rule").data('overlay');
-
-            // if($("#file-contents").length > 0) {
-            //     rulesEditor = new SourceEditor('editor', extensionModes.html, $("#file-contents").text(), !EDITABLE,
-            //         function() {
-            //             dirties['rules.xml'] = true;
-            //             $("#rules-editor .dirtyMarker").show();
-            //         }
-            //     );
-            // }
 
             themeFrameHighlighter = new FrameHighlighter("#theme-frame",
                 function(highlighter, node) { // onselect
@@ -390,7 +372,7 @@
                     aceEditor.navigateTo(cursorPosition.row, 0);
                     aceEditor.getSelection().selectTo(cursorPosition.row + rows + 1, 0);
                     rulesEditor.focus();
-                    dirties['rules.xml'] = true;
+
                     $("#rules-editor .dirtyMarker").show();
                     animateHighlight($("#rules-editor"));
 
@@ -421,23 +403,6 @@
             // Rules editor
 
             (function() {
-
-                // $("#rules-save").click(function() {
-
-                //     var data = rulesEditor.getValue();
-                //     $("#file-contents").val(data);
-
-                //     $.ajax({
-                //         url: THEME_BASE_URL + '/@@theming-controlpanel-mapper-save',
-                //         data: {value: data},
-                //         type: 'POST',
-                //         success: function(){
-                //             dirties['rules.xml'] = false;
-                //             $("#rules-editor .dirtyMarker").hide();
-                //             rulesEditor.focus();
-                //         }
-                //     });
-                // });
 
                 $("#rules-editor .fullscreen").click(function(event) {
                     event.preventDefault();
@@ -645,24 +610,6 @@
 
                 var canon = require('pilot/canon');
 
-                // if(rulesEditor !== null) {
-                //     canon.addCommand({
-                //         name: 'saveEditor',
-                //         bindKey: {
-                //             mac: 'Command-S',
-                //             win: 'Ctrl+S',
-                //             sender: 'editor'
-                //         },
-                //         exec: function(env, args, request) {
-                //             if($(env.editor.container).is("#theme-source")) {
-                //                 $("#theme-save").click();
-                //             } else if($(env.editor.container).is("#editor")) {
-                //                 $("#rules-save").click();
-                //             }
-                //         }
-                //     });
-                // }
-
                 canon.addCommand({
                     name: 'newRule',
                     bindKey: {
@@ -720,7 +667,7 @@
         <div id="page-intro">
 
             <h1 class="documentFirstHeading"
-                i18n:translate="heading_theme_mapper">Map rules for
+                i18n:translate="heading_theme_mapper">Modify theme
                 <span i18n:name="name" tal:content="view/title">name</span>
                 <span i18n:name="readonly" i18n:translate="" tal:condition="not:view/editable">(read-only)</span>
             </h1>
@@ -784,14 +731,8 @@
         <div id="rules-results-row" class="row splitview" tal:condition="view/editable">
             <div id="rules-editor" class="mapper-box cell width-full position-0">
 
-                <div class="panel-toolbar">
-                    <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
-                </div>
-
                 <metal:block use-macro="resourceDirectory/@@plone.resourceeditor.filemanager/macros/filemanager">
-                    <metal:block fill-slot="extraButtons">
-
-                        &nbsp;&nbsp;&nbsp;
+                    <span id="secondary-buttons" metal:fill-slot="extraButtons">
 
                         <button
                             id="new-rule"
@@ -812,7 +753,7 @@
                                 class="standalone"
                                 i18n:translate="">Help</button>
                         </form>
-                    </metal:block>
+                    </span>
                 </metal:block>
 
             </div>
@@ -907,8 +848,6 @@
 
             </div>
         </div>
-
-        <div id="unload-warning-text" class="hiddenStructure" i18n:translate="theming_mapper_unload_warning">Are you sure you want to leave this page? Unsaved changes will be lost.</div>
 
         <!-- Wizard overlay -->
         <div id="new-rule-wizard" class="overlay overlay-ajax">

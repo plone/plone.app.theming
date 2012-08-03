@@ -100,7 +100,11 @@
 
 /* Buttons */
 
-a.fullscreen {
+#secondary-buttons {
+    margin-left: 1em;
+}
+
+.fullscreen {
     vertical-align: top;
     display: inline-block;
     line-height: 12px;
@@ -114,11 +118,11 @@ a.fullscreen {
     font-size: 90%;
     content: none;
 }
-a.fullscreenActive {
+.fullscreenActive {
     background-image: url('./small.png');
 }
 
-a.sourceToggle {
+.sourceToggle {
     vertical-align: top;
     display: inline-block;
     line-height: 12px;
@@ -132,7 +136,7 @@ a.sourceToggle {
     font-size: 90%;
     content: none;
 }
-a.sourceActive {
+.sourceActive {
     background-image: url('./preview.png');
 }
 
