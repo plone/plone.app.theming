@@ -93,9 +93,9 @@
 }
 
 #rules-editor {
-    border-top: solid 1px #EEE;
-    padding-top: 10px;
-    margin-top: 10px;
+    border-bottom: solid 1px #EEE;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 /* Buttons */

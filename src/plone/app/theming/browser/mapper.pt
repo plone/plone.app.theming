@@ -7,7 +7,7 @@
     i18n:domain="plone">
 
 <head>
-<metal:block fill-slot="top_slot">
+<metal:block fill-slot="top_slot" tal:define="resourceDirectory nocall:view/resourceDirectory">
 
 <tal:defines define="dummy python:request.set('disable_border',1);
                      disable_column_one python:request.set('disable_plone.leftcolumn',1);
@@ -62,6 +62,7 @@
     tal:attributes="src string:${view/portalUrl}/++resource++plone.app.theming/mapper.js"
     ></script>
 
+<metal:block use-macro="resourceDirectory/@@plone.resourceeditor.filemanager/macros/resources" />
 
 <!-- Styling for this page -->
 <link
@@ -176,14 +177,14 @@
             });
             var ruleBuilderOverlay = $("#new-rule").data('overlay');
 
-            if($("#file-contents").length > 0) {
-                rulesEditor = new SourceEditor('editor', extensionModes.html, $("#file-contents").text(), !EDITABLE,
-                    function() {
-                        dirties['rules.xml'] = true;
-                        $("#rules-editor .dirtyMarker").show();
-                    }
-                );
-            }
+            // if($("#file-contents").length > 0) {
+            //     rulesEditor = new SourceEditor('editor', extensionModes.html, $("#file-contents").text(), !EDITABLE,
+            //         function() {
+            //             dirties['rules.xml'] = true;
+            //             $("#rules-editor .dirtyMarker").show();
+            //         }
+            //     );
+            // }
 
             themeFrameHighlighter = new FrameHighlighter("#theme-frame",
                 function(highlighter, node) { // onselect
@@ -421,36 +422,36 @@
 
             (function() {
 
-                $("#rules-save").click(function() {
+                // $("#rules-save").click(function() {
 
-                    var data = rulesEditor.getValue();
-                    $("#file-contents").val(data);
+                //     var data = rulesEditor.getValue();
+                //     $("#file-contents").val(data);
 
-                    $.ajax({
-                        url: THEME_BASE_URL + '/@@theming-controlpanel-mapper-save',
-                        data: {value: data},
-                        type: 'POST',
-                        success: function(){
-                            dirties['rules.xml'] = false;
-                            $("#rules-editor .dirtyMarker").hide();
-                            rulesEditor.focus();
-                        }
-                    });
-                });
+                //     $.ajax({
+                //         url: THEME_BASE_URL + '/@@theming-controlpanel-mapper-save',
+                //         data: {value: data},
+                //         type: 'POST',
+                //         success: function(){
+                //             dirties['rules.xml'] = false;
+                //             $("#rules-editor .dirtyMarker").hide();
+                //             rulesEditor.focus();
+                //         }
+                //     });
+                // });
 
                 $("#rules-editor .fullscreen").click(function(event) {
                     event.preventDefault();
 
-                    if($("#editor").css('height') == FULLSCREEN_HEIGHT) {
+                    if(!$("#theme-content-row").is(':visible')) {
                         $("#theme-content-row").show();
                         $("#page-intro").show();
                         $("#editor").css('height', WINDOWED_HEIGHT);
-                        rulesEditor.resize();
+                        // rulesEditor.resize();
                     } else {
                         $("#theme-content-row").hide();
                         $("#page-intro").hide();
                         $("#editor").css('height', FULLSCREEN_HEIGHT);
-                        rulesEditor.resize();
+                        // rulesEditor.resize();
                     }
 
                     return false;
@@ -644,23 +645,23 @@
 
                 var canon = require('pilot/canon');
 
-                if(rulesEditor !== null) {
-                    canon.addCommand({
-                        name: 'saveEditor',
-                        bindKey: {
-                            mac: 'Command-S',
-                            win: 'Ctrl+S',
-                            sender: 'editor'
-                        },
-                        exec: function(env, args, request) {
-                            if($(env.editor.container).is("#theme-source")) {
-                                $("#theme-save").click();
-                            } else if($(env.editor.container).is("#editor")) {
-                                $("#rules-save").click();
-                            }
-                        }
-                    });
-                }
+                // if(rulesEditor !== null) {
+                //     canon.addCommand({
+                //         name: 'saveEditor',
+                //         bindKey: {
+                //             mac: 'Command-S',
+                //             win: 'Ctrl+S',
+                //             sender: 'editor'
+                //         },
+                //         exec: function(env, args, request) {
+                //             if($(env.editor.container).is("#theme-source")) {
+                //                 $("#theme-save").click();
+                //             } else if($(env.editor.container).is("#editor")) {
+                //                 $("#rules-save").click();
+                //             }
+                //         }
+                //     });
+                // }
 
                 canon.addCommand({
                     name: 'newRule',
@@ -699,7 +700,7 @@
 </head>
 
 <body>
-<div metal:fill-slot="prefs_configlet_content" class="documentEditable" id="themeMapper">
+<div metal:fill-slot="prefs_configlet_content" class="documentEditable" id="themeMapper" tal:define="resourceDirectory nocall:view/resourceDirectory">
 
     <div metal:use-macro="context/global_statusmessage/macros/portal_message">
       Portal status message
@@ -730,15 +731,6 @@
                 i18n:translate="label_up_to_theming_controlpanel">
                     Back to the control panel
             </a>
-            <tal:block condition="view/editable">
-                |
-                <a href=""
-                    class="link-parent"
-                    tal:attributes="href string:${portal_url}/++theme++${view/name}/@@theming-controlpanel-filemanager"
-                    i18n:translate="label_up_to_theming_mapper">
-                        Launch file manager
-                </a>
-            </tal:block>
 
             <p class="discreet"
                 i18n:translate="help_theme_mapper_overview_editable"
@@ -771,30 +763,6 @@
                 </dd>
             </dl>
 
-            <div class="globalToolbar">
-
-                <button
-                    id="new-rule"
-                    name="form.button.BuildRule"
-                    class="allowMultiSubmit"
-                    rel="#new-rule-wizard"
-                    title="Ctrl+N (Windows/Linux) or Cmd+N (Mac)"
-                    i18n:attributes="title"
-                    i18n:translate=""
-                    >Build rule</button>
-
-                <button id="preview" name="preview" type="button" i18n:translate="filemanager_preview_theme"
-                    title="Open a preview of the theme in a new window. Forms will be disabled in the preview." i18n:attributes="title [filemanager_preview_theme_help]"
-                    tal:attributes="data-href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${view/title}">Preview theme</button>
-
-                <form id="helpButtonForm" method="get" tal:attributes="action string:${portal_url}/@@theming-controlpanel-help">
-                    <button
-                        class="standalone"
-                        i18n:translate="">Help</button>
-                </form>
-
-            </div>
-
             <dl class="portalMessage info wizard-text" id="new-rule-text-select-theme">
                 <dt i18n:translate="">New rule wizard</dt>
                 <dd i18n:translate="theming_mapper_select_theme">
@@ -813,11 +781,47 @@
 
         </div>
 
+        <div id="rules-results-row" class="row splitview" tal:condition="view/editable">
+            <div id="rules-editor" class="mapper-box cell width-full position-0">
+
+                <div class="panel-toolbar">
+                    <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
+                </div>
+
+                <metal:block use-macro="resourceDirectory/@@plone.resourceeditor.filemanager/macros/filemanager">
+                    <metal:block fill-slot="extraButtons">
+
+                        &nbsp;&nbsp;&nbsp;
+
+                        <button
+                            id="new-rule"
+                            name="form.button.BuildRule"
+                            class="allowMultiSubmit"
+                            rel="#new-rule-wizard"
+                            title="Ctrl+N (Windows/Linux) or Cmd+N (Mac)"
+                            i18n:attributes="title"
+                            i18n:translate=""
+                            >Build rule</button>
+
+                        <button id="preview" name="preview" type="button" i18n:translate="filemanager_preview_theme"
+                            title="Open a preview of the theme in a new window. Forms will be disabled in the preview." i18n:attributes="title [filemanager_preview_theme_help]"
+                            tal:attributes="data-href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${view/title}">Preview theme</button>
+
+                        <form id="helpButtonForm" method="get" tal:attributes="action string:${portal_url}/@@theming-controlpanel-help">
+                            <button
+                                class="standalone"
+                                i18n:translate="">Help</button>
+                        </form>
+                    </metal:block>
+                </metal:block>
+
+            </div>
+        </div>
+
         <div id="theme-content-row" class="row splitview">
             <div id="theme-panel" class="mapper-box cell width-1:2 position-0">
 
                 <div class="panel-toolbar">
-
                     <a class="sourceToggle" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
                     <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
                 </div>
@@ -900,34 +904,6 @@
                     Left-click or press <em>Enter</em> to save.
                     Press <em>Esc</em> to select parent.
                 </div>
-
-            </div>
-        </div>
-
-        <div id="rules-results-row" class="row splitview" tal:condition="view/editable">
-            <div id="rules-editor" class="mapper-box cell width-full position-0">
-
-                <div id="mapper-toolbar" class="panel-toolbar">
-                    <button
-                        tal:condition="view/editable"
-                        id="rules-save"
-                        name="form.button.Save"
-                        class="allowMultiSubmit"
-                        title="Ctrl+S (Windows/Linux) or Cmd+S (Mac)"
-                        i18n:attributes="title"
-                        i18n:translate=""
-                        >Save</button>
-
-                    <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
-
-                </div>
-
-                <label i18n:translate="heading_rules">Theme rules</label>
-                <span class="dirtyMarker" style="display:none" title="Unsaved changes" i18n:attributes="title">*</span>
-
-                <pre id="editor"></pre>
-                <textarea id="file-contents" class="hiddenStructure" name="rules"
-                    tal:content="view/rules"></textarea>
 
             </div>
         </div>
