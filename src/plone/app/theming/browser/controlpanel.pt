@@ -242,20 +242,9 @@
                                 </form>
 
                                 <form method="get" tal:attributes="action string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-mapper">
-                                    <button i18n:translate="">Map rules</button>
+                                    <button tal:condition="theme/editable" i18n:translate="">Modify theme</button>
+                                    <button tal:condition="not:theme/editable" i18n:translate="">Inspect theme</button>
                                 </form>
-
-                                <form method="get" tal:condition="theme/editable" tal:attributes="action string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-filemanager">
-                                    <button tal:condition="theme/editable" i18n:translate="">Manage Files</button>
-                                </form>
-
-                                <button
-                                    tal:condition="not:theme/editable"
-                                    disabled="disabled"
-                                    title="Themes located on the filesystem are read-only. Click Copy to create an editable copy."
-                                    i18n:translate=""
-                                    i18n:attributes="title">Manage Files</button>
-
 
                                 <a href="#" class="deleteLink"
                                     tal:condition="theme/editable"

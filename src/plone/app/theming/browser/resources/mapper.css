@@ -100,6 +100,10 @@
 
 /* Buttons */
 
+#readonlyActions {
+    margin: 10px 0;
+}
+
 #secondary-buttons {
     margin-left: 1em;
 }

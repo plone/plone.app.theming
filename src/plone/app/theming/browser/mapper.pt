@@ -728,6 +728,28 @@
 
         </div>
 
+        <div id="readonlyActions" tal:condition="not:view/editable">
+            <button
+                id="new-rule"
+                name="form.button.BuildRule"
+                class="allowMultiSubmit"
+                rel="#new-rule-wizard"
+                title="Ctrl+N (Windows/Linux) or Cmd+N (Mac)"
+                i18n:attributes="title"
+                i18n:translate=""
+                >Build rule</button>
+
+            <button id="preview" name="preview" type="button" i18n:translate="filemanager_preview_theme"
+                title="Open a preview of the theme in a new window. Forms will be disabled in the preview." i18n:attributes="title [filemanager_preview_theme_help]"
+                tal:attributes="data-href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${view/title}">Preview theme</button>
+
+            <form id="helpButtonForm" method="get" tal:attributes="action string:${portal_url}/@@theming-controlpanel-help">
+                <button
+                    class="standalone"
+                    i18n:translate="">Help</button>
+            </form>
+        </div>
+
         <div id="rules-results-row" class="row splitview" tal:condition="view/editable">
             <div id="rules-editor" class="mapper-box cell width-full position-0">
 

@@ -76,21 +76,16 @@ class ThemeMapper(BrowserView):
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
         self.active = (settings.enabled and self.name == getCurrentTheme())
 
-        self.jsVariables = "var BASE_URL='%s'; var CURRENT_SELECTION='%s'; var THEME_BASE_URL='%s'; var EDITABLE=%s" % (
-                self.themeBaseUrl,
+        self.rulesFileName = self.theme.rules or RULE_FILENAME
+
+        self.jsVariables = "var CURRENT_SELECTION='%s'; var THEME_BASE_URL='%s'; var EDITABLE=%s; var RULE_FILENAME='%s';" % (
                 self.request.get('file-selector') or '',
                 self.themeBaseUrl,
                 str(self.editable).lower(),
+                self.rulesFileName
             )
 
     def update(self):
-        rulesFile = RULE_FILENAME
-
-        if not self.resourceDirectory.isFile(rulesFile):
-            self.rules = "(%s not found)" % rulesFile
-        else:
-            self.rules = self.resourceDirectory.readFile(rulesFile)
-
         self.themeFiles = self.findThemeFiles(self.resourceDirectory)
 
         self.defaultThemeFile = None
