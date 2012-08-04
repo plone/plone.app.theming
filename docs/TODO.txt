@@ -53,7 +53,9 @@ Mapper
 [x] Make inspector on/off explicit action
 
 [x] Make preview action open new window/tab
-[ ] Make preview show current path from content?
+
+[ ] Instead of hiding file manager for read-only themes, show with read-only
+    editor?
 
 [ ] Reload theme and discover new files when editor changed
     [ ] Can tie this to the loaded event in the file manager
@@ -75,3 +77,4 @@ Mapper
 
 [ ] Working copy editing
 [ ] Table-based visual rules list viewer/editor instead of source (unless rules source too complex)
+[ ] Make preview show current path from content?

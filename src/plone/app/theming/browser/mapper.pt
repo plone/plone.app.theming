@@ -410,6 +410,10 @@
 
             (function() {
 
+                if(FileManager.enabled) {
+                    FileManager.openFile("/" + RULE_FILENAME);
+                }
+
                 $("#rules-editor .fullscreen").click(function(event) {
                     event.preventDefault();
 
@@ -677,9 +681,15 @@
         <div id="page-intro">
 
             <h1 class="documentFirstHeading"
-                i18n:translate="heading_theme_mapper">Modify theme
+                i18n:translate="heading_theme_mapper"
+                tal:condition="view/editable">Modify theme
                 <span i18n:name="name" tal:content="view/title">name</span>
-                <span i18n:name="readonly" i18n:translate="" tal:condition="not:view/editable">(read-only)</span>
+            </h1>
+            <h1 class="documentFirstHeading"
+                i18n:translate="heading_theme_mapper"
+                tal:condition="not:view/editable">Inspect theme
+                <span i18n:name="name" tal:content="view/title">name</span>
+                <span i18n:name="readonly" i18n:translate="">(read-only)</span>
             </h1>
 
             <a href=""
