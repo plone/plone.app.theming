@@ -26,7 +26,7 @@ Mapper
      6) Results (pop-up with insert/close buttons)
      7) "Now check the results and save if you're happy" (pop-up, ok button)
 
-[ ] Hide bottom row by default, but show when launching wizard or on demand?
+[x] Hide bottom row by default, but show when launching wizard or on demand?
 
 [ ] Reload theme and discover new files when editor changed
     [ ] Can tie this to the loaded event in the file manager

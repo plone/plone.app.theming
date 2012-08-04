@@ -72,6 +72,7 @@
 
 .inspector-switch {
     float: right;
+    margin-left: 5px;
 }
 
 .panel-footer label {

@@ -241,8 +241,8 @@
 
                         if(!$("#theme-content-row").is(":visible")) {
                             $("#theme-content-row").show();
-                            document.getElementById("theme-content-row").scrollIntoView();
                         }
+                        document.getElementById("theme-content-row").scrollIntoView();
                     }
 
                 } else if(ruleBuilder.currentScope == 'content') {
@@ -263,8 +263,8 @@
 
                         if(!$("#theme-content-row").is(":visible")) {
                             $("#theme-content-row").show();
-                            document.getElementById("theme-content-row").scrollIntoView();
                         }
+                        document.getElementById("theme-content-row").scrollIntoView();
                     }
 
                 } else if(ruleBuilder.ruleType != null && ruleBuilder.currentScope == null) {
