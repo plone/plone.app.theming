@@ -702,28 +702,6 @@
                     Back to the control panel
             </a>
 
-            <p class="discreet"
-                i18n:translate="help_theme_mapper_overview_editable"
-                tal:condition="view/editable">
-                Use the file manager at the top of this screen to edit theme
-                rules. Hover over elements in the <strong>HTML mockup</strong> or
-                <strong>Unthemed content</strong> panels to discover theme
-                selectors. Click <strong>Build rule</strong> to
-                create and insert rules using a point-and-click wizard. Turn off
-                the inspectors to navigate in the HTML mockup or unthemed content.
-            </p>
-
-            <p class="discreet"
-                i18n:translate="help_theme_mapper_overview_not_editable"
-                tal:condition="not:view/editable">
-                Hover over elements in the <strong>HTML mockup</strong> or
-                <strong>Unthemed content</strong> panels to discover theme
-                selectors. Click <strong>Build rule</strong> to
-                create rules using a point-and-click wizard, which you can copy
-                into a <code>rules.xml</code> file on the filesystem.  Turn off
-                the inspectors to navigate in the HTML mockup or unthemed content.
-            </p>
-
             <dl style="display: none" class="ie-warning portalMessage warning">
                 <dt i18n:translate="">Warning</dt>
                 <dd i18n:translate="theming_mapper_warning_ie">

@@ -155,8 +155,8 @@ simply unzip the archive on your computer into a new directory, move up a level,
 and compress this directory on its own into a new Zip file, which you can then
 upload.
 
-The *Modify theme* screen
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Modifying the theme
+~~~~~~~~~~~~~~~~~~~
 
 You can modify a theme by clicking *Modify theme* underneath a theme in the
 *Themes* tab of the *Theming* control panel. This screen is also launched

@@ -145,10 +145,6 @@
             Up to Site Setup
     </a>
 
-    <p i18n:translate="description_theme_settings">
-        Use this control panel to import, enable or edit a Diazo theme.
-    </p>
-
     <dl class="portalMessage info">
         <dt i18n:translate="">Note</dt>
         <dd i18n:translate="description_notheme_controlpanel">
