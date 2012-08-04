@@ -432,6 +432,10 @@
             // Theme panel
             (function() {
 
+                if($("#theme-file-selector-area option").length <= 1) {
+                    $("#theme-file-selector-area").hide();
+                }
+
                 var themeSource = new SourceEditor('theme-source', extensionModes.html, "", true);
 
                 function reloadFrame() {
@@ -798,7 +802,11 @@
                 <label i18n:translate="heading_theme">HTML mockup</label>
 
                 <iframe id="theme-frame"
+                    tal:condition="python:len(view.themeFiles) > 0"
                     tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off"></iframe>
+                <iframe id="theme-frame"
+                    tal:condition="python:len(view.themeFiles) == 0"
+                    src=""></iframe>
                 <pre class="source-editor" id="theme-source"></pre>
 
                 <div class="frame-info">
@@ -816,7 +824,7 @@
                         <button id="theme-inspector-on" disabled="disabled">Inspector on</button>
                         <button id="theme-inspector-off">Inspector off</button>
                     </div>
-                    <tal:block condition="python:len(view.themeFiles) > 1">
+                    <span id="theme-file-selector-area">
                         <label for="file-selector">Switch file:</label>
                         <select size="1" name="file-selector" id="file-selector">
                             <option
@@ -828,7 +836,7 @@
                                 tal:content="f/path"
                                 />
                         </select>
-                    </tal:block>
+                    </span>
                 </div>
 
                 <div id="theme-footer-help" class="discreet footer-help" i18n:translate="help_highlighter_selection">

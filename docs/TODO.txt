@@ -62,7 +62,7 @@ Mapper
     [ ] Also need to deal with file deletions
 
 [x] Hide 'insert' button in rule builder when no theme file
-[ ] Recover gracefully when no theme file
+[x] Recover gracefully when no theme file
 
 
 [x] Show wizard steps more clearly (styling)
