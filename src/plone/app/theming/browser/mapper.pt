@@ -290,7 +290,7 @@
             // The insert wizard doesn't work well in IE where we use plain
             // textareas, but we offer a copy-to-clipboard button instead
 
-            var haveRules = (FileManager.getNodeByPath("/" + RULE_FILENAME) !== null);
+            var haveRules = (FileManager.enabled && FileManager.getNodeByPath("/" + RULE_FILENAME) !== null);
             if(!haveRules) {
                 $("#new-rule-step-2 .insert").hide();
                 $("#new-rule-step-2 .copy").hide();

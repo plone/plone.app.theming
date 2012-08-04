@@ -57,8 +57,9 @@ Mapper
 
 [ ] Reload theme and discover new files when editor changed
     [ ] Can tie this to the loaded event in the file manager
-        (will also catch new files)
+        (this will also catch new files)
     [ ] Refresh on save
+    [ ] Also need to deal with file deletions
 
 [x] Hide 'insert' button in rule builder when no theme file
 [ ] Recover gracefully when no theme file
