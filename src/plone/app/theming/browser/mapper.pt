@@ -140,7 +140,6 @@
             // Rule builder and highlighters
 
             var ruleBuilder = null;
-            var rulesEditor = null;
             var themeFrameHighlighter = null;
             var contentFrameHighlighter = null;
 
@@ -161,8 +160,6 @@
                 }, onBeforeClose: function() {
                     if(ruleBuilder.active && $("#new-rule-step-2").is(":visible")) {
                         ruleBuilder.end();
-                        if(rulesEditor !== null)
-                            rulesEditor.focus();
                     }
                 }
             });
@@ -308,7 +305,11 @@
 
                     var rule = $("#new-rule-output").val();
 
-                    // Get the underlying ACE editor: no IE support for this anyway
+                    FileManager.openFile("/" + RULE_FILENAME, false);
+                    var rulesEditor = FileManager.editors["/" + RULE_FILENAME];
+
+                    // XXX: There seems to be a race condition here where
+                    // rulesEditor could be undefined
                     var aceEditor = rulesEditor.ace;
 
                     function findStartTag(backwards) {
@@ -682,7 +683,7 @@
             <p class="discreet"
                 i18n:translate="help_theme_mapper_overview_editable"
                 tal:condition="view/editable">
-                Use the rules editor at the bottom of this screen to edit theme
+                Use the file manager at the top of this screen to edit theme
                 rules. Hover over elements in the <strong>HTML mockup</strong> or
                 <strong>Unthemed content</strong> panels to discover theme
                 selectors. Click <strong>Build rule</strong> to

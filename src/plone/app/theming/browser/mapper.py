@@ -76,7 +76,7 @@ class ThemeMapper(BrowserView):
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
         self.active = (settings.enabled and self.name == getCurrentTheme())
 
-        self.rulesFileName = self.theme.rules or RULE_FILENAME
+        self.rulesFileName = RULE_FILENAME
 
         self.jsVariables = "var CURRENT_SELECTION='%s'; var THEME_BASE_URL='%s'; var EDITABLE=%s; var RULE_FILENAME='%s';" % (
                 self.request.get('file-selector') or '',

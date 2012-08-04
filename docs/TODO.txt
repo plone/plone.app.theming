@@ -8,6 +8,16 @@ General
 [x] Document preview option in manifest.cfg
 [x] Document control panel UI
 
+[ ] Update userguide.rst to describe unified file manager/mapper
+
+[ ] Improve test coverage
+    [ ] Create
+    [ ] Copy
+    [ ] Delete
+    [ ] Enable
+    [ ] Disable
+    [ ] Advanced save
+
 Control panel
 -------------
 
@@ -27,14 +37,6 @@ Control panel
     [ ] If no top level directory, create one
     [ ] Use Zip file name as theme name
 
-[ ] Improve test coverage
-    [ ] Create
-    [ ] Copy
-    [ ] Delete
-    [ ] Enable
-    [ ] Disable
-    [ ] Advanced save
-
 File manager
 ------------
 
@@ -52,6 +54,10 @@ Mapper
 
 [x] Make preview action open new window/tab
 [ ] Make preview show current path from content?
+
+[ ] Test with no theme files
+[ ] Test with no rules file
+[ ] Test with renamed rules file
 
 
 [x] Show wizard steps more clearly (styling)
