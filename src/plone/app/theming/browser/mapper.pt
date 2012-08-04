@@ -137,6 +137,17 @@
                 subtype: 'iframe'
             });
 
+            // Mapper toggle
+
+            $("#mapper-toggle").click(function() {
+                if($("#theme-content-row").is(":visible")) {
+                    $("#theme-content-row").hide();
+                } else {
+                    $("#theme-content-row").show();
+                    document.getElementById("theme-content-row").scrollIntoView();
+                }
+            });
+
             // Rule builder and highlighters
 
             var ruleBuilder = null;
@@ -726,7 +737,6 @@
                 </dd>
             </dl>
 
-
         </div>
 
         <div id="readonlyActions" tal:condition="not:view/editable">
@@ -762,10 +772,17 @@
                             name="form.button.BuildRule"
                             class="allowMultiSubmit"
                             rel="#new-rule-wizard"
-                            title="Ctrl+N (Windows/Linux) or Cmd+N (Mac)"
-                            i18n:attributes="title"
                             i18n:translate=""
                             >Build rule</button>
+
+                        <button
+                            id="mapper-toggle"
+                            name="form.button.MapperToggle"
+                            class="allowMultiSubmit"
+                            title="Show or hide the HTML mockup and content inspector panels"
+                            i18n:attributes="title"
+                            i18n:translate=""
+                            >Toggle inspector</button>
 
                         <button id="preview" name="preview" type="button" i18n:translate="filemanager_preview_theme"
                             title="Open a preview of the theme in a new window. Forms will be disabled in the preview." i18n:attributes="title [filemanager_preview_theme_help]"
@@ -782,7 +799,7 @@
             </div>
         </div>
 
-        <div id="theme-content-row" class="row splitview">
+        <div id="theme-content-row" class="row splitview" style="display:none">
             <div id="theme-panel" class="mapper-box cell width-1:2 position-0">
 
                 <div class="panel-toolbar">
