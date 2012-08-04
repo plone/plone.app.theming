@@ -234,9 +234,15 @@
                         ruleBuilder.next();
                     } else {
                         // Let the frame highlighter perform a selection
+
                         $("#theme-inspector-on").click();
                         $("#new-rule-text-select-theme").show();
                         $("#theme-panel, .wizard-text").expose();
+
+                        if(!$("#theme-content-row").is(":visible")) {
+                            $("#theme-content-row").show();
+                            document.getElementById("theme-content-row").scrollIntoView();
+                        }
                     }
 
                 } else if(ruleBuilder.currentScope == 'content') {
@@ -250,9 +256,15 @@
                         ruleBuilder.next();
                     } else {
                         // Let the frame highlighter perform a selection
+
                         $("#content-inspector-on").click();
                         $("#new-rule-text-select-content").show();
                         $("#content-panel, .wizard-text").expose();
+
+                        if(!$("#theme-content-row").is(":visible")) {
+                            $("#theme-content-row").show();
+                            document.getElementById("theme-content-row").scrollIntoView();
+                        }
                     }
 
                 } else if(ruleBuilder.ruleType != null && ruleBuilder.currentScope == null) {
@@ -394,9 +406,11 @@
                     rulesEditor.focus();
 
                     $("#rules-editor .dirtyMarker").show();
-                    animateHighlight($("#rules-editor"));
+                    animateHighlight($("#rules-results-row"));
 
                     ruleBuilderOverlay.close();
+
+                    document.getElementById("page-intro").scrollIntoView();
 
                     // Clear the selection now that we're done with it
                     contentFrameHighlighter.save(null);
@@ -722,21 +736,6 @@
                 </dd>
             </dl>
 
-            <dl class="portalMessage info wizard-text" id="new-rule-text-select-theme">
-                <dt i18n:translate="">New rule wizard</dt>
-                <dd i18n:translate="theming_mapper_select_theme">
-                    Please select an element in the <strong>HTML mockup</strong> panel.
-                    <button class="wizard-cancel allowMultiSubmit">Quit wizard</button>
-                </dd>
-            </dl>
-            <dl class="portalMessage info wizard-text" id="new-rule-text-select-content">
-                <dt i18n:translate="">New rule wizard</dt>
-                <dd i18n:translate="theming_mapper_select_content">
-                    Please select an element in the <strong>Unthemed content</strong> panel.
-                    <button class="wizard-cancel allowMultiSubmit">Quit wizard</button>
-                </dd>
-            </dl>
-
         </div>
 
         <div id="readonlyActions" tal:condition="not:view/editable">
@@ -798,6 +797,21 @@
 
             </div>
         </div>
+
+        <dl class="portalMessage info wizard-text" id="new-rule-text-select-theme">
+                <dt i18n:translate="">New rule wizard</dt>
+                <dd i18n:translate="theming_mapper_select_theme">
+                    Please select an element in the <strong>HTML mockup</strong> panel.
+                    <button class="wizard-cancel allowMultiSubmit">Quit wizard</button>
+                </dd>
+            </dl>
+            <dl class="portalMessage info wizard-text" id="new-rule-text-select-content">
+                <dt i18n:translate="">New rule wizard</dt>
+                <dd i18n:translate="theming_mapper_select_content">
+                    Please select an element in the <strong>Unthemed content</strong> panel.
+                    <button class="wizard-cancel allowMultiSubmit">Quit wizard</button>
+                </dd>
+            </dl>
 
         <div id="theme-content-row" class="row splitview" style="display:none">
             <div id="theme-panel" class="mapper-box cell width-1:2 position-0">
