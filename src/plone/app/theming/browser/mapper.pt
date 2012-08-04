@@ -249,6 +249,13 @@
                     $("#new-rule-step-2").show();
                     updateRule(ruleBuilder);
 
+                    var haveRules = (FileManager.enabled && (FileManager.getNodeByPath("/" + RULE_FILENAME) !== null));
+                    if(haveRules && !$.browser.msie) {
+                        $("#new-rule-step-2 .insert").show();
+                    } else {
+                        $("#new-rule-step-2 .insert").hide();
+                    }
+
                     if(!ruleBuilderOverlay.isOpened()) {
                         ruleBuilderOverlay.load();
                     }
@@ -290,11 +297,7 @@
             // The insert wizard doesn't work well in IE where we use plain
             // textareas, but we offer a copy-to-clipboard button instead
 
-            var haveRules = (FileManager.enabled && FileManager.getNodeByPath("/" + RULE_FILENAME) !== null);
-            if(!haveRules) {
-                $("#new-rule-step-2 .insert").hide();
-                $("#new-rule-step-2 .copy").hide();
-            } else if($.browser.msie) {
+            if($.browser.msie) {
                 $("#new-rule-step-2 .insert").hide();
                 $("#new-rule-step-2 .copy").click(function() {
                     window.clipboardData.setData('Text', $("#new-rule-output").val());
