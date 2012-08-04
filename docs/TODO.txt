@@ -4,12 +4,6 @@ plone.app.theming to-do
 General
 -------
 
-[x] Document doctype option in manifest.cfg
-[x] Document preview option in manifest.cfg
-[x] Document control panel UI
-
-[ ] Update userguide.rst to describe unified file manager/mapper
-
 [ ] Improve test coverage
     [ ] Create
     [ ] Copy
@@ -18,40 +12,22 @@ General
     [ ] Disable
     [ ] Advanced save
 
-Control panel
--------------
-
-[x] Update layout and language to match revised mockups
-[x] Expose user guide
-
-[x] Explicit activate/deactivate action per theme
-[x] Explicit copy per theme
-
-[x] Use 'template' theme for Create action always (no 'based on')
-[x] Let Upload action use rules.xml from 'template' theme if none provided
-
-[x] Incorporate fields from standard 'Theme' control panel under
-    'Advanced settings' and hide that on install
-
-File manager
-------------
-
-[x] Update layout and language to match revised mockups
-[x] Move Preview to open in a new window/tab on explicit button action
-[x] Server-side validation of file name for new file/new folder/upload
+[ ] Kill HappyTalk (intro text etc.)
 
 Mapper
 ------
 
-[x] Update layout and language to match revised mockups
-[x] Make clear when readonly for filesystem themes; hide rules editor
-[x] Change buttons to show future state
-[x] Make inspector on/off explicit action
 
-[x] Make preview action open new window/tab
+[ ] Make wizard steps all use pop-ups instead of mixture of pop-ups and banners?
+     1) Pick rule type (pop-up with form)
+     2) "Select an element in the theme" (pop-up, ok / cancel buttons)
+     3) Expose theme panel, engage inspector, no way to cancel this without selecting something
+     4) "Select an element in the content" (pop-up, ok / cancel buttons)
+     5) Expose content panel, engage inspector, no way to cancel this without selecting something
+     6) Results (pop-up with insert/close buttons)
+     7) "Now check the results and save if you're happy" (pop-up, ok button)
 
-[ ] Instead of hiding file manager for read-only themes, show with read-only
-    editor?
+[ ] Hide bottom row by default, but show when launching wizard or on demand?
 
 [ ] Reload theme and discover new files when editor changed
     [ ] Can tie this to the loaded event in the file manager
@@ -59,18 +35,13 @@ Mapper
     [ ] Refresh on save
     [ ] Also need to deal with file deletions
 
-[x] Hide 'insert' button in rule builder when no theme file
-[x] Recover gracefully when no theme file
+[ ] Let preview show better error if theme not found
+[ ] Make preview show current path from content?
+[ ] Instead of hiding file manager for read-only themes, show with read-only
+    editor?
 
-
-[x] Show wizard steps more clearly (styling)
-[x] Fix sticky highlither after click
-[x] Separate rules wizard from 'new rule' action (using saved selection)
-    [x] switch on first screen for "use saved selection"
-    [x] default to on if one or both selections made
-    [x] clear on insert
-[x] Enable the inspector during the wizard
+Future
+------
 
 [ ] Working copy editing
 [ ] Table-based visual rules list viewer/editor instead of source (unless rules source too complex)
-[ ] Make preview show current path from content?
