@@ -33,10 +33,6 @@ Control panel
 [x] Incorporate fields from standard 'Theme' control panel under
     'Advanced settings' and hide that on install
 
-[ ] Make Zip uploader more forgiving
-    [ ] If no top level directory, create one
-    [ ] Use Zip file name as theme name
-
 File manager
 ------------
 

@@ -145,6 +145,16 @@ generated rules file will assume the main HTML mockup file is called
 Once you have successfully uploaded a theme Zip file, you will be taken to the
 file manager (see below), where you can editor or create theme files.
 
+*Hint:* If you get an error message like "The uploaded file does not contain
+a valid theme archive", this usually means that you have uploaded a Zip file
+that contains multiple files and folders, rather than a single top level
+folder with all the theme resources in it. This could happen if you compressed
+a theme or HTML mockup by adding its files and folders directly a Zip archive,
+rather than compressing the directory in which they were found. To fix this,
+simply unzip the archive on your computer into a new directory, move up a level,
+and compress this directory on its own into a new Zip file, which you can then
+upload.
+
 The file manager
 ~~~~~~~~~~~~~~~~
 
