@@ -115,12 +115,12 @@ New themes can be created in one of two ways:
 
 * Click the *New theme* button at the top of the *Themes* tab in the *Theming*
   control panel and enter a title and description in the form that appears.
-  A bare-bones theme will be created, and you will be taken to the file manager
-  (see below), where you can edit or create theme and rules files.
+  A bare-bones theme will be created, and you will be taken to the *Modify
+  theme* screen (see below), where you can edit or create theme and rules files.
 * Click the *Copy* button underneath any existing theme and enter a title and
   description in the form that appears. A new theme will be created as a copy
-  of the existing theme, and you will be taken to the file manager (see below),
-  where you can edit or create theme and rules files.
+  of the existing theme, and you will be taken to the *Modify theme* (see
+  below), where you can edit or create theme and rules files.
 
 Uploading an existing theme
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -138,12 +138,12 @@ You can also upload a Zip file of a static HTML mockup that does not contain a
 rules file, such as a design provided by a Plone-agnostic web designer.
 
 In this case, a basic ``rules.xml`` file will be added for you to start building
-up a theme from, either in the file manager or the rule mapper (see below). The
+up a theme from using the *Modify theme* screen (see below). The
 generated rules file will assume the main HTML mockup file is called
 ``index.html``, but you can change this in ``rules.xml``.
 
 Once you have successfully uploaded a theme Zip file, you will be taken to the
-file manager (see below), where you can editor or create theme files.
+*Modify theme* screen (see below), where you can edit or create theme files.
 
 *Hint:* If you get an error message like "The uploaded file does not contain
 a valid theme archive", this usually means that you have uploaded a Zip file
@@ -155,19 +155,24 @@ simply unzip the archive on your computer into a new directory, move up a level,
 and compress this directory on its own into a new Zip file, which you can then
 upload.
 
-The file manager
-~~~~~~~~~~~~~~~~
+The *Modify theme* screen
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can launch the file manager for a theme by clicking *Manage files*
-underneath a theme in the *Themes* tab of the *Theming* control panel. The file
-manager is also launched automatically when you create or upload a new theme.
+You can modify a theme by clicking *Modify theme* underneath a theme in the
+*Themes* tab of the *Theming* control panel. This screen is also launched
+automatically when you create or upload a new theme.
 
-*Note:* The file manager is only available for themes created or uploaded
-through the *Theming* control panel. Themes installed by third-party add-ons
-or distributed on the filesystem cannot be modified through Plone, although
-changes made on the filesystem will be reflected immediately if Zope is running
-in debug mode. To modify a filesystem theme, you can copy it to a new in-Plone
-theme and modifiy that.
+*Note:* Only themes created or uploaded through the *Theming* control panel can
+be modified through Plone. Themes installed by third-party add-ons or
+distributed on the filesystem cannot, although changes made on the filesystem
+will be reflected immediately if Zope is running in debug mode. To modify a
+filesystem theme, you can copy it to a new in-Plone theme and modifiy that. For
+filesystem themes, an *Inspect theme* button will be shown instead, allowing
+access to the theme mapper (see below), but not the file manager.
+
+The *Modify theme* screen consists of two panels: The file manager, shown at the
+top (not avaialble for filesystem themes) and the rule mapper, shown
+underneath.
 
 The file manager shows a file tree on the left and an editor on the right. Click
 on a file in the file tree to open an editor or preview: HTML, CSS, JavaScript
@@ -190,18 +195,11 @@ advanced features will not work.
 To save the file currently being edited, click the *Save file* button, or use the
 keyboard shortcut ``Ctrl+S`` (Windows/Linux) or ``Cmd+S`` (Mac).
 
-When viewing an HTML file, you can click *Show mockup* to preview it in a new
-tab or window.
-
 To rename or delete a file or folder, right-click on it in the file tree and
 select the appropriate action.
 
-The rule mapper
-~~~~~~~~~~~~~~~~
-
-The rule mapper provides an advanced interface for building up the rules of a
-Diazo theme. You can launch the rule mapper by clicking *Map rules* underneath
-any theme on the *Themes* tab of the *Theming* control panel.
+The theme mapper provides an advanced interface for building up the rules of a
+Diazo theme.
 
 *Note*: Unlike the file manager, the theme mapper is also available for
 filesystem themes, but in readonly mode: you can build rules and inspect the
@@ -209,23 +207,18 @@ HTML mockup and theme, but not change the ``rules.xml`` file. In this case,
 the *Insert* button of the rules wizard (see below) will not be available
 either.
 
-The theme mapper shows three panels (two in read-only mode):
+The theme mapper shows two panels:
 
 * The *HTML mockup*. If there are several HTML files in the theme, you can switch
   between them using the drop-down list underneath the *HTML mockup* panel.
 * The *Unthemed content*. This shows Plone without any theme applied.
-* The *Theme rules*. This is an editable view of the ``rules.xml`` file. Not
-  avaialble in read-only mode (for filesystem themes).
 
-Any panel can be maximised by clicking the arrows icon at the top right of each.
+Either panel can be maximised by clicking the arrows icon at the top right of
+either.
 
-The *HTML mockups* and *Unthemed content* panesl can be switch to source view,
+The *HTML mockups* and *Unthemed content* panels can be switch to source view,
 showing their underlying HTML markup, by clicking the tags icon at the top right
 of either.
-
-The rules file can be saved by clicking the *Save* button at the top right of
-the *Theme rules* panel, using the keyboard shortcut ``Ctrl+S`` (Windows/Linux)
-or ``Cmd+S`` (Mac).
 
 As you hover over elements in the *HTML mockup* or *Unthemed content* panels,
 you will see:
@@ -247,7 +240,7 @@ can be navigated, for example to get to a content page that requires specific
 theme rules, by disabling the inspector. Use the toggle switches at the bottom
 right of the relevant panel to enable or disable the selector.
 
-Click the *Build rule* button near the top of the theme mapper interface to
+Click the *Build rule* button near the top of the *Modify theme* screen to
 launch an interactive rule building wizard. You will be asked which type of
 rule to build, and then prompted to select the relevant elements in the *HTML
 mockup* and/or *Unthemed content* panels as required. By default, this will use
@@ -261,6 +254,10 @@ You can move it around or edit it further as you wish.
 
 Click *Preview theme* to preview the theme in a new tab or window. Don't forget
 to save the ``rules.xml`` file if you have made changes.
+
+*Note:* The advanced editor with syntax highlighting and the ability to insert
+rules from the *Build rule* wizard are not available in Microsoft Internet
+Explorer.
 
 Advanced settings
 ~~~~~~~~~~~~~~~~~
@@ -360,8 +357,8 @@ starting from scratch with a near-empty theme.
 
 See the instructions on using the control panel above for more details.
 
-Once a theme has been created, you can modify it through the in-Plone theme
-file manager or rule mapper. See above for more details.
+Once a theme has been created, you can modify it through the *Theming*
+control panel. See above for more details.
 
 3. As a zip file
 
