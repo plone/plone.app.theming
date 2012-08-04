@@ -55,9 +55,13 @@ Mapper
 [x] Make preview action open new window/tab
 [ ] Make preview show current path from content?
 
-[ ] Test with no theme files
-[ ] Test with no rules file
-[ ] Test with renamed rules file
+[ ] Reload theme and discover new files when editor changed
+    [ ] Can tie this to the loaded event in the file manager
+        (will also catch new files)
+    [ ] Refresh on save
+
+[x] Hide 'insert' button in rule builder when no theme file
+[ ] Recover gracefully when no theme file
 
 
 [x] Show wizard steps more clearly (styling)

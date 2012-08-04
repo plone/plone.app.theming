@@ -289,7 +289,12 @@
 
             // The insert wizard doesn't work well in IE where we use plain
             // textareas, but we offer a copy-to-clipboard button instead
-            if($.browser.msie) {
+
+            var haveRules = (FileManager.getNodeByPath("/" + RULE_FILENAME) !== null);
+            if(!haveRules) {
+                $("#new-rule-step-2 .insert").hide();
+                $("#new-rule-step-2 .copy").hide();
+            } else if($.browser.msie) {
                 $("#new-rule-step-2 .insert").hide();
                 $("#new-rule-step-2 .copy").click(function() {
                     window.clipboardData.setData('Text', $("#new-rule-output").val());
@@ -308,8 +313,8 @@
                     FileManager.openFile("/" + RULE_FILENAME, false);
                     var rulesEditor = FileManager.editors["/" + RULE_FILENAME];
 
-                    // XXX: There seems to be a race condition here where
-                    // rulesEditor could be undefined
+                    // No IE support for this anyway, so we can use the
+                    // underlying editor
                     var aceEditor = rulesEditor.ace;
 
                     function findStartTag(backwards) {
