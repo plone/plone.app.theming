@@ -4,6 +4,9 @@ plone.app.theming to-do
 General
 -------
 
+[ ] Update userguide.rst to describe new inspector behaviour
+[ ] Warn if uploaded theme without rules.xml where there is no index.html
+
 [ ] Improve test coverage
     [ ] Create
     [ ] Copy
@@ -12,12 +15,11 @@ General
     [ ] Disable
     [ ] Advanced save
 
-[x] Kill HappyTalk (intro text etc.)
-
 Mapper
 ------
 
-[ ] Add "preview file" button (open currently edited file in a new window)
+[x] Add "preview file" button (open currently edited file in a new window)
+
 [ ] Make wizard steps all use pop-ups instead of mixture of pop-ups and banners?
      1) Pick rule type (pop-up with form)
      2) "Select an element in the theme" (pop-up, ok / cancel buttons)

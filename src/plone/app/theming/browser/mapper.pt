@@ -460,26 +460,26 @@
             (function() {
 
                 if(FileManager.enabled) {
+
+                    $("#preview-file").click(function() {
+                        var selected = FileManager.getCurrentFilePath();
+                        if(selected != undefined) {
+                            // Use path as window name so that we get at most one window per file
+                            window.open(THEME_BASE_URL + selected, selected);
+                        }
+                    });
+
+                    $("#filemanager").bind('resourceeditor.selected', function(path) {
+                        $("#preview-file").removeAttr('disabled');
+                    });
+
+                    $("#filemanager").bind('resourceeditor.closed', function() {
+                        $("#preview-file").attr('disabled', 'disabled');
+                    });
+
                     FileManager.openFile("/" + RULE_FILENAME);
+
                 }
-
-                $("#rules-editor .fullscreen").click(function(event) {
-                    event.preventDefault();
-
-                    if(!$("#theme-content-row").is(':visible')) {
-                        $("#theme-content-row").show();
-                        $("#page-intro").show();
-                        $("#editor").css('height', WINDOWED_HEIGHT);
-                        // rulesEditor.resize();
-                    } else {
-                        $("#theme-content-row").hide();
-                        $("#page-intro").hide();
-                        $("#editor").css('height', FULLSCREEN_HEIGHT);
-                        // rulesEditor.resize();
-                    }
-
-                    return false;
-                });
             })();
 
             // Theme panel
@@ -821,6 +821,17 @@
                                 class="standalone"
                                 i18n:translate="">Help</button>
                         </form>
+                    </span>
+
+                    <span id="secondary-context-buttons" metal:fill-slot="extraContextButtons">
+                        <button
+                            id="preview-file"
+                            name="preview-file"
+                            type="button"
+                            disabled="disabled"
+                            title="Preview the most recently saved version of the currently open file"
+                            i18n:translate=""
+                            i18n:attributes="title">Preview file</button>
                     </span>
 
                 </metal:block>
