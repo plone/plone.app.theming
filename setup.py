@@ -28,6 +28,7 @@ setup(name='plone.app.theming',
       install_requires=[
           'setuptools',
           'diazo',
+          'docutils',
           'lxml>=2.2.4',
           'plone.app.registry>=1.0a2',
           'plone.subrequest',
