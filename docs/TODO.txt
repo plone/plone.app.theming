@@ -20,7 +20,7 @@ Mapper
 
 [x] Add "preview file" button (open currently edited file in a new window)
 
-[ ] Make wizard steps all use pop-ups instead of mixture of pop-ups and banners?
+[x] Make wizard steps all use pop-ups instead of mixture of pop-ups and banners?
      1) Pick rule type (pop-up with form)
      2) "Select an element in the theme" (pop-up, ok / cancel buttons)
      3) Expose theme panel, engage inspector, no way to cancel this without selecting something

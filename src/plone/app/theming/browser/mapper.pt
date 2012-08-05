@@ -233,62 +233,42 @@
 
             var haveScrolled = false;
             ruleBuilder = new RuleBuilder(function(ruleBuilder) {
-                $(".wizard-text").hide();
-                $.mask.close();
+                $(".rule-wizard-step").hide();
 
                 if(ruleBuilder.currentScope == 'theme') {
-                    if(ruleBuilderOverlay.isOpened()) {
-                        ruleBuilderOverlay.close();
-                    }
-
                     if(themeFrameHighlighter.saved != null && $("#new-rule-reuse-selectors").is(":checked")) {
                         // Use saved rule
                         ruleBuilder.select(themeFrameHighlighter.saved);
                         ruleBuilder.next();
+
+                        ruleBuilderOverlay.close();
                     } else {
                         // Let the frame highlighter perform a selection
-
-                        $("#theme-inspector-on").click();
-                        $("#new-rule-text-select-theme").show();
-                        $("#theme-panel, .wizard-text").expose();
-
-                        if(!$("#theme-content-row").is(":visible")) {
-                            $("#mapper-toggle-show").click();
-                        } else if (!haveScrolled) {
-                            scrollTo("theme-content-row");
-                            haveScrolled = true;
+                        $("#new-rule-select-theme").show();
+                        if(!ruleBuilderOverlay.isOpened()) {
+                            ruleBuilderOverlay.load();
                         }
-
                     }
 
                 } else if(ruleBuilder.currentScope == 'content') {
-                    if(ruleBuilderOverlay.isOpened()) {
-                        ruleBuilderOverlay.close();
-                    }
-
                     if(contentFrameHighlighter.saved != null && $("#new-rule-reuse-selectors").is(":checked")) {
                         // Use saved rule
                         ruleBuilder.select(contentFrameHighlighter.saved);
                         ruleBuilder.next();
+
+                        ruleBuilderOverlay.close();
                     } else {
                         // Let the frame highlighter perform a selection
-
-                        $("#content-inspector-on").click();
-                        $("#new-rule-text-select-content").show();
-                        $("#content-panel, .wizard-text").expose();
-
-                        if(!$("#theme-content-row").is(":visible")) {
-                            $("#mapper-toggle-show").click();
-                        } else if (!haveScrolled) {
-                            scrollTo("theme-content-row");
-                            haveScrolled = true;
+                        $("#new-rule-select-content").show();
+                        if(!ruleBuilderOverlay.isOpened()) {
+                            ruleBuilderOverlay.load();
                         }
                     }
 
                 } else if(ruleBuilder.ruleType != null && ruleBuilder.currentScope == null) {
                     haveScrolled = false;
 
-                    $("#new-rule-step-1").hide();
+                    $(".rule-wizard-step").hide();
                     $("#new-rule-step-2").show();
                     updateRule(ruleBuilder);
 
@@ -310,8 +290,8 @@
                         ruleBuilderOverlay.close();
                     }
 
+                    $(".rule-wizard-step").hide();
                     $("#new-rule-step-1").show();
-                    $("#new-rule-step-2").hide();
                 }
             });
 
@@ -336,6 +316,34 @@
             $("#new-rule-step-1 .next").click(function() {
                 var ruleType = $("input[name='new-rule-type']:checked").val();
                 ruleBuilder.start(ruleType);
+            });
+
+            $("#new-rule-select-theme .next").click(function() {
+                $("#theme-inspector-on").click();
+                $("#theme-panel").expose();
+
+                if(!$("#theme-content-row").is(":visible")) {
+                    $("#mapper-toggle-show").click();
+                } else if (!haveScrolled) {
+                    scrollTo("theme-content-row");
+                    haveScrolled = true;
+                }
+
+                ruleBuilderOverlay.close();
+            });
+
+            $("#new-rule-select-content .next").click(function() {
+                $("#content-inspector-on").click();
+                $("#content-panel").expose();
+
+                if(!$("#theme-content-row").is(":visible")) {
+                    $("#mapper-toggle-show").click();
+                } else if (!haveScrolled) {
+                    scrollTo("theme-content-row");
+                    haveScrolled = true;
+                }
+
+                ruleBuilderOverlay.close();
             });
 
             // The insert wizard doesn't work well in IE where we use plain
@@ -839,21 +847,6 @@
             </div>
         </div>
 
-        <dl class="portalMessage info wizard-text" id="new-rule-text-select-theme">
-                <dt i18n:translate="">New rule wizard</dt>
-                <dd i18n:translate="theming_mapper_select_theme">
-                    Please select an element in the <strong>HTML mockup</strong> panel.
-                    <button class="wizard-cancel allowMultiSubmit">Quit wizard</button>
-                </dd>
-            </dl>
-            <dl class="portalMessage info wizard-text" id="new-rule-text-select-content">
-                <dt i18n:translate="">New rule wizard</dt>
-                <dd i18n:translate="theming_mapper_select_content">
-                    Please select an element in the <strong>Unthemed content</strong> panel.
-                    <button class="wizard-cancel allowMultiSubmit">Quit wizard</button>
-                </dd>
-            </dl>
-
         <div id="theme-content-row" class="row splitview">
             <div id="theme-panel" class="mapper-box cell width-1:2 position-0">
 
@@ -957,7 +950,7 @@
                 <div class="new-rule">
                     <h1 class="documentFirstHeading" i18n:translate="theming_mapper_heading_newrule">Build rule</h1>
 
-                    <div id="new-rule-step-1">
+                    <div id="new-rule-step-1" class="rule-wizard-step">
                         <div class="documentDescription" i18n:translate="theming_mapper_wizard_step1">
                             Choose the operation you would like to perform
                         </div>
@@ -1014,7 +1007,25 @@
                         </div>
 
                     </div>
-                    <div id="new-rule-step-2" style="display:none">
+                    <div id="new-rule-select-theme" class="rule-wizard-step" style="display:none">
+                        <div class="documentDescription">
+                            Please select an element in the <strong>HTML mockup</strong> panel.
+                        </div>
+                        <div class="formControls new-rule-actions">
+                            <input type="submit" class="allowMultiSubmit context next" i18n:attributes="value" value="Ok" />
+                            <input type="submit" class="allowMultiSubmit standalone wizard-cancel" i18n:attributes="value" value="Cancel" />
+                        </div>
+                    </div>
+                    <div id="new-rule-select-content" class="rule-wizard-step" style="display:none">
+                        <div class="documentDescription">
+                            Please select an element in the <strong>Unthemed content</strong> panel.
+                        </div>
+                        <div class="formControls new-rule-actions">
+                            <input type="submit" class="allowMultiSubmit context next" i18n:attributes="value" value="Ok" />
+                            <input type="submit" class="allowMultiSubmit standalone wizard-cancel" i18n:attributes="value" value="Cancel" />
+                        </div>
+                    </div>
+                    <div id="new-rule-step-2" class="rule-wizard-step" style="display:none">
                         <div class="documentDescription" i18n:translate="theming_mapper_wizard_step2">
                             The rule can be found below. Use the checkboxes
                             to further refine it.

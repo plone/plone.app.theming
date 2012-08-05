@@ -152,14 +152,6 @@
     width: auto;
 }
 
- .wizard-text {
-     display: none;
-}
-
-.wizard-cancel {
-    float: right;
-}
-
 #new-rule-type-panel {
     white-space: nowrap;
 }
