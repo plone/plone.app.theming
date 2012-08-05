@@ -15,6 +15,7 @@ from plone.app.theming.interfaces import _
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.interfaces import RULE_FILENAME
+from plone.app.theming.interfaces import DEFAULT_THEME_FILENAME
 from plone.app.theming.interfaces import TEMPLATE_THEME
 
 from plone.app.theming.utils import extractThemeInfo
@@ -168,8 +169,7 @@ class ThemingControlpanel(BrowserView):
                 self._setup()
                 return True
             else:
-                IStatusMessage(self.request).add(_(u"There were errors"),
-                                                 'error')
+                IStatusMessage(self.request).add(_(u"There were errors"), 'error')
                 self.redirectToFieldset('advanced')
                 return False
 
@@ -232,6 +232,12 @@ class ThemingControlpanel(BrowserView):
                             templateThemeDirectory = queryResourceDirectory(THEME_RESOURCE_NAME, TEMPLATE_THEME)
                             themeDirectory.writeFile(RULE_FILENAME, templateThemeDirectory.readFile(RULE_FILENAME))
 
+                            if not themeDirectory.isFile(DEFAULT_THEME_FILENAME):
+                                IStatusMessage(self.request).add(
+                                        _(u"A boilerplate rules.xml was added to your theme, but no index.html file found. Update rules.xml to reference the current theme file."),
+                                        'warning',
+                                    )
+
                     plugins = getPlugins()
                     pluginSettings = getPluginSettings(themeDirectory, plugins)
                     if pluginSettings is not None:
@@ -245,9 +251,12 @@ class ThemingControlpanel(BrowserView):
                     self.settings.enabled = True
 
             if not self.errors:
-                IStatusMessage(self.request).add(_(u"Theme uploaded"))
-                self._setup()
-                return True
+                portalUrl = getToolByName(self.context, 'portal_url')()
+                self.redirect(
+                    "%s/++theme++%s/@@theming-controlpanel-mapper" % (
+                        portalUrl, themeData.__name__,)
+                    )
+                return False
             else:
                 IStatusMessage(self.request).add(
                         _(u"There were errors"), "error"
@@ -281,7 +290,6 @@ class ThemingControlpanel(BrowserView):
                     applyTheme(themeData)
                     self.settings.enabled = True
 
-                IStatusMessage(self.request).add(_(u"Theme created"))
                 portalUrl = getToolByName(self.context, 'portal_url')()
                 self.redirect(
                     "%s/++theme++%s/@@theming-controlpanel-mapper" % (

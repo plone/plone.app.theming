@@ -5,7 +5,7 @@ General
 -------
 
 [ ] Update userguide.rst to describe new inspector behaviour
-[ ] Warn if uploaded theme without rules.xml where there is no index.html
+[x] Warn if uploaded theme without rules.xml where there is no index.html
 
 [ ] Improve test coverage
     [ ] Create
