@@ -139,14 +139,26 @@
 
             // Mapper toggle
 
-            $("#mapper-toggle").click(function() {
-                if($("#theme-content-row").is(":visible")) {
-                    $("#theme-content-row").hide();
-                } else {
-                    $("#theme-content-row").show();
-                    document.getElementById("theme-content-row").scrollIntoView();
-                }
+            function scrollTo(id) {
+                $('html,body').animate({scrollTop: $("#"+id).offset().top}, 600);
+            }
+
+            $("#mapper-toggle-show").click(function() {
+                $("#theme-content-row").show();
+                $("#mapper-toggle-show").hide();
+                $("#mapper-toggle-hide").show();
+                scrollTo("theme-content-row");
             });
+
+            $("#mapper-toggle-hide").click(function() {
+                $("#theme-content-row").hide();
+                $("#mapper-toggle-show").show();
+                $("#mapper-toggle-hide").hide();
+            });
+
+            if($("#rules-results-row").is(":visible")) {
+                $("#mapper-toggle-hide").click();
+            }
 
             // Rule builder and highlighters
 
@@ -219,6 +231,7 @@
                 }
             );
 
+            var haveScrolled = false;
             ruleBuilder = new RuleBuilder(function(ruleBuilder) {
                 $(".wizard-text").hide();
                 $.mask.close();
@@ -240,9 +253,12 @@
                         $("#theme-panel, .wizard-text").expose();
 
                         if(!$("#theme-content-row").is(":visible")) {
-                            $("#theme-content-row").show();
+                            $("#mapper-toggle-show").click();
+                        } else if (!haveScrolled) {
+                            scrollTo("theme-content-row");
+                            haveScrolled = true;
                         }
-                        document.getElementById("theme-content-row").scrollIntoView();
+
                     }
 
                 } else if(ruleBuilder.currentScope == 'content') {
@@ -262,12 +278,16 @@
                         $("#content-panel, .wizard-text").expose();
 
                         if(!$("#theme-content-row").is(":visible")) {
-                            $("#theme-content-row").show();
+                            $("#mapper-toggle-show").click();
+                        } else if (!haveScrolled) {
+                            scrollTo("theme-content-row");
+                            haveScrolled = true;
                         }
-                        document.getElementById("theme-content-row").scrollIntoView();
                     }
 
                 } else if(ruleBuilder.ruleType != null && ruleBuilder.currentScope == null) {
+                    haveScrolled = false;
+
                     $("#new-rule-step-1").hide();
                     $("#new-rule-step-2").show();
                     updateRule(ruleBuilder);
@@ -284,6 +304,7 @@
                     }
 
                 } else { // end
+                    haveScrolled = false;
 
                     if(ruleBuilderOverlay.isOpened()) {
                         ruleBuilderOverlay.close();
@@ -410,7 +431,7 @@
 
                     ruleBuilderOverlay.close();
 
-                    document.getElementById("page-intro").scrollIntoView();
+                    scrollTo("page-intro");
 
                     // Clear the selection now that we're done with it
                     contentFrameHighlighter.save(null);
@@ -775,13 +796,21 @@
                             >Build rule</button>
 
                         <button
-                            id="mapper-toggle"
-                            name="form.button.MapperToggle"
+                            id="mapper-toggle-show"
+                            name="form.button.MapperToggleShow"
                             class="allowMultiSubmit"
-                            title="Show or hide the HTML mockup and content inspector panels"
+                            title="Show the HTML mockup and content inspector panels"
                             i18n:attributes="title"
                             i18n:translate=""
-                            >Toggle inspector</button>
+                            >Show inspector</button>
+                        <button
+                            id="mapper-toggle-hide"
+                            name="form.button.MapperToggleHide"
+                            class="allowMultiSubmit"
+                            title="Hide the HTML mockup and content inspector panels"
+                            i18n:attributes="title"
+                            i18n:translate=""
+                            >Hide inspector</button>
 
                         <button id="preview" name="preview" type="button" i18n:translate="filemanager_preview_theme"
                             title="Open a preview of the theme in a new window. Forms will be disabled in the preview." i18n:attributes="title [filemanager_preview_theme_help]"
@@ -793,6 +822,7 @@
                                 i18n:translate="">Help</button>
                         </form>
                     </span>
+
                 </metal:block>
 
             </div>
@@ -813,7 +843,7 @@
                 </dd>
             </dl>
 
-        <div id="theme-content-row" class="row splitview" style="display:none">
+        <div id="theme-content-row" class="row splitview">
             <div id="theme-panel" class="mapper-box cell width-1:2 position-0">
 
                 <div class="panel-toolbar">

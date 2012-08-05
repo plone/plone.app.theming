@@ -17,6 +17,7 @@ General
 Mapper
 ------
 
+[ ] Add "preview file" button (open currently edited file in a new window)
 [ ] Make wizard steps all use pop-ups instead of mixture of pop-ups and banners?
      1) Pick rule type (pop-up with form)
      2) "Select an element in the theme" (pop-up, ok / cancel buttons)
@@ -26,13 +27,15 @@ Mapper
      6) Results (pop-up with insert/close buttons)
      7) "Now check the results and save if you're happy" (pop-up, ok button)
 
-[x] Hide bottom row by default, but show when launching wizard or on demand?
-
 [ ] Reload theme and discover new files when editor changed
     [ ] Can tie this to the loaded event in the file manager
         (this will also catch new files)
     [ ] Refresh on save
     [ ] Also need to deal with file deletions
+    [ ] Explicit refresh
+
+
+[x] Hide bottom row by default, but show when launching wizard or on demand?
 
 Future
 ------

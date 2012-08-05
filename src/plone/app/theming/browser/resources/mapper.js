@@ -65,7 +65,7 @@ RuleBuilder.prototype.select = function(element) {
  */
 RuleBuilder.prototype.next = function() {
 
-        if(this.subtype != null) {
+        if(this.subtype !== null) {
             // Drop rules have only one scope
             this.currentScope = null;
         } else {
