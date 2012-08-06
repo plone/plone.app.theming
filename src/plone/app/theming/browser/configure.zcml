@@ -30,14 +30,6 @@
         />
 
     <browser:page
-        name="theming-controlpanel-filemanager"
-        for="plone.resource.interfaces.IResourceDirectory"
-        class=".filemanager.FileManager"
-        template="filemanager.pt"
-        permission="cmf.ManagePortal"
-        />
-
-    <browser:page
         name="theming-controlpanel-mapper"
         for="plone.resource.interfaces.IResourceDirectory"
         class=".mapper.ThemeMapper"
