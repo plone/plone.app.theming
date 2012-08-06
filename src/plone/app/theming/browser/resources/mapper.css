@@ -146,6 +146,21 @@
     background-image: url('./preview.png');
 }
 
+.refresh {
+    vertical-align: top;
+    display: inline-block;
+    line-height: 12px;
+    padding: 0 0 0 12px;
+    margin: 4px 0 0 5px;
+    background-image: url('./refresh.png');
+    background-repeat: no-repeat;
+    text-decoration: none;
+    border-bottom: none !important;
+    color: #333 !important;
+    font-size: 90%;
+    content: none;
+}
+
 /* Wizard */
 
 #new-rule-wizard {

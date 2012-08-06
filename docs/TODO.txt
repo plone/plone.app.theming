@@ -35,7 +35,7 @@ Mapper
 
 [x] Handle file and folder add/remove/rename
 [ ] Handle file move
-[ ] Reload action for mockup
+[x] Reload action for mockup
 
 [x] Hide bottom row by default, but show when launching wizard or on demand?
 

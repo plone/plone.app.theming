@@ -606,6 +606,12 @@
                 $("#theme-frame").show();
                 $("#theme-source").hide();
 
+                $("#theme-panel .refresh").click(function(event) {
+                    event.preventDefault();
+                    reloadFrame();
+                    return false;
+                });
+
                 $("#theme-panel .sourceToggle").click(function() {
                     if($("#theme-frame").is(":visible")) {
                         $("#theme-frame").hide();
@@ -930,6 +936,7 @@
             <div id="theme-panel" class="mapper-box cell width-1:2 position-0">
 
                 <div class="panel-toolbar">
+                    <a class="refresh" href="#" title="Refresh mockup. You can also right-click on the mockup to use your browser's native refresh." i18n:attributes="title">&nbsp;</a>
                     <a class="sourceToggle" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
                     <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
                 </div>
