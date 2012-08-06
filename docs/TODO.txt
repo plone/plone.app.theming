@@ -17,6 +17,8 @@ General
     [ ] Disable
     [ ] Advanced save
 
+[ ] Remove file manager view
+
 Mapper
 ------
 
@@ -33,9 +35,16 @@ Mapper
      6) Results (pop-up with insert/close buttons)
      7) "Now check the results and save if you're happy" (pop-up, ok button)
 
-[x] Handle file and folder add/remove/rename
-[ ] Handle file move
 [x] Reload action for mockup
+
+[x] Handle file and folder add/remove
+[ ] Handle file rename and move
+    - on rename of a file inside a folder, leading slash is lost
+        -> bug in rename event trigger? should send path with leading slash
+    - move of file after renaming parent folder fails
+        -> bug in handling of rename in file tree?
+        -> probably fails to recurisvely update child nodes
+        -> similar problem likely with folder drag-and-drop
 
 [x] Hide bottom row by default, but show when launching wizard or on demand?
 

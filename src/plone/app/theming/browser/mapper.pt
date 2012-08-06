@@ -487,10 +487,15 @@
                         }
                     });
 
+                    function getFileSelectorValue(path) {
+                        if(path[0] == '/') path = path.slice(1);
+                        return THEME_BASE_PATH_ENCODED + '/' + path;
+                    }
+
                     function addPathToFileSelector(path) {
                         if(isHTMLFile(path) && $("#file-selector option[data-path='" + path + "']").length == 0) {
                             // Add new node
-                            var selectedValue = THEME_BASE_PATH_ENCODED + path;
+                            var selectedValue = getFileSelectorValue(path);
                             $("#file-selector").append(
                                 "<option value='" + selectedValue + "' " +
                                         "data-path='" + path + "'" +
@@ -518,7 +523,7 @@
                         }
 
                         // Did we just delete the selected one? Select the first one
-                        if(changed && selected == (THEME_BASE_PATH_ENCODED + path)) {
+                        if(changed && selected == getFileSelectorValue(path)) {
                             if($("#file-selector option").length > 0) {
                                 $("#file-selector").val(
                                     $("#file-selector option:first-child").attr('value')
@@ -544,7 +549,7 @@
                                 $("#file-selector option[data-path='" + oldPath + "']")
                                     .attr('data-path', newPath)
                                     .attr('data-extension', getExtension(newPath))
-                                    .attr('value', THEME_BASE_PATH_ENCODED + newPath)
+                                    .attr('value', getFileSelectorValue(newPath))
                                     .html(newPath);
                             } else { // .html -> something else
                                 removePathFromFileSelector(oldPath);
@@ -557,7 +562,7 @@
                                 var updatedPath = newPath + currentPath.slice(oldPath.length);
                                 $(this)
                                     .attr('data-path', updatedPath)
-                                    .attr('value', THEME_BASE_PATH_ENCODED + updatedPath)
+                                    .attr('value', getFileSelectorValue(updatedPath))
                                     .html(updatedPath);
                             });
                         }
