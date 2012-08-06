@@ -4,7 +4,7 @@ plone.app.theming to-do
 General
 -------
 
-[ ] Update userguide.rst to describe new inspector behaviour
+[x] Update userguide.rst to describe new inspector behaviour
 [x] Warn if uploaded theme without rules.xml where there is no index.html
 
 [x] Diagnose 'roman' module problem

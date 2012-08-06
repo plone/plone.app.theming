@@ -166,18 +166,17 @@ automatically when you create or upload a new theme.
 be modified through Plone. Themes installed by third-party add-ons or
 distributed on the filesystem cannot, although changes made on the filesystem
 will be reflected immediately if Zope is running in debug mode. To modify a
-filesystem theme, you can copy it to a new in-Plone theme and modifiy that. For
-filesystem themes, an *Inspect theme* button will be shown instead, allowing
-access to the theme mapper (see below), but not the file manager.
+filesystem theme, you can copy it to a new in-Plone theme by clicking the *Copy*
+button underneath the theme in the *Theming* control panel.
 
-The *Modify theme* screen consists of two panels: The file manager, shown at the
-top (not avaialble for filesystem themes) and the rule mapper, shown
-underneath.
+The *Modify theme* screen initially shows a file manager, with a file tree on
+the left and an editor on the right. Click on a file in the file tree to open an
+editor or preview: HTML, CSS, JavaScript and other text files can be edited
+directly through the editor. Other files (e.g. images) will be rendered as a
+preview.
 
-The file manager shows a file tree on the left and an editor on the right. Click
-on a file in the file tree to open an editor or preview: HTML, CSS, JavaScript
-and other text files can be edited directly through the editor. Other files
-(e.g. images) will be rendered as a preview.
+*Note:* The advanced editor with syntax highlighting is not available in
+Microsoft Internet Explorer.
 
 Click *New folder* to create a new folder. You can also right-click on a folder
 in the file tree to bring up this action.
@@ -192,22 +191,22 @@ Click *Preview theme* to preview the theme as it will be applied with the mockup
 and rules as currently saved. The preview is navigable, but forms and certain
 advanced features will not work.
 
-To save the file currently being edited, click the *Save file* button, or use the
-keyboard shortcut ``Ctrl+S`` (Windows/Linux) or ``Cmd+S`` (Mac).
+To save the file currently being edited, click the *Save file* button, or use
+the keyboard shortcut ``Ctrl+S`` (Windows/Linux) or ``Cmd+S`` (Mac).
 
 To rename or delete a file or folder, right-click on it in the file tree and
 select the appropriate action.
 
-The theme mapper provides an advanced interface for building up the rules of a
-Diazo theme.
+The theme inspector
+~~~~~~~~~~~~~~~~~~~
 
-*Note*: Unlike the file manager, the theme mapper is also available for
-filesystem themes, but in readonly mode: you can build rules and inspect the
-HTML mockup and theme, but not change the ``rules.xml`` file. In this case,
-the *Insert* button of the rules wizard (see below) will not be available
-either.
+The theme inspector provides an advanced interface for discovering and building
+up the rules of a Diazo theme. It can be launched by clicking the *Show
+inspector* button on the *Modify theme* screen for in-Plone themes, or by
+clicking the *Inspect theme* button underneath a filesystem theme on the
+*Themes* tab of the *Theming* control panel.
 
-The theme mapper shows two panels:
+The theme inspector consists of two panels:
 
 * The *HTML mockup*. If there are several HTML files in the theme, you can switch
   between them using the drop-down list underneath the *HTML mockup* panel.
@@ -240,12 +239,15 @@ can be navigated, for example to get to a content page that requires specific
 theme rules, by disabling the inspector. Use the toggle switches at the bottom
 right of the relevant panel to enable or disable the selector.
 
-Click the *Build rule* button near the top of the *Modify theme* screen to
-launch an interactive rule building wizard. You will be asked which type of
-rule to build, and then prompted to select the relevant elements in the *HTML
-mockup* and/or *Unthemed content* panels as required. By default, this will use
-any saved selections, unless you untick the *Use selected elements* box on the
-first page if the wizard.
+The rule builder
+~~~~~~~~~~~~~~~~
+
+Click the *Build rule* button near the top of the *Modify theme* or *Inspect
+theme* screen to launch an interactive rule building wizard. You will be asked
+which type of rule to build, and then prompted to select the relevant elements
+in the *HTML mockup* and/or *Unthemed content* panels as required. By default,
+this will use any saved selections, unless you untick the *Use selected
+elements* box on the first page if the wizard.
 
 Once the wizard completes, you will be shown the generated rule. You can edit
 this if you wish. If you click *Insert*, the newly generated rule will be
@@ -255,9 +257,13 @@ You can move it around or edit it further as you wish.
 Click *Preview theme* to preview the theme in a new tab or window. Don't forget
 to save the ``rules.xml`` file if you have made changes.
 
-*Note:* The advanced editor with syntax highlighting and the ability to insert
-rules from the *Build rule* wizard are not available in Microsoft Internet
-Explorer.
+*Note*: In readonly mode, you can build rules and inspect the HTML mockup and
+theme, but not change the ``rules.xml`` file. In this case, the *Insert* button
+of the rule builder (see below) will not be available either.
+
+*Note:* The ability to insert rules from the *Build rule* wizard are not
+available in Microsoft Internet Explorer, although you will be given the option
+to copy the rule to the clipboard when using this browser.
 
 Advanced settings
 ~~~~~~~~~~~~~~~~~
