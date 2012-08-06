@@ -78,9 +78,10 @@ class ThemeMapper(BrowserView):
 
         self.rulesFileName = RULE_FILENAME
 
-        self.jsVariables = "var CURRENT_SELECTION='%s'; var THEME_BASE_URL='%s'; var EDITABLE=%s; var RULE_FILENAME='%s';" % (
+        self.jsVariables = "var CURRENT_SELECTION='%s'; var THEME_BASE_URL='%s'; var THEME_BASE_PATH_ENCODED='%s'; var EDITABLE=%s; var RULE_FILENAME='%s';" % (
                 self.request.get('file-selector') or '',
                 self.themeBaseUrl,
+                self.themeBasePathEncoded,
                 str(self.editable).lower(),
                 self.rulesFileName
             )
@@ -137,7 +138,7 @@ class ThemeMapper(BrowserView):
                 ext = ext[1:].lower()
                 if ext in THEME_EXTENSIONS:
                     files.append({
-                        'path': path,
+                        'path': '/' + path,
                         'filename': f,
                         'extension': ext,
                     })

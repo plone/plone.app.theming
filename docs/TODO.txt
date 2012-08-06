@@ -33,13 +33,9 @@ Mapper
      6) Results (pop-up with insert/close buttons)
      7) "Now check the results and save if you're happy" (pop-up, ok button)
 
-[ ] Reload theme and discover new files when editor changed
-    [ ] Can tie this to the loaded event in the file manager
-        (this will also catch new files)
-    [ ] Refresh on save
-    [ ] Also need to deal with file deletions
-    [ ] Explicit refresh
-
+[x] Handle file and folder add/remove/rename
+[ ] Handle file move
+[ ] Reload action for mockup
 
 [x] Hide bottom row by default, but show when launching wizard or on demand?
 

@@ -104,7 +104,12 @@
             function getExtension(path) {
                 var m = path.match(/.(\w+)$/);
                 if(m == null) return null;
-                return m[1];
+                return m[1].toLowerCase();
+            }
+
+            function isHTMLFile(path) {
+                var extension = getExtension(path);
+                return extension == 'html' || extension == 'htm';
             }
 
             // See http://stackoverflow.com/questions/1694295/jquery-background-color-animate-not-working/5718151
@@ -482,14 +487,87 @@
                         }
                     });
 
-                    $("#filemanager").bind('resourceeditor.selected', function(path) {
+                    function addPathToFileSelector(path) {
+                        if(isHTMLFile(path) && $("#file-selector option[data-path='" + path + "']").length == 0) {
+                            // Add new node
+                            var selectedValue = THEME_BASE_PATH_ENCODED + path;
+                            $("#file-selector").append(
+                                "<option value='" + selectedValue + "' " +
+                                        "data-path='" + path + "'" +
+                                        "data-extension='" + getExtension(path) + "'>" +
+                                    path +
+                                "<" + "/option>"
+                            );
+
+                            if($("#file-selector option").length == 1) {
+                                // We just added the only one; select it
+                                $("#file-selector").val(selectedValue).change();
+                            }
+                        }
+                    }
+
+                    function removePathFromFileSelector(path) {
+                        var changed = false;
+                        var selected = $("#file-selector").val();
+                        if(isHTMLFile(path)) {
+                            $("#file-selector option[data-path='" + path + "']").remove();
+                            changed = true;
+                        } else if(FileManager.getNodeByPath(path).data.isFolder) {
+                            $("#file-selector option[data-path^='" + path + "/']").remove();
+                            changed = true;
+                        }
+
+                        // Did we just delete the selected one? Select the first one
+                        if(changed && selected == (THEME_BASE_PATH_ENCODED + path)) {
+                            if($("#file-selector option").length > 0) {
+                                $("#file-selector").val(
+                                    $("#file-selector option:first-child").attr('value')
+                                ).change();
+                            } else {
+                                $("#theme-frame").attr('src', '');
+                            }
+                        }
+                    }
+
+                    $("#filemanager").bind('resourceeditor.selected', function(event, path) {
                         $("#preview-file").removeAttr('disabled');
+                        addPathToFileSelector(path);
+                    });
+
+                    $("#filemanager").bind('resourceeditor.deleted', function(event, path) {
+                        removePathFromFileSelector(path);
+                    });
+
+                    $("#filemanager").bind('resourceeditor.renamed', function(event, oldPath, newPath) {
+                        if(isHTMLFile(oldPath)) {
+                            if(isHTMLFile(newPath)) { // .html -> .html
+                                $("#file-selector option[data-path='" + oldPath + "']")
+                                    .attr('data-path', newPath)
+                                    .attr('data-extension', getExtension(newPath))
+                                    .attr('value', THEME_BASE_PATH_ENCODED + newPath)
+                                    .html(newPath);
+                            } else { // .html -> something else
+                                removePathFromFileSelector(oldPath);
+                            }
+                        } else if(isHTMLFile(newPath)) { // something else -> .html
+                            addPathToFileSelector(newPath);
+                        } else if(FileManager.getNodeByPath(oldPath).data.isFolder) { // folder
+                            $("#file-selector option[data-path^='" + oldPath + "/']").each(function() {
+                                var currentPath = $(this).attr('data-path');
+                                var updatedPath = newPath + currentPath.slice(oldPath.length);
+                                $(this)
+                                    .attr('data-path', updatedPath)
+                                    .attr('value', THEME_BASE_PATH_ENCODED + updatedPath)
+                                    .html(updatedPath);
+                            });
+                        }
                     });
 
                     $("#filemanager").bind('resourceeditor.closed', function() {
                         $("#preview-file").attr('disabled', 'disabled');
                     });
 
+                    // Start with rules.xml open
                     FileManager.openFile("/" + RULE_FILENAME);
 
                 }
@@ -497,10 +575,6 @@
 
             // Theme panel
             (function() {
-
-                if($("#theme-file-selector-area option").length <= 1) {
-                    $("#theme-file-selector-area").hide();
-                }
 
                 var themeSource = new SourceEditor('theme-source', extensionModes.html, "", true);
 
@@ -886,11 +960,11 @@
                         <button id="theme-inspector-off">Inspector off</button>
                     </div>
                     <span id="theme-file-selector-area">
-                        <label for="file-selector">Switch file:</label>
+                        <label for="file-selector">Show mockup:</label>
                         <select size="1" name="file-selector" id="file-selector">
                             <option
                                 tal:repeat="f view/themeFiles"
-                                tal:attributes="value string:${view/themeBasePathEncoded}/${f/path};
+                                tal:attributes="value string:${view/themeBasePathEncoded}${f/path};
                                                 data-path f/path;
                                                 data-extension f/extension;
                                                 selected python:f['path'] == view.defaultThemeFile and 'selected' or None"
