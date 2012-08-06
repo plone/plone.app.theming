@@ -7,8 +7,7 @@ General
 [ ] Update userguide.rst to describe new inspector behaviour
 [x] Warn if uploaded theme without rules.xml where there is no index.html
 
-[ ] Diagnose 'roman' module problem
-[ ] Fall back on plan text if help rendering fails
+[x] Diagnose 'roman' module problem
 
 [ ] Improve test coverage
     [ ] Create
