@@ -235,6 +235,9 @@
             ruleBuilder = new RuleBuilder(function(ruleBuilder) {
                 $(".rule-wizard-step").hide();
 
+                if($.mask.isLoaded(true) && !ruleBuilderOverlay.isOpened())
+                    $.mask.close();
+
                 if(ruleBuilder.currentScope == 'theme') {
                     if(themeFrameHighlighter.saved != null && $("#new-rule-reuse-selectors").is(":checked")) {
                         // Use saved rule
@@ -320,7 +323,6 @@
 
             $("#new-rule-select-theme .next").click(function() {
                 $("#theme-inspector-on").click();
-                $("#theme-panel").expose();
 
                 if(!$("#theme-content-row").is(":visible")) {
                     $("#mapper-toggle-show").click();
@@ -330,11 +332,12 @@
                 }
 
                 ruleBuilderOverlay.close();
+
+                $("#theme-panel").expose({color: "#fff", closeOnClick: false, closeOnEsc: false, closeSpeed: 0});
             });
 
             $("#new-rule-select-content .next").click(function() {
                 $("#content-inspector-on").click();
-                $("#content-panel").expose();
 
                 if(!$("#theme-content-row").is(":visible")) {
                     $("#mapper-toggle-show").click();
@@ -344,6 +347,8 @@
                 }
 
                 ruleBuilderOverlay.close();
+
+                $("#content-panel").expose({color: "#fff", closeOnClick: false, closeOnEsc: false, closeSpeed: 0});
             });
 
             // The insert wizard doesn't work well in IE where we use plain

@@ -7,6 +7,9 @@ General
 [ ] Update userguide.rst to describe new inspector behaviour
 [x] Warn if uploaded theme without rules.xml where there is no index.html
 
+[ ] Diagnose 'roman' module problem
+[ ] Fall back on plan text if help rendering fails
+
 [ ] Improve test coverage
     [ ] Create
     [ ] Copy
@@ -17,6 +20,8 @@ General
 
 Mapper
 ------
+
+[x] Make expose more prominent
 
 [x] Add "preview file" button (open currently edited file in a new window)
 
