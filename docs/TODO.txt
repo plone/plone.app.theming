@@ -4,11 +4,6 @@ plone.app.theming to-do
 General
 -------
 
-[x] Update userguide.rst to describe new inspector behaviour
-[x] Warn if uploaded theme without rules.xml where there is no index.html
-
-[x] Diagnose 'roman' module problem
-
 [ ] Improve test coverage
     [ ] Create
     [ ] Copy
@@ -17,27 +12,9 @@ General
     [ ] Disable
     [ ] Advanced save
 
-[ ] Remove file manager view
-
 Mapper
 ------
 
-[x] Make expose more prominent
-
-[x] Add "preview file" button (open currently edited file in a new window)
-
-[x] Make wizard steps all use pop-ups instead of mixture of pop-ups and banners?
-     1) Pick rule type (pop-up with form)
-     2) "Select an element in the theme" (pop-up, ok / cancel buttons)
-     3) Expose theme panel, engage inspector, no way to cancel this without selecting something
-     4) "Select an element in the content" (pop-up, ok / cancel buttons)
-     5) Expose content panel, engage inspector, no way to cancel this without selecting something
-     6) Results (pop-up with insert/close buttons)
-     7) "Now check the results and save if you're happy" (pop-up, ok button)
-
-[x] Reload action for mockup
-
-[x] Handle file and folder add/remove
 [ ] Handle file rename and move
     - on rename of a file inside a folder, leading slash is lost
         -> bug in rename event trigger? should send path with leading slash
@@ -45,8 +22,6 @@ Mapper
         -> bug in handling of rename in file tree?
         -> probably fails to recurisvely update child nodes
         -> similar problem likely with folder drag-and-drop
-
-[x] Hide bottom row by default, but show when launching wizard or on demand?
 
 Future
 ------
