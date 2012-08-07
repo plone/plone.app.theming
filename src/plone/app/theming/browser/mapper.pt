@@ -900,18 +900,18 @@
                             id="mapper-toggle-show"
                             name="form.button.MapperToggleShow"
                             class="allowMultiSubmit"
-                            title="Show the HTML mockup and content inspector panels"
+                            title="Show the HTML mockup and content panels"
                             i18n:attributes="title"
                             i18n:translate=""
-                            >Show inspector</button>
+                            >Show inspectors</button>
                         <button
                             id="mapper-toggle-hide"
                             name="form.button.MapperToggleHide"
                             class="allowMultiSubmit"
-                            title="Hide the HTML mockup and content inspector panels"
+                            title="Hide the HTML mockup and content panels"
                             i18n:attributes="title"
                             i18n:translate=""
-                            >Hide inspector</button>
+                            >Hide inspectors</button>
 
                         <button id="preview" name="preview" type="button" i18n:translate="filemanager_preview_theme"
                             title="Open a preview of the theme in a new window. Forms will be disabled in the preview." i18n:attributes="title [filemanager_preview_theme_help]"
