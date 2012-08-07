@@ -240,16 +240,17 @@
             ruleBuilder = new RuleBuilder(function(ruleBuilder) {
                 $(".rule-wizard-step").hide();
 
-                if($.mask.isLoaded(true) && !ruleBuilderOverlay.isOpened())
+                if($.mask.isLoaded(true) && !ruleBuilderOverlay.isOpened()) {
                     $.mask.close();
+                }
 
                 if(ruleBuilder.currentScope == 'theme') {
                     if(themeFrameHighlighter.saved != null && $("#new-rule-reuse-selectors").is(":checked")) {
+                        ruleBuilderOverlay.close();
+
                         // Use saved rule
                         ruleBuilder.select(themeFrameHighlighter.saved);
                         ruleBuilder.next();
-
-                        ruleBuilderOverlay.close();
                     } else {
                         // Let the frame highlighter perform a selection
                         $("#new-rule-select-theme").show();
@@ -260,11 +261,11 @@
 
                 } else if(ruleBuilder.currentScope == 'content') {
                     if(contentFrameHighlighter.saved != null && $("#new-rule-reuse-selectors").is(":checked")) {
+                        ruleBuilderOverlay.close();
+
                         // Use saved rule
                         ruleBuilder.select(contentFrameHighlighter.saved);
                         ruleBuilder.next();
-
-                        ruleBuilderOverlay.close();
                     } else {
                         // Let the frame highlighter perform a selection
                         $("#new-rule-select-content").show();
