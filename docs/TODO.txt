@@ -16,8 +16,6 @@ Mapper
 ------
 
 [ ] Handle file rename and move
-    - on rename of a file inside a folder, leading slash is lost
-        -> bug in rename event trigger? should send path with leading slash
     - move of file after renaming parent folder fails
         -> bug in handling of rename in file tree?
         -> probably fails to recurisvely update child nodes

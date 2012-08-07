@@ -487,6 +487,8 @@
                         }
                     });
 
+                    // Folder tree event handlers
+
                     function getFileSelectorValue(path) {
                         if(path[0] == '/') path = path.slice(1);
                         return THEME_BASE_PATH_ENCODED + '/' + path;
