@@ -9,6 +9,4 @@ install:
 script:
   - bin/test -s plone.app.theming
   - bin/test -s plone.app.themingplugins
-  - bin/test -s plone.resource
   - bin/test -s plone.resourceeditor
-  - bin/test -s plone.subrequest
