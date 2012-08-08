@@ -16,7 +16,6 @@ General
 Mapper
 ------
 
-[ ] Hide irrelevant options on root node in file tree
 
 Future
 ------
