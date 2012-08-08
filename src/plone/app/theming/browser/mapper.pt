@@ -660,6 +660,7 @@
                         $("#theme-panel iframe").removeClass('fullscreen-frame');
                         $("#theme-source").css('height', WINDOWED_HEIGHT);
                         themeSource.resize();
+                        FileManager.resizeEditor();
                     } else {
                         $("#content-panel").hide();
                         $("#rules-results-row").hide();
@@ -745,6 +746,7 @@
                         $("#content-panel iframe").removeClass('fullscreen-frame');
                         $("#content-source").css('height', WINDOWED_HEIGHT);
                         contentSource.resize();
+                        FileManager.resizeEditor();
                     } else {
                         $("#theme-panel").hide();
                         $("#rules-results-row").hide();
