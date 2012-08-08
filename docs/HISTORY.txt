@@ -1,7 +1,12 @@
 Changelog
 =========
 
-1.1a1 (unreleased)
+1.1a2 (Unreleased)
+------------------
+
+ - No changes yet
+
+1.1a1 (2012-08-08)
 ------------------
 
 - Replace the stock "Themes" control panel with a renamed "Theming" control
