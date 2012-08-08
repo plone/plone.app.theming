@@ -164,7 +164,7 @@
 /* Wizard */
 
 #new-rule-wizard {
-    width: auto;
+    width: 500px;
 }
 
 #new-rule-type-panel {
@@ -203,7 +203,6 @@
 
 #new-rule-wizard .pb-ajax .documentDescription{
     padding: 0 0 5px 0;
-    white-space: nowrap;
     font-weight: normal;
 }
 

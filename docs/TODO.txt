@@ -11,15 +11,12 @@ General
     [ ] Enable
     [ ] Disable
     [ ] Advanced save
+    [ ] File manager API
 
 Mapper
 ------
 
-[ ] Handle file rename and move
-    - move of file after renaming parent folder fails
-        -> bug in handling of rename in file tree?
-        -> probably fails to recurisvely update child nodes
-        -> similar problem likely with folder drag-and-drop
+[ ] Hide irrelevant options on root node in file tree
 
 Future
 ------

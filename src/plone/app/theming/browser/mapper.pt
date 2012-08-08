@@ -866,7 +866,7 @@
                 name="form.button.BuildRule"
                 class="allowMultiSubmit"
                 rel="#new-rule-wizard"
-                title="Ctrl+B (Windows/Linux) or Cmd+B (Mac)"
+                title="Launch the rule builder wizard."
                 i18n:attributes="title"
                 i18n:translate=""
                 >Build rule</button>
@@ -889,18 +889,10 @@
                     <span id="secondary-buttons" metal:fill-slot="extraButtons">
 
                         <button
-                            id="new-rule"
-                            name="form.button.BuildRule"
-                            class="allowMultiSubmit"
-                            rel="#new-rule-wizard"
-                            i18n:translate=""
-                            >Build rule</button>
-
-                        <button
                             id="mapper-toggle-show"
                             name="form.button.MapperToggleShow"
                             class="allowMultiSubmit"
-                            title="Show the HTML mockup and content panels"
+                            title="Show the HTML mockup and content panels. Use these to discover and verify rule selectors."
                             i18n:attributes="title"
                             i18n:translate=""
                             >Show inspectors</button>
@@ -908,10 +900,20 @@
                             id="mapper-toggle-hide"
                             name="form.button.MapperToggleHide"
                             class="allowMultiSubmit"
-                            title="Hide the HTML mockup and content panels"
+                            title="Hide the HTML mockup and content panels. Use these to discover and verify rule selectors."
                             i18n:attributes="title"
                             i18n:translate=""
                             >Hide inspectors</button>
+
+                        <button
+                            id="new-rule"
+                            name="form.button.BuildRule"
+                            class="allowMultiSubmit"
+                            rel="#new-rule-wizard"
+                            title="Launch the rule builder wizard."
+                            i18n:attributes="title"
+                            i18n:translate=""
+                            >Build rule</button>
 
                         <button id="preview" name="preview" type="button" i18n:translate="filemanager_preview_theme"
                             title="Open a preview of the theme in a new window. Forms will be disabled in the preview." i18n:attributes="title [filemanager_preview_theme_help]"
@@ -1046,7 +1048,8 @@
 
                     <div id="new-rule-step-1" class="rule-wizard-step">
                         <div class="documentDescription" i18n:translate="theming_mapper_wizard_step1">
-                            Choose the operation you would like to perform
+                            This wizard will help you build a Diazo rule by selecting relevant elements using
+                            the <strong>HTML mockup</strong> and <strong>Unthemed content</strong> inspectors.
                         </div>
 
                         <form>
@@ -1090,7 +1093,7 @@
                                 <div class="formHelp">
                                     If selected, the rule builder will use the elements you have currently selected
                                     in the <strong>HTML mockup</strong> and/or <strong>Unthemed content</strong>
-                                    panels instead of promting you to select new ones.
+                                    inspectors instead of promting you to select new ones.
                                 </div>
                             </div>
                         </form>
@@ -1103,7 +1106,7 @@
                     </div>
                     <div id="new-rule-select-theme" class="rule-wizard-step" style="display:none">
                         <div class="documentDescription">
-                            Please select an element in the <strong>HTML mockup</strong> panel.
+                            Please select an element using the <strong>HTML mockup</strong> inspector.
                         </div>
                         <div class="formControls new-rule-actions">
                             <input type="submit" class="allowMultiSubmit context next" i18n:attributes="value" value="Ok" />
@@ -1112,7 +1115,7 @@
                     </div>
                     <div id="new-rule-select-content" class="rule-wizard-step" style="display:none">
                         <div class="documentDescription">
-                            Please select an element in the <strong>Unthemed content</strong> panel.
+                            Please select an element using the <strong>Unthemed content</strong> inspector.
                         </div>
                         <div class="formControls new-rule-actions">
                             <input type="submit" class="allowMultiSubmit context next" i18n:attributes="value" value="Ok" />
@@ -1142,7 +1145,9 @@
                         </form>
 
                         <div class="formControls new-rule-actions">
-                            <input type="submit" class="allowMultiSubmit context insert" i18n:attributes="value" tal:condition="view/editable" value="Insert" />
+                            <input type="submit" class="allowMultiSubmit context insert" i18n:attributes="value; title" tal:condition="view/editable"
+                                title="Insert rule into the rules.xml file"
+                                value="Insert" />
                             <input type="submit" class="allowMultiSubmit context copy" i18n:attributes="value" value="Copy to clipboard" />
                             <input type="submit" class="allowMultiSubmit standalone close" i18n:attributes="value" value="Close" />
                         </div>
