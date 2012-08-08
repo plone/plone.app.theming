@@ -202,7 +202,7 @@ The theme inspector
 
 The theme inspector provides an advanced interface for discovering and building
 up the rules of a Diazo theme. It can be launched by clicking the *Show
-inspector* button on the *Modify theme* screen for in-Plone themes, or by
+inspectors* button on the *Modify theme* screen for in-Plone themes, or by
 clicking the *Inspect theme* button underneath a filesystem theme on the
 *Themes* tab of the *Theming* control panel.
 
