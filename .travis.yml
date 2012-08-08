@@ -7,7 +7,6 @@ install:
   - python bootstrap.py
   - bin/buildout -c travis.cfg -q
 script:
-  - bin/test -s diazo
   - bin/test -s plone.app.theming
   - bin/test -s plone.app.themingplugins
   - bin/test -s plone.resource
