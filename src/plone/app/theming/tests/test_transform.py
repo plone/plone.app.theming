@@ -18,7 +18,7 @@ from plone.registry.interfaces import IRegistry
 from zope.component import getUtility
 
 from plone.app.theming.interfaces import IThemeSettings
-from plone.app.theming.utils import applyTheme, getAvailableThemes
+from plone.app.theming.utils import applyTheme, getAvailableThemes, getTheme
 from plone.app.theming.utils import InternalResolver, PythonResolver, resolvePythonURL
 
 import re
@@ -46,7 +46,8 @@ class TestCase(unittest.TestCase):
                 'requestParam': 'request/useother | string:off',
             }
 
-        import transaction; transaction.commit()
+        import transaction;
+        transaction.commit()
 
     def tearDown(self):
         Globals.DevelopmentMode = False
@@ -97,7 +98,7 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        theme = getAvailableThemes()[0]
+        theme = getTheme('plone.app.theming.tests')
         applyTheme(theme)
         self.assertEqual(self.settings.rules, u'/++theme++plone.app.theming.tests/rules.xml')
         self.assertEqual(self.settings.currentTheme, u"plone.app.theming.tests")
@@ -117,7 +118,7 @@ class TestCase(unittest.TestCase):
         self.assertTrue("This is the theme" in browser.contents)
 
         # Doctype
-        self.assertTrue(re.match("<!DOCTYPE html>\s+<html",browser.contents))
+        self.assertTrue(re.match("<!DOCTYPE html>\s+<html", browser.contents))
 
     def test_theme_enabled_query_string_off_switch(self):
         app = self.layer['app']

@@ -1,0 +1,94 @@
+#themeControlPanel button,
+#themeControlPanel input.context,
+#themeControlPanel input.standalone {
+    padding: 4px;
+    margin: 3px 6px 3px 0;
+}
+
+#themeControlPanel .enableFormTabbing > dd {
+    margin-left: 0;
+}
+
+#helpButtonForm {
+    display: inline;
+}
+
+#themesList {
+    background-color: #eee;
+    padding: 10px;
+}
+
+#themesList h3 {
+    margin-bottom: 10px;
+}
+
+.themeEntry {
+    float: left;
+    position:relative;
+    overflow: hidden;
+    height: 275px;
+    width: 243px;
+    margin: 5px;
+    padding: 0 6px 0 9px;
+    text-align: center;
+    border: solid #eee 1px;
+    background-color: white;
+}
+
+.activeThemeEntry {
+    background-color: #ffffe3;
+}
+
+.themeEntry img {
+    border: 1px solid #ccc;
+    display: block;
+    margin: 0 auto;
+}
+.themeEntryWrapper {
+    height: 230px;
+    width: 238px;
+    margin: 0 auto 7px;
+}
+
+.themeEntryDetail {
+    display: block;
+    text-decoration: none;
+    font-size: 90%;
+    height: 259px;
+    width: 230px;
+    margin: 16px auto 0;
+}
+
+.themeEntry .previewImageContainer {
+    height: 130px;
+}
+
+.themeEntry .previewImageContainer > img {
+    max-height: 125px;
+    max-width: 230px;
+    border: solid 1px #eee;
+    margin-bottom: 5px;
+}
+
+.themeEntryTitle {
+    display: block;
+    width: 228px;
+    height: 3.6em;
+}
+
+.themeDescription {
+    color: #76797c;
+}
+
+.themeEntry .themeEntryControls {
+    position: absolute;
+    bottom: 5px;
+}
+
+.themeEntry input, .themeEntry form {
+    display: inline;
+}
+
+.radioLabel {
+    font-weight: normal;
+}

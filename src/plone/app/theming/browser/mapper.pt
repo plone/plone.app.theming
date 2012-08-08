@@ -1,0 +1,1125 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    lang="en"
+    metal:use-macro="context/prefs_main_template/macros/master"
+    i18n:domain="plone">
+
+<head>
+<metal:block fill-slot="top_slot" tal:define="resourceDirectory nocall:view/resourceDirectory">
+
+<tal:defines define="dummy python:request.set('disable_border',1);
+                     disable_column_one python:request.set('disable_plone.leftcolumn',1);
+                     disable_column_two python:request.set('disable_plone.rightcolumn',1);">
+
+<!-- File manager -->
+<metal:block use-macro="resourceDirectory/@@plone.resourceeditor.filemanager/macros/resources" />
+
+<!-- Mapper tools -->
+<script
+    type="text/javascript"
+    charset="utf-8"
+    tal:attributes="src string:${view/portalUrl}/++resource++plone.app.theming/mapper.js"
+    ></script>
+
+<!-- Styling for this page -->
+<link
+    rel="stylesheet"
+    type="text/css"
+    tal:attributes="href string:${view/portalUrl}/++resource++plone.app.theming/mapper.css"
+    />
+
+<script type="text/javascript" tal:content="view/jsVariables"></script>
+
+<script type="text/javascript">
+
+    jQuery(function($) {
+
+        $().ready(function() {
+
+            var WINDOW_BASE = window.location.protocol + '//' + window.location.host;
+
+            var WINDOWED_HEIGHT = '300px';
+            var FULLSCREEN_HEIGHT = '600px';
+
+            // Editor management
+
+            var HTMLMode = require("ace/mode/html").Mode;
+            var CSSMode  = require("ace/mode/css").Mode;
+            var XMLMode  = require("ace/mode/xml").Mode;
+            var JSMode   = require("ace/mode/javascript").Mode;
+            var TextMode = require("ace/mode/text").Mode;
+
+            var extensionModes = {
+                css: new CSSMode(),
+                js: new JSMode(),
+                htm: new HTMLMode(),
+                html: new HTMLMode(),
+                xml: new XMLMode()
+            };
+            var defaultMode = new TextMode();
+
+            function getExtension(path) {
+                var m = path.match(/.(\w+)$/);
+                if(m == null) return null;
+                return m[1].toLowerCase();
+            }
+
+            function isHTMLFile(path) {
+                var extension = getExtension(path);
+                return extension == 'html' || extension == 'htm';
+            }
+
+            // See http://stackoverflow.com/questions/1694295/jquery-background-color-animate-not-working/5718151
+            function animateHighlight(node, highlightColor, duration) {
+                var highlightBg = highlightColor || "#FFFFE3";
+                var animateMs = duration || 750;
+                var originalBg = $(node).css("background-color");
+
+                if (!originalBg || originalBg == highlightBg)
+                    originalBg = "#FFFFFF"; // default to white
+
+                $(node)
+                    .css("backgroundColor", highlightBg)
+                    .animate({ backgroundColor: originalBg }, animateMs, null, function () {
+                        $(node).css("backgroundColor", originalBg);
+                    });
+            };
+
+            if($.browser.msie) {
+                $(".ie-warning").show();
+            }
+
+            // Help and preview
+            $("#preview").click(function() {
+              window.open($(this).attr("data-href"), "preview");
+              return false;
+            });
+
+            $("#helpButtonForm").prepOverlay({
+                subtype: 'iframe'
+            });
+
+            // Mapper toggle
+
+            function scrollTo(id) {
+                $('html,body').animate({scrollTop: $("#"+id).offset().top}, 600);
+            }
+
+            $("#mapper-toggle-show").click(function() {
+                $("#theme-content-row").show();
+                $("#mapper-toggle-show").hide();
+                $("#mapper-toggle-hide").show();
+                scrollTo("theme-content-row");
+            });
+
+            $("#mapper-toggle-hide").click(function() {
+                $("#theme-content-row").hide();
+                $("#mapper-toggle-show").show();
+                $("#mapper-toggle-hide").hide();
+            });
+
+            if($("#rules-results-row").is(":visible")) {
+                $("#mapper-toggle-hide").click();
+            }
+
+            // Rule builder and highlighters
+
+            var ruleBuilder = null;
+            var themeFrameHighlighter = null;
+            var contentFrameHighlighter = null;
+
+            $("#new-rule").overlay({
+                closeOnClick: false,
+                onBeforeLoad: function() {
+
+                    // Do we have a selection?
+                    var themeSelection = $("#theme-frame-shelf").text();
+                    var contentSelection = $("#content-frame-shelf").text();
+
+                    if(themeSelection == "" && contentSelection == "") {
+                        $("#new-rule-reuse-panel").hide();
+                    } else {
+                        $("#new-rule-reuse-panel").show();
+                    }
+
+                }, onBeforeClose: function() {
+                    if(ruleBuilder.active && $("#new-rule-step-2").is(":visible")) {
+                        ruleBuilder.end();
+                    }
+                }
+            });
+            var ruleBuilderOverlay = $("#new-rule").data('overlay');
+
+            themeFrameHighlighter = new FrameHighlighter("#theme-frame",
+                function(highlighter, node) { // onselect
+                    $("#theme-frame-info").text(node == null? "" : ruleBuilder.bestSelector(node));
+                },
+                function(highlighter, node) { // onsave
+                    if(node == null) {
+                        $("#theme-frame-shelf-container").hide();
+                    } else {
+                        $("#theme-frame-shelf-container").show();
+                    }
+
+                    animateHighlight($("#theme-panel .frame-info"));
+                    $("#theme-frame-shelf").text(node == null? "" : ruleBuilder.bestSelector(node));
+
+                    if(ruleBuilder.active && ruleBuilder.currentScope == "theme") {
+                        ruleBuilder.select(node);
+                        ruleBuilder.next();
+                    }
+
+                }
+            );
+
+            contentFrameHighlighter = new FrameHighlighter("#content-frame",
+                function(highlighter, node) { // onselect
+                    $("#content-frame-info").text(node == null? "" : ruleBuilder.bestSelector(node));
+                },
+                function(highlighter, node) { // onsave
+                    if(node == null) {
+                        $("#content-frame-shelf-container").hide();
+                    } else {
+                        $("#content-frame-shelf-container").show();
+                    }
+
+                    animateHighlight($("#content-panel .frame-info"));
+                    $("#content-frame-shelf").text(node == null? "" : ruleBuilder.bestSelector(node));
+
+                    if(ruleBuilder.active && ruleBuilder.currentScope == "content") {
+                        ruleBuilder.select(node);
+                        ruleBuilder.next();
+                    }
+                }
+            );
+
+            var haveScrolled = false;
+            ruleBuilder = new RuleBuilder(function(ruleBuilder) {
+                $(".rule-wizard-step").hide();
+
+                if($.mask.isLoaded(true) && !ruleBuilderOverlay.isOpened()) {
+                    $.mask.close();
+                }
+
+                if(ruleBuilder.currentScope == 'theme') {
+                    if(themeFrameHighlighter.saved != null && $("#new-rule-reuse-selectors").is(":checked")) {
+                        ruleBuilderOverlay.close();
+
+                        // Use saved rule
+                        ruleBuilder.select(themeFrameHighlighter.saved);
+                        ruleBuilder.next();
+                    } else {
+                        // Let the frame highlighter perform a selection
+                        $("#new-rule-select-theme").show();
+                        if(!ruleBuilderOverlay.isOpened()) {
+                            ruleBuilderOverlay.load();
+                        }
+                    }
+
+                } else if(ruleBuilder.currentScope == 'content') {
+                    if(contentFrameHighlighter.saved != null && $("#new-rule-reuse-selectors").is(":checked")) {
+                        ruleBuilderOverlay.close();
+
+                        // Use saved rule
+                        ruleBuilder.select(contentFrameHighlighter.saved);
+                        ruleBuilder.next();
+                    } else {
+                        // Let the frame highlighter perform a selection
+                        $("#new-rule-select-content").show();
+                        if(!ruleBuilderOverlay.isOpened()) {
+                            ruleBuilderOverlay.load();
+                        }
+                    }
+
+                } else if(ruleBuilder.ruleType != null && ruleBuilder.currentScope == null) {
+                    haveScrolled = false;
+
+                    $(".rule-wizard-step").hide();
+                    $("#new-rule-step-2").show();
+                    updateRule(ruleBuilder);
+
+                    var haveRules = (FileManager.enabled && (FileManager.getNodeByPath("/" + RULE_FILENAME) !== null));
+                    if(haveRules && !$.browser.msie) {
+                        $("#new-rule-step-2 .insert").show();
+                    } else {
+                        $("#new-rule-step-2 .insert").hide();
+                    }
+
+                    if(!ruleBuilderOverlay.isOpened()) {
+                        ruleBuilderOverlay.load();
+                    }
+
+                } else { // end
+                    haveScrolled = false;
+
+                    if(ruleBuilderOverlay.isOpened()) {
+                        ruleBuilderOverlay.close();
+                    }
+
+                    $(".rule-wizard-step").hide();
+                    $("#new-rule-step-1").show();
+                }
+            });
+
+            function updateRule(ruleBuilder) {
+                $("#new-rule-output").val(
+                    ruleBuilder.buildRule(
+                        $('#new-rule-theme-children').is(':checked'),
+                        $('#new-rule-content-children').is(':checked')
+                    )
+                );
+            }
+
+            $(".wizard-cancel").click(function() {
+                ruleBuilder.end();
+                return false;
+            });
+
+            $(".rule-modifier").change(function() {
+                updateRule(ruleBuilder);
+            });
+
+            $("#new-rule-step-1 .next").click(function() {
+                var ruleType = $("input[name='new-rule-type']:checked").val();
+                ruleBuilder.start(ruleType);
+            });
+
+            $("#new-rule-select-theme .next").click(function() {
+                $("#theme-inspector-on").click();
+
+                if(!$("#theme-content-row").is(":visible")) {
+                    $("#mapper-toggle-show").click();
+                } else if (!haveScrolled) {
+                    scrollTo("theme-content-row");
+                    haveScrolled = true;
+                }
+
+                ruleBuilderOverlay.close();
+
+                $("#theme-panel").expose({color: "#fff", closeOnClick: false, closeOnEsc: false, closeSpeed: 0});
+            });
+
+            $("#new-rule-select-content .next").click(function() {
+                $("#content-inspector-on").click();
+
+                if(!$("#theme-content-row").is(":visible")) {
+                    $("#mapper-toggle-show").click();
+                } else if (!haveScrolled) {
+                    scrollTo("theme-content-row");
+                    haveScrolled = true;
+                }
+
+                ruleBuilderOverlay.close();
+
+                $("#content-panel").expose({color: "#fff", closeOnClick: false, closeOnEsc: false, closeSpeed: 0});
+            });
+
+            // The insert wizard doesn't work well in IE where we use plain
+            // textareas, but we offer a copy-to-clipboard button instead
+
+            if($.browser.msie) {
+                $("#new-rule-step-2 .insert").hide();
+                $("#new-rule-step-2 .copy").click(function() {
+                    window.clipboardData.setData('Text', $("#new-rule-output").val());
+                    ruleBuilderOverlay.close();
+
+                    // Clear the selection now that we're done with it
+                    contentFrameHighlighter.save(null);
+                    themeFrameHighlighter.save(null);
+                });
+            } else {
+                $("#new-rule-step-2 .copy").hide();
+                $("#new-rule-step-2 .insert").click(function() {
+
+                    var rule = $("#new-rule-output").val();
+
+                    FileManager.openFile("/" + RULE_FILENAME, false);
+                    var rulesEditor = FileManager.editors["/" + RULE_FILENAME];
+
+                    // No IE support for this anyway, so we can use the
+                    // underlying editor
+                    var aceEditor = rulesEditor.ace;
+
+                    function findStartTag(backwards) {
+                        aceEditor.find("<\\w+", {
+                            backwards: backwards,
+                            wrap: false,
+                            wholeWord: false,
+                            regExp: true
+                        });
+                    }
+
+                    function indent(string, amount) {
+                        var padding = '';
+                        for(var i = 0; i < amount; ++i) {
+                            padding += ' ';
+                        }
+                        return padding + string.replace(/\n/g, '\n' + padding) + '\n\n';
+                    }
+
+                    // Go to the next opening tag - we want to insert before this
+                    findStartTag(false);
+                    if(aceEditor.getCursorPosition().row <= 1) {
+                        // Probably the opening rules tag
+                        findStartTag(false);
+                    }
+
+                    var selectionText = aceEditor.getSession().getTextRange(aceEditor.getSelectionRange());
+
+                    // If we didn't find anything, look for the end of the current tag
+                    if(selectionText == "") {
+
+                        aceEditor.find("(/>|<" + "/)", {
+                            backwards: false,
+                            wrap: false,
+                            wholeWord: false,
+                            regExp: true
+                        });
+
+                        var selectionText = aceEditor.getSession().getTextRange(aceEditor.getSelectionRange());
+                        if(selectionText == "") {
+                            // Still nothing? Go to the end
+                            aceEditor.navigateFileEnd();
+                        } else {
+                            // Go one past the end tag, but first figure out how far we should i
+                            aceEditor.navigateDown();
+                        }
+
+                    }
+
+                    var indentation = aceEditor.getSelectionRange().start.column;
+
+                    var cursorPosition = aceEditor.getCursorPosition();
+                    var newlines = rule.match(/\n/g);
+                    var rows = 0;
+                    if(newlines != null) {
+                        rows = newlines.length;
+                    }
+
+                    aceEditor.navigateTo(cursorPosition.row, 0);
+                    aceEditor.insert(indent(rule, indentation));
+                    aceEditor.navigateTo(cursorPosition.row, 0);
+                    aceEditor.getSelection().selectTo(cursorPosition.row + rows + 1, 0);
+                    rulesEditor.focus();
+
+                    $("#rules-editor .dirtyMarker").show();
+                    animateHighlight($("#rules-results-row"));
+
+                    ruleBuilderOverlay.close();
+
+                    scrollTo("page-intro");
+
+                    // Clear the selection now that we're done with it
+                    contentFrameHighlighter.save(null);
+                    themeFrameHighlighter.save(null);
+                });
+            }
+
+            // Fullscreen
+
+            $(".fullscreen").click(function(event) {
+                event.preventDefault();
+                $(this).toggleClass("fullscreenActive");
+                return false;
+            });
+
+            // View source
+
+            $(".sourceToggle").click(function(event) {
+                event.preventDefault();
+                $(this).toggleClass("sourceActive");
+                return false;
+            });
+
+            // Rules editor
+
+            (function() {
+
+                if(FileManager.enabled) {
+
+                    $("#preview-file").click(function() {
+                        var selected = FileManager.getCurrentFilePath();
+                        if(selected != undefined) {
+                            // Use path as window name so that we get at most one window per file
+                            window.open(THEME_BASE_URL + selected, selected);
+                        }
+                    });
+
+                    // Folder tree event handlers
+
+                    function getFileSelectorValue(path) {
+                        if(path[0] == '/') path = path.slice(1);
+                        return THEME_BASE_PATH_ENCODED + '/' + path;
+                    }
+
+                    function addPathToFileSelector(path) {
+                        if(isHTMLFile(path) && $("#file-selector option[data-path='" + path + "']").length == 0) {
+                            // Add new node
+                            var selectedValue = getFileSelectorValue(path);
+                            $("#file-selector").append(
+                                "<option value='" + selectedValue + "' " +
+                                        "data-path='" + path + "'" +
+                                        "data-extension='" + getExtension(path) + "'>" +
+                                    path +
+                                "<" + "/option>"
+                            );
+
+                            if($("#file-selector option").length == 1) {
+                                // We just added the only one; select it
+                                $("#file-selector").val(selectedValue).change();
+                            }
+                        }
+                    }
+
+                    function removePathFromFileSelector(path) {
+                        var changed = false;
+                        var selected = $("#file-selector").val();
+                        if(isHTMLFile(path)) {
+                            $("#file-selector option[data-path='" + path + "']").remove();
+                            changed = true;
+                        } else if(FileManager.getNodeByPath(path).data.isFolder) {
+                            $("#file-selector option[data-path^='" + path + "/']").remove();
+                            changed = true;
+                        }
+
+                        // Did we just delete the selected one? Select the first one
+                        if(changed && selected == getFileSelectorValue(path)) {
+                            if($("#file-selector option").length > 0) {
+                                $("#file-selector").val(
+                                    $("#file-selector option:first-child").attr('value')
+                                ).change();
+                            } else {
+                                $("#theme-frame").attr('src', '');
+                            }
+                        }
+                    }
+
+                    $("#filemanager").bind('resourceeditor.selected', function(event, path) {
+                        $("#preview-file").removeAttr('disabled');
+                        addPathToFileSelector(path);
+                    });
+
+                    $("#filemanager").bind('resourceeditor.deleted', function(event, path) {
+                        removePathFromFileSelector(path);
+                    });
+
+                    $("#filemanager").bind('resourceeditor.renamed', function(event, oldPath, newPath) {
+                        if(isHTMLFile(oldPath)) {
+                            if(isHTMLFile(newPath)) { // .html -> .html
+                                $("#file-selector option[data-path='" + oldPath + "']")
+                                    .attr('data-path', newPath)
+                                    .attr('data-extension', getExtension(newPath))
+                                    .attr('value', getFileSelectorValue(newPath))
+                                    .html(newPath);
+                            } else { // .html -> something else
+                                removePathFromFileSelector(oldPath);
+                            }
+                        } else if(isHTMLFile(newPath)) { // something else -> .html
+                            addPathToFileSelector(newPath);
+                        } else if(FileManager.getNodeByPath(oldPath).data.isFolder) { // folder
+                            $("#file-selector option[data-path^='" + oldPath + "/']").each(function() {
+                                var currentPath = $(this).attr('data-path');
+                                var updatedPath = newPath + currentPath.slice(oldPath.length);
+                                $(this)
+                                    .attr('data-path', updatedPath)
+                                    .attr('value', getFileSelectorValue(updatedPath))
+                                    .html(updatedPath);
+                            });
+                        }
+                    });
+
+                    $("#filemanager").bind('resourceeditor.closed', function() {
+                        $("#preview-file").attr('disabled', 'disabled');
+                    });
+
+                    // Start with rules.xml open
+                    FileManager.openFile("/" + RULE_FILENAME);
+
+                }
+            })();
+
+            // Theme panel
+            (function() {
+
+                var themeSource = new SourceEditor('theme-source', extensionModes.html, "", true);
+
+                function reloadFrame() {
+                    var path = $("#file-selector option:selected").val();
+                    var fetch = THEME_BASE_URL + "/@@theming-controlpanel-mapper-getframe?path=" + path + "&amp;theme=off";
+                    $("#theme-frame").attr('src', fetch);
+                }
+
+                function reloadSource() {
+                    var html = $("#theme-frame").contents().find(":root").html();
+                    themeSource.setValue("<" + "html>\n" + html + '\n<' + '/html>');
+                    themeSource.resize();
+                }
+
+                $("#theme-frame").ready(function() {
+                    function setup() {
+                        themeFrameHighlighter.setupElements();
+                        reloadSource();
+                    }
+                    setup();
+                    $("#theme-frame").load(setup);
+                });
+
+                $("#file-selector").change(function() {
+                    reloadFrame();
+                });
+
+                $("#theme-frame").show();
+                $("#theme-source").hide();
+
+                $("#theme-panel .refresh").click(function(event) {
+                    event.preventDefault();
+                    reloadFrame();
+                    return false;
+                });
+
+                $("#theme-panel .sourceToggle").click(function() {
+                    if($("#theme-frame").is(":visible")) {
+                        $("#theme-frame").hide();
+                        $("#theme-source").show();
+                        $("#theme-footer-help").hide();
+                        $("#theme-panel .inspector-switch").hide();
+                        reloadSource();
+                        themeSource.focus();
+                    } else {
+                        $("#theme-frame").show();
+                        $("#theme-source").hide();
+                        $("#theme-footer-help").show();
+                        $("#theme-panel .inspector-switch").show();
+                    }
+                });
+
+                $("#theme-inspector-on").click(function() {
+                    themeFrameHighlighter.enabled = true;
+                    $("#theme-inspector-on").attr('disabled', 'disabled');
+                    $("#theme-inspector-off").removeAttr('disabled');
+                    $("#theme-footer-help").show();
+                });
+                $("#theme-inspector-off").click(function() {
+                    themeFrameHighlighter.enabled = false;
+                    $("#theme-inspector-off").attr('disabled', 'disabled');
+                    $("#theme-inspector-on").removeAttr('disabled');
+                    $("#theme-footer-help").hide();
+                });
+
+                $("#theme-panel .fullscreen").click(function(event) {
+                    event.preventDefault();
+
+                    if($("#theme-panel").is(".width-full")) {
+                        $("#content-panel").show();
+                        $("#rules-results-row").show();
+                        $("#page-intro").show();
+                        $("#theme-panel").removeClass('width-full').addClass('width-1:2');
+                        $("#theme-panel iframe").removeClass('fullscreen-frame');
+                        $("#theme-source").css('height', WINDOWED_HEIGHT);
+                        themeSource.resize();
+                        FileManager.resizeEditor();
+                    } else {
+                        $("#content-panel").hide();
+                        $("#rules-results-row").hide();
+                        $("#page-intro").hide();
+                        $("#theme-panel").removeClass('width-1:2').addClass('width-full');
+                        $("#theme-panel iframe").addClass('fullscreen-frame');
+                        $("#theme-source").css('height', FULLSCREEN_HEIGHT);
+                        themeSource.resize();
+                    }
+
+                    return false;
+                });
+
+                $("#theme-frame-shelf-clear").click(function() {
+                    themeFrameHighlighter.save(null);
+                    return false;
+                });
+
+            })();
+
+            // Content panel
+            (function() {
+
+                var contentSource = new SourceEditor('content-source', extensionModes.html, "", true);
+
+                $("#content-frame").ready(function() {
+                    var linkManager = new LinkManager("#content-frame", 'off',  WINDOW_BASE, THEME_BASE_URL);
+                    function setup() {
+                        contentFrameHighlighter.setupElements();
+                        linkManager.setupLinks();
+                        linkManager.setupForms();
+                    }
+                    setup();
+                    $("#content-frame").load(setup);
+                });
+
+                $("#content-frame").show();
+                $("#content-source").hide();
+
+                $("#content-panel .sourceToggle").click(function() {
+                    if($("#content-frame").is(":visible")) {
+                        var html = $("#content-frame").contents().find(":root").html();
+                        contentSource.setValue("<" + "html>\n" + html + '\n<' + '/html>');
+                        $("#content-frame").hide();
+                        $("#content-source").show();
+                        $("#content-footer-help").hide();
+                        $("#content-panel .inspector-switch").hide();
+                        contentSource.resize();
+                        contentSource.focus();
+                    } else {
+                        $("#content-frame").show();
+                        $("#content-source").hide();
+                        $("#content-footer-help").show();
+                        $("#content-panel .inspector-switch").show();
+                    }
+                });
+
+                $("#content-inspector-on").click(function() {
+                    contentFrameHighlighter.enabled = true;
+                    $("#content-inspector-on").attr('disabled', 'disabled');
+                    $("#content-inspector-off").removeAttr('disabled');
+                    $("#content-footer-help").show();
+                });
+                $("#content-inspector-off").click(function() {
+                    contentFrameHighlighter.enabled = false;
+                    $("#content-inspector-off").attr('disabled', 'disabled');
+                    $("#content-inspector-on").removeAttr('disabled');
+                    $("#content-footer-help").hide();
+                });
+
+                $("#content-panel .fullscreen").click(function(event) {
+                    event.preventDefault();
+
+                    if($("#content-panel").is(".width-full")) {
+                        $("#theme-panel").show();
+                        $("#rules-results-row").show();
+                        $("#page-intro").show();
+                        $("#content-panel").removeClass('width-full')
+                                           .removeClass('position-0')
+                                           .addClass('width-1:2')
+                                           .addClass('position-1:2');
+
+                        $("#content-panel iframe").removeClass('fullscreen-frame');
+                        $("#content-source").css('height', WINDOWED_HEIGHT);
+                        contentSource.resize();
+                        FileManager.resizeEditor();
+                    } else {
+                        $("#theme-panel").hide();
+                        $("#rules-results-row").hide();
+                        $("#page-intro").hide();
+                        $("#content-panel").removeClass('width-1:2')
+                                           .removeClass('position-1:2')
+                                           .addClass('width-full')
+                                           .addClass('position-0');
+
+                        $("#content-panel iframe").addClass('fullscreen-frame');
+                        $("#content-source").css('height', FULLSCREEN_HEIGHT);
+                        contentSource.resize();
+                   }
+
+                    return false;
+                });
+
+                $("#content-frame-shelf-clear").click(function() {
+                    contentFrameHighlighter.save(null);
+                    return false;
+                });
+
+            })();
+
+            // Key bindings
+            (function() {
+
+                var canon = require('pilot/canon');
+
+                canon.addCommand({
+                    name: 'buildRule',
+                    bindKey: {
+                        mac: 'Command-B',
+                        win: 'Ctrl+B',
+                        sender: 'editor'
+                    },
+                    exec: function(env, args, request) {
+                        $("#new-rule").click();
+                    }
+                });
+
+                canon.addCommand({
+                    name: 'rulesHelp',
+                    bindKey: {
+                        mac: 'Command-H',
+                        win: 'Ctrl+H',
+                        sender: 'editor'
+                    },
+                    exec: function(env, args, request) {
+                        $("#helpButtonForm button").click();
+                    }
+                });
+
+            })();
+
+        });
+
+    });
+
+</script>
+</tal:defines>
+
+</metal:block>
+</head>
+
+<body>
+<div metal:fill-slot="prefs_configlet_content" class="documentEditable" id="themeMapper" tal:define="resourceDirectory nocall:view/resourceDirectory">
+
+    <div metal:use-macro="context/global_statusmessage/macros/portal_message">
+      Portal status message
+    </div>
+
+    <dl class="portalMessage warning" tal:condition="python:view.active and view.editable">
+        <dt i18n:translate="">Warning</dt>
+        <dd i18n:translate="theming_mapper_warning_live">
+            This theme is currently active. Any changes made will be immediately
+            reflected on the live site.
+        </dd>
+    </dl>
+
+    <div id="content">
+
+
+        <div id="page-intro">
+
+            <h1 class="documentFirstHeading"
+                i18n:translate="heading_theme_mapper"
+                tal:condition="view/editable">Modify theme
+                <span i18n:name="name" tal:content="view/title">name</span>
+            </h1>
+            <h1 class="documentFirstHeading"
+                i18n:translate="heading_theme_mapper"
+                tal:condition="not:view/editable">Inspect theme
+                <span i18n:name="name" tal:content="view/title">name</span>
+                <span i18n:name="readonly" i18n:translate="">(read-only)</span>
+            </h1>
+
+            <a href=""
+                class="link-parent"
+                tal:attributes="href string:${portal_url}/@@theming-controlpanel"
+                i18n:translate="label_up_to_theming_controlpanel">
+                    Back to the control panel
+            </a>
+
+            <dl style="display: none" class="ie-warning portalMessage warning">
+                <dt i18n:translate="">Warning</dt>
+                <dd i18n:translate="theming_mapper_warning_ie">
+                    You are using Internet Explorer. The theme mapper will work,
+                    but some functionality will not be available. We recommend that
+                    you use Mozilla Firefox or Google Chrome instead.
+                </dd>
+            </dl>
+
+        </div>
+
+        <div id="readonlyActions" tal:condition="not:view/editable">
+            <button
+                id="new-rule"
+                name="form.button.BuildRule"
+                class="allowMultiSubmit"
+                rel="#new-rule-wizard"
+                title="Launch the rule builder wizard."
+                i18n:attributes="title"
+                i18n:translate=""
+                >Build rule</button>
+
+            <button id="preview" name="preview" type="button" i18n:translate="filemanager_preview_theme"
+                title="Open a preview of the theme in a new window. Forms will be disabled in the preview." i18n:attributes="title [filemanager_preview_theme_help]"
+                tal:attributes="data-href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${view/title}">Preview theme</button>
+
+            <form id="helpButtonForm" method="get" tal:attributes="action string:${portal_url}/@@theming-controlpanel-help">
+                <button
+                    class="standalone"
+                    i18n:translate="">Help</button>
+            </form>
+        </div>
+
+        <div id="rules-results-row" class="row splitview" tal:condition="view/editable">
+            <div id="rules-editor" class="mapper-box cell width-full position-0">
+
+                <metal:block use-macro="resourceDirectory/@@plone.resourceeditor.filemanager/macros/filemanager">
+                    <span id="secondary-buttons" metal:fill-slot="extraButtons">
+
+                        <button
+                            id="mapper-toggle-show"
+                            name="form.button.MapperToggleShow"
+                            class="allowMultiSubmit"
+                            title="Show the HTML mockup and content panels. Use these to discover and verify rule selectors."
+                            i18n:attributes="title"
+                            i18n:translate=""
+                            >Show inspectors</button>
+                        <button
+                            id="mapper-toggle-hide"
+                            name="form.button.MapperToggleHide"
+                            class="allowMultiSubmit"
+                            title="Hide the HTML mockup and content panels. Use these to discover and verify rule selectors."
+                            i18n:attributes="title"
+                            i18n:translate=""
+                            >Hide inspectors</button>
+
+                        <button
+                            id="new-rule"
+                            name="form.button.BuildRule"
+                            class="allowMultiSubmit"
+                            rel="#new-rule-wizard"
+                            title="Launch the rule builder wizard."
+                            i18n:attributes="title"
+                            i18n:translate=""
+                            >Build rule</button>
+
+                        <button id="preview" name="preview" type="button" i18n:translate="filemanager_preview_theme"
+                            title="Open a preview of the theme in a new window. Forms will be disabled in the preview." i18n:attributes="title [filemanager_preview_theme_help]"
+                            tal:attributes="data-href string:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${view/title}">Preview theme</button>
+
+                        <form id="helpButtonForm" method="get" tal:attributes="action string:${portal_url}/@@theming-controlpanel-help">
+                            <button
+                                class="standalone"
+                                i18n:translate="">Help</button>
+                        </form>
+                    </span>
+
+                    <span id="secondary-context-buttons" metal:fill-slot="extraContextButtons">
+                        <button
+                            id="preview-file"
+                            name="preview-file"
+                            type="button"
+                            disabled="disabled"
+                            title="Preview the most recently saved version of the currently open file"
+                            i18n:translate=""
+                            i18n:attributes="title">Preview file</button>
+                    </span>
+
+                </metal:block>
+
+            </div>
+        </div>
+
+        <div id="theme-content-row" class="row splitview">
+            <div id="theme-panel" class="mapper-box cell width-1:2 position-0">
+
+                <div class="panel-toolbar">
+                    <a class="refresh" href="#" title="Refresh mockup. You can also right-click on the mockup to use your browser's native refresh." i18n:attributes="title">&nbsp;</a>
+                    <a class="sourceToggle" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
+                    <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
+                </div>
+
+                <label i18n:translate="heading_theme">HTML mockup</label>
+
+                <iframe id="theme-frame"
+                    tal:condition="python:len(view.themeFiles) > 0"
+                    tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off"></iframe>
+                <iframe id="theme-frame"
+                    tal:condition="python:len(view.themeFiles) == 0"
+                    src=""></iframe>
+                <pre class="source-editor" id="theme-source"></pre>
+
+                <div class="frame-info">
+                    <div id="theme-frame-shelf-container" class="frame-shelf" style="display:none">
+                        <span i18n:translate="theming_mapper_shelf_label">Selected:</span>
+                        <span class="shelf" id="theme-frame-shelf"></span>
+                        <a class="clear-shelf" id="theme-frame-shelf-clear" href="#clear"
+                            title="Clear selection" i18n:attributes="title">x</a>
+                    </div>
+                    <span id="theme-frame-info"></span>
+                </div>
+
+                <div class="panel-footer">
+                    <div class="inspector-switch">
+                        <button id="theme-inspector-on" disabled="disabled">Inspector on</button>
+                        <button id="theme-inspector-off">Inspector off</button>
+                    </div>
+                    <span id="theme-file-selector-area">
+                        <label for="file-selector">Show mockup:</label>
+                        <select size="1" name="file-selector" id="file-selector">
+                            <option
+                                tal:repeat="f view/themeFiles"
+                                tal:attributes="value string:${view/themeBasePathEncoded}${f/path};
+                                                data-path f/path;
+                                                data-extension f/extension;
+                                                selected python:f['path'] == view.defaultThemeFile and 'selected' or None"
+                                tal:content="f/path"
+                                />
+                        </select>
+                    </span>
+                </div>
+
+                <div id="theme-footer-help" class="discreet footer-help" i18n:translate="help_highlighter_selection">
+                    Hover over an element to see its selector.
+                    Left-click or press <em>Enter</em> to save.
+                    Press <em>Esc</em> to select parent.
+                </div>
+
+            </div>
+            <div id="content-panel" class="mapper-box cell width-1:2 position-1:2">
+
+                <div class="panel-toolbar">
+                    <a class="sourceToggle" href="#" title="Toggle source view" i18n:attributes="title">&nbsp;</a>
+                    <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">&nbsp;</a>
+                </div>
+
+                <label i18n:translate="heading_content">Unthemed content</label>
+
+                <iframe id="content-frame"
+                    tal:attributes="src string:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=off"></iframe>
+                <pre class="source-editor" id="content-source"></pre>
+
+                <div class="frame-info">
+                    <div id="content-frame-shelf-container" class="frame-shelf" style="display:none">
+                        <span i18n:translate="theming_mapper_shelf_label">Selected:</span>
+                        <span class="shelf" id="content-frame-shelf"></span>
+                        <a class="clear-shelf" id="content-frame-shelf-clear" href="#clear"
+                            title="Clear selection" i18n:attributes="title">x</a>
+                    </div>
+                    <span id="content-frame-info"></span>
+                </div>
+
+                <div class="panel-footer">
+                    <div class="inspector-switch">
+                        <button id="content-inspector-on" disabled="disabled">Inspector on</button>
+                        <button id="content-inspector-off">Inspector off</button>
+                    </div>
+                </div>
+
+                <div id="content-footer-help" class="discreet footer-help" i18n:translate="help_highlighter_selection">
+                    Hover over an element to see its selector.
+                    Left-click or press <em>Enter</em> to save.
+                    Press <em>Esc</em> to select parent.
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Wizard overlay -->
+        <div id="new-rule-wizard" class="overlay overlay-ajax">
+            <div class="close">
+                <span i18n:translate="">Close</span>
+            </div>
+            <div class="pb-ajax">
+                <div class="new-rule">
+                    <h1 class="documentFirstHeading" i18n:translate="theming_mapper_heading_newrule">Build rule</h1>
+
+                    <div id="new-rule-step-1" class="rule-wizard-step">
+                        <div class="documentDescription" i18n:translate="theming_mapper_wizard_step1">
+                            This wizard will help you build a Diazo rule by selecting relevant elements using
+                            the <strong>HTML mockup</strong> and <strong>Unthemed content</strong> inspectors.
+                        </div>
+
+                        <form>
+                            <div id="new-rule-type-panel">
+                                <div>
+                                    <input type="radio" name="new-rule-type" value="replace" id="new-rule-replace" checked="checked" />
+                                    <label for="new-rule-replace" i18n:translate="theming_mapping_wizard_replace">
+                                        <strong>Replace</strong> an element of the theme with an element from the content
+                                    </label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="new-rule-type" value="before" id="new-rule-before" />
+                                    <label for="new-rule-before" i18n:translate="theming_mapping_wizard_before">
+                                        Insert an element from the content <strong>before</strong> an element in the theme
+                                    </label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="new-rule-type" value="after" id="new-rule-after" />
+                                    <label for="new-rule-after" i18n:translate="theming_mapping_wizard_after">
+                                        Insert an element from the content <strong>after</strong> an element in the theme
+                                    </label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="new-rule-type" value="drop:content" id="new-rule-drop-content" />
+                                    <label for="new-rule-drop-content" i18n:translate="theming_mapping_wizard_drop_content">
+                                        <strong>Drop</strong> an element in the <strong>content</strong>
+                                    </label>
+                                </div>
+                                <div>
+                                    <input type="radio" name="new-rule-type" value="drop:theme" id="new-rule-drop-theme" />
+                                    <label for="new-rule-drop-theme" i18n:translate="theming_mapping_wizard_drop_theme">
+                                        <strong>Drop</strong> an element in the <strong>theme</strong>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="field" id="new-rule-reuse-panel">
+                                <input type="checkbox" name="new-rule-reuse-selectors" value="yes" id="new-rule-reuse-selectors" checked="checked" />
+                                <label for="new-rule-reuse-selectors" i18n:translate="theming_mapping_wizard_reuse_selectors">
+                                    Use selected elements
+                                </label>
+                                <div class="formHelp">
+                                    If selected, the rule builder will use the elements you have currently selected
+                                    in the <strong>HTML mockup</strong> and/or <strong>Unthemed content</strong>
+                                    inspectors instead of promting you to select new ones.
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="formControls new-rule-actions">
+                            <input type="submit" class="allowMultiSubmit context next" i18n:attributes="value" value="Next" />
+                            <input type="submit" class="allowMultiSubmit standalone close" i18n:attributes="value" value="Cancel" />
+                        </div>
+
+                    </div>
+                    <div id="new-rule-select-theme" class="rule-wizard-step" style="display:none">
+                        <div class="documentDescription">
+                            Please select an element using the <strong>HTML mockup</strong> inspector.
+                        </div>
+                        <div class="formControls new-rule-actions">
+                            <input type="submit" class="allowMultiSubmit context next" i18n:attributes="value" value="Ok" />
+                            <input type="submit" class="allowMultiSubmit standalone wizard-cancel" i18n:attributes="value" value="Cancel" />
+                        </div>
+                    </div>
+                    <div id="new-rule-select-content" class="rule-wizard-step" style="display:none">
+                        <div class="documentDescription">
+                            Please select an element using the <strong>Unthemed content</strong> inspector.
+                        </div>
+                        <div class="formControls new-rule-actions">
+                            <input type="submit" class="allowMultiSubmit context next" i18n:attributes="value" value="Ok" />
+                            <input type="submit" class="allowMultiSubmit standalone wizard-cancel" i18n:attributes="value" value="Cancel" />
+                        </div>
+                    </div>
+                    <div id="new-rule-step-2" class="rule-wizard-step" style="display:none">
+                        <div class="documentDescription" i18n:translate="theming_mapper_wizard_step2">
+                            The rule can be found below. Use the checkboxes
+                            to further refine it.
+                        </div>
+                        <form>
+                            <div id="new-rule-output-panel">
+                                <textarea name="new-rule-output" id="new-rule-output"></textarea>
+                            </div>
+                            <div id="new-rule-selector-panel">
+                                <div>
+                                    <input type="checkbox" class="rule-modifier" name="new-rule-theme-children" value="replace" id="new-rule-theme-children" />
+                                    <label for="new-rule-theme-children" i18n:translate="">Apply rule to children of the matched theme node(s)</label>
+                                </div>
+                                <div>
+                                    <input type="checkbox" class="rule-modifier" name="new-rule-content-children" value="replace" id="new-rule-content-children" />
+                                    <label for="new-rule-content-children" i18n:translate="">Apply rule to children of the matched content node(s)</label>
+                                </div>
+                            </div>
+
+                        </form>
+
+                        <div class="formControls new-rule-actions">
+                            <input type="submit" class="allowMultiSubmit context insert" i18n:attributes="value; title" tal:condition="view/editable"
+                                title="Insert rule into the rules.xml file"
+                                value="Insert" />
+                            <input type="submit" class="allowMultiSubmit context copy" i18n:attributes="value" value="Copy to clipboard" />
+                            <input type="submit" class="allowMultiSubmit standalone close" i18n:attributes="value" value="Close" />
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

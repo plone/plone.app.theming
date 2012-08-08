@@ -1,2 +1,12 @@
 *.py?
-src/plone.app.theming.egg-info/
+*.pyc
+.DS_Store
+*.egg-info
+*.graffle
+.installed.cfg
+.mr.developer.cfg
+bin/
+develop-eggs/
+extras/
+parts/
+var/

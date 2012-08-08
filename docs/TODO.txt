@@ -1,0 +1,27 @@
+plone.app.theming to-do
+=======================
+
+General
+-------
+
+[ ] Improve test coverage
+    [ ] Create
+    [ ] Copy
+    [ ] Delete
+    [ ] Enable
+    [ ] Disable
+    [ ] Advanced save
+
+Mapper
+------
+
+
+Future
+------
+
+[ ] Let preview show better error if theme not found
+[ ] Make preview show current path from content?
+[ ] Instead of hiding file manager for read-only themes, show with read-only
+    editor?
+[ ] Working copy editing
+[ ] Table-based visual rules list viewer/editor instead of source (unless rules source too complex)

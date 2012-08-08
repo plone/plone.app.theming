@@ -1,8 +1,15 @@
 Changelog
 =========
 
-1.0.1 (unreleased)
+1.1a1 (unreleased)
 ------------------
+
+- Replace the stock "Themes" control panel with a renamed "Theming" control
+  panel, which incorporates the former's settings under its "Advanced" tab.
+  [optilude]
+
+- Add a full in-Plone theme authoring environment
+  [optilude, vangheem]
 
 - Update IBeforeTraverseEvent import to zope.traversing.
   [hannosch]

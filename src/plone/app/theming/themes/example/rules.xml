@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules
+    xmlns="http://namespaces.plone.org/diazo"
+    xmlns:css="http://namespaces.plone.org/diazo/css"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+    <!-- Note:
+
+        This is an example theme only. It is reasonably complete, but not
+        perfect, and not tested in all browsers. It is intended only to show
+        how a reasonably complete theme can be constructed.
+
+        See ``theme.html`` for the page layout and placeholders, ``theme.css``
+        and ``bootstrap.css`` for the basic theme CSS (based on Twitter
+        Bootstrap), and ``ploneui.css``, which contains CSS stolen from Plone's
+        default Sunburst theme to style Plone-specific elements.
+
+        -->
+
+    <rules css:if-content="#visual-portal-wrapper">
+
+        <theme href="theme.html" />
+
+        <!-- Head elements -->
+        <replace css:theme="html head title" css:content="html head title" />
+        <after css:theme-children="html head" css:content="html head base" />
+        <after css:theme-children="html head" css:content="html head script" />
+
+        <!-- Logo -->
+        <copy attributes="href" css:theme="#brand" css:content="#portal-logo" />
+
+        <!-- Tabs -->
+        <replace css:theme-children="#tabs" css:content-children="#portal-globalnav" />
+
+        <!-- Personal tools -->
+        <replace css:theme="#account-info" css:content="#portal-personaltools" />
+
+        <!-- Search -->
+        <copy attributes="action" css:theme="#searchbox" css:content="#portal-searchbox form" />
+        <copy attributes="name" css:theme="#searchbox .search-query" css:content="#portal-searchbox form .searchField" />
+
+        <!-- Edit bar -->
+        <before css:theme-children="#content" css:content="#edit-bar" />
+
+        <!-- Portal messages -->
+
+        <!-- Main columns -->
+        <replace css:content-children="#content" css:theme-children="#content" />
+        <replace css:content-children="#portal-column-one" css:theme-children="#left-column" />
+        <replace css:content-children="#portal-column-two" css:theme-children="#right-column" />
+
+        <!-- Footer -->
+        <replace css:theme-children="#footer" css:content-children="#portal-footer" />
+        <after css:theme-children="#footer" css:content="#portal-siteactions" />
+
+    </rules>
+
+</rules>

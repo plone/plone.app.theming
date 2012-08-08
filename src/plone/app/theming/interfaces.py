@@ -8,11 +8,16 @@ _ = MessageFactory(u"plone")
 
 THEME_RESOURCE_NAME = 'theme'
 RULE_FILENAME = 'rules.xml'
+DEFAULT_THEME_FILENAME = 'index.html'
+TEMPLATE_THEME = 'template'
 
 MANIFEST_FORMAT = ManifestFormat(THEME_RESOURCE_NAME,
-        keys=['title', 'description', 'rules', 'prefix', 'doctype'],
+        keys=['title', 'description', 'rules', 'prefix', 'doctype', 'preview'],
         parameterSections=['parameters'],
     )
+
+THEME_EXTENSIONS = frozenset(['html', 'htm'])
+
 
 class ITheme(Interface):
     """A theme, loaded from a resource directory
@@ -53,6 +58,12 @@ class ITheme(Interface):
             required=False,
             default="",
         )
+
+    preview = schema.ASCIILine(
+            title=_(u"Preview image"),
+            required=False,
+        )
+
 
 class IThemeSettings(Interface):
     """Transformation settings
@@ -146,6 +157,7 @@ class IThemeSettings(Interface):
 class IThemingLayer(Interface):
     """Browser layer used to indicate that plone.app.theming is installed
     """
+
 
 class IThemePlugin(Interface):
     """Register a named utility providing this interface to create a theme
