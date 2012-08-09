@@ -21,6 +21,8 @@ from plone.app.theming.utils import isThemeEnabled
 from plone.app.theming.utils import findContext
 from plone.app.theming.zmi import patch_zmi
 
+from plone.app.theming.utils import filewatcher
+
 # Disable theming of ZMI
 patch_zmi()
 
@@ -95,10 +97,13 @@ class ThemeTransform(object):
         # Apply theme
         transform = None
 
-        if not DevelopmentMode:
+        if not DevelopmentMode or ( DevelopmentMode and not filewatcher.dirty() ):
             transform = cache.transform
 
         if transform is None:
+            if DevelopmentMode:
+                filewatcher.clear()
+
             rules = settings.rules
             absolutePrefix = settings.absolutePrefix or None
             readNetwork = settings.readNetwork
@@ -107,9 +112,11 @@ class ThemeTransform(object):
             transform = compileThemeTransform(rules, absolutePrefix, readNetwork, parameterExpressions)
             if transform is None:
                 return None
+
+            cache.updateTransform(transform)
             
-            if not DevelopmentMode:
-                cache.updateTransform(transform)
+            if DevelopmentMode:
+                filewatcher.start()
 
         return transform
 

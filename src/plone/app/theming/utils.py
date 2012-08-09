@@ -43,6 +43,123 @@ from plone.app.theming.plugins.utils import getPluginSettings
 
 from Products.PageTemplates.Expressions import getEngine
 
+#
+# Make Diazo reload when files changed
+#
+
+import signal
+
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+
+from Signals.SignalHandler import SignalHandler
+registerHandler = SignalHandler.registerHandler
+
+from zope.app.component.hooks import getSite
+
+import logging
+
+import DateTime
+import datetime
+
+LOGGER = logging.getLogger('plone.app.theming')
+
+class FileWatcher(FileSystemEventHandler):
+    """ Observe the .xml and .html files of the theme
+    
+    """
+
+    def __init__(self):
+        self.files = []
+        self.paths = []
+        self.objects = []
+        self.observers = []
+        self.last_start = datetime.datetime.now()
+        self.is_dirty = True
+
+        FileSystemEventHandler.__init__(self)
+
+        registerHandler(signal.SIGINT, self._exitHandler)
+        registerHandler(signal.SIGTERM, self._exitHandler)
+
+    def clear(self):
+        for obs in self.observers:
+            obs.stop()
+
+        self.paths = []
+        self.files = []
+        self.objects = []
+        self.is_dirty = True
+
+    def add(self, filename):
+        site = getSite()
+
+        if site is None:
+            return
+
+        filesystempath = site.restrictedTraverse(str(filename))
+
+        if filesystempath is None:
+            return
+
+        if filesystempath.__class__.__name__ is 'File':
+            self.objects.append(filesystempath)
+            return
+
+        filesystempath = filesystempath.path 
+        filesystemfolder = '/'.join(filesystempath.split('/')[:-1])
+
+        if filesystempath not in self.files:
+            self.files.append(filesystempath) 
+
+        if filesystemfolder not in self.paths:
+            self.paths.append(filesystemfolder) 
+
+    def dirty(self):
+        site = getSite()
+
+        if len(self.objects) > 0:
+            for o in self.objects:
+                # This refetch is needed to get the latest version of the object
+                oo = site.restrictedTraverse(o.absolute_url())
+                #oo = site._p_jar[o._p_oid]
+
+                if oo.bobobase_modification_time() > self.last_start:
+                    return True
+
+        return self.is_dirty
+
+    def start(self):
+        """
+        Start file monitoring thread
+        """
+        
+        for path in self.paths:
+            observer = Observer()
+            self.observers.append(observer)
+            observer.schedule(self, path=path, recursive=False)
+            observer.start()
+
+            LOGGER.info("Observing %s" % path)
+
+        self.is_dirty = False
+        self.last_start = DateTime.DateTime()
+        LOGGER.info("Observing since %s ( paths = %d, objects = %d )", str(self.last_start), len(self.paths), len(self.objects) )
+
+    def _exitHandler(self):
+        for obs in self.observers:
+            obs.stop()
+
+    def on_any_event(self, event):   
+        if event.src_path in self.files:
+            self.is_dirty = True
+
+filewatcher = FileWatcher()
+
+#
+# Make Diazo reload when files changed
+#
+
 
 class NetworkResolver(etree.Resolver):
     """Resolver for network urls
@@ -84,6 +201,9 @@ class InternalResolver(etree.Resolver):
         request = getRequest()
         if request is None:
             return None
+
+        if system_url.endswith('.xml') or system_url.endswith('.html'):
+            filewatcher.add(system_url)
 
         # Ignore URLs with a scheme
         if '://' in system_url:
