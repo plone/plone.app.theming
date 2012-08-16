@@ -548,7 +548,7 @@ set. Your rules file might include::
 To add this parameter as well as the ``mode`` parameter outlined earlier, you
 could add the following in the control panel::
 
-    ajax_load = python: 'ajax_load' in request.form
+    ajax_load = python: request.form.get('ajax_load')
     mode = string: test
 
 The right hand side is a TALES expression. It *must* evaluate to a string,
@@ -585,7 +585,7 @@ example::
     description = A test theme
 
     [theme:parameters]
-    ajax_load = python: 'ajax_load' in request.form
+    ajax_load = python: request.form.get('ajax_load')
     mode = string: test
 
 Theme debugging

@@ -1,8 +1,24 @@
 Changelog
 =========
 
-1.0b10 - unreleased
--------------------
+1.0.1 (unreleased)
+------------------
+
+- Advise defining ajax_load as ``request.form.get('ajax_load')`` in
+  manifest.cfg.  For instance, the login_form has an hidden empty
+  ajax_load input, which would give an unthemed page after submitting
+  the form.
+  [maurits]
+
+- Update IBeforeTraverseEvent import to zope.traversing.
+  [hannosch]
+
+- On tab "Manage themes", change table header to
+  better describe what's actually listed.
+  [kleist]
+
+1.0 (2012-04-15)
+----------------
 
 * Prevent AttributeError when getRequest returns None.
   [maurits]
