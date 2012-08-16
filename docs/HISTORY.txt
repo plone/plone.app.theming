@@ -4,6 +4,12 @@ Changelog
 1.0.1 (unreleased)
 ------------------
 
+- Advise defining ajax_load as ``request.form.get('ajax_load')`` in
+  manifest.cfg.  For instance, the login_form has an hidden empty
+  ajax_load input, which would give an unthemed page after submitting
+  the form.
+  [maurits]
+
 - Update IBeforeTraverseEvent import to zope.traversing.
   [hannosch]
 
