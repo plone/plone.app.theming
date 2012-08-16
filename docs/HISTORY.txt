@@ -4,7 +4,12 @@ Changelog
 1.1a2 (Unreleased)
 ------------------
 
- - No changes yet
+- Advise defining ajax_load as ``request.form.get('ajax_load')`` in
+  manifest.cfg.  For instance, the login_form has an hidden empty
+  ajax_load input, which would give an unthemed page after submitting
+  the form.
+  [maurits]
+
 
 1.1a1 (2012-08-08)
 ------------------
