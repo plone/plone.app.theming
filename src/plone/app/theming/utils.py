@@ -62,6 +62,8 @@ import logging
 import DateTime
 import datetime
 
+from OFS.Image import File
+
 LOGGER = logging.getLogger('plone.app.theming')
 
 class FileWatcher(FileSystemEventHandler):
@@ -103,7 +105,7 @@ class FileWatcher(FileSystemEventHandler):
         if filesystempath is None:
             return
 
-        if filesystempath.__class__.__name__ is 'File':
+        if isinstance(filesystempath, File):
             self.objects.append(filesystempath)
             return
 
