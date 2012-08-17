@@ -89,6 +89,7 @@ class FileWatcher(FileSystemEventHandler):
         self.paths = []
         self.files = []
         self.objects = []
+        self.observers = []
         self.is_dirty = True
 
     def add(self, filename):
