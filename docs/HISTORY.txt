@@ -1,7 +1,14 @@
 Changelog
 =========
 
-1.0.2 (unreleased)
+1.0.3 (2012-08-18)
+------------------
+
+- Fix packaging error.
+  [esteele]
+
+
+1.0.2 (2012-08-18)
 ------------------
 
 - Fixed up the 1.0 branch, so a new release will actually contain the
