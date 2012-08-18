@@ -350,7 +350,7 @@
                         <label for="doctype" i18n:translate="label_doctype">Doctype</label>
                         <div class="formHelp" i18n:translate="help_doctype">
                             You can specify a Doctype string which will be set on
-                            the output, for example "<!DOCTYPE html>". If left
+                            the output, for example "&lt;!DOCTYPE html&gt;". If left
                             blank the default XHTML 1.0 transistional Doctype or
                             that set in the Diazo theme is used.
                         </div>
