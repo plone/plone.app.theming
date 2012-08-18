@@ -18,7 +18,7 @@ from plone.registry.interfaces import IRegistry
 from zope.component import getUtility
 
 from plone.app.theming.interfaces import IThemeSettings
-from plone.app.theming.utils import applyTheme, getAvailableThemes, getTheme
+from plone.app.theming.utils import applyTheme, getAvailableThemes, getTheme, filewatcher
 from plone.app.theming.utils import InternalResolver, PythonResolver, resolvePythonURL
 
 import re
@@ -50,6 +50,7 @@ class TestCase(unittest.TestCase):
         transaction.commit()
 
     def tearDown(self):
+        filewatcher.clear()
         Globals.DevelopmentMode = False
 
     def evaluate(self, context, expression):

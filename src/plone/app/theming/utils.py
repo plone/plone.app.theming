@@ -79,14 +79,15 @@ class FileWatcher(FileSystemEventHandler):
         self.last_start = datetime.datetime.now()
         self.is_dirty = True
 
-        FileSystemEventHandler.__init__(self)
+#        FileSystemEventHandler.__init__(self)
 
-        registerHandler(signal.SIGINT, self._exitHandler)
-        registerHandler(signal.SIGTERM, self._exitHandler)
+#        registerHandler(signal.SIGINT, self._exitHandler)
+#        registerHandler(signal.SIGTERM, self._exitHandler)
 
     def clear(self):
         for obs in self.observers:
             obs.stop()
+            del obs
 
         self.paths = []
         self.files = []
@@ -100,16 +101,20 @@ class FileWatcher(FileSystemEventHandler):
         if site is None:
             return
 
-        filesystempath = site.restrictedTraverse(str(filename))
+        filesystempath = None
+        try:
+            filesystempath = site.restrictedTraverse(str(filename))
+            if isinstance(filesystempath, File):
+                self.objects.append(filesystempath)
+                return
+
+            filesystempath = filesystempath.path 
+        except:
+            filesystempath = filename
 
         if filesystempath is None:
             return
 
-        if isinstance(filesystempath, File):
-            self.objects.append(filesystempath)
-            return
-
-        filesystempath = filesystempath.path 
         filesystemfolder = '/'.join(filesystempath.split('/')[:-1])
 
         if filesystempath not in self.files:
@@ -143,15 +148,16 @@ class FileWatcher(FileSystemEventHandler):
             observer.schedule(self, path=path, recursive=False)
             observer.start()
 
-            LOGGER.info("Observing %s" % path)
+            LOGGER.debug("Observing %s" % path)
 
         self.is_dirty = False
         self.last_start = DateTime.DateTime()
-        LOGGER.info("Observing since %s ( paths = %d, objects = %d )", str(self.last_start), len(self.paths), len(self.objects) )
+        LOGGER.debug("Observing since %s ( paths = %d, objects = %d )", str(self.last_start), len(self.paths), len(self.objects) )
 
     def _exitHandler(self):
         for obs in self.observers:
             obs.stop()
+        observers = []
 
     def on_any_event(self, event):   
         if event.src_path in self.files:
@@ -205,9 +211,6 @@ class InternalResolver(etree.Resolver):
         if request is None:
             return None
 
-        if system_url.endswith('.xml') or system_url.endswith('.html'):
-            filewatcher.add(system_url)
-
         # Ignore URLs with a scheme
         if '://' in system_url:
             return None
@@ -216,6 +219,10 @@ class InternalResolver(etree.Resolver):
         if system_url.startswith('diazo:'):
             return None
 
+        # Register with Watchdog
+        if system_url.endswith('.xml') or system_url.endswith('.html'):
+            filewatcher.add(system_url)   
+        
         context = findContext(request)
         portalState = queryMultiAdapter(
             (context, request), name=u"plone_portal_state")
