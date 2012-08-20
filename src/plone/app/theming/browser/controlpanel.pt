@@ -136,7 +136,7 @@
 <body>
 
 <metal:override fill-slot="portlets_one_slot">
-    <metal:prefs use-macro="here/portlet_prefs/macros/portlet" />
+    <metal:prefs use-macro="context/portlet_prefs/macros/portlet" />
 </metal:override>
 
 <div metal:fill-slot="main" id="themeControlPanel">
