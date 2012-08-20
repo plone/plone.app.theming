@@ -3,7 +3,7 @@
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     lang="en"
-    metal:use-macro="context/prefs_main_template/macros/master"
+    metal:use-macro="context/main_template/macros/master"
     i18n:domain="plone">
 
 <metal:block fill-slot="top_slot">
@@ -11,6 +11,9 @@
     <tal:defines tal:define="dummy python:request.set('disable_border',1);
                              disable_column_one python:request.set('disable_plone.leftcolumn',0);
                              disable_column_two python:request.set('disable_plone.rightcolumn',1);"/>
+</metal:block>
+
+<metal:block fill-slot="head_slot">
 
     <link
         rel="stylesheet"
@@ -128,12 +131,15 @@
 
 </script>
 
-
 </metal:block>
 
 <body>
 
-<div metal:fill-slot="prefs_configlet_main" id="themeControlPanel">
+<metal:override fill-slot="portlets_one_slot">
+    <metal:prefs use-macro="context/portlet_prefs/macros/portlet" />
+</metal:override>
+
+<div metal:fill-slot="main" id="themeControlPanel">
 
     <h1 class="documentFirstHeading"
         i18n:translate="heading_theme_settings">Theme settings</h1>

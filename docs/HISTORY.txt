@@ -10,6 +10,10 @@ Changelog
   the form.
   [maurits]
 
+- Change theme editor page templates to use main_template rather than
+  prefs_main_template to avoid inserting CSS and JavaScript too early
+  under plonetheme.classic.
+  [danjacka]
 
 1.1a1 (2012-08-08)
 ------------------
