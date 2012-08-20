@@ -748,3 +748,139 @@ class TestCase(unittest.TestCase):
         self.assertTrue(
             '''<div>N\xc3\xbamero uno</div>'''
             in browser.contents)
+
+    def test_reload_in_dev_mode_filesystem(self):        
+        app = self.layer['app']
+        portal = self.layer['portal']
+
+        Globals.DevelopmentMode = True
+        self.settings.enabled = True
+        theme = getTheme('plone.app.theming.tests')
+        applyTheme(theme)
+        self.assertEqual(self.settings.rules, u'/++theme++plone.app.theming.tests/rules.xml')
+        self.assertEqual(self.settings.currentTheme, u"plone.app.theming.tests")
+        self.assertEqual(self.settings.doctype, u"<!DOCTYPE html>")
+        import transaction; transaction.commit()
+
+        browser = Browser(app)
+        browser.open(portal.absolute_url())
+
+        # Doctype
+        self.assertTrue(re.match("<!DOCTYPE html>\s+<html", browser.contents))
+
+        # Now switch some setting: the doctype
+        self.settings.doctype = "<!DOCTYPE xhtml>"
+        transaction.commit()
+
+        browser.open(portal.absolute_url())
+
+        # Doctype
+        self.assertTrue(re.match("<!DOCTYPE xhtml>\s+<html", browser.contents))
+
+
+        # Now change a file on the filesystem:
+        fname = portal.restrictedTraverse(str(self.settings.rules)).path
+        from shutil import copyfile
+
+        try:
+            # Copy the 'otherrules.xml' file to the 'rules.xml'
+            src = fname.replace('resources/', '/other')
+            copyfile(fname, fname + '.bkp')
+            copyfile(src, fname)
+
+            browser.open(portal.absolute_url())
+
+            # The theme
+            self.assertTrue("This is the other theme" in browser.contents)
+
+        finally:
+            copyfile(fname + '.bkp', fname)
+            os.remove(fname + '.bkp')        
+
+        browser.open(portal.absolute_url())
+
+        # Test for the test: has the rules file been restored ?
+        self.assertTrue("This is the theme" in browser.contents)
+
+
+    def test_reload_in_dev_mode_plone(self):        
+        app = self.layer['app']
+        portal = self.layer['portal']
+
+        # We'll upload the theme files to the Plone site root
+        rules_contents = open(os.path.join(os.path.split(__file__)[0], 'localrules.xml'))
+        portal.manage_addDTMLMethod('rules.xml', file=rules_contents)
+        theme_contents = open(os.path.join(os.path.split(__file__)[0], 'theme.html'))
+        portal.manage_addDTMLMethod('theme.html', file=theme_contents)
+        theme_contents = open(os.path.join(os.path.split(__file__)[0], 'othertheme.html'))
+        portal.manage_addDTMLMethod('othertheme.html', file=theme_contents)
+
+        # These paths should be relative to the Plone site root
+        Globals.DevelopmentMode = True
+        self.settings.rules = u'/rules.xml'
+        self.settings.enabled = True
+
+        import transaction; transaction.commit()
+
+        browser = Browser(app)
+        browser.open(portal.absolute_url())
+
+        # Title - pulled in with rules.xml
+        self.assertTrue(portal.title in browser.contents)
+
+        # Elsewhere - not pulled in
+        self.assertFalse("Accessibility" in browser.contents)
+
+        # The theme
+        self.assertTrue("This is the theme" in browser.contents)
+
+        rules_contents = open(os.path.join(os.path.split(__file__)[0], 'otherrules.xml')).read()
+        rules = portal.restrictedTraverse('rules.xml')
+
+        rules.manage_edit(rules_contents.replace('othertheme',  '/othertheme'), '')
+        transaction.commit()
+
+        browser.open(portal.absolute_url())
+        
+        # The theme
+        self.assertTrue("This is the other theme" in browser.contents)
+
+    def test_reload_in_production_mode(self):        
+        app = self.layer['app']
+        portal = self.layer['portal']
+
+        Globals.DevelopmentMode = False
+        self.settings.enabled = True
+        theme = getTheme('plone.app.theming.tests')
+        applyTheme(theme)
+        self.assertEqual(self.settings.rules, u'/++theme++plone.app.theming.tests/rules.xml')
+        self.assertEqual(self.settings.currentTheme, u"plone.app.theming.tests")
+        self.assertEqual(self.settings.doctype, u"<!DOCTYPE html>")
+        import transaction; transaction.commit()
+
+        browser = Browser(app)
+        browser.open(portal.absolute_url())
+
+        # Doctype
+        self.assertTrue(re.match("<!DOCTYPE html>\s+<html", browser.contents))
+
+        # Now change a file on the filesystem:
+        fname = portal.restrictedTraverse(str(self.settings.rules)).path
+        from shutil import copyfile
+
+        try:
+            # Copy the 'otherrules.xml' file to the 'rules.xml'
+            src = fname.replace('resources/', '/other')
+            copyfile(fname, fname + '.bkp')
+            copyfile(src, fname)
+
+            browser.open(portal.absolute_url())
+
+            # The theme
+            self.assertFalse("This is the other theme" in browser.contents)
+
+        finally:
+            copyfile(fname + '.bkp', fname)
+            os.remove(fname + '.bkp')        
+
+

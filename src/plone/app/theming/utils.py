@@ -63,6 +63,7 @@ import DateTime
 import datetime
 
 from OFS.Image import File
+from OFS.DTMLMethod import DTMLMethod
 
 LOGGER = logging.getLogger('plone.app.theming')
 
@@ -79,10 +80,10 @@ class FileWatcher(FileSystemEventHandler):
         self.last_start = datetime.datetime.now()
         self.is_dirty = True
 
-#        FileSystemEventHandler.__init__(self)
+        FileSystemEventHandler.__init__(self)
 
-#        registerHandler(signal.SIGINT, self._exitHandler)
-#        registerHandler(signal.SIGTERM, self._exitHandler)
+        registerHandler(signal.SIGINT, self._exitHandler)
+        registerHandler(signal.SIGTERM, self._exitHandler)
 
     def clear(self):
         for obs in self.observers:
@@ -104,13 +105,24 @@ class FileWatcher(FileSystemEventHandler):
         filesystempath = None
         try:
             filesystempath = site.restrictedTraverse(str(filename))
-            if isinstance(filesystempath, File):
+            if isinstance(filesystempath, File) or isinstance(filesystempath, DTMLMethod):
                 self.objects.append(filesystempath)
                 return
 
             filesystempath = filesystempath.path 
         except:
-            filesystempath = filename
+            pass
+
+        if filesystempath is None and filename[0] == '/':
+            try:
+                filesystempath = site.restrictedTraverse(str(filename[1:]))
+                if isinstance(filesystempath, File) or isinstance(filesystempath, DTMLMethod):
+                    self.objects.append(filesystempath)
+                    return
+
+                filesystempath = filesystempath.path 
+            except:
+                filesystempath = filename
 
         if filesystempath is None:
             return
