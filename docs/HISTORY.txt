@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1a2 (Unreleased)
+1.1a2 (2012-08-30)
 ------------------
 
 - Advise defining ajax_load as ``request.form.get('ajax_load')`` in
