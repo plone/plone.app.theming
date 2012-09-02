@@ -1057,7 +1057,7 @@
                                 <div class="formHelp">
                                     If selected, the rule builder will use the elements you have currently selected
                                     in the <strong>HTML mockup</strong> and/or <strong>Unthemed content</strong>
-                                    inspectors instead of promting you to select new ones.
+                                    inspectors instead of prompting you to select new ones.
                                 </div>
                             </div>
                         </form>
