@@ -47,16 +47,6 @@ from Products.PageTemplates.Expressions import getEngine
 # Make Diazo reload when files changed
 #
 
-import signal
-
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-
-from Signals.SignalHandler import SignalHandler
-registerHandler = SignalHandler.registerHandler
-
-from zope.app.component.hooks import getSite
-
 import logging
 
 import DateTime
@@ -66,121 +56,6 @@ from OFS.Image import File
 from OFS.DTMLMethod import DTMLMethod
 
 LOGGER = logging.getLogger('plone.app.theming')
-
-class FileWatcher(FileSystemEventHandler):
-    """ Observe the .xml and .html files of the theme
-    
-    """
-
-    def __init__(self):
-        self.files = []
-        self.paths = []
-        self.objects = []
-        self.observers = []
-        self.last_start = datetime.datetime.now()
-        self.is_dirty = True
-
-        FileSystemEventHandler.__init__(self)
-
-        registerHandler(signal.SIGINT, self._exitHandler)
-        registerHandler(signal.SIGTERM, self._exitHandler)
-
-    def clear(self):
-        for obs in self.observers:
-            obs.stop()
-            del obs
-
-        self.paths = []
-        self.files = []
-        self.objects = []
-        self.observers = []
-        self.is_dirty = True
-
-    def add(self, filename):
-        site = getSite()
-
-        if site is None:
-            return
-
-        filesystempath = None
-        try:
-            filesystempath = site.restrictedTraverse(str(filename))
-            if isinstance(filesystempath, File) or isinstance(filesystempath, DTMLMethod):
-                self.objects.append(filesystempath)
-                return
-
-            filesystempath = filesystempath.path 
-        except:
-            pass
-
-        if filesystempath is None and filename[0] == '/':
-            try:
-                filesystempath = site.restrictedTraverse(str(filename[1:]))
-                if isinstance(filesystempath, File) or isinstance(filesystempath, DTMLMethod):
-                    self.objects.append(filesystempath)
-                    return
-
-                filesystempath = filesystempath.path 
-            except:
-                filesystempath = filename
-
-        if filesystempath is None:
-            return
-
-        filesystemfolder = '/'.join(filesystempath.split('/')[:-1])
-
-        if filesystempath not in self.files:
-            self.files.append(filesystempath) 
-
-        if filesystemfolder not in self.paths:
-            self.paths.append(filesystemfolder) 
-
-    def dirty(self):
-        site = getSite()
-
-        if len(self.objects) > 0:
-            for o in self.objects:
-                # This refetch is needed to get the latest version of the object
-                oo = site.restrictedTraverse(o.absolute_url())
-                #oo = site._p_jar[o._p_oid]
-
-                if oo.bobobase_modification_time() > self.last_start:
-                    return True
-
-        return self.is_dirty
-
-    def start(self):
-        """
-        Start file monitoring thread
-        """
-        
-        for path in self.paths:
-            observer = Observer()
-            self.observers.append(observer)
-            observer.schedule(self, path=path, recursive=False)
-            observer.start()
-
-            LOGGER.debug("Observing %s" % path)
-
-        self.is_dirty = False
-        self.last_start = DateTime.DateTime()
-        LOGGER.debug("Observing since %s ( paths = %d, objects = %d )", str(self.last_start), len(self.paths), len(self.objects) )
-
-    def _exitHandler(self):
-        for obs in self.observers:
-            obs.stop()
-        observers = []
-
-    def on_any_event(self, event):   
-        if event.src_path in self.files:
-            self.is_dirty = True
-
-filewatcher = FileWatcher()
-
-#
-# Make Diazo reload when files changed
-#
-
 
 class NetworkResolver(etree.Resolver):
     """Resolver for network urls
@@ -231,10 +106,6 @@ class InternalResolver(etree.Resolver):
         if system_url.startswith('diazo:'):
             return None
 
-        # Register with Watchdog
-        if system_url.endswith('.xml') or system_url.endswith('.html'):
-            filewatcher.add(system_url)   
-        
         context = findContext(request)
         portalState = queryMultiAdapter(
             (context, request), name=u"plone_portal_state")

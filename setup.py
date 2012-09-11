@@ -41,7 +41,7 @@ setup(name='plone.app.theming',
           'Products.CMFPlone',
           'zope.traversing',
           'plone.app.controlpanel',
-          'watchdog'
+          'five.grok'
       ],
       extras_require={
         'test': ['plone.app.testing'],

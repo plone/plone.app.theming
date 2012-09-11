@@ -21,8 +21,26 @@ from plone.app.theming.utils import isThemeEnabled
 from plone.app.theming.utils import findContext
 from plone.app.theming.zmi import patch_zmi
 
-from plone.app.theming.utils import filewatcher
+try:
+    from sauna.reload.interfaces import IThemeChanged
+    import zope.event
+    from five import grok
 
+    @grok.subscribe(IThemeChanged)
+    def reload(event):
+        registry = queryUtility(IRegistry)
+        if registry is None:
+            return None
+
+        try:
+            settings = registry.forInterface(IThemeSettings, False)
+        except KeyError:
+            return None
+    
+        invalidateCache(settings, event)
+except:
+    pass
+        
 # Disable theming of ZMI
 patch_zmi()
 
@@ -95,14 +113,9 @@ class ThemeTransform(object):
         cache = getCache(settings)
 
         # Apply theme
-        transform = None
-
-        if not DevelopmentMode or ( DevelopmentMode and not filewatcher.dirty() ):
-            transform = cache.transform
+        transform = cache.transform
 
         if transform is None:
-            if DevelopmentMode:
-                filewatcher.clear()
 
             rules = settings.rules
             absolutePrefix = settings.absolutePrefix or None
@@ -115,9 +128,6 @@ class ThemeTransform(object):
 
             cache.updateTransform(transform)
             
-            if DevelopmentMode:
-                filewatcher.start()
-
         return transform
 
     def getSettings(self):
