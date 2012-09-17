@@ -49,20 +49,14 @@
 
             // Editor management
 
-            var HTMLMode = require("ace/mode/html").Mode;
-            var CSSMode  = require("ace/mode/css").Mode;
-            var XMLMode  = require("ace/mode/xml").Mode;
-            var JSMode   = require("ace/mode/javascript").Mode;
-            var TextMode = require("ace/mode/text").Mode;
-
             var extensionModes = {
-                css: new CSSMode(),
-                js: new JSMode(),
-                htm: new HTMLMode(),
-                html: new HTMLMode(),
-                xml: new XMLMode()
+                css: "ace/mode/css",
+                js: "ace/mode/javascript",
+                htm: "ace/mode/html",
+                html: "ace/mode/html",
+                xml: "ace/mode/xml"
             };
-            var defaultMode = new TextMode();
+            var defaultMode = "ace/mode/text";
 
             function getExtension(path) {
                 var m = path.match(/.(\w+)$/);
@@ -648,6 +642,7 @@
             (function() {
 
                 var contentSource = new SourceEditor('content-source', extensionModes.html, "", true);
+                // TODO: key bindings?
 
                 $("#content-frame").ready(function() {
                     var linkManager = new LinkManager("#content-frame", 'off',  WINDOW_BASE, THEME_BASE_URL);
@@ -730,37 +725,6 @@
                 $("#content-frame-shelf-clear").click(function() {
                     contentFrameHighlighter.save(null);
                     return false;
-                });
-
-            })();
-
-            // Key bindings
-            (function() {
-
-                var canon = require('pilot/canon');
-
-                canon.addCommand({
-                    name: 'buildRule',
-                    bindKey: {
-                        mac: 'Command-B',
-                        win: 'Ctrl+B',
-                        sender: 'editor'
-                    },
-                    exec: function(env, args, request) {
-                        $("#new-rule").click();
-                    }
-                });
-
-                canon.addCommand({
-                    name: 'rulesHelp',
-                    bindKey: {
-                        mac: 'Command-H',
-                        win: 'Ctrl+H',
-                        sender: 'editor'
-                    },
-                    exec: function(env, args, request) {
-                        $("#helpButtonForm button").click();
-                    }
                 });
 
             })();
