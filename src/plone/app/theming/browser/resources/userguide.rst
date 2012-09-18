@@ -692,6 +692,7 @@ Rules may operate on content that is fetched from somewhere other than the
 current page being rendered by Plone, by using the ``href`` attribute to specify
 a path of a resource relative to the root of the Plone site::
 
+    <!-- Pull in extra navigation from a browser view on the Plone site root -->
     <after
         css:theme-children="#leftnav"
         css:content=".navitem"
