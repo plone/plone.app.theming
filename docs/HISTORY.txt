@@ -4,6 +4,9 @@ Changelog
 1.1b1 (unreleased)
 ------------------
 
+- Demote ZMI patch log message to debug level.
+  [hannosch]
+
 - Upgrade to ACE 1.0 via plone.resourceeditor
   [optilude]
 
