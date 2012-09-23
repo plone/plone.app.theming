@@ -28,4 +28,4 @@ def patch_zmi():
     for name in NO_THEME_DTML:
         dtml = getattr(Navigation, name)
         dtml.__class__ = NoThemeDTMLFile
-    LOGGER.info('Patched Zope Management Interface to disable theming.')
+    LOGGER.debug('Patched Zope Management Interface to disable theming.')

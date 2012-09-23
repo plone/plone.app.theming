@@ -4,7 +4,8 @@ Changelog
 1.0.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Demote ZMI patch log message to debug level.
+  [hannosch]
 
 
 1.0.3 (2012-08-18)
