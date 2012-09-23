@@ -5,6 +5,7 @@ from zope.globalrequest import getRequest
 
 LOGGER = logging.getLogger('plone.app.theming')
 
+
 class NoThemeDTMLFile(DTMLFile):
     '''DTMLFile that automatically sets the X-Theme-Disabled header'''
 
@@ -19,7 +20,8 @@ NO_THEME_DTML = [
     'manage',
     'manage_page_header',
     'manage_top_frame',
-    ]
+]
+
 
 def patch_zmi():
     from App.Management import Navigation
