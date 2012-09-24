@@ -444,10 +444,10 @@ To change the absolute path prefix (see *Advanced settings*), use::
 
     prefix = /some/prefix
 
-To emply a ``DOCTYPE`` in the themed content other than ``XHTML 1.0
+To employ a ``DOCTYPE`` in the themed content other than ``XHTML 1.0
 Transitional``, add e.g.::
 
-    doctype = html
+    doctype = <!DOCTYPE html>
 
 To provide a user-friendly preview of your theme in the *Theming* control panel,
 add::

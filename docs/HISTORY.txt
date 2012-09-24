@@ -4,6 +4,9 @@ Changelog
 1.1b1 (unreleased)
 ------------------
 
+- Make example Bootstrap-based theme use the HTML5 DOCTYPE.
+  [danjacka]
+
 - Demote ZMI patch log message to debug level.
   [hannosch]
 
