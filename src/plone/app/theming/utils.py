@@ -423,9 +423,9 @@ def isThemeEnabled(request, settings=None):
     if not settings.enabled or not settings.rules:
         return False
 
-    base1 = request.get('BASE1')
-    _, base1 = base1.split('://', 1)
-    host = base1.lower()
+    server_url = request.get('SERVER_URL')
+    _, host = server_url.split('://', 1)
+    host = host.lower()
     serverPort = request.get('SERVER_PORT')
 
     for hostname in settings.hostnameBlacklist or ():
