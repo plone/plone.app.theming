@@ -19,6 +19,7 @@ from plone.app.theming.utils import compileThemeTransform
 from plone.app.theming.utils import prepareThemeParameters
 from plone.app.theming.utils import isThemeEnabled
 from plone.app.theming.utils import findContext
+from plone.app.theming.utils import getParser
 from plone.app.theming.zmi import patch_zmi
 
 # Disable theming of ZMI
@@ -104,7 +105,7 @@ class ThemeTransform(object):
             readNetwork = settings.readNetwork
             parameterExpressions = settings.parameterExpressions
 
-            transform = compileThemeTransform(rules, absolutePrefix, readNetwork, parameterExpressions)
+            transform = compileThemeTransform(rules, absolutePrefix, readNetwork, parameterExpressions, runtrace=DevelopmentMode)
             if transform is None:
                 return None
             
@@ -172,9 +173,18 @@ class ThemeTransform(object):
         params = prepareThemeParameters(findContext(self.request), self.request, parameterExpressions, cache) 
 
         transformed = transform(result.tree, **params)
-        if transformed is None:
-            return None
+        if transformed is not None:
+            # Transformed worked, swap content with result
+            result.tree = transformed
 
-        result.tree = transformed
+        if DevelopmentMode:
+            from diazo.runtrace import generate_debug_html
+            # Add debug information into head
+            body = result.tree.xpath('/html/body')[0]
+            body.insert(-1, generate_debug_html(
+                rules=settings.rules,
+                rules_parser=getParser('rules', settings.readNetwork),
+                error_log = transform.error_log,
+            ))
 
         return result
