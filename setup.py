@@ -48,6 +48,7 @@ setup(name='plone.app.theming',
           'robotsuite',
           'robotframework-selenium2library',
           'decorator',
+          'selenium',
         ],
       },
       entry_points="""
