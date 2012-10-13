@@ -6,13 +6,20 @@ from zope.configuration import xmlconfig
 from plone.app.testing.layers import IntegrationTesting
 from plone.app.testing.layers import FunctionalTesting
 
+from plone.testing.z2 import ZSERVER_FIXTURE
+
+
 class Theming(PloneSandboxLayer):
     defaultBases = (PLONE_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
         # load ZCML
         import plone.app.theming.tests
-        xmlconfig.file('configure.zcml', plone.app.theming.tests, context=configurationContext)
+        xmlconfig.file(
+            'configure.zcml',
+            plone.app.theming.tests,
+            context=configurationContext
+        )
 
         # Run the startup hook
         from plone.app.theming.plugins.hooks import onStartup
@@ -23,5 +30,15 @@ class Theming(PloneSandboxLayer):
         applyProfile(portal, 'plone.app.theming:default')
 
 THEMING_FIXTURE = Theming()
-THEMING_INTEGRATION_TESTING = IntegrationTesting(bases=(THEMING_FIXTURE,), name="Theming:Integration")
-THEMING_FUNCTIONAL_TESTING = FunctionalTesting(bases=(THEMING_FIXTURE,), name="Theming:Functional")
+THEMING_INTEGRATION_TESTING = IntegrationTesting(
+    bases=(THEMING_FIXTURE,),
+    name="Theming:Integration"
+)
+THEMING_FUNCTIONAL_TESTING = FunctionalTesting(
+    bases=(THEMING_FIXTURE,),
+    name="Theming:Functional"
+)
+THEMING_ACCEPTANCE_TESTING = FunctionalTesting(
+    bases=(THEMING_FIXTURE, ZSERVER_FIXTURE),
+    name="Theming:Acceptance"
+)
