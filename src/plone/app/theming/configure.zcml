@@ -1,5 +1,6 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:gs="http://namespaces.zope.org/genericsetup"
     xmlns:zcml="http://namespaces.zope.org/zcml"
     xmlns:i18n="http://namespaces.zope.org/i18n"
@@ -75,6 +76,15 @@
         for="* zope.publisher.interfaces.IRequest"
         provides="zope.traversing.interfaces.ITraversable"
         factory=".traversal.ThemeTraverser"
+        />
+
+    <!-- Theme traverser -->
+    <browser:page
+        name="theme-fragment"
+        for="*"
+        layer="plone.app.theming.interfaces.IThemingLayer"
+        class=".traversal.ThemeFragment"
+        permission="zope.Public"
         />
 
     <!-- Themes -->
