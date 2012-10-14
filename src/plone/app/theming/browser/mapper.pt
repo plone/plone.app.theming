@@ -54,9 +54,12 @@
                 js: "ace/mode/javascript",
                 htm: "ace/mode/html",
                 html: "ace/mode/html",
-                xml: "ace/mode/xml"
+                xml: "ace/mode/xml",
+                pt: "ace/mode/html"
             };
             var defaultMode = "ace/mode/text";
+
+            FileManager.extensionModes["pt"] = "ace/mode/html";
 
             function getExtension(path) {
                 var m = path.match(/.(\w+)$/);
