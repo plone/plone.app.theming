@@ -177,7 +177,9 @@ class ThemeTransform(object):
             # Transformed worked, swap content with result
             result.tree = transformed
 
-        if DevelopmentMode:
+        if (DevelopmentMode and
+                self.request.get('diazo.debug', '').lower() in ('1', 'y', 'yes', 't', 'true')
+            ):
             from diazo.runtrace import generate_debug_html
             # Add debug information into head
             body = result.tree.xpath('/html/body')[0]
