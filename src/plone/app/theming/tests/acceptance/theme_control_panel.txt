@@ -20,6 +20,23 @@ Scenario: Preview theme
      And I click on the "Example theme" theme preview
     Then a preview of "Example theme" is shown in a new window
 
+Scenario: Activate theme
+    Given a logged-in admin user
+     And a Plone site with no theme applied
+    When I navigate to the "Theming" control panel
+     And I click on the "Example theme" "Activate" button
+    Then the "Example theme" is enabled in the site on all pages other than the "Theming" control panel
+
+Scenario: Copy theme
+    Given a logged-in admin user
+     And a Plone site with no theme applied
+    When I navigate to the "Theming" control panel
+
+     And I click on the "Example theme" "Copy" button
+     And I enter a new title and description
+     And I click "Create"
+    Then a new theme is created
+     And I am taken to the theme editor for this theme
 
 *** Keywords ***
 
@@ -44,3 +61,31 @@ I click on the "Example theme" theme preview
 a preview of "Example theme" is shown in a new window
 #    Select Window  title='Preview: Example theme'
     Page should contain  Plone site
+
+I click on the "Example theme" "Activate" button
+    Click Button  Activate
+
+the "Example theme" is enabled in the site on all pages other than the "Theming" control panel
+    Page should not contain element  css=html head link[href*="++theme++example"]
+    # TODO: Check a selection of other pages.
+    Go to  ${PLONE_URL}
+    Page should contain element  css=html head link[href*="++theme++example"]
+
+I click on the "Example theme" "Copy" button
+    Click Button  Copy
+
+I enter a new title and description
+    Input text  title  Test theme
+    Input text  description  This is a test theme
+
+I click "Create"
+    Click Button  Create
+
+a new theme is created
+    Location Should Contain  /++theme++test-theme/
+
+I am taken to the theme editor for this theme
+    Location Should Contain  /++theme++test-theme/@@theming-controlpanel-mapper
+    # This is not as robust as we'd like. Language and parameter dependent.
+    Page should contain  Modify theme
+    Page should contain  Test theme
