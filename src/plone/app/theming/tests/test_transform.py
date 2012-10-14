@@ -18,7 +18,7 @@ from plone.registry.interfaces import IRegistry
 from zope.component import getUtility
 
 from plone.app.theming.interfaces import IThemeSettings
-from plone.app.theming.utils import applyTheme, getAvailableThemes, getTheme
+from plone.app.theming.utils import applyTheme, getTheme
 from plone.app.theming.utils import InternalResolver, PythonResolver, resolvePythonURL
 
 import re
@@ -26,6 +26,7 @@ import re
 from diazo.compiler import compile_theme
 
 from Products.CMFCore.utils import getToolByName
+
 
 class TestCase(unittest.TestCase):
 
