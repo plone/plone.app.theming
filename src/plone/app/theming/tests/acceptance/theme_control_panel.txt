@@ -51,6 +51,28 @@ Scenario: Copy theme and enable immediately
      And the theme is enabled in the site on all pages other than the "Theming" control panel
      And I am taken to the theme editor for this theme
 
+Scenario: Create new theme from scratch
+    Given a logged-in admin user
+     And a Plone site with no theme applied
+    When I navigate to the "Theming" control panel
+     And I click on the "New theme" button
+     And I enter a new title and description
+     And I click "Create"
+    Then a new theme is created
+     And I am taken to the theme editor for this theme
+
+# TODO: Not working yet, since the unthemed site does not provide login
+#Scenario: Create new theme from scratch and enable immediately
+#    Given a logged-in admin user
+#     And a Plone site with no theme applied
+#    When I navigate to the "Theming" control panel
+#     And I click on the "New theme" button
+#     And I enter a new title and description
+#     And I select "enable immediately"
+#     And I click "Create"
+#    Then a new theme is created
+#     And the theme is enabled in the site on all pages other than the "Theming" control panel
+#     And I am taken to the theme editor for this theme
 
 *** Keywords ***
 
@@ -88,6 +110,9 @@ the "Example theme" is enabled in the site on all pages other than the "Theming"
 
 I click on the "Example theme" "Copy" button
     Click Button  Copy
+
+And I click on the "New theme" button
+    Click Button  New theme
 
 I enter a new title and description
     Input text  title  Test theme
