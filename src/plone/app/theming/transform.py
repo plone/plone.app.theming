@@ -184,6 +184,7 @@ class ThemeTransform(object):
             # Add debug information into head
             body = result.tree.xpath('/html/body')[0]
             body.insert(-1, generate_debug_html(
+                findContext(self.request).portal_url() + '/++resource++diazo-debug',
                 rules=settings.rules,
                 rules_parser=getParser('rules', settings.readNetwork),
                 error_log = transform.error_log,

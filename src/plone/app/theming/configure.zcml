@@ -17,6 +17,7 @@
     <include package="five.globalrequest" />
     <include package="plone.transformchain" />
     <include package="plone.app.registry" />
+    <include package="diazo" file="diazo-debug.zcml" />
 
     <include package=".browser" />
     <include package=".exportimport" />
