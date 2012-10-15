@@ -1,6 +1,14 @@
 plone.app.theming to-do
 =======================
 
+Fragments
+---------
+
+[ ] Support for views.cfg (permissions and context discriminators)
+[ ] Do we want fargments/*.pt or views/*.pt?
+[ ] Test for view lookup code
+[ ] Documentation
+
 General
 -------
 
