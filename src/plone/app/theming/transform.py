@@ -21,6 +21,26 @@ from plone.app.theming.utils import isThemeEnabled
 from plone.app.theming.utils import findContext
 from plone.app.theming.zmi import patch_zmi
 
+try:
+    from sauna.reload.interfaces import IThemeChanged
+    import zope.event
+    from five import grok
+
+    @grok.subscribe(IThemeChanged)
+    def reload(event):
+        registry = queryUtility(IRegistry)
+        if registry is None:
+            return None
+
+        try:
+            settings = registry.forInterface(IThemeSettings, False)
+        except KeyError:
+            return None
+    
+        invalidateCache(settings, event)
+except:
+    pass
+        
 # Disable theming of ZMI
 patch_zmi()
 
@@ -93,12 +113,10 @@ class ThemeTransform(object):
         cache = getCache(settings)
 
         # Apply theme
-        transform = None
-
-        if not DevelopmentMode:
-            transform = cache.transform
+        transform = cache.transform
 
         if transform is None:
+
             rules = settings.rules
             absolutePrefix = settings.absolutePrefix or None
             readNetwork = settings.readNetwork
@@ -107,10 +125,9 @@ class ThemeTransform(object):
             transform = compileThemeTransform(rules, absolutePrefix, readNetwork, parameterExpressions)
             if transform is None:
                 return None
-            
-            if not DevelopmentMode:
-                cache.updateTransform(transform)
 
+            cache.updateTransform(transform)
+            
         return transform
 
     def getSettings(self):
@@ -163,10 +180,7 @@ class ThemeTransform(object):
             if not result.doctype.endswith('\n'):
                 result.doctype += '\n'
         
-        cache = None
-        DevelopmentMode = Globals.DevelopmentMode
-        if not DevelopmentMode:
-            cache = getCache(settings)
+        cache = getCache(settings)
 
         parameterExpressions = settings.parameterExpressions or {}
         params = prepareThemeParameters(findContext(self.request), self.request, parameterExpressions, cache) 

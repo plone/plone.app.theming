@@ -43,6 +43,19 @@ from plone.app.theming.plugins.utils import getPluginSettings
 
 from Products.PageTemplates.Expressions import getEngine
 
+#
+# Make Diazo reload when files changed
+#
+
+import logging
+
+import DateTime
+import datetime
+
+from OFS.Image import File
+from OFS.DTMLMethod import DTMLMethod
+
+LOGGER = logging.getLogger('plone.app.theming')
 
 class NetworkResolver(etree.Resolver):
     """Resolver for network urls
