@@ -180,10 +180,7 @@ class ThemeTransform(object):
             if not result.doctype.endswith('\n'):
                 result.doctype += '\n'
         
-        cache = None
-        DevelopmentMode = Globals.DevelopmentMode
-        if not DevelopmentMode:
-            cache = getCache(settings)
+        cache = getCache(settings)
 
         parameterExpressions = settings.parameterExpressions or {}
         params = prepareThemeParameters(findContext(self.request), self.request, parameterExpressions, cache) 
