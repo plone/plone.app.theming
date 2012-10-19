@@ -40,7 +40,6 @@ setup(name='plone.app.theming',
           'five.globalrequest',
           'Products.CMFPlone',
           'zope.traversing',
-          'plone.app.controlpanel',
       ],
       extras_require={
         'test': ['plone.app.testing'],
