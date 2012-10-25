@@ -6,7 +6,7 @@
     purge="False">
 
     <configlet
-        title="Diazo theme"
+        title="Theme Settings"
         action_id="plone.app.theming"
         appId="plone.app.theming"
         category="Plone"
