@@ -699,6 +699,11 @@ a path of a resource relative to the root of the Plone site::
         href="/@@extra-nav"
         />
 
+Fragments
+~~~~~~~~~
+
+
+
 Theme parameters
 ~~~~~~~~~~~~~~~~
 
