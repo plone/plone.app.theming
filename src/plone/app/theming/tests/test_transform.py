@@ -1,9 +1,13 @@
+import transaction
 import unittest2 as unittest
 
 from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
 from plone.testing.z2 import Browser
 
-from plone.app.testing import setRoles, TEST_USER_ID
+from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import TEST_USER_PASSWORD
 
 import Globals
 import os.path
@@ -18,7 +22,7 @@ from plone.registry.interfaces import IRegistry
 from zope.component import getUtility
 
 from plone.app.theming.interfaces import IThemeSettings
-from plone.app.theming.utils import applyTheme, getAvailableThemes, getTheme
+from plone.app.theming.utils import applyTheme, getTheme
 from plone.app.theming.utils import InternalResolver, PythonResolver, resolvePythonURL
 
 import re
@@ -26,6 +30,7 @@ import re
 from diazo.compiler import compile_theme
 
 from Products.CMFCore.utils import getToolByName
+
 
 class TestCase(unittest.TestCase):
 
@@ -42,11 +47,10 @@ class TestCase(unittest.TestCase):
         self.settings.parameterExpressions = {
                 'stringParam': 'string:string param value',
                 'boolParam': 'python:False',
-                'contextParam' : 'context/absolute_url | string:no context',
+                'contextParam': 'context/absolute_url | string:no context',
                 'requestParam': 'request/useother | string:off',
             }
 
-        import transaction;
         transaction.commit()
 
     def tearDown(self):
@@ -78,7 +82,7 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -103,7 +107,7 @@ class TestCase(unittest.TestCase):
         self.assertEqual(self.settings.rules, u'/++theme++plone.app.theming.tests/rules.xml')
         self.assertEqual(self.settings.currentTheme, u"plone.app.theming.tests")
         self.assertEqual(self.settings.doctype, u"<!DOCTYPE html>")
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -125,7 +129,7 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url() + '?diazo.off=1')
@@ -146,7 +150,7 @@ class TestCase(unittest.TestCase):
         Globals.DevelopmentMode = False
 
         self.settings.enabled = True
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url() + '?diazo.off=1')
@@ -165,7 +169,7 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url() + '/@@header-disabled')
@@ -174,7 +178,6 @@ class TestCase(unittest.TestCase):
 
         # The theme
         self.assertFalse("This is the theme" in browser.contents)
-
 
     def test_internal_resolver(self):
         compiler_parser = etree.XMLParser()
@@ -205,7 +208,7 @@ class TestCase(unittest.TestCase):
         self.settings.rules = u'/rules.xml'
         self.settings.enabled = True
 
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -264,7 +267,7 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = True
         self.settings.absolutePrefix = None
 
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -278,7 +281,7 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = True
         self.settings.absolutePrefix = u'http://example.com'
 
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -293,7 +296,7 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = True
         self.settings.absolutePrefix = u'/foo'
 
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -308,7 +311,7 @@ class TestCase(unittest.TestCase):
         from Products.SiteAccess import VirtualHostMonster
         VirtualHostMonster.manage_addVirtualHostMonster(app, 'virtual_hosting')
 
-        import transaction; transaction.commit()
+        transaction.commit()
 
         self.settings.enabled = True
         self.settings.absolutePrefix = u'/foo'
@@ -317,9 +320,9 @@ class TestCase(unittest.TestCase):
         prefix = '/'.join(portalURL.split('/')[:-1])
         suffix = portalURL.split('/')[-1]
 
-        vhostURL = "%s/VirtualHostBase/http/example.org:80/%s/VirtualHostRoot/_vh_fizz/_vh_buzz/_vh_fizzbuzz/" % (prefix,suffix)
+        vhostURL = "%s/VirtualHostBase/http/example.org:80/%s/VirtualHostRoot/_vh_fizz/_vh_buzz/_vh_fizzbuzz/" % (prefix, suffix,)
 
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(vhostURL)
@@ -334,7 +337,7 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = True
         self.settings.rules = u"invalid"
 
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -354,7 +357,7 @@ class TestCase(unittest.TestCase):
 
         self.settings.enabled = True
 
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url() + '/document_icon.png')
@@ -379,7 +382,7 @@ class TestCase(unittest.TestCase):
     #
     #     getCache(self.settings, portal.absolute_url()).updateTransform(transform)
     #
-    #     import transaction; transaction.commit()
+    #     transaction.commit()
     #
     #     browser = Browser(app)
     #     browser.open(portal.absolute_url())
@@ -398,7 +401,7 @@ class TestCase(unittest.TestCase):
     #     self.settings.enabled = False
     #     self.settings.enabled = True
     #
-    #     import transaction; transaction.commit()
+    #     transaction.commit()
     #
     #     browser.open(portal.absolute_url())
     #
@@ -486,7 +489,7 @@ class TestCase(unittest.TestCase):
 
         self.settings.enabled = True
 
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -520,11 +523,11 @@ class TestCase(unittest.TestCase):
         self.settings.parameterExpressions = {
                 'stringParam': 'string:string param value',
                 'boolParam': 'python:False',
-                'contextParam' : 'context/absolute_url | string:no context',
+                'contextParam': 'context/absolute_url | string:no context',
                 'requestParam': 'request/someParam | string:off',
             }
 
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -560,7 +563,7 @@ class TestCase(unittest.TestCase):
 
         self.settings.enabled = True
 
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         error = None
@@ -582,11 +585,11 @@ class TestCase(unittest.TestCase):
         self.settings.parameterExpressions = {
                 'stringParam': 'string:string param value',
                 'boolParam': 'python:False',
-                'contextParam' : 'context/absolute_url | string:no context',
+                'contextParam': 'context/absolute_url | string:no context',
                 'requestParam': 'request/someParam | string:off',
             }
 
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         error = None
@@ -720,7 +723,7 @@ class TestCase(unittest.TestCase):
         self.settings.rules = u'python://plone.app.theming/tests/includes.xml'
         self.settings.enabled = True
 
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
 
@@ -745,7 +748,7 @@ class TestCase(unittest.TestCase):
 
         self.settings.enabled = True
         self.settings.rules = u'/++theme++plone.app.theming.tests/css-js.xml'
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -767,7 +770,7 @@ class TestCase(unittest.TestCase):
 
         self.settings.enabled = True
         self.settings.rules = u'/++theme++plone.app.theming.tests/nonascii.xml'
-        import transaction; transaction.commit()
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -791,3 +794,86 @@ class TestCase(unittest.TestCase):
 
         # The theme
         self.assertTrue("id=\"diazo-debug-iframe\"" in browser.contents)
+
+    def test_theme_fragment_traverser(self):
+        app = self.layer['app']
+        portal = self.layer['portal']
+        self.settings.enabled = True
+        self.settings.currentTheme = u"plone.app.theming.tests"
+        self.settings.rules = u'/++theme++plone.app.theming.tests/rules.xml'
+
+        transaction.commit()
+
+        browser = Browser(app)
+        browser.open(portal.absolute_url() + '/@@theme-fragment/customnav')
+
+        self.assertTrue('<h2>%s</h2>' % portal.Title() in browser.contents)
+
+    def test_theme_fragment_traverser_invalid_url(self):
+        app = self.layer['app']
+        portal = self.layer['portal']
+        self.settings.enabled = True
+        self.settings.currentTheme = u"plone.app.theming.tests"
+        self.settings.rules = u'/++theme++plone.app.theming.tests/rules.xml'
+
+        transaction.commit()
+
+        browser = Browser(app)
+
+        try:
+            browser.open(portal.absolute_url() + '/@@theme-fragment/foo')
+        except HTTPError, e:
+            error = e
+        self.assertEqual(error.code, 404)
+
+    def test_theme_fragment_traverser_theme_disabled(self):
+        app = self.layer['app']
+        portal = self.layer['portal']
+        self.settings.enabled = False
+        self.settings.currentTheme = u"plone.app.theming.tests"
+        self.settings.rules = u'/++theme++plone.app.theming.tests/rules.xml'
+
+        transaction.commit()
+
+        browser = Browser(app)
+
+        try:
+            browser.open(portal.absolute_url() + '/@@theme-fragment/customnav')
+        except HTTPError, e:
+            error = e
+        self.assertEqual(error.code, 404)
+
+    def test_theme_fragment_traverser_restricted_python(self):
+        app = self.layer['app']
+        portal = self.layer['portal']
+        self.settings.enabled = True
+        self.settings.currentTheme = u"plone.app.theming.tests"
+        self.settings.rules = u'/++theme++plone.app.theming.tests/rules.xml'
+
+        transaction.commit()
+
+        browser = Browser(app)
+
+        try:
+            # tries to use an underscore attribute, which isn't traversable
+            # in restricted python
+            browser.open(portal.absolute_url() + '/@@theme-fragment/invalid')
+        except HTTPError, e:
+            error = e
+
+        self.assertEqual(error.code, 500)
+
+    def test_theme_fragment_href_include(self):
+        app = self.layer['app']
+        portal = self.layer['portal']
+        self.settings.enabled = True
+        self.settings.currentTheme = u"plone.app.theming.tests"
+        self.settings.rules = u'/++theme++plone.app.theming.tests/fragment.xml'
+
+        transaction.commit()
+
+        browser = Browser(app)
+
+        browser.open(portal.absolute_url())
+        self.assertTrue('<div id="nav">' in browser.contents)
+        self.assertTrue('<h2>%s</h2>' % portal.Title() in browser.contents)

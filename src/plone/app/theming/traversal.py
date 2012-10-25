@@ -1,6 +1,6 @@
 import urllib
 from zope.interface import implements
-from zope.interface.interfaces import IInterface
+from plone.resource.traversal import ResourceTraverser
 
 from zope.publisher.interfaces import IPublishTraverse
 from zope.publisher.browser import BrowserPage
@@ -8,7 +8,6 @@ from zope.security import checkPermission
 
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.registry.interfaces import IRegistry
-from plone.resource.traversal import ResourceTraverser
 from plone.resource.utils import queryResourceDirectory
 
 from zope.component import getUtility
@@ -79,7 +78,11 @@ class FragmentView(BrowserPage):
                 'view': self,
             }
         zpt = zpt.__of__(self.context)
-        return zpt._exec(boundNames, args, kwargs)
+        try:
+            return zpt._exec(boundNames, args, kwargs)
+        except NotFound, e:
+            # We don't want 404's for these - they are programming errors
+            raise Exception(e)
 
 
 class ThemeFragment(BrowserPage):
@@ -111,7 +114,7 @@ class ThemeFragment(BrowserPage):
             raise NotFound(self, name, request)
 
     def __getitem__(self, name):
-        # Make sure themes are enabled
+        # Make sure a theme is enabled
         if not isThemeEnabled(self.request):
             raise KeyError(name)
 
@@ -124,21 +127,13 @@ class ThemeFragment(BrowserPage):
         if themeDirectory is None:
             raise KeyError(name)
 
-        # TODO: Read permission and context from views.cfg
-        allowedContext = None
-        permission = 'zope.Public'
-
-        # Check context
-        if not (
-            allowedContext is None or
-            isinstance(self.context, allowedContext) or
-            (IInterface.providedBy(allowedContext) and allowedContext.providedBy(self.context))
-        ):
-            raise KeyError(name)
-
         templatePath = "%s/%s.pt" % (FRAGMENTS_DIRECTORY, name,)
         if not themeDirectory.isFile(templatePath):
             raise KeyError(name)
 
         template = themeDirectory.readFile(templatePath)
-        return FragmentView(self.context, self.request, name, permission, template)
+
+        # Now disable the theme so we don't double-transform
+        self.request.response.setHeader('X-Theme-Disabled', '1')
+
+        return FragmentView(self.context, self.request, name, 'zope.Public', template)
