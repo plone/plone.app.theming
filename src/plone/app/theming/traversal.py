@@ -20,6 +20,7 @@ from zExceptions import NotFound
 from zExceptions import Unauthorized
 
 from Products.PageTemplates.ZopePageTemplate import ZopePageTemplate
+from Products.CMFCore.utils import getToolByName
 
 
 class ThemeTraverser(ResourceTraverser):
@@ -71,11 +72,15 @@ class FragmentView(BrowserPage):
         if not checkPermission(self.permission, self.context):
             raise Unauthorized()
 
+        portal_url = getToolByName(self.context, 'portal_url')
+
         zpt = ZopePageTemplate(self.__name__, text=self.template)
         boundNames = {
                 'context': self.context,
                 'request': self.request,
                 'view': self,
+                'portal_url': portal_url(),
+                'portal': portal_url.getPortalObject(),
             }
         zpt = zpt.__of__(self.context)
         try:
