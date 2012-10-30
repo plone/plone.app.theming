@@ -748,6 +748,8 @@ fragment:
   The request used to render the fragment. When using a fragment from the
   ``href`` of a rule, this is a clone of the request used to render the page,
   but with the path to the fragment view, not the original content object.
+  Note that form parameters from the original request are not available in this
+  request.
 ``portal``
   The portal root object.
 ``portal_url``
