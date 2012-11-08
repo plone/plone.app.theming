@@ -181,7 +181,7 @@ class ThemeTransform(object):
                 self.request.get('diazo.debug', '').lower() in ('1', 'y', 'yes', 't', 'true')
             ):
             from diazo.runtrace import generate_debug_html
-            # Add debug information into head
+            # Add debug information to end of body
             body = result.tree.xpath('/html/body')[0]
             body.insert(-1, generate_debug_html(
                 findContext(self.request).portal_url() + '/++resource++diazo-debug',
