@@ -27,7 +27,7 @@ setup(name='plone.app.theming',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'diazo',
+          'diazo>=1.0.3',
           'docutils',
           'roman',
           'lxml>=2.2.4',
