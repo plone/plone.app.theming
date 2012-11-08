@@ -78,7 +78,7 @@ class ThemeTransform(object):
         self.published = published
         self.request = request
 
-    def setupTransform(self):
+    def setupTransform(self, runtrace=False):
         request = self.request
         DevelopmentMode = Globals.DevelopmentMode
 
@@ -105,7 +105,7 @@ class ThemeTransform(object):
             readNetwork = settings.readNetwork
             parameterExpressions = settings.parameterExpressions
 
-            transform = compileThemeTransform(rules, absolutePrefix, readNetwork, parameterExpressions, runtrace=DevelopmentMode)
+            transform = compileThemeTransform(rules, absolutePrefix, readNetwork, parameterExpressions, runtrace=runtrace)
             if transform is None:
                 return None
             
@@ -154,32 +154,41 @@ class ThemeTransform(object):
         if result is None:
             return None
 
-        transform = self.setupTransform()
-        if transform is None:
-            return None
-        
-        settings = self.getSettings()
-        if settings.doctype:
-            result.doctype = settings.doctype
-            if not result.doctype.endswith('\n'):
-                result.doctype += '\n'
-        
-        cache = None
         DevelopmentMode = Globals.DevelopmentMode
-        if not DevelopmentMode:
-            cache = getCache(settings)
+        runtrace = (DevelopmentMode and
+            self.request.get('diazo.debug', '').lower() in ('1', 'y', 'yes', 't', 'true'))
 
-        parameterExpressions = settings.parameterExpressions or {}
-        params = prepareThemeParameters(findContext(self.request), self.request, parameterExpressions, cache) 
+        try:
+            etree.clear_error_log()
 
-        transformed = transform(result.tree, **params)
-        if transformed is not None:
-            # Transformed worked, swap content with result
-            result.tree = transformed
+            settings = self.getSettings()
+            if settings.doctype:
+                result.doctype = settings.doctype
+                if not result.doctype.endswith('\n'):
+                    result.doctype += '\n'
 
-        if (DevelopmentMode and
-                self.request.get('diazo.debug', '').lower() in ('1', 'y', 'yes', 't', 'true')
-            ):
+            transform = self.setupTransform(runtrace=runtrace)
+            if transform is None:
+                return None
+
+            cache = None
+            if not DevelopmentMode:
+                cache = getCache(settings)
+
+            parameterExpressions = settings.parameterExpressions or {}
+            params = prepareThemeParameters(findContext(self.request), self.request, parameterExpressions, cache)
+
+            transformed = transform(result.tree, **params)
+            error_log = transform.error_log
+            if transformed is not None:
+                # Transformed worked, swap content with result
+                result.tree = transformed
+        except etree.LxmlError as e:
+            if not(runtrace):
+                raise
+            error_log = e.error_log
+
+        if runtrace:
             from diazo.runtrace import generate_debug_html
             # Add debug information to end of body
             body = result.tree.xpath('/html/body')[0]
@@ -187,7 +196,7 @@ class ThemeTransform(object):
                 findContext(self.request).portal_url() + '/++resource++diazo-debug',
                 rules=settings.rules,
                 rules_parser=getParser('rules', settings.readNetwork),
-                error_log = transform.error_log,
+                error_log = error_log,
             ))
 
         return result
