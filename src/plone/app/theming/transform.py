@@ -184,9 +184,10 @@ class ThemeTransform(object):
                 # Transformed worked, swap content with result
                 result.tree = transformed
         except etree.LxmlError as e:
-            if not(runtrace):
+            if not(DevelopmentMode):
                 raise
             error_log = e.error_log
+            runtrace = True
 
         if runtrace:
             from diazo.runtrace import generate_debug_html
