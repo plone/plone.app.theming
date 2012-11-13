@@ -6,6 +6,7 @@ from zope.configuration import xmlconfig
 from plone.app.testing.layers import IntegrationTesting
 from plone.app.testing.layers import FunctionalTesting
 
+
 class Theming(PloneSandboxLayer):
     defaultBases = (PLONE_FIXTURE,)
 
@@ -21,6 +22,7 @@ class Theming(PloneSandboxLayer):
     def setUpPloneSite(self, portal):
         # install into the Plone site
         applyProfile(portal, 'plone.app.theming:default')
+
 
 class ThemingWithCaching(Theming):
     defaultBases = (PLONE_FIXTURE,)
@@ -40,6 +42,7 @@ class ThemingWithCaching(Theming):
         # install into the Plone site
         applyProfile(portal, 'plone.app.caching:default')
         applyProfile(portal, 'plone.app.theming:default')
+        portal['portal_workflow'].setDefaultChain('simple_publication_workflow')
 
 THEMING_FIXTURE = Theming()
 THEMING_INTEGRATION_TESTING = IntegrationTesting(bases=(THEMING_FIXTURE,), name="Theming:Integration")
