@@ -4,7 +4,7 @@ Changelog
 1.1b2 (unreleased)
 ------------------
 
-- Fix bad interaction between plone.app.theming and plone.app.caching when
+- Add test about plone.app.theming / plone.app.caching integration when
   using GZIP compression for anonymous
   (see ticket `12038 <https://dev.plone.org/ticket/12038>`_). [ebrehault]
 
