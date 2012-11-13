@@ -177,4 +177,4 @@ class ThemeTransform(object):
 
         result.tree = transformed
 
-        return str(result)
+        return result
