@@ -1,0 +1,3 @@
+<div id="nav">
+    <h2 tal:content="context/Title">Current title</h2>
+</div>
