@@ -762,4 +762,4 @@ class TestCase(unittest.TestCase):
         self.assertTrue(portal.title in browser.contents)
 
         # The theme
-        self.assertTrue("id=\"diazo_debug\"" in browser.contents)
+        self.assertTrue("id=\"diazo-debug-iframe\"" in browser.contents)
