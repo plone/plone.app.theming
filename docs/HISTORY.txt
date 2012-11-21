@@ -12,6 +12,10 @@ Changelog
 1.1b1 (2012-10-16)
 ------------------
 
+- Add diazo.debug option, route all error_log output through
+  this so debugging can be displayed
+  [lentinj]
+
 - Make example Bootstrap-based theme use the HTML5 DOCTYPE.
   [danjacka]
 

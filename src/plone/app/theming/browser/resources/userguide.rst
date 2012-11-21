@@ -798,6 +798,15 @@ by appending a query string parameter ``diazo.off=1``. For example::
 
     http://localhost:8080/Plone/some-page?diazo.off=1
 
+Finally, you can get an overlay containing your rules, annotated with how
+many times the conditions matched both the theme and the document. Green
+means the condition matched, red means it didn't. The entire rule tag will
+be green (i.e. it had an effect) so long as all conditions within are green.
+
+To enable this, append ``diazo.debug=1``. For example::
+
+    http://localhost:8080/Plone/some-page?diazo.debug=1
+
 The parameter is ignored in non-development mode.
 
 Commonly used rules
