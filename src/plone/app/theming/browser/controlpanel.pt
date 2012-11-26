@@ -34,7 +34,7 @@
     </dl>
 
     <dl class="enableFormTabbing">
-        <dt id="fieldsetlegend-basic">Basic settings</dt>
+        <dt id="fieldsetlegend-basic" i18n:translate="title_basic_settings">Basic settings</dt>
         <dd id="fieldset-basic">
 
             <p i18n:translate="description_basic_settings">
@@ -118,7 +118,7 @@
 
         </dd>
 
-        <dt id="fieldsetlegend-advanced">Advanced settings</dt>
+        <dt id="fieldsetlegend-advanced" i18n:translate="title_advanced_settings">Advanced settings</dt>
         <dd id="fieldset-advanced">
 
             <p i18n:translate="description_advanced">
@@ -305,7 +305,7 @@
 
         </dd>
 
-        <dt id="fieldsetlegend-import">Import theme</dt>
+        <dt id="fieldsetlegend-import" i18n:translate="title_import_theme">Import theme</dt>
         <dd id="fieldset-import">
 
             <p i18n:translate="description_import">
