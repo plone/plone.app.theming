@@ -3,14 +3,12 @@ from plone.testing.z2 import Browser
 from plone.app.testing import applyProfile, setRoles
 from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, TEST_USER_PASSWORD
 
-import Globals
 import cStringIO
 import gzip
 
-from zope.component import provideUtility, provideAdapter, getUtility
+from zope.component import getUtility
 from zope.globalrequest import setRequest
 from plone.registry.interfaces import IRegistry
-from plone.registry import Registry
 
 from plone.app.caching.interfaces import IPloneCacheSettings
 from plone.caching.interfaces import ICacheSettings
@@ -28,12 +26,12 @@ class TestIntegration(unittest.TestCase):
         self.settings.enabled = True
         self.settings.rules = u'python://plone.app.theming/tests/rules.xml'
         self.settings.parameterExpressions = {
-                'stringParam': 'string:string param value',
-                'boolParam': 'python:False',
-                'contextParam' : 'context/absolute_url | string:no context',
-                'requestParam': 'request/useother | string:off',
-            }
-        
+            'stringParam': 'string:string param value',
+            'boolParam': 'python:False',
+            'contextParam': 'context/absolute_url | string:no context',
+            'requestParam': 'request/useother | string:off',
+        }
+
         self.portal = self.layer['portal']
         setRequest(self.portal.REQUEST)
 
@@ -41,11 +39,12 @@ class TestIntegration(unittest.TestCase):
 
         self.cacheSettings = getUtility(IRegistry).forInterface(ICacheSettings)
         self.cacheSettings.enabled = True
-        self.cacheSettings.operationMapping = {'plone.content.folderView': 'plone.app.caching.weakCaching'}
+        self.cacheSettings.operationMapping = {
+            'plone.content.folderView': 'plone.app.caching.weakCaching'}
         registry = getUtility(IRegistry)
         registry['plone.app.caching.weakCaching.ramCache'] = True
 
-        import transaction;
+        import transaction
         transaction.commit()
 
     def tearDown(self):
@@ -68,7 +67,9 @@ class TestIntegration(unittest.TestCase):
         # Publish the folder
         portal.portal_workflow.doActionFor(portal['f1'], 'publish')
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
+
         browser = Browser(app)
         browser.open(portal['f1'].absolute_url())
 
@@ -82,7 +83,7 @@ class TestIntegration(unittest.TestCase):
         self.assertTrue("This is the theme" in browser.contents)
 
     def test_cache_with_GZIP_anonymous(self):
-    	ploneSettings = getUtility(IRegistry).forInterface(IPloneCacheSettings)
+        ploneSettings = getUtility(IRegistry).forInterface(IPloneCacheSettings)
         ploneSettings.enableCompression = True
 
         app = self.layer['app']
@@ -98,7 +99,9 @@ class TestIntegration(unittest.TestCase):
         # Publish the folder
         portal.portal_workflow.doActionFor(portal['f2'], 'publish')
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
+
         browser = Browser(app)
         browser.addHeader('Accept-Encoding', 'gzip')
         browser.open(portal['f2'].absolute_url())
@@ -135,11 +138,13 @@ class TestIntegration(unittest.TestCase):
         # Publish the folder
         portal.portal_workflow.doActionFor(portal['f3'], 'publish')
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
+
         browser = Browser(app)
         browser.addHeader('Accept-Encoding', 'gzip')
-        browser.addHeader('Authorization', 'Basic %s:%s' %
-                (TEST_USER_NAME, TEST_USER_PASSWORD,))
+        browser.addHeader('Authorization', 'Basic %s:%s' % (
+            TEST_USER_NAME, TEST_USER_PASSWORD))
         browser.open(portal['f3'].absolute_url())
         content_handler = cStringIO.StringIO(browser.contents)
         uncompressed = gzip.GzipFile(fileobj=content_handler).read()
