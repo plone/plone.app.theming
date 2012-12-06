@@ -4,6 +4,10 @@ Changelog
 1.1b2 (unreleased)
 ------------------
 
+- Ensure host blacklist utilises SERVER_URL to correctly determine hostname
+  for sites hosted as sub-folders at any depth.
+  [davidjb]
+
 - Add test about plone.app.theming / plone.app.caching integration when
   using GZIP compression for anonymous
   (see ticket `12038 <https://dev.plone.org/ticket/12038>`_). [ebrehault]
