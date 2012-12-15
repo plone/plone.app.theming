@@ -536,7 +536,7 @@ GenericSetup syntax for enabling a theme
 To enable the theme upon installation of a GenericSetup extension profile,
 you can use the ``theme.xml`` import step.
 
-Place a file like this in the profile directory – usually ``profiles/default``
+Place a file like this in the profile directory - usually ``profiles/default``
 inside a package that registers a GenericSetup extension profile::
 
     <theme>
