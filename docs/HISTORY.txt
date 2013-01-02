@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1b2 (unreleased)
+1.1b2 (2013-01-01)
 ------------------
 
 - Ensure host blacklist utilises SERVER_URL to correctly determine hostname
