@@ -865,7 +865,7 @@ theme file untouched, but you can still use ``portal_css`` to manage your
 stylesheets. The trick is to:
 
 * Register your theme's styles with Plone's ``portal_css`` tool (this is
-  normally best done when you ship a theme in a Pyton package - there is
+  normally best done when you ship a theme in a Python package - there is
   currently no way to automate this for a theme imported from a Zip file or
   created through the web)
 * Drop the theme's styles with a rule, and then
