@@ -4,8 +4,8 @@ Changelog
 1.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
-
+- Make it easier to delegate management of themes.
+  [afrepues]
 
 1.1b2 (2013-01-01)
 ------------------

@@ -19,7 +19,7 @@
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         class=".controlpanel.ThemingControlpanel"
         template="controlpanel.pt"
-        permission="cmf.ManagePortal"
+        permission="plone.app.controlpanel.Themes"
         />
 
     <browser:page
@@ -34,7 +34,7 @@
         for="plone.resource.interfaces.IResourceDirectory"
         class=".mapper.ThemeMapper"
         template="mapper.pt"
-        permission="cmf.ManagePortal"
+        permission="plone.app.controlpanel.Themes"
         />
 
     <browser:page
@@ -42,7 +42,7 @@
         for="plone.resource.interfaces.IResourceDirectory"
         class=".mapper.ThemeMapper"
         attribute="getFrame"
-        permission="cmf.ManagePortal"
+        permission="plone.app.controlpanel.Themes"
         />
 
     <browser:page
@@ -50,7 +50,7 @@
         for="plone.resource.interfaces.IResourceDirectory"
         class=".mapper.ThemeMapper"
         attribute="save"
-        permission="cmf.ManagePortal"
+        permission="plone.app.controlpanel.Themes"
         />
 
 </configure>
