@@ -4,6 +4,9 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Grant theme management privileges to the Site Administrator.
+  [afrepues]
+
 - Make it easier to delegate management of themes.
   [afrepues]
 
