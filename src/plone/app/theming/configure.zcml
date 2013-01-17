@@ -59,6 +59,15 @@
         run_deps="false"
 	    />
 
+    <gs:upgradeDepends
+        title="New role: Themer"
+        source="1002"
+        destination="1003"
+        profile="plone.app.theming:default"
+        import_steps="rolemap"
+        run_deps="false"
+        />
+
     <!-- Transform order 8850 - apply theme transform -->
     <adapter
         name="plone.app.theming.transform"
