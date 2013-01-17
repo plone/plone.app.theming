@@ -4,6 +4,9 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Create a role for designers.
+  [afrepues]
+
 - Grant theme management privileges to the Site Administrator.
   [afrepues]
 
