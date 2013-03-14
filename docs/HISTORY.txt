@@ -4,7 +4,9 @@ Changelog
 1.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Upgrades from 1.0 get the combined "Theming" control panel that was added in
+  1.1a1.
+  [danjacka]
 
 
 1.1b2 (2013-01-01)

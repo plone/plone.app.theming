@@ -41,6 +41,15 @@
         profile="plone.app.theming:default"
         />
 
+    <gs:upgradeStep
+        title="Combine Theming control panels"
+        source="1000"
+        destination="1001"
+        handler=".upgrade.update_controlpanel"
+        sortkey="2"
+        profile="plone.app.theming:default"
+        />
+
     <!-- Transform order 8850 - apply theme transform -->
     <adapter
         name="plone.app.theming.transform"
