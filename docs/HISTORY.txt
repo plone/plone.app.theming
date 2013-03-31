@@ -4,6 +4,10 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Make the template theme do what it claims to do: copy styles as
+  well as scripts.
+  [smcmahon]
+
 - Change the label and description for the example theme to supply useful
   information.
   [smcmahon]
