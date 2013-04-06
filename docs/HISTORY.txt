@@ -4,6 +4,9 @@ Changelog
 1.1 (unreleased)
 ----------------
 
+- Fixed i18n issues.
+  [vincentfretin]
+
 - Make the template theme do what it claims to do: copy styles as
   well as scripts.
   [smcmahon]

@@ -759,12 +759,12 @@
         <div id="page-intro">
 
             <h1 class="documentFirstHeading"
-                i18n:translate="heading_theme_mapper"
+                i18n:translate="heading_theme_modify"
                 tal:condition="view/editable">Modify theme
                 <span i18n:name="name" tal:content="view/title">name</span>
             </h1>
             <h1 class="documentFirstHeading"
-                i18n:translate="heading_theme_mapper"
+                i18n:translate="heading_theme_inspect"
                 tal:condition="not:view/editable">Inspect theme
                 <span i18n:name="name" tal:content="view/title">name</span>
                 <span i18n:name="readonly" i18n:translate="">(read-only)</span>
