@@ -209,7 +209,7 @@
 
                             <a class="previewImageContainer"
                                 title="Click to view a live preview. Forms will be disabled in the preview."
-                                i18n:translate="title [tooltip_theme_preview]"
+                                i18n:attributes="title tooltip_theme_preview"
                                 tal:attributes="href string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${theme/title}"
                                 target="_new"
                                 href="#">
