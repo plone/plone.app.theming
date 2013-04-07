@@ -901,11 +901,11 @@
 
                 <div class="panel-footer">
                     <div class="inspector-switch">
-                        <button id="theme-inspector-on" disabled="disabled">Inspector on</button>
-                        <button id="theme-inspector-off">Inspector off</button>
+                        <button id="theme-inspector-on" disabled="disabled" i18n:translate="">Inspector on</button>
+                        <button id="theme-inspector-off" i18n:translate="">Inspector off</button>
                     </div>
                     <span id="theme-file-selector-area">
-                        <label for="file-selector">Show mockup:</label>
+                        <label for="file-selector" i18n:translate="">Show mockup:</label>
                         <select size="1" name="file-selector" id="file-selector">
                             <option
                                 tal:repeat="f view/themeFiles"
@@ -951,12 +951,15 @@
 
                 <div class="panel-footer">
                     <div class="inspector-switch">
-                        <button id="content-inspector-on" disabled="disabled">Inspector on</button>
-                        <button id="content-inspector-off">Inspector off</button>
+                        <button id="content-inspector-on" disabled="disabled" 
+                                i18n:translate="">Inspector on</button>
+                        <button id="content-inspector-off" 
+                                i18n:translate="">Inspector off</button>
                     </div>
                 </div>
 
-                <div id="content-footer-help" class="discreet footer-help" i18n:translate="help_highlighter_selection">
+                <div id="content-footer-help" class="discreet footer-help" 
+                     i18n:translate="help_highlighter_selection">
                     Hover over an element to see its selector.
                     Left-click or press <em>Enter</em> to save.
                     Press <em>Esc</em> to select parent.
@@ -1018,7 +1021,7 @@
                                 <label for="new-rule-reuse-selectors" i18n:translate="theming_mapping_wizard_reuse_selectors">
                                     Use selected elements
                                 </label>
-                                <div class="formHelp">
+                                <div class="formHelp" i18n:translate="help_theming_mapping_wizard_reuse_selectors">
                                     If selected, the rule builder will use the elements you have currently selected
                                     in the <strong>HTML mockup</strong> and/or <strong>Unthemed content</strong>
                                     inspectors instead of prompting you to select new ones.

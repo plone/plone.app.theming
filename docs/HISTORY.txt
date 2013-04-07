@@ -4,7 +4,8 @@ Changelog
 1.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fixed i18n issues.
+  [thomasdesvenain]
 
 
 1.1 (2013-04-06)
