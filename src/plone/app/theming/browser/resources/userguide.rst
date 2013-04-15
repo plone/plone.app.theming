@@ -14,6 +14,8 @@ can edit your website theme through web browser in Plone's site setup control pa
 Only HTML, CSS and little XML knowledge needed as the prerequisitements.
 This guide explains how to use this feature of Plone.
 
+See `introduction video to plone.app.theming <https://vimeo.com/42564510>`_.
+
 What is a Diazo theme?
 ----------------------
 
