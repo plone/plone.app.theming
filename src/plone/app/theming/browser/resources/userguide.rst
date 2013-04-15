@@ -1,10 +1,18 @@
-Diazo theming
-=============
+plone.app.theming manual
+==========================
 
-This guide provides an overview of Diazo theming in Plone.
+This guide provides an overview of Diazo theming in Plone versions 4.3 and higher.
 
 .. contents:: Contents
     :local:
+
+Introduction
+---------------
+
+In `Plone <http://plone.org>`_ versions 4.3 and higher you
+can edit your website theme through web browser in Plone's site setup control panel.
+Only HTML, CSS and little XML knowledge needed as the prerequisitements.
+This guide explains how to use this feature of Plone.
 
 What is a Diazo theme?
 ----------------------
