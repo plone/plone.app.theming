@@ -93,7 +93,7 @@ I navigate to the "Theming" control panel
     Go to  ${PLONE_URL}/@@theming-controlpanel
 
 I click on the "Example theme" theme preview
-    Click Link  xpath=//div[@data-theme-title='Example theme']//a
+    Click Link  xpath=//div[@data-theme-title='Twitter Bootstrap Example']//a
 
 a preview of "Example theme" is shown in a new window
 #    Select Window  title='Preview: Example theme'

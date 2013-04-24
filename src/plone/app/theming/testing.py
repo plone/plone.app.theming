@@ -29,6 +29,15 @@ class Theming(PloneSandboxLayer):
         applyProfile(portal, 'plone.app.theming:default')
 
 
+class ThemingAcceptance(Theming):
+    defaultBases = (PLONE_FIXTURE,)
+
+    def setUpZope(self, app, configurationContext):
+        # Run the startup hook
+        from plone.app.theming.plugins.hooks import onStartup
+        onStartup(None)
+
+
 class ThemingWithCaching(Theming):
     defaultBases = (PLONE_FIXTURE,)
 
@@ -58,8 +67,9 @@ THEMING_FUNCTIONAL_TESTING = FunctionalTesting(
     bases=(THEMING_FIXTURE,),
     name="Theming:Functional"
 )
+THEMING_ACCEPTANCE_FIXTURE = ThemingAcceptance()
 THEMING_ACCEPTANCE_TESTING = FunctionalTesting(
-    bases=(THEMING_FIXTURE, ZSERVER_FIXTURE),
+    bases=(THEMING_ACCEPTANCE_FIXTURE, ZSERVER_FIXTURE),
     name="Theming:Acceptance"
 )
 THEMINGWITHCACHING_FIXTURE = ThemingWithCaching()
