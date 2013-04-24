@@ -108,6 +108,44 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(settings.absolutePrefix, None)
         self.assertEqual(settings.parameterExpressions, {})
 
+    def test_isThemeEnabled(self):
+        from zope.component import getUtility
+
+        from plone.registry.interfaces import IRegistry
+
+        from plone.app.theming.interfaces import IThemeSettings
+        from plone.app.theming.utils import isThemeEnabled
+
+        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        settings.enabled = True
+        settings.rules = u"/++theme++foo/rules.xml"
+
+        request = self.layer['request']
+
+        self.assertTrue(isThemeEnabled(request, settings))
+
+    def test_isThemeEnabled_blacklist(self):
+        from zope.component import getUtility
+
+        from plone.registry.interfaces import IRegistry
+
+        from plone.app.theming.interfaces import IThemeSettings
+        from plone.app.theming.utils import isThemeEnabled
+
+        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        settings.enabled = True
+        settings.rules = u"/++theme++foo/rules.xml"
+
+        request = self.layer['request']
+        request.set('BASE1', 'http://nohost/path/to/site')
+
+        self.assertTrue(isThemeEnabled(request, settings))
+        self.assertEqual(request.get('SERVER_URL'), 'http://nohost')
+
+        #Should pay no attention to BASE1 and only use SERVER_URL
+        settings.hostnameBlacklist.append('nohost')
+        self.assertFalse(isThemeEnabled(request, settings))
+
 
 class TestUnit(unittest.TestCase):
 

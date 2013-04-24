@@ -748,3 +748,19 @@ class TestCase(unittest.TestCase):
         self.assertTrue(
             '''<div>N\xc3\xbamero uno</div>'''
             in browser.contents)
+
+    def test_theme_enabled_query_string_debug_switch(self):
+        app = self.layer['app']
+        portal = self.layer['portal']
+
+        self.settings.enabled = True
+        import transaction; transaction.commit()
+
+        browser = Browser(app)
+        browser.open(portal.absolute_url() + '?diazo.debug=1')
+
+        # Title - pulled in with rules.xml
+        self.assertTrue(portal.title in browser.contents)
+
+        # The theme
+        self.assertTrue("id=\"diazo-debug-iframe\"" in browser.contents)

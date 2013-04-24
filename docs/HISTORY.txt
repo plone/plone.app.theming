@@ -1,8 +1,50 @@
 Changelog
 =========
 
-1.1b1 (unreleased)
+1.1.1 (unreleased)
 ------------------
+
+- Fixed i18n issues.
+  [thomasdesvenain]
+
+
+1.1 (2013-04-06)
+----------------
+
+- Fixed i18n issues.
+  [vincentfretin]
+
+- Make the template theme do what it claims to do: copy styles as
+  well as scripts.
+  [smcmahon]
+
+- Change the label and description for the example theme to supply useful
+  information.
+  [smcmahon]
+
+- Upgrades from 1.0 get the combined "Theming" control panel that was added in
+  1.1a1.
+  [danjacka]
+
+
+1.1b2 (2013-01-01)
+------------------
+
+- Ensure host blacklist utilises SERVER_URL to correctly determine hostname
+  for sites hosted as sub-folders at any depth.
+  [davidjb]
+
+- Add test about plone.app.theming / plone.app.caching integration when
+  using GZIP compression for anonymous
+  (see ticket `12038 <https://dev.plone.org/ticket/12038>`_). [ebrehault]
+
+
+1.1b1 (2012-10-16)
+------------------
+
+- Add diazo.debug option, route all error_log output through
+  this so debugging can be displayed
+  [lentinj]
 
 - Make example Bootstrap-based theme use the HTML5 DOCTYPE.
   [danjacka]
@@ -116,7 +158,7 @@ Changelog
   response header.
   [optilude]
 
-* Add support for registering new views from Zope Page Templates and 
+* Add support for registering new views from Zope Page Templates and
   overriding existing templates. See README for more details.
   [optilude]
 
@@ -190,18 +232,18 @@ Changelog
 * Removed 'domains' support: This can be handled with the rules file syntax
   by using the ``host`` parameter.
   [optilude]
-  
+
 * Removed 'notheme' support: This can be handled within the rules file syntax
   by using the ``path`` parameter.
   [optilude]
-  
+
 * Added ``path`` and ``host`` as parameters to the Diazo rules file. These
   can now be used as conditional expressions.
   [optilude]
-  
+
 * Removed dependency on XDV in favour of dependency on Diazo (which is the
   new name for XDV).
   [optilude]
-  
+
 * Forked from collective.xdv 1.0rc11.
   [optilude]

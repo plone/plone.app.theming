@@ -1,10 +1,20 @@
-Diazo theming
-=============
+plone.app.theming manual
+==========================
 
-This guide provides an overview of Diazo theming in Plone.
+This guide provides an overview of Diazo theming in Plone versions 4.3 and higher.
 
 .. contents:: Contents
     :local:
+
+Introduction
+---------------
+
+In `Plone <http://plone.org>`_ versions 4.3 and higher you
+can edit your website theme through web browser in Plone's site setup control panel.
+Only HTML, CSS and little XML knowledge needed as the prerequisitements.
+This guide explains how to use this feature of Plone.
+
+See `introduction video to plone.app.theming <https://vimeo.com/42564510>`_.
 
 What is a Diazo theme?
 ----------------------
@@ -798,6 +808,15 @@ by appending a query string parameter ``diazo.off=1``. For example::
 
     http://localhost:8080/Plone/some-page?diazo.off=1
 
+Finally, you can get an overlay containing your rules, annotated with how
+many times the conditions matched both the theme and the document. Green
+means the condition matched, red means it didn't. The entire rule tag will
+be green (i.e. it had an effect) so long as all conditions within are green.
+
+To enable this, append ``diazo.debug=1``. For example::
+
+    http://localhost:8080/Plone/some-page?diazo.debug=1
+
 The parameter is ignored in non-development mode.
 
 Commonly used rules
@@ -856,7 +875,7 @@ theme file untouched, but you can still use ``portal_css`` to manage your
 stylesheets. The trick is to:
 
 * Register your theme's styles with Plone's ``portal_css`` tool (this is
-  normally best done when you ship a theme in a Pyton package - there is
+  normally best done when you ship a theme in a Python package - there is
   currently no way to automate this for a theme imported from a Zip file or
   created through the web)
 * Drop the theme's styles with a rule, and then

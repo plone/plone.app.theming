@@ -423,9 +423,9 @@ def isThemeEnabled(request, settings=None):
     if not settings.enabled or not settings.rules:
         return False
 
-    base1 = request.get('BASE1')
-    _, base1 = base1.split('://', 1)
-    host = base1.lower()
+    server_url = request.get('SERVER_URL')
+    _, host = server_url.split('://', 1)
+    host = host.lower()
     serverPort = request.get('SERVER_PORT')
 
     for hostname in settings.hostnameBlacklist or ():
@@ -536,8 +536,23 @@ def createThemeFromTemplate(title, description, baseOn='template'):
 
     return themeName
 
+def getParser(type, readNetwork):
+    """Set up a parser for either rules, theme or compiler
+    """
 
-def compileThemeTransform(rules, absolutePrefix=None, readNetwork=False, parameterExpressions=None):
+    if type == 'rules':
+        parser = etree.XMLParser(recover=False)
+    elif type == 'theme':
+        parser = etree.HTMLParser()
+    elif type == 'compiler':
+        parser = etree.XMLParser()
+    parser.resolvers.add(InternalResolver())
+    parser.resolvers.add(PythonResolver())
+    if readNetwork:
+        parser.resolvers.add(NetworkResolver())
+    return parser
+
+def compileThemeTransform(rules, absolutePrefix=None, readNetwork=False, parameterExpressions=None, runtrace=False):
     """Prepare the theme transform by compiling the rules with the given options
     """
 
@@ -552,38 +567,16 @@ def compileThemeTransform(rules, absolutePrefix=None, readNetwork=False, paramet
     params = set(parameterExpressions.keys() + ['url', 'base', 'path', 'scheme', 'host'])
     xslParams = dict((k, '') for k in params)
 
-    internalResolver = InternalResolver()
-    pythonResolver = PythonResolver()
-    if readNetwork:
-        networkResolver = NetworkResolver()
-
-    rulesParser = etree.XMLParser(recover=False)
-    rulesParser.resolvers.add(internalResolver)
-    rulesParser.resolvers.add(pythonResolver)
-    if readNetwork:
-        rulesParser.resolvers.add(networkResolver)
-
-    themeParser = etree.HTMLParser()
-    themeParser.resolvers.add(internalResolver)
-    themeParser.resolvers.add(pythonResolver)
-    if readNetwork:
-        themeParser.resolvers.add(networkResolver)
-
-    compilerParser = etree.XMLParser()
-    compilerParser.resolvers.add(internalResolver)
-    compilerParser.resolvers.add(pythonResolver)
-    if readNetwork:
-        compilerParser.resolvers.add(networkResolver)
-
     compiledTheme = compile_theme(rules,
             absolute_prefix=absolutePrefix,
-            parser=themeParser,
-            rules_parser=rulesParser,
-            compiler_parser=compilerParser,
+            parser=getParser('theme', readNetwork),
+            rules_parser=getParser('rules', readNetwork),
+            compiler_parser=getParser('compiler', readNetwork),
             read_network=readNetwork,
             access_control=accessControl,
             update=True,
             xsl_params=xslParams,
+            runtrace=runtrace,
         )
 
     if not compiledTheme:
