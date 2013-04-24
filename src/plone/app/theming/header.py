@@ -1,5 +1,6 @@
 from plone.app.theming.utils import isThemeEnabled
 
+
 def setHeader(object, event):
     """Set a header X-Theme-Enabled in the request if theming is enabled.
 

@@ -2,6 +2,7 @@ from plone.resource.traversal import ResourceTraverser
 
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 
+
 class ThemeTraverser(ResourceTraverser):
     """The theme traverser.
 

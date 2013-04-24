@@ -8,39 +8,43 @@ from plone.app.theming.interfaces import IThemePlugin
 
 from plone.memoize.ram import cache
 
+
 def pluginsCacheKey(fun):
     return len(list(getUtilitiesFor(IThemePlugin)))
 
+
 def pluginSettingsCacheKey(fun, themeDirectory, plugins=None):
     return themeDirectory.__name__, len(plugins)
+
 
 def sortDependencies(plugins):
     """Topological sort
     """
 
     queue = []
-    waiting = {} # (n,p) -> [remaining deps]
+    waiting = {}  # (n,p) -> [remaining deps]
 
-    for n,p in plugins:
+    for n, p in plugins:
         if p.dependencies:
-            waiting[(n,p)] = list(p.dependencies)
+            waiting[(n, p)] = list(p.dependencies)
         else:
-            queue.append((n,p,))
+            queue.append((n, p,))
 
     while queue:
-        n,p = queue.pop()
-        yield (n,p,)
+        n, p = queue.pop()
+        yield (n, p,)
 
-        for (nw,pw,), deps in waiting.items():
+        for (nw, pw,), deps in waiting.items():
             if n in deps:
                 deps.remove(n)
 
             if not deps:
-                queue.append((nw,pw,))
-                del waiting[(nw,pw,)]
+                queue.append((nw, pw,))
+                del waiting[(nw, pw,)]
 
     if waiting:
         raise ValueError("Could not resolve dependencies for: %s" % waiting)
+
 
 @cache(pluginsCacheKey)
 def getPlugins():
@@ -53,6 +57,7 @@ def getPlugins():
         plugins.append((name, plugin,))
 
     return list(sortDependencies(plugins))
+
 
 @cache(pluginSettingsCacheKey)
 def getPluginSettings(themeDirectory, plugins=None):
@@ -89,6 +94,7 @@ def getPluginSettings(themeDirectory, plugins=None):
 
     pluginSettings = {}
     for name, plugin in plugins:
-        pluginSettings[name] = manifestContents.get("%s:%s" % (THEME_RESOURCE_NAME, name), {})
+        pluginSettings[name] = manifestContents.get(
+            "%s:%s" % (THEME_RESOURCE_NAME, name), {})
 
     return pluginSettings

@@ -8,6 +8,7 @@ from plone.app.testing.layers import FunctionalTesting
 
 from plone.testing.z2 import ZSERVER_FIXTURE
 
+
 class Theming(PloneSandboxLayer):
     defaultBases = (PLONE_FIXTURE,)
 
@@ -45,8 +46,10 @@ class ThemingWithCaching(Theming):
         # load ZCML
         import plone.app.theming.tests
         import plone.app.caching
-        xmlconfig.file('configure.zcml', plone.app.caching, context=configurationContext)
-        xmlconfig.file('configure.zcml', plone.app.theming.tests, context=configurationContext)
+        xmlconfig.file(
+            'configure.zcml', plone.app.caching, context=configurationContext)
+        xmlconfig.file(
+            'configure.zcml', plone.app.theming.tests, context=configurationContext)
 
         # Run the startup hook
         from plone.app.theming.plugins.hooks import onStartup
@@ -56,7 +59,8 @@ class ThemingWithCaching(Theming):
         # install into the Plone site
         applyProfile(portal, 'plone.app.caching:default')
         applyProfile(portal, 'plone.app.theming:default')
-        portal['portal_workflow'].setDefaultChain('simple_publication_workflow')
+        portal['portal_workflow'].setDefaultChain(
+            'simple_publication_workflow')
 
 THEMING_FIXTURE = Theming()
 THEMING_INTEGRATION_TESTING = IntegrationTesting(
