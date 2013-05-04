@@ -10,6 +10,10 @@ Changelog
 - Fixed i18n issues.
   [jianaijun]
 
+- This fixed UnicodeDecodeError when Theme Title is Non-ASCII
+  in the manifest.cfg file.
+  [jianaijun]
+
 
 1.1 (2013-04-06)
 ----------------
