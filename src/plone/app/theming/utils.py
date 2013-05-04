@@ -42,6 +42,7 @@ from plone.app.theming.plugins.utils import getPlugins
 from plone.app.theming.plugins.utils import getPluginSettings
 
 from Products.PageTemplates.Expressions import getEngine
+from Products.CMFPlone.utils import safe_unicode
 
 
 class NetworkResolver(etree.Resolver):
@@ -321,7 +322,7 @@ def getAvailableThemes():
     for name, manifest in resources.items():
         themes.append(getTheme(name, manifest))
 
-    themes.sort(key=lambda x: x.title)
+    themes.sort(key=lambda x: safe_unicode(x.title))
     return themes
 
 

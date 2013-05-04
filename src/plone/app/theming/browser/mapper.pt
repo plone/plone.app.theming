@@ -1036,7 +1036,7 @@
 
                     </div>
                     <div id="new-rule-select-theme" class="rule-wizard-step" style="display:none">
-                        <div class="documentDescription">
+                        <div class="documentDescription" i18n:translate="theming_mapper_wizard_select_theme">
                             Please select an element using the <strong>HTML mockup</strong> inspector.
                         </div>
                         <div class="formControls new-rule-actions">
@@ -1045,7 +1045,7 @@
                         </div>
                     </div>
                     <div id="new-rule-select-content" class="rule-wizard-step" style="display:none">
-                        <div class="documentDescription">
+                        <div class="documentDescription" i18n:translate="theming_mapper_wizard_select_content">
                             Please select an element using the <strong>Unthemed content</strong> inspector.
                         </div>
                         <div class="formControls new-rule-actions">
