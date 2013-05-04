@@ -267,7 +267,10 @@ class ThemeMapper(BrowserView):
                 if forms:
                     newQuery['forms'] = forms
                 if title:
-                    newQuery['title'] = title
+                    if isinstance(title, unicode):
+                        newQuery['title'] = title.encode('utf-8', 'replace')
+                    else:
+                        newQuery['title'] = title
 
                 return self.request.getURL() + '?' + urllib.urlencode(newQuery)
 
