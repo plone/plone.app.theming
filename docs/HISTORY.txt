@@ -7,6 +7,9 @@ Changelog
 - Fixed i18n issues.
   [thomasdesvenain]
 
+- Fixed i18n issues.
+  [jianaijun]
+
 
 1.1 (2013-04-06)
 ----------------
