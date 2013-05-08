@@ -576,7 +576,7 @@ with the unconditional theme, if any, used as a fallback.
 should be used. ``<notheme />`` takes precedence over ``<theme />``.
 
 **Tip:**  To ensure you do not accidentally style non-Plone pages, add a
-condition like ``css:if-condition="#visual-portal-wrapper"`` to the last theme
+condition like ``css:if-content="#visual-portal-wrapper"`` to the last theme
 listed, and do not have any unconditional themes.
 
 ``replace``
