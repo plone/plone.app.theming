@@ -41,6 +41,11 @@
                 subtype: 'iframe'
             });
 
+	    // Test Styles /test_rendering
+	    $("#testStylesButton").click(function() {
+                window.open($("base").attr("href") + 'test_rendering#top', "_blank");
+                return false;
+	    })
             // Create/copy overlay
             $("#overlay-new-theme").overlay();
             $("#overlayTitleNewTheme").show();
@@ -177,6 +182,11 @@
                     id="uploadButton"
                     class="standalone"
                     i18n:translate="">Upload Zip file</button>
+
+                <button
+                    id="testStylesButton"
+                    class="standalone"
+                    i18n:translate="">Test Styles</button>
 
                 <form id="helpButtonForm" method="get" tal:attributes="action string:${portal_url}/@@theming-controlpanel-help">
                     <button
