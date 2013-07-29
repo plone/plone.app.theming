@@ -492,6 +492,7 @@ def applyTheme(theme):
         new_themeDirectory = queryResourceDirectory(
             THEME_RESOURCE_NAME, theme)
         if new_themeDirectory is not None:
+            plugins = getPlugins()
             new_pluginSettings = getPluginSettings(new_themeDirectory, plugins)
             if new_pluginSettings is not None:
                 for name, plugin in plugins:
