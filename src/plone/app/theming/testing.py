@@ -1,5 +1,6 @@
 from plone.app.testing import PloneSandboxLayer
-from plone.app.testing import PLONE_FIXTURE
+from plone.app.contenttypes.testing import PLONE_APP_CONTENTTYPES_FIXTURE
+
 from plone.app.testing import applyProfile
 
 from zope.configuration import xmlconfig
@@ -8,7 +9,7 @@ from plone.app.testing.layers import FunctionalTesting
 
 
 class Theming(PloneSandboxLayer):
-    defaultBases = (PLONE_FIXTURE,)
+    defaultBases = (PLONE_APP_CONTENTTYPES_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
         # load ZCML
@@ -25,7 +26,7 @@ class Theming(PloneSandboxLayer):
 
 
 class ThemingWithCaching(Theming):
-    defaultBases = (PLONE_FIXTURE,)
+    defaultBases = (PLONE_APP_CONTENTTYPES_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
         # load ZCML

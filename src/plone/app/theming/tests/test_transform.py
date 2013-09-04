@@ -479,6 +479,8 @@ class TestCase(unittest.TestCase):
 
         setRoles(portal, TEST_USER_ID, ('Manager',))
         portal.invokeFactory('Folder', 'news', title=u"News")
+        wftool = getToolByName(portal, "portal_workflow")
+        wftool.doActionFor(portal.news, action='publish')
         setRoles(portal, TEST_USER_ID, ('Member',))
 
         self.settings.enabled = True
@@ -705,7 +707,6 @@ class TestCase(unittest.TestCase):
 
         # In the subfolder, we've reversed alpha and beta. We should now get
         # 'one' twice, since we still get alpha from the site root.
-
         browser.open(portal['subfolder'].absolute_url())
         self.assertTrue('<div id="alpha">Number one</div>' in browser.contents)
         self.assertTrue('<div id="beta">Number one</div>' in browser.contents)
