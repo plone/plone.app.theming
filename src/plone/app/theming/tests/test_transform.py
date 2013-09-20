@@ -685,6 +685,7 @@ class TestCase(unittest.TestCase):
 
         # Create some different content in a subfolder
         portal.invokeFactory('Folder', 'subfolder')
+        portal.portal_workflow.doActionFor(portal.subfolder, 'publish')
 
         portal['subfolder'].manage_addDTMLMethod('alpha', file=two)
         portal['subfolder'].manage_addDTMLMethod('beta', file=one)
