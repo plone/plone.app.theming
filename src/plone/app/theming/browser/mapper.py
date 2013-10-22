@@ -229,7 +229,7 @@ class ThemeMapper(BrowserView):
             try:
                 transform = compileThemeTransform(themeInfo.rules, themeInfo.absolutePrefix, settings.readNetwork, themeInfo.parameterExpressions or {})
             except lxml.etree.XMLSyntaxError, e:
-                return self.themeInfo_error_template(error=e.msg)
+                return self.theme_error_template(error=e.msg)
 
             params = prepareThemeParameters(context, self.request, themeInfo.parameterExpressions or {})
 
