@@ -7,6 +7,16 @@ Changelog
 - Add "Test Styles" button in control panel to expose, test_rendering template.
   [runyaga]
 
+- Make it easier to delegate management of themes.
+  [afrepues]
+
+- Grant theme management privileges to the Site Administrator.
+  [afrepues]
+
+- Create a role for designers.
+  [afrepues]
+
+
 1.1.1 (2013-05-23)
 ------------------
 

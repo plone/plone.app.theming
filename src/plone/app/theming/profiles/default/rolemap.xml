@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<rolemap>
+
+  <roles>
+    <role name="Themer" />
+  </roles>
+
+  <permissions>
+    <permission name="Plone Site Setup: Overview"
+		acquire="True">
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Themer" />
+    </permission>
+    <permission name="Plone Site Setup: Themes"
+                acquire="True">
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Themer" />
+    </permission>
+    <permission name="plone.resourceeditor: Manage Sources"
+                acquire="True">
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Themer" />
+    </permission>
+  </permissions>
+
+</rolemap>
