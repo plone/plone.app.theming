@@ -50,13 +50,17 @@ class TestExportImport(unittest.TestCase):
                 assert name == 'theme.xml'
                 return None
 
+        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        rules = settings.rules
+        absolutePrefix = settings.absolutePrefix
+        parameterExpressions = settings.parameterExpressions
+
         importTheme(FauxContext())
 
-        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
-
-        self.assertEqual(settings.rules, None)
-        self.assertEqual(settings.absolutePrefix, None)
-        self.assertEqual(settings.parameterExpressions, {})
+        # should be unchanged
+        self.assertEqual(settings.rules, rules)
+        self.assertEqual(settings.absolutePrefix, absolutePrefix)
+        self.assertEqual(settings.parameterExpressions, parameterExpressions)
 
     def test_import_not_found(self):
         from plone.app.theming.exportimport.handler import importTheme
@@ -92,8 +96,7 @@ class TestExportImport(unittest.TestCase):
                 return "<theme><enabled>true</enabled></theme>"
 
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
-
-        self.assertEqual(settings.enabled, False)
+        settings.enabled = False
 
         importTheme(FauxContext())
 

@@ -30,7 +30,7 @@ class TestIntegration(unittest.TestCase):
 
         themes = getAvailableThemes()
 
-        self.assertEqual(len(themes), 3)
+        self.assertTrue(len(themes) >= 3)
         theme = getTheme('plone.app.theming.tests')
         self.assertTrue(theme is not None)
         self.assertEqual(theme.__name__, 'plone.app.theming.tests')
@@ -73,14 +73,14 @@ class TestIntegration(unittest.TestCase):
         from plone.app.theming.utils import getAvailableThemes
         from plone.app.theming.utils import applyTheme
 
-        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
-
         theme = None
         for t in getAvailableThemes():
             theme = t
             break
 
-        self.assertEqual(settings.rules, None)
+        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+        settings.rules = None
+
         applyTheme(theme)
 
         self.assertEqual(settings.rules, theme.rules)
