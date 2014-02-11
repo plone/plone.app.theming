@@ -156,12 +156,12 @@
             Up to Site Setup
     </a>
 
-    <dl class="portalMessage info">
-        <dt i18n:translate="">Note</dt>
-        <dd i18n:translate="description_notheme_controlpanel">
+    <div class="portalMessage info">
+        <strong i18n:translate="">Note</strong>
+        <span tal:omit-tag="" i18n:translate="description_notheme_controlpanel">
             Please note that this control panel page will never be themed.
-        </dd>
-    </dl>
+        </span>
+    </div>
 
     <dl class="enableFormTabbing">
         <dt id="fieldsetlegend-basic" i18n:translate="">Themes</dt>

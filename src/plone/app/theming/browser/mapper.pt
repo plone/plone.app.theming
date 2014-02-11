@@ -745,13 +745,14 @@
       Portal status message
     </div>
 
-    <dl class="portalMessage warning" tal:condition="python:view.active and view.editable">
-        <dt i18n:translate="">Warning</dt>
-        <dd i18n:translate="theming_mapper_warning_live">
+    <div class="portalMessage warning"
+        tal:condition="python:view.active and view.editable">
+        <strong i18n:translate="">Warning</strong>
+        <span tal:omit-tag="" i18n:translate="theming_mapper_warning_live">
             This theme is currently active. Any changes made will be immediately
             reflected on the live site.
-        </dd>
-    </dl>
+        </span>
+    </div>
 
     <div id="content">
 
@@ -951,14 +952,14 @@
 
                 <div class="panel-footer">
                     <div class="inspector-switch">
-                        <button id="content-inspector-on" disabled="disabled" 
+                        <button id="content-inspector-on" disabled="disabled"
                                 i18n:translate="">Inspector on</button>
-                        <button id="content-inspector-off" 
+                        <button id="content-inspector-off"
                                 i18n:translate="">Inspector off</button>
                     </div>
                 </div>
 
-                <div id="content-footer-help" class="discreet footer-help" 
+                <div id="content-footer-help" class="discreet footer-help"
                      i18n:translate="help_highlighter_selection">
                     Hover over an element to see its selector.
                     Left-click or press <em>Enter</em> to save.

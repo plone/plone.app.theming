@@ -4,6 +4,10 @@ Changelog
 1.1.2 (unreleased)
 ------------------
 
+- Remove DL's from portal message in templates.
+  https://github.com/plone/Products.CMFPlone/issues/153
+  [khink]
+
 - Add "Test Styles" button in control panel to expose, test_rendering template.
   [runyaga]
 
