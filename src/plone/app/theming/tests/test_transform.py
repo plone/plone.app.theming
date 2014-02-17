@@ -1,3 +1,4 @@
+import transaction
 import unittest2 as unittest
 
 from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
@@ -46,7 +47,7 @@ class TestCase(unittest.TestCase):
                 'requestParam': 'request/useother | string:off',
             }
 
-        import transaction;
+        import transaction
         transaction.commit()
 
     def tearDown(self):
@@ -72,6 +73,22 @@ class TestCase(unittest.TestCase):
 
         # The theme
         self.assertFalse("This is the theme" in browser.contents)
+
+    def test_spamProtect(self):
+        portal = self.layer['portal']
+
+        browser = Browser(self.layer['app'])
+        # obfuscation works without Diazo
+        browser.open(portal.absolute_url() + '/spamProtect?mailaddress=foo@example.org')
+        self.assertIn('<a href="&#0109;ailto&#0058;foo&#0064;example.org">foo&#0064;example.org</a>',
+                      browser.contents)
+
+        self.settings.enabled = True
+        transaction.commit()
+        browser.open(portal.absolute_url() + '/spamProtect?mailaddress=foo@example.org')
+        # obfuscation should work with Diazo too
+        self.assertIn('<a href="&#0109;ailto&#0058;foo&#0064;example.org">foo&#0064;example.org</a>',
+                      browser.contents)
 
     def test_theme_enabled(self):
         app = self.layer['app']
