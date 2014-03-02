@@ -1,8 +1,14 @@
 Changelog
 =========
 
-1.1.2 (unreleased)
+1.2.0 (2014-03-02)
 ------------------
+
+- Disable theming for manage_shutdown view.
+  [davisagli]
+
+- Fix reference to theme error template
+  [afrepues]
 
 - Add "Test Styles" button in control panel to expose, test_rendering template.
   [runyaga]
