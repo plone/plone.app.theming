@@ -4,7 +4,8 @@ Changelog
 1.2.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Put themes in a separate zcml file to be able to exclude them
+  [laulaz]
 
 
 1.2.0 (2014-03-02)
