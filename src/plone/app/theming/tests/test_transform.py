@@ -616,6 +616,30 @@ class TestCase(unittest.TestCase):
         # Context is the last found parent
         self.assertTrue('<script id="contextParam">http://nohost/plone</script>' in browser.contents)
 
+    def test_navroot_params_on_404_widget_in_path(self):
+        app = self.layer['app']
+        portal = self.layer['portal']
+        portal.invokeFactory('Folder', 'subfolder')
+
+        self.settings.enabled = True
+        self.settings.parameterExpressions = {
+                'navigation_root_id': 'python:portal_state.navigation_root().getId()'
+            }
+
+        import transaction; transaction.commit()
+
+        browser = Browser(app)
+        error = None
+        try:
+            browser.open(
+                    '%s/widget/oauth_login/info.txt' % 
+                        portal['subfolder'].absolute_url())
+        except HTTPError, e:
+            error = e
+        self.assertEqual(error.code, 404)
+
+        self.assertTrue("This is the theme" in browser.contents)
+
     def test_resource_condition_404(self):
         app = self.layer['app']
         portal = self.layer['portal']
