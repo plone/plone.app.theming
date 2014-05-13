@@ -7,8 +7,8 @@ Changelog
 - Put themes in a separate zcml file to be able to exclude them
   [laulaz]
   
-- #14107 bot requests like /widget/oauth_login/info.txt cause finding 
-  correct context with plone.app.theming
+- #14107 bot requests like /widget/oauth_login/info.txt causes 
+  problems finding correct context with plone.app.theming
   [anthonygerrard]
 
 
