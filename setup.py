@@ -6,9 +6,9 @@ version = '1.2.1.dev0'
 setup(name='plone.app.theming',
       version=version,
       description="Integrates the Diazo theming engine with Plone",
-      long_description=open("README.txt").read() + "\n\n" +
+      long_description=open("README.rst").read() + "\n\n" +
                        open(os.path.join("src", "plone", "app", "theming", "browser", "resources", "userguide.rst")).read() + "\n\n" +
-                       open(os.path.join("docs", "HISTORY.txt")).read(),
+                       open(os.path.join("docs", "HISTORY.rst")).read(),
       # Get more strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
         "Framework :: Plone",
