@@ -13,7 +13,7 @@ TEMPLATE_THEME = 'template'
 
 MANIFEST_FORMAT = ManifestFormat(THEME_RESOURCE_NAME,
         keys=['title', 'description', 'rules', 'prefix', 'doctype', 'preview',
-              'enabled_bundles', 'disabled_bundles'],
+              'enabled-bundles', 'disabled-bundles'],
         parameterSections=['parameters'],
     )
 
