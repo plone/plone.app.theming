@@ -1,4 +1,4 @@
-from zope.interface import Interface
+from zope.interface import Interface, Attribute
 from zope import schema
 from zope.i18nmessageid import MessageFactory
 
@@ -12,7 +12,8 @@ DEFAULT_THEME_FILENAME = 'index.html'
 TEMPLATE_THEME = 'template'
 
 MANIFEST_FORMAT = ManifestFormat(THEME_RESOURCE_NAME,
-        keys=['title', 'description', 'rules', 'prefix', 'doctype', 'preview'],
+        keys=['title', 'description', 'rules', 'prefix', 'doctype', 'preview',
+              'enabled_bundles', 'disabled_bundles'],
         parameterSections=['parameters'],
     )
 
@@ -210,3 +211,7 @@ class IThemePlugin(Interface):
     def onRequest(request, theme, settings, dependenciesSettings):
         """Called upon traversal into the site when a theme is enabled
         """
+
+
+class IThemeAppliedEvent(Interface):
+    theme = Attribute('theme that is getting applied')
