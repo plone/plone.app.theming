@@ -6,11 +6,15 @@ Changelog
 
 - Put themes in a separate zcml file to be able to exclude them
   [laulaz]
-  
-- #14107 bot requests like /widget/oauth_login/info.txt causes 
+
+- #14107 bot requests like /widget/oauth_login/info.txt causes
   problems finding correct context with plone.app.theming
   [anthonygerrard]
 
+- Added support for ++theme++ to traverse to the contents of the
+  current activated theme.
+  [bosim]
+  
 
 1.2.0 (2014-03-02)
 ------------------

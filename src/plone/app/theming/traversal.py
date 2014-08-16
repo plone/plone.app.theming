@@ -30,7 +30,7 @@ class ThemeTraverser(ResourceTraverser):
     def traverse(self, name, remaining):
         type = self.name
 
-        if name == 'current':
+        if name == '':
             name = self.current_theme()
 
         # Note: also fixes possible unicode problems
