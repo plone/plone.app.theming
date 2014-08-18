@@ -46,6 +46,8 @@ from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFPlone.utils import safe_unicode
 
+DIAZO_OFF_TRUE = ('1', 'y', 'yes', 't', 'true')
+
 
 class NetworkResolver(etree.Resolver):
     """Resolver for network urls
@@ -133,13 +135,13 @@ class InternalResolver(etree.Resolver):
                 '<html><body><script type="text/javascript">',
                 result,
                 '</script></body></html>',
-                ])
+            ])
         elif content_type == 'text/css':
             result = ''.join([
                 '<html><body><style type="text/css">',
                 result,
                 '</style></body></html>',
-                ])
+            ])
 
         return self.resolve_string(result, context)
 
@@ -231,7 +233,7 @@ def isValidThemeDirectory(directory):
     directory
     """
     return directory.isFile(MANIFEST_FILENAME) or \
-           directory.isFile(RULE_FILENAME)
+        directory.isFile(RULE_FILENAME)
 
 
 def extractThemeInfo(zipfile, checkRules=True):
@@ -243,7 +245,8 @@ def extractThemeInfo(zipfile, checkRules=True):
     Set checkRules=False to disable the rules check.
     """
 
-    resourceName, manifestDict = extractManifestFromZipFile(zipfile, MANIFEST_FORMAT)
+    resourceName, manifestDict = extractManifestFromZipFile(
+        zipfile, MANIFEST_FORMAT)
 
     rulesFile = None
     absolutePrefix = '/++%s++%s' % (THEME_RESOURCE_NAME, resourceName)
@@ -268,16 +271,17 @@ def extractThemeInfo(zipfile, checkRules=True):
                 zipfile.getinfo("%s/%s" % (resourceName, RULE_FILENAME,))
             except KeyError:
                 raise ValueError("Could not find theme name and rules file")
-        rulesFile = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, resourceName, RULE_FILENAME,)
+        rulesFile = u"/++%s++%s/%s" % (
+            THEME_RESOURCE_NAME, resourceName, RULE_FILENAME,)
 
     return Theme(resourceName, rulesFile,
-            title=title,
-            description=description,
-            absolutePrefix=absolutePrefix,
-            parameterExpressions=parameters,
-            doctype=doctype,
-            preview=preview,
-        )
+                 title=title,
+                 description=description,
+                 absolutePrefix=absolutePrefix,
+                 parameterExpressions=parameters,
+                 doctype=doctype,
+                 preview=preview,
+                 )
 
 
 def getTheme(name, manifest=None, resources=None):
@@ -311,13 +315,13 @@ def getTheme(name, manifest=None, resources=None):
         prefix = prefix.decode('utf-8')
 
     return Theme(name, rules,
-            title=title,
-            description=description,
-            absolutePrefix=prefix,
-            parameterExpressions=params,
-            doctype=doctype,
-            preview=preview,
-        )
+                 title=title,
+                 description=description,
+                 absolutePrefix=prefix,
+                 parameterExpressions=params,
+                 doctype=doctype,
+                 preview=preview,
+                 )
 
 
 def getAvailableThemes():
@@ -363,12 +367,12 @@ def getThemeFromResourceDirectory(resourceDirectory):
         prefix = prefix.decode('utf-8')
 
     return Theme(name, rules,
-                title=title,
-                description=description,
-                absolutePrefix=prefix,
-                parameterExpressions=params,
-                doctype=doctype,
-            )
+                 title=title,
+                 description=description,
+                 absolutePrefix=prefix,
+                 parameterExpressions=params,
+                 doctype=doctype,
+                 )
 
 
 def getZODBThemes():
@@ -416,9 +420,8 @@ def isThemeEnabled(request, settings=None):
         return False
 
     # Check for diazo.off request parameter
-    if (DevelopmentMode and
-        request.get('diazo.off', '').lower() in ('1', 'y', 'yes', 't', 'true')
-    ):
+    diazo_off = request.get('diazo.off', '').lower()
+    if (DevelopmentMode and diazo_off in DIAZO_OFF_TRUE):
         return False
 
     if settings is None:
@@ -544,6 +547,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
 
     return themeName
 
+
 def getParser(type, readNetwork):
     """Set up a parser for either rules, theme or compiler
     """
@@ -560,6 +564,7 @@ def getParser(type, readNetwork):
         parser.resolvers.add(NetworkResolver())
     return parser
 
+
 def compileThemeTransform(rules, absolutePrefix=None, readNetwork=False, parameterExpressions=None, runtrace=False):
     """Prepare the theme transform by compiling the rules with the given options
     """
@@ -567,32 +572,35 @@ def compileThemeTransform(rules, absolutePrefix=None, readNetwork=False, paramet
     if parameterExpressions is None:
         parameterExpressions = {}
 
-    accessControl = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=readNetwork, write_network=False)
+    accessControl = etree.XSLTAccessControl(
+        read_file=True, write_file=False, create_dir=False, read_network=readNetwork, write_network=False)
 
     if absolutePrefix:
         absolutePrefix = expandAbsolutePrefix(absolutePrefix)
 
-    params = set(parameterExpressions.keys() + ['url', 'base', 'path', 'scheme', 'host'])
+    params = set(parameterExpressions.keys() + [
+                 'url', 'base', 'path', 'scheme', 'host'])
     xslParams = dict((k, '') for k in params)
 
     compiledTheme = compile_theme(rules,
-            absolute_prefix=absolutePrefix,
-            parser=getParser('theme', readNetwork),
-            rules_parser=getParser('rules', readNetwork),
-            compiler_parser=getParser('compiler', readNetwork),
-            read_network=readNetwork,
-            access_control=accessControl,
-            update=True,
-            xsl_params=xslParams,
-            runtrace=runtrace,
-        )
+                                  absolute_prefix=absolutePrefix,
+                                  parser=getParser('theme', readNetwork),
+                                  rules_parser=getParser('rules', readNetwork),
+                                  compiler_parser=getParser(
+                                  'compiler', readNetwork),
+                                  read_network=readNetwork,
+                                  access_control=accessControl,
+                                  update=True,
+                                  xsl_params=xslParams,
+                                  runtrace=runtrace,
+                                  )
 
     if not compiledTheme:
         return None
 
     return etree.XSLT(compiledTheme,
-            access_control=accessControl,
-        )
+                      access_control=accessControl,
+                      )
 
 
 def prepareThemeParameters(context, request, parameterExpressions, cache=None):
@@ -608,12 +616,12 @@ def prepareThemeParameters(context, request, parameterExpressions, cache=None):
     parts = urlsplit(base.lower())
 
     params = dict(
-            url=quote_param(url),
-            base=quote_param(base),
-            path=quote_param(path),
-            scheme=quote_param(parts.scheme),
-            host=quote_param(parts.netloc),
-        )
+        url=quote_param(url),
+        base=quote_param(base),
+        path=quote_param(path),
+        scheme=quote_param(parts.scheme),
+        host=quote_param(parts.netloc),
+    )
 
     # Add expression-based parameters
     if parameterExpressions:

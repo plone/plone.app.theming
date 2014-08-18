@@ -36,9 +36,12 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(theme.__name__, 'plone.app.theming.tests')
         self.assertEqual(theme.title, 'Test theme')
         self.assertEqual(theme.description, 'A theme for testing')
-        self.assertEqual(theme.rules, '/++theme++plone.app.theming.tests/rules.xml')
-        self.assertEqual(theme.absolutePrefix, '/++theme++plone.app.theming.tests')
-        self.assertEqual(theme.parameterExpressions, {'foo': "python:request.get('bar')"})
+        self.assertEqual(
+            theme.rules, '/++theme++plone.app.theming.tests/rules.xml')
+        self.assertEqual(
+            theme.absolutePrefix, '/++theme++plone.app.theming.tests')
+        self.assertEqual(theme.parameterExpressions, {
+                         'foo': "python:request.get('bar')"})
         self.assertEqual(theme.doctype, "<!DOCTYPE html>")
 
     def test_getZODBThemes(self):
@@ -47,7 +50,8 @@ class TestIntegration(unittest.TestCase):
         from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
         from plone.app.theming.utils import getZODBThemes
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'default_rules.zip'))
+        f = open(os.path.join(os.path.dirname(
+            __file__), 'zipfiles', 'default_rules.zip'))
 
         z = zipfile.ZipFile(f)
 
@@ -59,8 +63,10 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(len(zodbThemes), 1)
 
         self.assertEqual(zodbThemes[0].__name__, 'default_rules')
-        self.assertEqual(zodbThemes[0].rules, '/++theme++default_rules/rules.xml')
-        self.assertEqual(zodbThemes[0].absolutePrefix, '/++theme++default_rules')
+        self.assertEqual(zodbThemes[
+                         0].rules, '/++theme++default_rules/rules.xml')
+        self.assertEqual(zodbThemes[
+                         0].absolutePrefix, '/++theme++default_rules')
 
         f.close()
 
@@ -85,7 +91,8 @@ class TestIntegration(unittest.TestCase):
 
         self.assertEqual(settings.rules, theme.rules)
         self.assertEqual(settings.absolutePrefix, theme.absolutePrefix)
-        self.assertEqual(settings.parameterExpressions, theme.parameterExpressions)
+        self.assertEqual(
+            settings.parameterExpressions, theme.parameterExpressions)
         self.assertEqual(settings.doctype, theme.doctype)
 
     def test_applyTheme_None(self):
@@ -142,7 +149,7 @@ class TestIntegration(unittest.TestCase):
         self.assertTrue(isThemeEnabled(request, settings))
         self.assertEqual(request.get('SERVER_URL'), 'http://nohost')
 
-        #Should pay no attention to BASE1 and only use SERVER_URL
+        # Should pay no attention to BASE1 and only use SERVER_URL
         settings.hostnameBlacklist.append('nohost')
         self.assertFalse(isThemeEnabled(request, settings))
 
@@ -154,7 +161,8 @@ class TestUnit(unittest.TestCase):
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'default_rules.zip'))
+        f = open(os.path.join(os.path.dirname(
+            __file__), 'zipfiles', 'default_rules.zip'))
         z = zipfile.ZipFile(f)
 
         theme = extractThemeInfo(z)
@@ -170,7 +178,8 @@ class TestUnit(unittest.TestCase):
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_rules.zip'))
+        f = open(os.path.join(os.path.dirname(
+            __file__), 'zipfiles', 'manifest_rules.zip'))
         z = zipfile.ZipFile(f)
 
         theme = extractThemeInfo(z)
@@ -187,7 +196,8 @@ class TestUnit(unittest.TestCase):
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_prefix.zip'))
+        f = open(os.path.join(os.path.dirname(
+            __file__), 'zipfiles', 'manifest_prefix.zip'))
         z = zipfile.ZipFile(f)
 
         theme = extractThemeInfo(z)
@@ -195,7 +205,7 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(theme.__name__, 'manifest_prefix')
         self.assertEqual(theme.rules, u'/++theme++manifest_prefix/rules.xml')
         self.assertEqual(theme.absolutePrefix, '/foo')
-        self.assertEqual(theme.title,  'Test theme')
+        self.assertEqual(theme.title, 'Test theme')
 
         f.close()
 
@@ -204,15 +214,18 @@ class TestUnit(unittest.TestCase):
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_default_rules.zip'))
+        f = open(os.path.join(os.path.dirname(
+            __file__), 'zipfiles', 'manifest_default_rules.zip'))
         z = zipfile.ZipFile(f)
 
         theme = extractThemeInfo(z)
 
         self.assertEqual(theme.__name__, 'manifest_default_rules')
-        self.assertEqual(theme.rules, u'/++theme++manifest_default_rules/rules.xml')
-        self.assertEqual(theme.absolutePrefix, '/++theme++manifest_default_rules')
-        self.assertEqual(theme.title,  'Test theme')
+        self.assertEqual(
+            theme.rules, u'/++theme++manifest_default_rules/rules.xml')
+        self.assertEqual(
+            theme.absolutePrefix, '/++theme++manifest_default_rules')
+        self.assertEqual(theme.title, 'Test theme')
 
         f.close()
 
@@ -221,7 +234,8 @@ class TestUnit(unittest.TestCase):
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_preview.zip'))
+        f = open(os.path.join(os.path.dirname(
+            __file__), 'zipfiles', 'manifest_preview.zip'))
         z = zipfile.ZipFile(f)
 
         theme = extractThemeInfo(z)
@@ -229,8 +243,8 @@ class TestUnit(unittest.TestCase):
         self.assertEqual(theme.__name__, 'manifest_preview')
         self.assertEqual(theme.rules, u'/++theme++manifest_preview/rules.xml')
         self.assertEqual(theme.absolutePrefix, '/++theme++manifest_preview')
-        self.assertEqual(theme.title,  'Test theme')
-        self.assertEqual(theme.preview,  'preview.png')
+        self.assertEqual(theme.title, 'Test theme')
+        self.assertEqual(theme.preview, 'preview.png')
 
         f.close()
 
@@ -239,15 +253,17 @@ class TestUnit(unittest.TestCase):
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_default_rules_override.zip'))
+        f = open(os.path.join(os.path.dirname(
+            __file__), 'zipfiles', 'manifest_default_rules_override.zip'))
         z = zipfile.ZipFile(f)
 
         theme = extractThemeInfo(z)
 
         self.assertEqual(theme.__name__, 'manifest_default_rules_override')
         self.assertEqual(theme.rules, 'other.xml')
-        self.assertEqual(theme.absolutePrefix, '/++theme++manifest_default_rules_override')
-        self.assertEqual(theme.title,  'Test theme')
+        self.assertEqual(
+            theme.absolutePrefix, '/++theme++manifest_default_rules_override')
+        self.assertEqual(theme.title, 'Test theme')
 
         f.close()
 
@@ -256,7 +272,8 @@ class TestUnit(unittest.TestCase):
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'nodir.zip'))
+        f = open(os.path.join(os.path.dirname(
+            __file__), 'zipfiles', 'nodir.zip'))
         z = zipfile.ZipFile(f)
 
         self.assertRaises(ValueError, extractThemeInfo, z)
@@ -268,7 +285,8 @@ class TestUnit(unittest.TestCase):
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'multiple_dir.zip'))
+        f = open(os.path.join(os.path.dirname(
+            __file__), 'zipfiles', 'multiple_dir.zip'))
         z = zipfile.ZipFile(f)
 
         self.assertRaises(ValueError, extractThemeInfo, z)
@@ -280,7 +298,8 @@ class TestUnit(unittest.TestCase):
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'ignores_dotfiles_resource_forks.zip'))
+        f = open(os.path.join(os.path.dirname(
+            __file__), 'zipfiles', 'ignores_dotfiles_resource_forks.zip'))
         z = zipfile.ZipFile(f)
 
         theme = extractThemeInfo(z)
@@ -296,7 +315,8 @@ class TestUnit(unittest.TestCase):
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'subdirectories.zip'))
+        f = open(os.path.join(os.path.dirname(
+            __file__), 'zipfiles', 'subdirectories.zip'))
         z = zipfile.ZipFile(f)
 
         theme = extractThemeInfo(z)

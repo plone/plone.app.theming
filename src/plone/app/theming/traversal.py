@@ -10,6 +10,7 @@ from zope.component import getUtility
 from interfaces import IThemeSettings
 
 
+
 class ThemeTraverser(ResourceTraverser):
     """The theme traverser.
 

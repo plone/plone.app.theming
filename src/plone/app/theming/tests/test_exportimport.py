@@ -2,6 +2,7 @@ import unittest2 as unittest
 
 from plone.app.theming.testing import THEMING_INTEGRATION_TESTING
 
+
 class TestExportImport(unittest.TestCase):
 
     layer = THEMING_INTEGRATION_TESTING
@@ -28,9 +29,12 @@ class TestExportImport(unittest.TestCase):
 
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
 
-        self.assertEqual(settings.rules, '/++theme++plone.app.theming.tests/rules.xml')
-        self.assertEqual(settings.absolutePrefix, '/++theme++plone.app.theming.tests')
-        self.assertEqual(settings.parameterExpressions, {'foo': "python:request.get('bar')"})
+        self.assertEqual(
+            settings.rules, '/++theme++plone.app.theming.tests/rules.xml')
+        self.assertEqual(
+            settings.absolutePrefix, '/++theme++plone.app.theming.tests')
+        self.assertEqual(settings.parameterExpressions, {
+                         'foo': "python:request.get('bar')"})
 
     def test_import_no_file(self):
         from zope.component import getUtility
@@ -127,4 +131,3 @@ class TestExportImport(unittest.TestCase):
         importTheme(FauxContext())
 
         self.assertEqual(settings.enabled, False)
-

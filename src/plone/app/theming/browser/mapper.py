@@ -71,7 +71,8 @@ class ThemeMapper(BrowserView):
         self.themeBasePathEncoded = urllib.quote_plus(self.themeBasePath)
         self.themeBaseUrl = "%s/%s" % (self.portalUrl, self.themeBasePath,)
 
-        self.editable = IWritableResourceDirectory.providedBy(self.resourceDirectory)
+        self.editable = IWritableResourceDirectory.providedBy(
+            self.resourceDirectory)
 
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
         self.active = (settings.enabled and self.name == getCurrentTheme())
@@ -79,12 +80,12 @@ class ThemeMapper(BrowserView):
         self.rulesFileName = RULE_FILENAME
 
         self.jsVariables = "var CURRENT_SELECTION='%s'; var THEME_BASE_URL='%s'; var THEME_BASE_PATH_ENCODED='%s'; var EDITABLE=%s; var RULE_FILENAME='%s';" % (
-                self.request.get('file-selector') or '',
-                self.themeBaseUrl,
-                self.themeBasePathEncoded,
-                str(self.editable).lower(),
-                self.rulesFileName
-            )
+            self.request.get('file-selector') or '',
+            self.themeBaseUrl,
+            self.themeBasePathEncoded,
+            str(self.editable).lower(),
+            self.rulesFileName
+        )
 
     def update(self):
         self.themeFiles = self.findThemeFiles(self.resourceDirectory)
@@ -104,13 +105,15 @@ class ThemeMapper(BrowserView):
         return True
 
     def authorize(self):
-        authenticator = getMultiAdapter((self.context, self.request), name=u"authenticator")
+        authenticator = getMultiAdapter((
+            self.context, self.request), name=u"authenticator")
         if not authenticator.verify():
             raise Unauthorized
 
     def redirect(self, message):
         IStatusMessage(self.request).add(message)
-        self.request.response.redirect("%s/@@theming-controlpanel" % self.portalUrl)
+        self.request.response.redirect(
+            "%s/@@theming-controlpanel" % self.portalUrl)
 
     def findThemeFiles(self, directory, files=None, prefix=''):
         """Depth-first search of files with known extensions.
@@ -227,15 +230,18 @@ class ThemeMapper(BrowserView):
             serializer = getHTMLSerializer([result], pretty_print=False)
 
             try:
-                transform = compileThemeTransform(themeInfo.rules, themeInfo.absolutePrefix, settings.readNetwork, themeInfo.parameterExpressions or {})
+                transform = compileThemeTransform(
+                    themeInfo.rules, themeInfo.absolutePrefix, settings.readNetwork, themeInfo.parameterExpressions or {})
             except lxml.etree.XMLSyntaxError, e:
                 return self.theme_error_template(error=e.msg)
 
-            params = prepareThemeParameters(context, self.request, themeInfo.parameterExpressions or {})
+            params = prepareThemeParameters(
+                context, self.request, themeInfo.parameterExpressions or {})
 
             # Fix url and path since the request gave us this view
             params['url'] = quote_param("%s%s" % (portal_url, path,))
-            params['path'] = quote_param("%s%s" % (portal.absolute_url_path(), path,))
+            params['path'] = quote_param("%s%s" % (
+                portal.absolute_url_path(), path,))
 
             if themeInfo.doctype:
                 serializer.doctype = themeInfo.doctype
@@ -255,7 +261,8 @@ class ThemeMapper(BrowserView):
 
                 # relative?
                 if not origUrl.netloc:
-                    newPath = urlparse.urljoin(path.rstrip("/") + "/", newPath.lstrip("/"))
+                    newPath = urlparse.urljoin(path.rstrip(
+                        "/") + "/", newPath.lstrip("/"))
                 elif not orig.lower().startswith(portal_url.lower()):
                     # Not an internal URL - ignore
                     return orig

@@ -27,6 +27,7 @@ patch_zmi()
 
 LOGGER = logging.getLogger('plone.app.theming')
 
+
 class _Cache(object):
     """Simple cache for the transform
     """
@@ -40,6 +41,7 @@ class _Cache(object):
 
     def updateExpressions(self, expressions):
         self.expressions = expressions
+
 
 def getCache(settings):
     # We need a persistent object to hang a _v_ attribute off for caching.
@@ -56,6 +58,7 @@ def getCache(settings):
         cache = caches[key] = _Cache()
     return cache
 
+
 def invalidateCache(settings, event):
     """When our settings are changed, invalidate the cache on all zeo clients
     """
@@ -63,6 +66,7 @@ def invalidateCache(settings, event):
     registry._p_changed = True
     if hasattr(registry, '_v_plone_app_theming_caches'):
         del registry._v_plone_app_theming_caches
+
 
 class ThemeTransform(object):
     """Late stage in the 8000's transform chain. When plone.app.blocks is
@@ -105,10 +109,11 @@ class ThemeTransform(object):
             readNetwork = settings.readNetwork
             parameterExpressions = settings.parameterExpressions
 
-            transform = compileThemeTransform(rules, absolutePrefix, readNetwork, parameterExpressions, runtrace=runtrace)
+            transform = compileThemeTransform(
+                rules, absolutePrefix, readNetwork, parameterExpressions, runtrace=runtrace)
             if transform is None:
                 return None
-            
+
             if not DevelopmentMode:
                 cache.updateTransform(transform)
 
@@ -156,7 +161,7 @@ class ThemeTransform(object):
 
         DevelopmentMode = Globals.DevelopmentMode
         runtrace = (DevelopmentMode and
-            self.request.get('diazo.debug', '').lower() in ('1', 'y', 'yes', 't', 'true'))
+                    self.request.get('diazo.debug', '').lower() in ('1', 'y', 'yes', 't', 'true'))
 
         try:
             etree.clear_error_log()
@@ -176,7 +181,8 @@ class ThemeTransform(object):
                 cache = getCache(settings)
 
             parameterExpressions = settings.parameterExpressions or {}
-            params = prepareThemeParameters(findContext(self.request), self.request, parameterExpressions, cache)
+            params = prepareThemeParameters(findContext(
+                self.request), self.request, parameterExpressions, cache)
 
             transformed = transform(result.tree, **params)
             error_log = transform.error_log
@@ -194,10 +200,11 @@ class ThemeTransform(object):
             # Add debug information to end of body
             body = result.tree.xpath('/html/body')[0]
             body.insert(-1, generate_debug_html(
-                findContext(self.request).portal_url() + '/++resource++diazo-debug',
+                findContext(
+                    self.request).portal_url() + '/++resource++diazo-debug',
                 rules=settings.rules,
                 rules_parser=getParser('rules', settings.readNetwork),
-                error_log = error_log,
+                error_log=error_log,
             ))
 
         return result

@@ -18,7 +18,7 @@ from plone.registry.interfaces import IRegistry
 from zope.component import getUtility
 
 from plone.app.theming.interfaces import IThemeSettings
-from plone.app.theming.utils import applyTheme, getAvailableThemes, getTheme
+from plone.app.theming.utils import applyTheme, getTheme
 from plone.app.theming.utils import InternalResolver, PythonResolver, resolvePythonURL
 
 import re
@@ -26,6 +26,7 @@ import re
 from diazo.compiler import compile_theme
 
 from Products.CMFCore.utils import getToolByName
+
 
 class TestCase(unittest.TestCase):
 
@@ -40,13 +41,13 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = False
         self.settings.rules = u'python://plone.app.theming/tests/rules.xml'
         self.settings.parameterExpressions = {
-                'stringParam': 'string:string param value',
-                'boolParam': 'python:False',
-                'contextParam' : 'context/absolute_url | string:no context',
-                'requestParam': 'request/useother | string:off',
-            }
+            'stringParam': 'string:string param value',
+            'boolParam': 'python:False',
+            'contextParam': 'context/absolute_url | string:no context',
+            'requestParam': 'request/useother | string:off',
+        }
 
-        import transaction;
+        import transaction
         transaction.commit()
 
     def tearDown(self):
@@ -78,7 +79,8 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -100,10 +102,13 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = True
         theme = getTheme('plone.app.theming.tests')
         applyTheme(theme)
-        self.assertEqual(self.settings.rules, u'/++theme++plone.app.theming.tests/rules.xml')
-        self.assertEqual(self.settings.currentTheme, u"plone.app.theming.tests")
+        self.assertEqual(
+            self.settings.rules, u'/++theme++plone.app.theming.tests/rules.xml')
+        self.assertEqual(
+            self.settings.currentTheme, u"plone.app.theming.tests")
         self.assertEqual(self.settings.doctype, u"<!DOCTYPE html>")
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -125,7 +130,8 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url() + '?diazo.off=1')
@@ -146,7 +152,8 @@ class TestCase(unittest.TestCase):
         Globals.DevelopmentMode = False
 
         self.settings.enabled = True
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url() + '?diazo.off=1')
@@ -165,7 +172,8 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url() + '/@@header-disabled')
@@ -175,19 +183,21 @@ class TestCase(unittest.TestCase):
         # The theme
         self.assertFalse("This is the theme" in browser.contents)
 
-
     def test_internal_resolver(self):
         compiler_parser = etree.XMLParser()
         compiler_parser.resolvers.add(InternalResolver())
-        # We can use a sub-package or a directory since tests is a python package
-        theme = resolvePythonURL(u'python://plone.app.theming.tests/theme.html')
+        # We can use a sub-package or a directory since tests is a python
+        # package
+        theme = resolvePythonURL(
+            u'python://plone.app.theming.tests/theme.html')
         rules = resolvePythonURL(u'python://plone.app.theming/tests/rules.xml')
         compile_theme(rules, theme, compiler_parser=compiler_parser)
 
     def test_python_resolver(self):
         compiler_parser = etree.XMLParser()
         compiler_parser.resolvers.add(PythonResolver())
-        theme = resolvePythonURL(u'python://plone.app.theming.tests/theme.html')
+        theme = resolvePythonURL(
+            u'python://plone.app.theming.tests/theme.html')
         rules = resolvePythonURL(u'python://plone.app.theming/tests/rules.xml')
         compile_theme(rules, theme, compiler_parser=compiler_parser)
 
@@ -196,8 +206,10 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         # We'll upload the theme files to the Plone site root
-        rules_contents = open(os.path.join(os.path.split(__file__)[0], 'localrules.xml'))
-        theme_contents = open(os.path.join(os.path.split(__file__)[0], 'theme.html'))
+        rules_contents = open(os.path.join(
+            os.path.split(__file__)[0], 'localrules.xml'))
+        theme_contents = open(os.path.join(
+            os.path.split(__file__)[0], 'theme.html'))
         portal.manage_addDTMLMethod('theme.html', file=theme_contents)
         portal.manage_addDTMLMethod('rules.xml', file=rules_contents)
 
@@ -205,7 +217,8 @@ class TestCase(unittest.TestCase):
         self.settings.rules = u'/rules.xml'
         self.settings.enabled = True
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -224,8 +237,10 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         # We'll upload the theme files to the Plone site root
-        rules_contents = open(os.path.join(os.path.dirname(__file__), 'localrules.xml'))
-        theme_contents = open(os.path.join(os.path.dirname(__file__), 'theme.html'))
+        rules_contents = open(os.path.join(
+            os.path.dirname(__file__), 'localrules.xml'))
+        theme_contents = open(os.path.join(
+            os.path.dirname(__file__), 'theme.html'))
         portal.manage_addDTMLMethod('theme.html', file=theme_contents)
         portal.manage_addDTMLMethod('rules.xml', file=rules_contents)
 
@@ -243,7 +258,8 @@ class TestCase(unittest.TestCase):
         prefix = '/'.join(portalURL.split('/')[:-1])
         suffix = portalURL.split('/')[-1]
 
-        vhostURL = "%s/VirtualHostBase/http/example.org:80/%s/VirtualHostRoot/_vh_fizz/_vh_buzz/_vh_fizzbuzz/" % (prefix,suffix)
+        vhostURL = "%s/VirtualHostBase/http/example.org:80/%s/VirtualHostRoot/_vh_fizz/_vh_buzz/_vh_fizzbuzz/" % (
+            prefix, suffix)
 
         browser = Browser(app)
         browser.open(vhostURL)
@@ -264,7 +280,8 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = True
         self.settings.absolutePrefix = None
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -278,13 +295,15 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = True
         self.settings.absolutePrefix = u'http://example.com'
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
 
         self.assertFalse('<img src="relative.jpg" />' in browser.contents)
-        self.assertTrue('<img src="http://example.com/relative.jpg" />' in browser.contents)
+        self.assertTrue(
+            '<img src="http://example.com/relative.jpg" />' in browser.contents)
 
     def test_absolutePrefix_enabled_path(self):
         app = self.layer['app']
@@ -293,13 +312,15 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = True
         self.settings.absolutePrefix = u'/foo'
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
 
         self.assertFalse('<img src="relative.jpg" />' in browser.contents)
-        self.assertTrue('<img src="/plone/foo/relative.jpg" />' in browser.contents)
+        self.assertTrue(
+            '<img src="/plone/foo/relative.jpg" />' in browser.contents)
 
     def test_absolutePrefix_enabled_path_vhosting(self):
         app = self.layer['app']
@@ -308,7 +329,8 @@ class TestCase(unittest.TestCase):
         from Products.SiteAccess import VirtualHostMonster
         VirtualHostMonster.manage_addVirtualHostMonster(app, 'virtual_hosting')
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         self.settings.enabled = True
         self.settings.absolutePrefix = u'/foo'
@@ -317,15 +339,18 @@ class TestCase(unittest.TestCase):
         prefix = '/'.join(portalURL.split('/')[:-1])
         suffix = portalURL.split('/')[-1]
 
-        vhostURL = "%s/VirtualHostBase/http/example.org:80/%s/VirtualHostRoot/_vh_fizz/_vh_buzz/_vh_fizzbuzz/" % (prefix,suffix)
+        vhostURL = "%s/VirtualHostBase/http/example.org:80/%s/VirtualHostRoot/_vh_fizz/_vh_buzz/_vh_fizzbuzz/" % (
+            prefix, suffix)
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(vhostURL)
 
         self.assertFalse('<img src="relative.jpg" />' in browser.contents)
-        self.assertTrue('<img src="/fizz/buzz/fizzbuzz/foo/relative.jpg" />' in browser.contents)
+        self.assertTrue(
+            '<img src="/fizz/buzz/fizzbuzz/foo/relative.jpg" />' in browser.contents)
 
     def test_theme_installed_invalid_config(self):
         app = self.layer['app']
@@ -334,7 +359,8 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = True
         self.settings.rules = u"invalid"
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -354,7 +380,8 @@ class TestCase(unittest.TestCase):
 
         self.settings.enabled = True
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url() + '/document_icon.png')
@@ -427,14 +454,16 @@ class TestCase(unittest.TestCase):
 
         # only show in theme
         secondToLastResource = portal_css.resources[-2]
-        secondToLastResource.setExpression('request/HTTP_X_THEME_ENABLED | nothing')
+        secondToLastResource.setExpression(
+            'request/HTTP_X_THEME_ENABLED | nothing')
         secondToLastResource.setRendering('link')
         secondToLastResource.setEnabled(True)
         secondToLastResource.setConditionalcomment('')
 
         # only show when theme is disabled
         lastResource = portal_css.resources[-1]
-        lastResource.setExpression('not:request/HTTP_X_THEME_ENABLED | nothing')
+        lastResource.setExpression(
+            'not:request/HTTP_X_THEME_ENABLED | nothing')
         lastResource.setRendering('link')
         lastResource.setEnabled(True)
         lastResource.setConditionalcomment('')
@@ -444,7 +473,8 @@ class TestCase(unittest.TestCase):
         # First try without the theme
         self.settings.enabled = False
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -460,7 +490,8 @@ class TestCase(unittest.TestCase):
         # Now enable the theme and try again
         self.settings.enabled = True
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -485,7 +516,8 @@ class TestCase(unittest.TestCase):
 
         self.settings.enabled = True
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -517,13 +549,14 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = True
         self.settings.rules = u'python://plone.app.theming/tests/paramrules.xml'
         self.settings.parameterExpressions = {
-                'stringParam': 'string:string param value',
-                'boolParam': 'python:False',
-                'contextParam' : 'context/absolute_url | string:no context',
-                'requestParam': 'request/someParam | string:off',
-            }
+            'stringParam': 'string:string param value',
+            'boolParam': 'python:False',
+            'contextParam': 'context/absolute_url | string:no context',
+            'requestParam': 'request/someParam | string:off',
+        }
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -544,14 +577,17 @@ class TestCase(unittest.TestCase):
         self.assertFalse('<script>bool param on</script>' in browser.contents)
 
         # Not present in this request
-        self.assertFalse('<script>request param on</script>' in browser.contents)
+        self.assertFalse(
+            '<script>request param on</script>' in browser.contents)
 
         # Context was available for parameter expressions
-        self.assertTrue('<script id="contextParam">http://nohost/plone</script>' in browser.contents)
+        self.assertTrue(
+            '<script id="contextParam">http://nohost/plone</script>' in browser.contents)
 
         # ... but present with the request param on
         browser.open(portal.absolute_url() + '?someParam=on')
-        self.assertTrue('<script>request param on</script>' in browser.contents)
+        self.assertTrue(
+            '<script>request param on</script>' in browser.contents)
 
     def test_theme_for_404(self):
         app = self.layer['app']
@@ -559,7 +595,8 @@ class TestCase(unittest.TestCase):
 
         self.settings.enabled = True
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         error = None
@@ -579,13 +616,14 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = True
         self.settings.rules = u'python://plone.app.theming/tests/paramrules.xml'
         self.settings.parameterExpressions = {
-                'stringParam': 'string:string param value',
-                'boolParam': 'python:False',
-                'contextParam' : 'context/absolute_url | string:no context',
-                'requestParam': 'request/someParam | string:off',
-            }
+            'stringParam': 'string:string param value',
+            'boolParam': 'python:False',
+            'contextParam': 'context/absolute_url | string:no context',
+            'requestParam': 'request/someParam | string:off',
+        }
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         error = None
@@ -611,10 +649,12 @@ class TestCase(unittest.TestCase):
         self.assertFalse('<script>bool param on</script>' in browser.contents)
 
         # Not present in this request
-        self.assertFalse('<script>request param on</script>' in browser.contents)
+        self.assertFalse(
+            '<script>request param on</script>' in browser.contents)
 
         # Context is the last found parent
-        self.assertTrue('<script id="contextParam">http://nohost/plone</script>' in browser.contents)
+        self.assertTrue(
+            '<script id="contextParam">http://nohost/plone</script>' in browser.contents)
 
     def test_navroot_params_on_404_widget_in_path(self):
         app = self.layer['app']
@@ -654,28 +694,28 @@ class TestCase(unittest.TestCase):
         thirdLastResource.setEnabled(True)
         thirdLastResource.setConditionalcomment('')
 
-
         # only show in theme
         secondToLastResource = portal_css.resources[-2]
-        secondToLastResource.setExpression('request/HTTP_X_THEME_ENABLED | nothing')
+        secondToLastResource.setExpression(
+            'request/HTTP_X_THEME_ENABLED | nothing')
         secondToLastResource.setRendering('link')
         secondToLastResource.setEnabled(True)
         secondToLastResource.setConditionalcomment('')
 
-
         # only show when theme is disabled
         lastResource = portal_css.resources[-1]
-        lastResource.setExpression('not:request/HTTP_X_THEME_ENABLED | nothing')
+        lastResource.setExpression(
+            'not:request/HTTP_X_THEME_ENABLED | nothing')
         lastResource.setRendering('link')
         lastResource.setEnabled(True)
         lastResource.setConditionalcomment('')
-
 
         portal_css.cookResources()
 
         self.settings.enabled = True
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
 
@@ -718,7 +758,8 @@ class TestCase(unittest.TestCase):
         self.settings.rules = u'python://plone.app.theming/tests/includes.xml'
         self.settings.enabled = True
 
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
 
@@ -743,7 +784,8 @@ class TestCase(unittest.TestCase):
 
         self.settings.enabled = True
         self.settings.rules = u'/++theme++plone.app.theming.tests/css-js.xml'
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -765,7 +807,8 @@ class TestCase(unittest.TestCase):
 
         self.settings.enabled = True
         self.settings.rules = u'/++theme++plone.app.theming.tests/nonascii.xml'
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
@@ -779,7 +822,8 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        import transaction; transaction.commit()
+        import transaction
+        transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url() + '?diazo.debug=1')
