@@ -52,17 +52,14 @@ class ThemingControlpanel(BrowserView):
         return ''
 
     def _setup(self):
-        self.settings = getUtility(
-            IRegistry).forInterface(IThemeSettings, False)
+        self.settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
         self.zodbThemes = getZODBThemes()
         self.availableThemes = getAvailableThemes()
-        self.selectedTheme = self.getSelectedTheme(
-            self.availableThemes, self.settings.rules)
+        self.selectedTheme = self.getSelectedTheme(self.availableThemes, self.settings.rules)
         self.overlay = ''
 
         self.skinsSettings = ISkinsSchema(self.context)
-        self.skinsVocabulary = getUtility(
-            IVocabularyFactory, name='plone.app.vocabularies.Skins')(self.context)
+        self.skinsVocabulary = getUtility(IVocabularyFactory, name='plone.app.vocabularies.Skins')(self.context)
 
         # Set response header to make sure control panel is never themed
         self.request.response.setHeader('X-Theme-Disabled', '1')
@@ -90,13 +87,11 @@ class ThemingControlpanel(BrowserView):
             themeSelection = form.get('themeName', None)
 
             if themeSelection:
-                themeData = self.getThemeData(
-                    self.availableThemes, themeSelection)
+                themeData = self.getThemeData(self.availableThemes, themeSelection)
                 applyTheme(themeData)
                 self.settings.enabled = True
 
-            IStatusMessage(self.request).add(_(
-                u"Theme enabled. Note that this control panel page is never themed."))
+            IStatusMessage(self.request).add(_(u"Theme enabled. Note that this control panel page is never themed."))
             self._setup()
             return True
 
@@ -129,14 +124,14 @@ class ThemingControlpanel(BrowserView):
                 try:
                     name, expression = line.split('=', 1)
                     parameterExpressions[str(name.strip())] = \
-                        str(expression.strip())
+                                                    str(expression.strip())
                 except ValueError:
                     self.errors['parameterExpressions'] = \
-                        _('error_invalid_parameter_expressions',
-                          default=u"Please ensure you enter one "
-                          u"expression per line, in the "
-                          u"format <name> = <expression>."
-                          )
+                                    _('error_invalid_parameter_expressions',
+                        default=u"Please ensure you enter one "
+                                u"expression per line, in the "
+                                u"format <name> = <expression>."
+                    )
 
             themeBase = form.get('themeBase', None)
             markSpecialLinks = form.get('markSpecialLinks', None)
@@ -170,15 +165,13 @@ class ThemingControlpanel(BrowserView):
                 if usePopups is not None:
                     self.skinsSettings.use_popups = usePopups
                 if iconVisibility is not None:
-                    self.skinsSettings.icon_visibility = iconVisibility.encode(
-                        'utf-8')
+                    self.skinsSettings.icon_visibility = iconVisibility.encode('utf-8')
 
                 IStatusMessage(self.request).add(_(u"Changes saved"))
                 self._setup()
                 return True
             else:
-                IStatusMessage(self.request).add(
-                    _(u"There were errors"), 'error')
+                IStatusMessage(self.request).add(_(u"There were errors"), 'error')
                 self.redirectToFieldset('advanced')
                 return False
 
@@ -197,8 +190,8 @@ class ThemingControlpanel(BrowserView):
             except (zipfile.BadZipfile, zipfile.LargeZipFile,):
                 logger.exception("Could not read zip file")
                 self.errors['themeArchive'] = _('error_invalid_zip',
-                                                default=u"The uploaded file is not a valid Zip archive"
-                                                )
+                        default=u"The uploaded file is not a valid Zip archive"
+                    )
 
             if themeZip:
 
@@ -207,9 +200,9 @@ class ThemingControlpanel(BrowserView):
                 except (ValueError, KeyError,), e:
                     logger.warn(str(e))
                     self.errors['themeArchive'] = _('error_no_rules_file',
-                                                    u"The uploaded file does not contain "
-                                                    u"a valid theme archive."
-                                                    )
+                            u"The uploaded file does not contain "
+                            u"a valid theme archive."
+                        )
                 else:
 
                     themeContainer = getOrCreatePersistentResourceDirectory()
@@ -222,7 +215,7 @@ class ThemingControlpanel(BrowserView):
                                     u"This theme is already installed. "
                                     u"Select 'Replace existing theme' "
                                     u"and re-upload to replace it."
-                                  )
+                                )
                         else:
                             del themeContainer[themeData.__name__]
                             performImport = True
@@ -232,23 +225,20 @@ class ThemingControlpanel(BrowserView):
             if performImport:
                 themeContainer.importZip(themeZip)
 
-                themeDirectory = queryResourceDirectory(
-                    THEME_RESOURCE_NAME, themeData.__name__)
+                themeDirectory = queryResourceDirectory(THEME_RESOURCE_NAME, themeData.__name__)
                 if themeDirectory is not None:
 
                     # If we don't have a rules file, use the template
                     if themeData.rules == u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, themeData.__name__, RULE_FILENAME,):
                         if not themeDirectory.isFile(RULE_FILENAME):
-                            templateThemeDirectory = queryResourceDirectory(
-                                THEME_RESOURCE_NAME, TEMPLATE_THEME)
-                            themeDirectory.writeFile(
-                                RULE_FILENAME, templateThemeDirectory.readFile(RULE_FILENAME))
+                            templateThemeDirectory = queryResourceDirectory(THEME_RESOURCE_NAME, TEMPLATE_THEME)
+                            themeDirectory.writeFile(RULE_FILENAME, templateThemeDirectory.readFile(RULE_FILENAME))
 
                             if not themeDirectory.isFile(DEFAULT_THEME_FILENAME):
                                 IStatusMessage(self.request).add(
-                                    _(u"A boilerplate rules.xml was added to your theme, but no index.html file found. Update rules.xml to reference the current theme file."),
-                                    'warning',
-                                )
+                                        _(u"A boilerplate rules.xml was added to your theme, but no index.html file found. Update rules.xml to reference the current theme file."),
+                                        'warning',
+                                    )
 
                     plugins = getPlugins()
                     pluginSettings = getPluginSettings(themeDirectory, plugins)
@@ -267,12 +257,12 @@ class ThemingControlpanel(BrowserView):
                 self.redirect(
                     "%s/++theme++%s/@@theming-controlpanel-mapper" % (
                         portalUrl, themeData.__name__,)
-                )
+                    )
                 return False
             else:
                 IStatusMessage(self.request).add(
-                    _(u"There were errors"), "error"
-                )
+                        _(u"There were errors"), "error"
+                    )
 
                 self.renderOverlay('upload')
                 return True
@@ -288,8 +278,7 @@ class ThemingControlpanel(BrowserView):
             if not title:
                 self.errors['title'] = _(u"Title is required")
 
-                IStatusMessage(self.request).add(
-                    _(u"There were errors"), 'error')
+                IStatusMessage(self.request).add(_(u"There were errors"), 'error')
 
                 self.renderOverlay('new-theme')
                 return True
@@ -307,7 +296,7 @@ class ThemingControlpanel(BrowserView):
                 self.redirect(
                     "%s/++theme++%s/@@theming-controlpanel-mapper" % (
                         portalUrl, name,)
-                )
+                    )
                 return False
 
         if 'form.button.DeleteSelected' in form:
@@ -351,8 +340,7 @@ class ThemingControlpanel(BrowserView):
 
             previewUrl = "++resource++plone.app.theming/defaultPreview.png"
             if theme.preview:
-                previewUrl = "++theme++%s/%s" % (
-                    theme.__name__, theme.preview,)
+                previewUrl = "++theme++%s/%s" % (theme.__name__, theme.preview,)
 
             themes.append({
                 'name': theme.__name__,

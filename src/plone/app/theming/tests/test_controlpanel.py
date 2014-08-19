@@ -51,15 +51,13 @@ class TestControlPanel(unittest.TestCase):
             self.browser.handleErrors = False
             self.browser.open(portal.absolute_url() + '/login_form')
             self.browser.getControl(name='__ac_name').value = TEST_USER_NAME
-            self.browser.getControl(
-                name='__ac_password').value = TEST_USER_PASSWORD
+            self.browser.getControl(name='__ac_password').value = TEST_USER_PASSWORD
             self.browser.getControl(name='submit').click()
         finally:
             self.browser.handleErrors = handleErrors
 
     def goto_controlpanel(self):
-        self.browser.open(
-            self.portal.absolute_url() + '/@@theming-controlpanel')
+        self.browser.open(self.portal.absolute_url() + '/@@theming-controlpanel')
 
     def test_create_theme(self):
         pass

@@ -9,7 +9,6 @@ from plone.app.theming.utils import isThemeEnabled
 from plone.app.theming.plugins.utils import getPlugins
 from plone.app.theming.plugins.utils import getPluginSettings
 
-
 def onStartup(event):
     """Call onDiscovery() on each plugin for each theme on startup
     """
@@ -20,9 +19,7 @@ def onStartup(event):
         pluginSettings = getPluginSettings(themeDirectory, plugins)
 
         for name, plugin in plugins:
-            plugin.onDiscovery(themeDirectory.__name__, pluginSettings[
-                               name], pluginSettings)
-
+            plugin.onDiscovery(themeDirectory.__name__, pluginSettings[name], pluginSettings)
 
 def onRequest(object, event):
     """Call onRequest() on each plugin for the eanbled theme on each request

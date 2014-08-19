@@ -9,13 +9,13 @@ class Theme(object):
     implements(ITheme)
 
     def __init__(self, name, rules,
-                 title=None,
-                 description=None,
-                 absolutePrefix=None,
-                 parameterExpressions=None,
-                 doctype=None,
-                 preview=None,
-                 ):
+            title=None,
+            description=None,
+            absolutePrefix=None,
+            parameterExpressions=None,
+            doctype=None,
+            preview=None,
+    ):
 
         self.__name__ = name
         self.rules = rules

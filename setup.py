@@ -42,13 +42,7 @@ setup(name='plone.app.theming',
           'zope.traversing',
       ],
       extras_require={
-        'test': [
-          'plone.app.testing',
-          'robotsuite',
-          'robotframework-selenium2library',
-          'decorator',
-          'selenium',
-        ],
+        'test': ['plone.app.testing'],
       },
       entry_points="""
       [z3c.autoinclude.plugin]

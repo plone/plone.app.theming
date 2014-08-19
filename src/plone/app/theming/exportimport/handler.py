@@ -8,7 +8,6 @@ from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.utils import applyTheme
 from plone.app.theming.utils import getAvailableThemes
 
-
 def importTheme(context):
     """Apply the theme with the id contained in the profile file theme.xml
     and enable the theme.
@@ -53,5 +52,4 @@ def importTheme(context):
             settings.enabled = False
             logger.info('Theme disabled')
         else:
-            raise ValueError(
-                "%s is not a valid value for <enabled />" % themeEnabled)
+            raise ValueError("%s is not a valid value for <enabled />" % themeEnabled)
