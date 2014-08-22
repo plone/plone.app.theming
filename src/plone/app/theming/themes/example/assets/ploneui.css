@@ -980,7 +980,7 @@ div.overlay .formTab {
 div.overlay .formTab.lastFormTab {
     margin-right:0em;
 }
-div.overlay .formControls a { 
+div.overlay .formControls a {
     display: block;
     margin: 0.75em;
 }

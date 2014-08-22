@@ -632,7 +632,7 @@ class TestCase(unittest.TestCase):
         error = None
         try:
             browser.open(
-                    '%s/widget/oauth_login/info.txt' % 
+                    '%s/widget/oauth_login/info.txt' %
                         portal['subfolder'].absolute_url())
         except HTTPError, e:
             error = e

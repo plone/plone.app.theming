@@ -163,7 +163,7 @@ def findContext(request):
     context = getattr(published, '__parent__', None)
     if context is not None:
         return context
-    
+
     for parent in request.PARENTS:
         if IContentish.providedBy(parent) or ISiteRoot.providedBy(parent):
             return parent

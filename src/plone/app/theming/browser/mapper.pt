@@ -951,14 +951,14 @@
 
                 <div class="panel-footer">
                     <div class="inspector-switch">
-                        <button id="content-inspector-on" disabled="disabled" 
+                        <button id="content-inspector-on" disabled="disabled"
                                 i18n:translate="">Inspector on</button>
-                        <button id="content-inspector-off" 
+                        <button id="content-inspector-off"
                                 i18n:translate="">Inspector off</button>
                     </div>
                 </div>
 
-                <div id="content-footer-help" class="discreet footer-help" 
+                <div id="content-footer-help" class="discreet footer-help"
                      i18n:translate="help_highlighter_selection">
                     Hover over an element to see its selector.
                     Left-click or press <em>Enter</em> to save.
