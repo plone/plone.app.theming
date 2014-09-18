@@ -4,6 +4,9 @@ Changelog
 1.2.1 (unreleased)
 ------------------
 
+- Fix "Insufficient Privileges" for "Site Administrators" on the control panel.
+  [@rpatterson]
+
 - Put themes in a separate zcml file to be able to exclude them
   [laulaz]
 
