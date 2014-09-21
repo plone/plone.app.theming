@@ -329,8 +329,8 @@ def getTheme(name, manifest=None, resources=None):
             parameterExpressions=params,
             doctype=doctype,
             preview=preview,
-            enabled_bundles=enabled_bundles.split(','),
-            disabled_bundles=disabled_bundles.split(',')
+            enabled_bundles=enabled_bundles.split(',') if enabled_bundles else [],
+            disabled_bundles=disabled_bundles.split(',') if disabled_bundles else []
         )
 
 
@@ -386,8 +386,8 @@ def getThemeFromResourceDirectory(resourceDirectory):
                 absolutePrefix=prefix,
                 parameterExpressions=params,
                 doctype=doctype,
-                enabled_bundles=enabled_bundles.split(','),
-                disabled_bundles=disabled_bundles.split(',')
+                enabled_bundles=enabled_bundles.split(',') if enabled_bundles else [],
+                disabled_bundles=disabled_bundles.split(',') if disabled_bundles else []
             )
 
 
