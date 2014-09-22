@@ -1,12 +1,36 @@
 Changelog
 =========
 
-1.1.2 (unreleased)
+1.2.1 (unreleased)
 ------------------
 
 - Remove DL's from portal message in templates.
   https://github.com/plone/Products.CMFPlone/issues/153
   [khink]
+
+- Fix "Insufficient Privileges" for "Site Administrators" on the control panel.
+  [@rpatterson]
+
+- Put themes in a separate zcml file to be able to exclude them
+  [laulaz]
+
+- #14107 bot requests like /widget/oauth_login/info.txt causes
+  problems finding correct context with plone.app.theming
+  [anthonygerrard]
+
+- Added support for ++theme++ to traverse to the contents of the
+  current activated theme.
+  [bosim]
+
+
+1.2.0 (2014-03-02)
+------------------
+
+- Disable theming for manage_shutdown view.
+  [davisagli]
+
+- Fix reference to theme error template
+  [afrepues]
 
 - Add "Test Styles" button in control panel to expose, test_rendering template.
   [runyaga]

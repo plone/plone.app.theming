@@ -42,6 +42,8 @@ from plone.app.theming.plugins.utils import getPlugins
 from plone.app.theming.plugins.utils import getPluginSettings
 
 from Products.PageTemplates.Expressions import getEngine
+from Products.CMFCore.interfaces import IContentish
+from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFPlone.utils import safe_unicode
 
 
@@ -159,9 +161,14 @@ def findContext(request):
     """
     published = request.get('PUBLISHED', None)
     context = getattr(published, '__parent__', None)
-    if context is None:
-        context = request.PARENTS[0]
-    return context
+    if context is not None:
+        return context
+
+    for parent in request.PARENTS:
+        if IContentish.providedBy(parent) or ISiteRoot.providedBy(parent):
+            return parent
+
+    return request.PARENTS[0]
 
 
 def expandAbsolutePrefix(prefix):

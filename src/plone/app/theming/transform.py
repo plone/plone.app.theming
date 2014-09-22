@@ -108,7 +108,7 @@ class ThemeTransform(object):
             transform = compileThemeTransform(rules, absolutePrefix, readNetwork, parameterExpressions, runtrace=runtrace)
             if transform is None:
                 return None
-            
+
             if not DevelopmentMode:
                 cache.updateTransform(transform)
 

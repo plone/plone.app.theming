@@ -78,15 +78,6 @@
         />
 
     <!-- Themes -->
-    <plone:static
-        type="theme"
-        name="template"
-        directory="themes/template"
-        />
-    <plone:static
-        type="theme"
-        name="example"
-        directory="themes/example"
-        />
+    <include file="themes.zcml" />
 
 </configure>
