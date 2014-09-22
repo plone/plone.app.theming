@@ -42,8 +42,6 @@ from plone.app.theming.plugins.utils import getPlugins
 from plone.app.theming.plugins.utils import getPluginSettings
 
 from Products.PageTemplates.Expressions import getEngine
-from Products.CMFCore.interfaces import IContentish
-from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFPlone.utils import safe_unicode
 
 
@@ -161,14 +159,9 @@ def findContext(request):
     """
     published = request.get('PUBLISHED', None)
     context = getattr(published, '__parent__', None)
-    if context is not None:
-        return context
-
-    for parent in request.PARENTS:
-        if IContentish.providedBy(parent) or ISiteRoot.providedBy(parent):
-            return parent
-
-    return request.PARENTS[0]
+    if context is None:
+        context = request.PARENTS[0]
+    return context
 
 
 def expandAbsolutePrefix(prefix):
@@ -497,8 +490,9 @@ def applyTheme(theme):
                                   pluginSettings)
         
         new_themeDirectory = queryResourceDirectory(
-            THEME_RESOURCE_NAME, theme.__name__)
+            THEME_RESOURCE_NAME, theme)
         if new_themeDirectory is not None:
+            plugins = getPlugins()
             new_pluginSettings = getPluginSettings(new_themeDirectory, plugins)
             if new_pluginSettings is not None:
                 for name, plugin in plugins:
