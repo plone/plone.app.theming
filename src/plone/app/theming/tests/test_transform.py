@@ -411,67 +411,68 @@ class TestCase(unittest.TestCase):
     #     # The theme
     #     self.assertTrue("This is the theme" in browser.contents)
 
-    def test_resource_condition(self):
-        app = self.layer['app']
-        portal = self.layer['portal']
+    # XXX need to be rewritten with latest plone 5 resource registries in mind
+    # def test_resource_condition(self):
+    #     app = self.layer['app']
+    #     portal = self.layer['portal']
 
-        portal_css = getToolByName(portal, 'portal_css')
-        portal_css.setDebugMode(True)
+    #     portal_css = getToolByName(portal, 'portal_css')
+    #     portal_css.setDebugMode(True)
 
-        # shown in both
-        thirdLastResource = portal_css.resources[-3]
-        thirdLastResource.setExpression('')
-        thirdLastResource.setRendering('link')
-        thirdLastResource.setEnabled(True)
-        thirdLastResource.setConditionalcomment('')
+    #     # shown in both
+    #     thirdLastResource = portal_css.resources[-3]
+    #     thirdLastResource.setExpression('')
+    #     thirdLastResource.setRendering('link')
+    #     thirdLastResource.setEnabled(True)
+    #     thirdLastResource.setConditionalcomment('')
 
-        # only show in theme
-        secondToLastResource = portal_css.resources[-2]
-        secondToLastResource.setExpression('request/HTTP_X_THEME_ENABLED | nothing')
-        secondToLastResource.setRendering('link')
-        secondToLastResource.setEnabled(True)
-        secondToLastResource.setConditionalcomment('')
+    #     # only show in theme
+    #     secondToLastResource = portal_css.resources[-2]
+    #     secondToLastResource.setExpression('request/HTTP_X_THEME_ENABLED | nothing')
+    #     secondToLastResource.setRendering('link')
+    #     secondToLastResource.setEnabled(True)
+    #     secondToLastResource.setConditionalcomment('')
 
-        # only show when theme is disabled
-        lastResource = portal_css.resources[-1]
-        lastResource.setExpression('not:request/HTTP_X_THEME_ENABLED | nothing')
-        lastResource.setRendering('link')
-        lastResource.setEnabled(True)
-        lastResource.setConditionalcomment('')
+    #     # only show when theme is disabled
+    #     lastResource = portal_css.resources[-1]
+    #     lastResource.setExpression('not:request/HTTP_X_THEME_ENABLED | nothing')
+    #     lastResource.setRendering('link')
+    #     lastResource.setEnabled(True)
+    #     lastResource.setConditionalcomment('')
 
-        portal_css.cookResources()
+    #     portal_css.cookResources()
 
-        # First try without the theme
-        self.settings.enabled = False
+    #     # First try without the theme
+    #     self.settings.enabled = False
 
-        import transaction; transaction.commit()
+    #     import transaction; transaction.commit()
 
-        browser = Browser(app)
-        browser.open(portal.absolute_url())
+    #     browser = Browser(app)
+    #     browser.open(portal.absolute_url())
 
-        self.assertTrue(thirdLastResource.getId() in browser.contents)
-        self.assertFalse(secondToLastResource.getId() in browser.contents)
-        self.assertTrue(lastResource.getId() in browser.contents)
+    #     self.assertTrue(thirdLastResource.getId() in browser.contents)
+    #     self.assertFalse(secondToLastResource.getId() in browser.contents)
+    #     self.assertTrue(lastResource.getId() in browser.contents)
 
-        self.assertTrue(portal.title in browser.contents)
-        self.assertTrue("Accessibility" in browser.contents)
-        self.assertFalse("This is the theme" in browser.contents)
+    #     self.assertTrue(portal.title in browser.contents)
+    #     self.assertTrue("Accessibility" in browser.contents)
+    #     self.assertFalse("This is the theme" in browser.contents)
 
-        # Now enable the theme and try again
-        self.settings.enabled = True
+    #     # Now enable the theme and try again
+    #     self.settings.enabled = True
 
-        import transaction; transaction.commit()
+    #     import transaction; transaction.commit()
 
-        browser = Browser(app)
-        browser.open(portal.absolute_url())
+    #     browser = Browser(app)
+    #     browser.open(portal.absolute_url())
 
-        self.assertTrue(thirdLastResource.getId() in browser.contents)
-        self.assertTrue(secondToLastResource.getId() in browser.contents)
-        self.assertFalse(lastResource.getId() in browser.contents)
+    #     self.assertTrue(thirdLastResource.getId() in browser.contents)
+    #     self.assertTrue(secondToLastResource.getId() in browser.contents)
+    #     self.assertFalse(lastResource.getId() in browser.contents)
 
-        self.assertTrue(portal.title in browser.contents)
-        self.assertFalse("Accessibility" in browser.contents)
-        self.assertTrue("This is the theme" in browser.contents)
+    #     self.assertTrue(portal.title in browser.contents)
+    #     self.assertFalse("Accessibility" in browser.contents)
+    #     self.assertTrue("This is the theme" in browser.contents)
 
     def test_theme_different_path(self):
         app = self.layer['app']
@@ -640,56 +641,57 @@ class TestCase(unittest.TestCase):
 
         self.assertTrue("This is the theme" in browser.contents)
 
-    def test_resource_condition_404(self):
-        app = self.layer['app']
-        portal = self.layer['portal']
+    # XXX need to be rewritten with latest resource registries in mind
+    # def test_resource_condition_404(self):
+    #     app = self.layer['app']
+    #     portal = self.layer['portal']
 
-        portal_css = getToolByName(portal, 'portal_css')
-        portal_css.setDebugMode(True)
+    #     portal_css = getToolByName(portal, 'portal_css')
+    #     portal_css.setDebugMode(True)
 
-        # shown in both
-        thirdLastResource = portal_css.resources[-3]
-        thirdLastResource.setExpression('')
-        thirdLastResource.setRendering('link')
-        thirdLastResource.setEnabled(True)
-        thirdLastResource.setConditionalcomment('')
-
-
-        # only show in theme
-        secondToLastResource = portal_css.resources[-2]
-        secondToLastResource.setExpression('request/HTTP_X_THEME_ENABLED | nothing')
-        secondToLastResource.setRendering('link')
-        secondToLastResource.setEnabled(True)
-        secondToLastResource.setConditionalcomment('')
+    #     # shown in both
+    #     thirdLastResource = portal_css.resources[-3]
+    #     thirdLastResource.setExpression('')
+    #     thirdLastResource.setRendering('link')
+    #     thirdLastResource.setEnabled(True)
+    #     thirdLastResource.setConditionalcomment('')
 
 
-        # only show when theme is disabled
-        lastResource = portal_css.resources[-1]
-        lastResource.setExpression('not:request/HTTP_X_THEME_ENABLED | nothing')
-        lastResource.setRendering('link')
-        lastResource.setEnabled(True)
-        lastResource.setConditionalcomment('')
+    #     # only show in theme
+    #     secondToLastResource = portal_css.resources[-2]
+    #     secondToLastResource.setExpression('request/HTTP_X_THEME_ENABLED | nothing')
+    #     secondToLastResource.setRendering('link')
+    #     secondToLastResource.setEnabled(True)
+    #     secondToLastResource.setConditionalcomment('')
 
 
-        portal_css.cookResources()
+    #     # only show when theme is disabled
+    #     lastResource = portal_css.resources[-1]
+    #     lastResource.setExpression('not:request/HTTP_X_THEME_ENABLED | nothing')
+    #     lastResource.setRendering('link')
+    #     lastResource.setEnabled(True)
+    #     lastResource.setConditionalcomment('')
 
-        self.settings.enabled = True
 
-        import transaction; transaction.commit()
+    #     portal_css.cookResources()
 
-        browser = Browser(app)
+    #     self.settings.enabled = True
 
-        try:
-            browser.open('%s/404_page' % portal.absolute_url())
-        except HTTPError, e:
-            error = e
-        self.assertEqual(error.code, 404)
+    #     import transaction; transaction.commit()
 
-        self.assertTrue(thirdLastResource.getId() in browser.contents)
-        self.assertTrue(secondToLastResource.getId() in browser.contents)
-        self.assertFalse(lastResource.getId() in browser.contents)
+    #     browser = Browser(app)
 
-        self.assertTrue("This is the theme" in browser.contents)
+    #     try:
+    #         browser.open('%s/404_page' % portal.absolute_url())
+    #     except HTTPError, e:
+    #         error = e
+    #     self.assertEqual(error.code, 404)
+
+    #     self.assertTrue(thirdLastResource.getId() in browser.contents)
+    #     self.assertTrue(secondToLastResource.getId() in browser.contents)
+    #     self.assertFalse(lastResource.getId() in browser.contents)
+
+    #     self.assertTrue("This is the theme" in browser.contents)
 
     def test_includes(self):
         app = self.layer['app']

@@ -16,6 +16,7 @@ from zope.component import getUtility
 from zope.component import queryUtility
 from zope.component import queryMultiAdapter
 from zope.globalrequest import getRequest
+from zope.event import notify
 
 from plone.subrequest import subrequest
 
@@ -37,6 +38,7 @@ from plone.app.theming.interfaces import MANIFEST_FORMAT
 from plone.app.theming.interfaces import RULE_FILENAME
 from plone.app.theming.interfaces import IThemeSettings
 
+from plone.app.theming.events import ThemeAppliedEvent
 from plone.app.theming.theme import Theme
 from plone.app.theming.plugins.utils import getPlugins
 from plone.app.theming.plugins.utils import getPluginSettings
@@ -252,6 +254,8 @@ def extractThemeInfo(zipfile, checkRules=True):
     parameters = {}
     doctype = ""
     preview = None
+    enabled_bundles = ''
+    disabled_bundles = ''
 
     if manifestDict is not None:
         rulesFile = manifestDict.get('rules', rulesFile)
@@ -261,6 +265,8 @@ def extractThemeInfo(zipfile, checkRules=True):
         parameters = manifestDict.get('parameters', {})
         doctype = manifestDict.get('doctype', "")
         preview = manifestDict.get('preview', None)
+        enabled_bundles = manifestDict.get('enabled-bundles', '')
+        disabled_bundles = manifestDict.get('disabled-bundles', '')
 
     if not rulesFile:
         if checkRules:
@@ -277,6 +283,8 @@ def extractThemeInfo(zipfile, checkRules=True):
             parameterExpressions=parameters,
             doctype=doctype,
             preview=preview,
+            enabled_bundles=enabled_bundles.split(',') if enabled_bundles else [],
+            disabled_bundles=disabled_bundles.split(',') if disabled_bundles else []
         )
 
 
@@ -295,6 +303,8 @@ def getTheme(name, manifest=None, resources=None):
     params = {}
     doctype = ""
     preview = None
+    enabled_bundles = ''
+    disabled_bundles = ''
 
     if manifest is not None:
         title = manifest['title'] or title
@@ -304,6 +314,8 @@ def getTheme(name, manifest=None, resources=None):
         params = manifest['parameters'] or params
         doctype = manifest['doctype'] or doctype
         preview = manifest['preview'] or preview
+        enabled_bundles = manifest['enabled-bundles'] or ''
+        disabled_bundles = manifest['disabled-bundles'] or ''
 
     if isinstance(rules, str):
         rules = rules.decode('utf-8')
@@ -317,6 +329,8 @@ def getTheme(name, manifest=None, resources=None):
             parameterExpressions=params,
             doctype=doctype,
             preview=preview,
+            enabled_bundles=enabled_bundles.split(',') if enabled_bundles else [],
+            disabled_bundles=disabled_bundles.split(',') if disabled_bundles else []
         )
 
 
@@ -345,6 +359,8 @@ def getThemeFromResourceDirectory(resourceDirectory):
     prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
     params = {}
     doctype = ""
+    enabled_bundles = ''
+    disabled_bundles = ''
 
     if resourceDirectory.isFile(MANIFEST_FILENAME):
         manifest = getManifest(
@@ -356,6 +372,8 @@ def getThemeFromResourceDirectory(resourceDirectory):
         prefix = manifest['prefix'] or prefix
         params = manifest['parameters'] or params
         doctype = manifest['doctype'] or doctype
+        enabled_bundles = manifest['enabled-bundles'] or ''
+        disabled_bundles = manifest['disabled-bundles'] or ''
 
     if isinstance(rules, str):
         rules = rules.decode('utf-8')
@@ -368,6 +386,8 @@ def getThemeFromResourceDirectory(resourceDirectory):
                 absolutePrefix=prefix,
                 parameterExpressions=params,
                 doctype=doctype,
+                enabled_bundles=enabled_bundles.split(',') if enabled_bundles else [],
+                disabled_bundles=disabled_bundles.split(',') if disabled_bundles else []
             )
 
 
@@ -496,6 +516,7 @@ def applyTheme(theme):
                 plugin.onDisabled(currentTheme, pluginSettings[name],
                                   pluginSettings)
                 plugin.onEnabled(theme, pluginSettings[name], pluginSettings)
+        notify(ThemeAppliedEvent(theme))
 
 
 def createThemeFromTemplate(title, description, baseOn='template'):

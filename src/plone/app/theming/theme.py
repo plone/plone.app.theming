@@ -15,6 +15,8 @@ class Theme(object):
             parameterExpressions=None,
             doctype=None,
             preview=None,
+            enabled_bundles=[],
+            disabled_bundles=[]
     ):
 
         self.__name__ = name
@@ -25,6 +27,8 @@ class Theme(object):
         self.parameterExpressions = parameterExpressions
         self.doctype = doctype
         self.preview = preview
+        self.enabled_bundles = [b for b in enabled_bundles if b]
+        self.disabled_bundles = [b for b in disabled_bundles if b]
 
     def __repr__(self):
         return '<Theme "%s">' % self.__name__
