@@ -4,8 +4,9 @@ Changelog
 1.1.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Fix AttributeError: 'NoneType' object has no attribute 'getroottree' when the result is not
+  html / is empty.
+  [sunew]
 
 1.1.6 (2015-05-04)
 ------------------
