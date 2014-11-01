@@ -15,7 +15,18 @@
 
 </metal:block>
 
-<metal:block fill-slot="head_slot" tal:define="resourceDirectory nocall:view/resourceDirectory">
+<metal:block fill-slot="head_slot">
+
+<!-- Styling for this page -->
+<link
+    rel="stylesheet"
+    type="text/css"
+    tal:attributes="href string:${view/portalUrl}/++resource++plone.app.theming/mapper.css"
+    />
+
+</metal:block>
+
+<metal:block fill-slot="javascript_head_slot" tal:define="resourceDirectory nocall:view/resourceDirectory">
 
 <!-- File manager -->
 <metal:block use-macro="resourceDirectory/@@plone.resourceeditor.filemanager/macros/resources" />
@@ -26,13 +37,6 @@
     charset="utf-8"
     tal:attributes="src string:${view/portalUrl}/++resource++plone.app.theming/mapper.js"
     ></script>
-
-<!-- Styling for this page -->
-<link
-    rel="stylesheet"
-    type="text/css"
-    tal:attributes="href string:${view/portalUrl}/++resource++plone.app.theming/mapper.css"
-    />
 
 <script type="text/javascript" tal:content="view/jsVariables"></script>
 
