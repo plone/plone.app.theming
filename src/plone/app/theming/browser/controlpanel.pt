@@ -21,6 +21,10 @@
         tal:attributes="href string:${context/portal_url}/++resource++plone.app.theming/controlpanel.css"
         />
 
+</metal:block>
+
+<metal:block fill-slot="javascript_head_slot">
+
 <script type="text/javascript" charset="utf-8" tal:content="string:var OPEN_OVERLAY='${view/overlay}';;"></script>
 <script type="text/javascript" charset="utf-8">
 
