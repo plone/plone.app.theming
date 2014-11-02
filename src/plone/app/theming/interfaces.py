@@ -13,7 +13,9 @@ TEMPLATE_THEME = 'template'
 
 MANIFEST_FORMAT = ManifestFormat(THEME_RESOURCE_NAME,
         keys=['title', 'description', 'rules', 'prefix', 'doctype', 'preview',
-              'enabled-bundles', 'disabled-bundles'],
+              'enabled-bundles', 'disabled-bundles',
+              'development-css', 'production-css', 'tinymce-content-css',
+              'development-js', 'production-js'],
         parameterSections=['parameters'],
     )
 
