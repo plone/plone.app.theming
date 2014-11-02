@@ -256,6 +256,11 @@ def extractThemeInfo(zipfile, checkRules=True):
     preview = None
     enabled_bundles = ''
     disabled_bundles = ''
+    development_css = ''
+    production_css = ''
+    tinymce_content_css = ''
+    development_js = ''
+    production_js = ''
 
     if manifestDict is not None:
         rulesFile = manifestDict.get('rules', rulesFile)
@@ -267,6 +272,11 @@ def extractThemeInfo(zipfile, checkRules=True):
         preview = manifestDict.get('preview', None)
         enabled_bundles = manifestDict.get('enabled-bundles', '')
         disabled_bundles = manifestDict.get('disabled-bundles', '')
+        development_css = manifestDict.get('development-css', '')
+        production_css = manifestDict.get('production-css', '')
+        tinymce_content_css = manifestDict.get('tinymce-content-css', '')
+        development_js = manifestDict.get('development-js', '')
+        production_js = manifestDict.get('production-js', '')
 
     if not rulesFile:
         if checkRules:
@@ -284,7 +294,12 @@ def extractThemeInfo(zipfile, checkRules=True):
             doctype=doctype,
             preview=preview,
             enabled_bundles=enabled_bundles.split(',') if enabled_bundles else [],
-            disabled_bundles=disabled_bundles.split(',') if disabled_bundles else []
+            disabled_bundles=disabled_bundles.split(',') if disabled_bundles else [],
+            development_css=development_css,
+            production_css=production_css,
+            development_js=development_js,
+            production_js=production_js,
+            tinymce_content_css=tinymce_content_css
         )
 
 
@@ -305,6 +320,11 @@ def getTheme(name, manifest=None, resources=None):
     preview = None
     enabled_bundles = ''
     disabled_bundles = ''
+    development_css = ''
+    development_js = ''
+    production_css = ''
+    production_js = ''
+    tinymce_content_css = ''
 
     if manifest is not None:
         title = manifest['title'] or title
@@ -316,12 +336,16 @@ def getTheme(name, manifest=None, resources=None):
         preview = manifest['preview'] or preview
         enabled_bundles = manifest['enabled-bundles'] or ''
         disabled_bundles = manifest['disabled-bundles'] or ''
+        development_css = manifest['development-css'] or ''
+        development_js = manifest['development-js'] or ''
+        production_css = manifest['production-css'] or ''
+        production_js = manifest['production-js'] or ''
+        tinymce_content_css = manifest['tinymce-content-css'] or ''
 
     if isinstance(rules, str):
         rules = rules.decode('utf-8')
     if isinstance(prefix, str):
         prefix = prefix.decode('utf-8')
-
     return Theme(name, rules,
             title=title,
             description=description,
@@ -330,7 +354,12 @@ def getTheme(name, manifest=None, resources=None):
             doctype=doctype,
             preview=preview,
             enabled_bundles=enabled_bundles.split(',') if enabled_bundles else [],
-            disabled_bundles=disabled_bundles.split(',') if disabled_bundles else []
+            disabled_bundles=disabled_bundles.split(',') if disabled_bundles else [],
+            development_css=development_css,
+            development_js=development_js,
+            production_css=production_css,
+            production_js=production_js,
+            tinymce_content_css=tinymce_content_css
         )
 
 
@@ -361,6 +390,11 @@ def getThemeFromResourceDirectory(resourceDirectory):
     doctype = ""
     enabled_bundles = ''
     disabled_bundles = ''
+    development_css = ''
+    development_js = ''
+    production_css = ''
+    production_js = ''
+    tinymce_content_css = ''
 
     if resourceDirectory.isFile(MANIFEST_FILENAME):
         manifest = getManifest(
@@ -374,6 +408,11 @@ def getThemeFromResourceDirectory(resourceDirectory):
         doctype = manifest['doctype'] or doctype
         enabled_bundles = manifest['enabled-bundles'] or ''
         disabled_bundles = manifest['disabled-bundles'] or ''
+        development_css = manifest['development-css'] or ''
+        development_js = manifest['development-js'] or ''
+        production_css = manifest['production-css'] or ''
+        production_js = manifest['production-js'] or ''
+        tinymce_content_css = manifest['tinymce-content-css'] or ''
 
     if isinstance(rules, str):
         rules = rules.decode('utf-8')
@@ -387,7 +426,12 @@ def getThemeFromResourceDirectory(resourceDirectory):
                 parameterExpressions=params,
                 doctype=doctype,
                 enabled_bundles=enabled_bundles.split(',') if enabled_bundles else [],
-                disabled_bundles=disabled_bundles.split(',') if disabled_bundles else []
+                disabled_bundles=disabled_bundles.split(',') if disabled_bundles else [],
+                development_css=development_css,
+                development_js=development_js,
+                production_css=production_css,
+                production_js=production_js,
+                tinymce_content_css=tinymce_content_css
             )
 
 
