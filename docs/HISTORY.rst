@@ -4,7 +4,7 @@ Changelog
 1.2.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fixed applyTheme (onEnabled) issues. When apply new theme, call onEnabled with new theme parameters. [fbrun]
 
 
 1.2.1 (2014-10-23)
