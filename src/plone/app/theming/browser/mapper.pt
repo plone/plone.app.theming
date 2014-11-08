@@ -31,9 +31,9 @@
             reflected on the live site.
         </span>
     </div>
-
-<div class="pat-thememapper"
-          data-pat-thememapper='filemanagerConfig:{"actionUrl":"${view/themeBaseUrl}/@@plone.resourceeditor.fileactions"};
+    <input tal:replace="structure context/@@authenticator/authenticator" />
+    <div class="pat-thememapper"
+          data-pat-thememapper='filemanagerConfig:{"actionUrl":"${view/themeBaseUrl}/@@plone.resourceeditor.filemanager-actions"};
                                 mockupUrl:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off;
                                 unthemedUrl:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=off;
                                 previewUrl:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${view/title};
