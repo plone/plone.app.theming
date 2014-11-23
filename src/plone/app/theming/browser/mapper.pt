@@ -80,6 +80,12 @@
             <div id="viewlet-above-content-title" tal:content="structure provider:plone.abovecontenttitle" />
             <h1 class="documentFirstHeading"
               tal:content="view/title">Theme title</h1>
+            <a href=""
+                class="link-parent"
+                tal:attributes="href string:${context/portal_url}/theming-controlpanel"
+                i18n:translate="label_up_to_theming_controlpanel">
+                    Back to the control panel
+            </a>
           </header>
 
           <section id="content-core">
