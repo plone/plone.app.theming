@@ -45,12 +45,4 @@
         permission="plone.app.controlpanel.Themes"
         />
 
-    <browser:page
-        name="theming-controlpanel-mapper-save"
-        for="plone.resource.interfaces.IResourceDirectory"
-        class=".mapper.ThemeMapper"
-        attribute="save"
-        permission="plone.app.controlpanel.Themes"
-        />
-
 </configure>

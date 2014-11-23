@@ -302,9 +302,3 @@ class ThemeMapper(BrowserView):
 
         return result
 
-    def save(self, value):
-        """Save the rules file (AJAX request)
-        """
-        processInputs(self.request)
-        value = value.replace('\r\n', '\n')
-        self.context.writeFile(RULE_FILENAME, value.encode('utf-8'))
