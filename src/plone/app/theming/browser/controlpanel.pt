@@ -131,9 +131,11 @@
         </span>
     </div>
 
-    <dl class="enableFormTabbing">
-        <dt id="fieldsetlegend-basic" i18n:translate="">Themes</dt>
-        <dd id="fieldset-basic">
+    <div class="pat-autotoc autotabs"
+         data-pat-autotoc="section:section;levels:h2;">
+
+        <section>
+            <h2 i18n:translate="">Themes</h2>
 
             <p i18n:translate="description_basic_settings">
                 Use the buttons to create or upload a new Diazo theme,
@@ -241,11 +243,9 @@
                 <div class="visualClear"><!-- --></div>
 
             </div>
-
-        </dd>
-
-        <dt id="fieldsetlegend-advanced" i18n:translate="">Advanced settings</dt>
-        <dd id="fieldset-advanced">
+        </section>
+        <section>
+            <h2 i18n:translate="">Advanced settings</h2>
 
             <form
                 name="advanced"
@@ -254,304 +254,307 @@
                 tal:attributes="action request/URL"
                 tal:define="errors view/errors">
 
-                <fieldset>
-                    <legend i18n:translate="">Theme details</legend>
+                <div class="pat-autotoc autotabs"
+                    data-pat-autotoc="section:fieldset;levels:legend;">
+                    <fieldset>
+                        <legend i18n:translate="">Theme details</legend>
 
-                    <p i18n:translate="description_advanced">
-                       Use the fields below to configure the Diazo theme
-                       manually. Usually, these settings are applied by
-                       enabling a theme from the <strong>Themes</strong>
-                       tab.
-                    </p>
+                        <p i18n:translate="description_advanced">
+                           Use the fields below to configure the Diazo theme
+                           manually. Usually, these settings are applied by
+                           enabling a theme from the <strong>Themes</strong>
+                           tab.
+                        </p>
 
-                    <div
-                        class="field"
-                        tal:define="selected python:request.get('themeEnabled', view.settings.enabled)">
+                        <div
+                            class="field"
+                            tal:define="selected python:request.get('themeEnabled', view.settings.enabled)">
 
-                        <input type="hidden" value="" name="themeEnabled:boolean:default" />
-                        <input type="checkbox" value="1" name="themeEnabled:boolean" id="themeEnabled"
-                            tal:attributes="checked python:'themeEnabled' if selected else None"
-                            />
-                        <label for="themeEnabled" i18n:translate="label_theme_enabled">Theme enabled</label>
-                        <div class="formHelp" i18n:translate="help_theme_enabled">
-                            If enabled the currently configured Diazo theme (if any)
-                            will be applied.
-                        </div>
-
-                    </div>
-
-                    <div
-                        tal:define="error errors/rules | nothing;
-                                    rules python:request.get('rules', view.settings.rules)"
-                        tal:attributes="class python:'field error' if error else 'field'">
-
-                        <label for="rules" i18n:translate="label_rules">Rules file</label>
-                        <div class="formHelp" i18n:translate="help_rules">
-                            Enter a path or URL for the theme rules file.
-                        </div>
-
-                        <div class="errorMessage" tal:content="error" tal:condition="error" />
-
-                        <input
-                            name="rules"
-                            id="rules"
-                            type="text"
-                            size="50"
-                            tal:attributes="value rules"
-                            />
-
-                    </div>
-
-                    <div
-                        tal:define="error errors/absolutePrefix | nothing;
-                                    absolutePrefix python:request.get('absolutePrefix', view.settings.absolutePrefix)"
-                        tal:attributes="class python:'field error' if error else 'field'">
-
-                        <label for="absolutePrefix" i18n:translate="label_absolute_prefix">Absolute path prefix</label>
-                        <div class="formHelp" i18n:translate="help_absolute_prefix">
-                            If your theme uses relative paths for images, stylesheets
-                            or other resources, you can enter a prefix here to make
-                            sure these resources will work regardless of which page
-                            Plone is rendering.
-                        </div>
-
-                        <div class="errorMessage" tal:content="error" tal:condition="error" />
-
-                        <input
-                            name="absolutePrefix"
-                            id="absolutePrefix"
-                            type="text"
-                            size="50"
-                            tal:attributes="value absolutePrefix"
-                            />
-
-                    </div>
-
-                    <div
-                        tal:define="error errors/doctype | nothing;
-                                    doctype python:request.get('doctype', view.settings.doctype)"
-                        tal:attributes="class python:'field error' if error else 'field'">
-
-                        <label for="doctype" i18n:translate="label_doctype">Doctype</label>
-                        <div class="formHelp" i18n:translate="help_doctype">
-                            You can specify a Doctype string which will be set on
-                            the output, for example "&lt;!DOCTYPE html&gt;". If left
-                            blank the default XHTML 1.0 transistional Doctype or
-                            that set in the Diazo theme is used.
-                        </div>
-
-                        <div class="errorMessage" tal:content="error" tal:condition="error" />
-
-                        <input
-                            name="doctype"
-                            id="doctype"
-                            type="text"
-                            size="50"
-                            tal:attributes="value doctype"
-                            />
-
-                    </div>
-
-                    <div
-                        class="field"
-                        tal:define="selected python:request.get('readNetwork', view.settings.readNetwork)">
-
-                        <input type="hidden" value="" name="readNetwork:boolean:default" />
-                        <input type="checkbox" value="1" name="readNetwork:boolean" id="readNetwork"
-                            tal:attributes="checked python:'readNetwork' if selected else None"
-                            />
-                        <label for="readNetwork" i18n:translate="label_read_network">Read network</label>
-                        <div class="formHelp" i18n:translate="help_read_network">
-                            Allow rules and themes to be read from remote servers.
-                        </div>
-
-                    </div>
-
-                    <div
-                        tal:define="error errors/hostnameBlacklist | nothing;
-                                    hostnameBlacklist view/settings/hostnameBlacklist | python:[];
-                                    hostnameBlacklist python:request.get('hostnameBlacklist', hostnameBlacklist)"
-                        tal:attributes="class python:'field error' if error else 'field'">
-
-                        <label for="hostnameBlacklist" i18n:translate="label_hostname_blacklist">Unthemed host names</label>
-                        <div class="formHelp" i18n:translate="help_hostname_blacklist">
-                            If there are hostnames that you do not want to be
-                            themed, you can list them here, one per line. This is
-                            useful during theme development, so that you can
-                            compare the themed and unthemed sites. In some cases,
-                            you may also want to provided an unthemed host alias
-                            for content administrators to be able to use 'plain'
-                            Plone.
-                        </div>
-
-                        <div class="errorMessage" tal:content="error" tal:condition="error" />
-
-                        <textarea
-                            name="hostnameBlacklist:lines"
-                            id="hostnameBlacklist"
-                            rows="5"
-                            cols="50"
-                            tal:content="python:'\n'.join(hostnameBlacklist)"
-                            ></textarea>
-
-                    </div>
-
-                    <div
-                        tal:define="error errors/parameterExpressions | nothing;
-                                    parameterExpressions python:view.settings.parameterExpressions or {};
-                                    parameterExpressions python:['%s = %s' % (k,v) for k,v in parameterExpressions.items()];
-                                    parameterExpressions python:request.get('parameterExpressions', parameterExpressions)"
-                        tal:attributes="class python:'field error' if error else 'field'">
-
-                        <label for="parameterExpressions" i18n:translate="label_parameter_expressions">Parameter expressions</label>
-                        <div class="formHelp" i18n:translate="help_parameter_expressions">
-                            You can define parameters that will be passed
-                            to the compiled theme here. In your rules file, you can
-                            refer to a parameter by <code>$name</code>. Parameters
-                            are defined using TALES expressions, which should
-                            evaluate to a string, a number, a boolean or None.
-                            Available variables are <code>context</code>,
-                            <code>request</code>, <code>portal</code>,
-                            <code>portal_state</code>, and
-                            <code>context_state</code>. Define one variable
-                            per line, in the format <code>name = expression</code>.
-                        </div>
-
-                        <div class="errorMessage" tal:content="error" tal:condition="error" />
-
-                        <textarea
-                            name="parameterExpressions:lines"
-                            id="parameterExpressions"
-                            rows="8"
-                            cols="50"
-                            tal:content="python:'\n'.join(parameterExpressions)"
-                            ></textarea>
-                    </div>
-
-                </fieldset>
-                <fieldset>
-                    <legend i18n:translate="">Theme base</legend>
-
-                    <p i18n:translate="description_advanced_base">
-                       The settings below control the presentation of the
-                       <em>content</em> produced by Plone before a Diazo theme
-                       is applied. Note that these settings will have an effect
-                       even if no Diazo theme is currently enabled.
-                    </p>
-
-                    <div
-                        class="field"
-                        tal:define="selected python:request.get('themeBase', view.skinsSettings.theme)">
-
-                        <label for="themeBase" i18n:translate="label_theme_base">Theme base</label>
-
-                        <div class="formHelp" i18n:translate="help_theme_base">
-                            The theme base defines a collection of templates and other
-                            resources that makes up the raw content to which a theme is
-                            applied. Most Diazo themes will assume the default theme base,
-                            so only change this if you know what you are doing.
-                        </div>
-
-                        <select size="1" name="themeBase" id="themeBase">
-                            <option
-                                tal:repeat="skin view/skinsVocabulary"
-                                tal:attributes="value skin/value;
-                                                selected python:skin.value == selected and 'selected' or None"
-                                tal:content="skin/title"
+                            <input type="hidden" value="" name="themeEnabled:boolean:default" />
+                            <input type="checkbox" value="1" name="themeEnabled:boolean" id="themeEnabled"
+                                tal:attributes="checked python:'themeEnabled' if selected else None"
                                 />
-                        </select>
+                            <label for="themeEnabled" i18n:translate="label_theme_enabled">Theme enabled</label>
+                            <div class="formHelp" i18n:translate="help_theme_enabled">
+                                If enabled the currently configured Diazo theme (if any)
+                                will be applied.
+                            </div>
 
-                    </div>
-
-                    <div
-                        class="field"
-                        tal:define="selected python:request.get('markSpecialLinks', view.skinsSettings.mark_special_links)">
-
-                        <input type="hidden" value="" name="markSpecialLinks:boolean:default" />
-                        <input type="checkbox" value="1" name="markSpecialLinks:boolean" id="markSpecialLinks"
-                            tal:attributes="checked python:'markSpecialLinks' if selected else None"
-                            />
-                        <label for="markSpecialLinks" i18n:translate="label_mark_special_links">Mark special links</label>
-                        <div class="formHelp" i18n:translate="help_mark_special_links">
-                            If enabled all external links will be marked with link type specific icons.
                         </div>
 
-                    </div>
+                        <div
+                            tal:define="error errors/rules | nothing;
+                                        rules python:request.get('rules', view.settings.rules)"
+                            tal:attributes="class python:'field error' if error else 'field'">
 
-                    <div
-                        class="field"
-                        tal:define="selected python:request.get('extLinksOpenInNewWindow', view.skinsSettings.ext_links_open_new_window)">
+                            <label for="rules" i18n:translate="label_rules">Rules file</label>
+                            <div class="formHelp" i18n:translate="help_rules">
+                                Enter a path or URL for the theme rules file.
+                            </div>
 
-                        <input type="hidden" value="" name="extLinksOpenInNewWindow:boolean:default" />
-                        <input type="checkbox" value="1" name="extLinksOpenInNewWindow:boolean" id="extLinksOpenInNewWindow"
-                            tal:attributes="checked python:'extLinksOpenInNewWindow' if selected else None"
-                            />
-                        <label for="extLinksOpenInNewWindow" i18n:translate="label_ext_links_open_new_window">External links open in new window</label>
-                        <div class="formHelp" i18n:translate="help_ext_links_open_new_window">
-                            If enabled all external links in the content region open in a new window.
+                            <div class="errorMessage" tal:content="error" tal:condition="error" />
+
+                            <input
+                                name="rules"
+                                id="rules"
+                                type="text"
+                                size="50"
+                                tal:attributes="value rules"
+                                />
+
                         </div>
 
-                    </div>
+                        <div
+                            tal:define="error errors/absolutePrefix | nothing;
+                                        absolutePrefix python:request.get('absolutePrefix', view.settings.absolutePrefix)"
+                            tal:attributes="class python:'field error' if error else 'field'">
 
-                    <div
-                        class="field radio"
-                        tal:define="selected python:request.get('iconVisibility', view.skinsSettings.icon_visibility)">
+                            <label for="absolutePrefix" i18n:translate="label_absolute_prefix">Absolute path prefix</label>
+                            <div class="formHelp" i18n:translate="help_absolute_prefix">
+                                If your theme uses relative paths for images, stylesheets
+                                or other resources, you can enter a prefix here to make
+                                sure these resources will work regardless of which page
+                                Plone is rendering.
+                            </div>
 
-                        <label i18n:translate="label_icon_visibility">Show content type icons </label>
-                        <div class="formHelp" i18n:translate="help_icon_visibility">
-                            If disabled the content icons in folder listings and portlets won't be visible.
+                            <div class="errorMessage" tal:content="error" tal:condition="error" />
+
+                            <input
+                                name="absolutePrefix"
+                                id="absolutePrefix"
+                                type="text"
+                                size="50"
+                                tal:attributes="value absolutePrefix"
+                                />
+
                         </div>
 
-                        <div>
-                            <input type="radio" name="iconVisibility" id="iconVisibility_enabled" value="enabled"
-                                tal:attributes="checked python:selected == 'enabled' and 'selected' or None" />
-                            <label class="radioLabel" for="iconVisibility_enabled" i18n:translate="">Always shown icons</label>
+                        <div
+                            tal:define="error errors/doctype | nothing;
+                                        doctype python:request.get('doctype', view.settings.doctype)"
+                            tal:attributes="class python:'field error' if error else 'field'">
+
+                            <label for="doctype" i18n:translate="label_doctype">Doctype</label>
+                            <div class="formHelp" i18n:translate="help_doctype">
+                                You can specify a Doctype string which will be set on
+                                the output, for example "&lt;!DOCTYPE html&gt;". If left
+                                blank the default XHTML 1.0 transistional Doctype or
+                                that set in the Diazo theme is used.
+                            </div>
+
+                            <div class="errorMessage" tal:content="error" tal:condition="error" />
+
+                            <input
+                                name="doctype"
+                                id="doctype"
+                                type="text"
+                                size="50"
+                                tal:attributes="value doctype"
+                                />
+
                         </div>
 
-                        <div>
-                            <input type="radio" name="iconVisibility" id="iconVisibility_authenticated" value="authenticated"
-                                tal:attributes="checked python:selected == 'authenticated' and 'selected' or None" />
-                            <label class="radioLabel" for="iconVisibility_authenticated" i18n:translate="">Only for users who are logged in</label>
+                        <div
+                            class="field"
+                            tal:define="selected python:request.get('readNetwork', view.settings.readNetwork)">
+
+                            <input type="hidden" value="" name="readNetwork:boolean:default" />
+                            <input type="checkbox" value="1" name="readNetwork:boolean" id="readNetwork"
+                                tal:attributes="checked python:'readNetwork' if selected else None"
+                                />
+                            <label for="readNetwork" i18n:translate="label_read_network">Read network</label>
+                            <div class="formHelp" i18n:translate="help_read_network">
+                                Allow rules and themes to be read from remote servers.
+                            </div>
+
                         </div>
 
-                        <div>
-                            <input type="radio" name="iconVisibility" id="iconVisibility_disabled" value="disabled"
-                                tal:attributes="checked python:selected == 'disabled' and 'selected' or None" />
-                            <label class="radioLabel" for="iconVisibility_disabled" i18n:translate="">Never show icons</label>
+                        <div
+                            tal:define="error errors/hostnameBlacklist | nothing;
+                                        hostnameBlacklist view/settings/hostnameBlacklist | python:[];
+                                        hostnameBlacklist python:request.get('hostnameBlacklist', hostnameBlacklist)"
+                            tal:attributes="class python:'field error' if error else 'field'">
+
+                            <label for="hostnameBlacklist" i18n:translate="label_hostname_blacklist">Unthemed host names</label>
+                            <div class="formHelp" i18n:translate="help_hostname_blacklist">
+                                If there are hostnames that you do not want to be
+                                themed, you can list them here, one per line. This is
+                                useful during theme development, so that you can
+                                compare the themed and unthemed sites. In some cases,
+                                you may also want to provided an unthemed host alias
+                                for content administrators to be able to use 'plain'
+                                Plone.
+                            </div>
+
+                            <div class="errorMessage" tal:content="error" tal:condition="error" />
+
+                            <textarea
+                                name="hostnameBlacklist:lines"
+                                id="hostnameBlacklist"
+                                rows="5"
+                                cols="50"
+                                tal:content="python:'\n'.join(hostnameBlacklist)"
+                                ></textarea>
+
                         </div>
 
-                    </div>
+                        <div
+                            tal:define="error errors/parameterExpressions | nothing;
+                                        parameterExpressions python:view.settings.parameterExpressions or {};
+                                        parameterExpressions python:['%s = %s' % (k,v) for k,v in parameterExpressions.items()];
+                                        parameterExpressions python:request.get('parameterExpressions', parameterExpressions)"
+                            tal:attributes="class python:'field error' if error else 'field'">
+
+                            <label for="parameterExpressions" i18n:translate="label_parameter_expressions">Parameter expressions</label>
+                            <div class="formHelp" i18n:translate="help_parameter_expressions">
+                                You can define parameters that will be passed
+                                to the compiled theme here. In your rules file, you can
+                                refer to a parameter by <code>$name</code>. Parameters
+                                are defined using TALES expressions, which should
+                                evaluate to a string, a number, a boolean or None.
+                                Available variables are <code>context</code>,
+                                <code>request</code>, <code>portal</code>,
+                                <code>portal_state</code>, and
+                                <code>context_state</code>. Define one variable
+                                per line, in the format <code>name = expression</code>.
+                            </div>
+
+                            <div class="errorMessage" tal:content="error" tal:condition="error" />
+
+                            <textarea
+                                name="parameterExpressions:lines"
+                                id="parameterExpressions"
+                                rows="8"
+                                cols="50"
+                                tal:content="python:'\n'.join(parameterExpressions)"
+                                ></textarea>
+                        </div>
+
+                    </fieldset>
+                    <fieldset>
+                        <legend i18n:translate="">Theme base</legend>
+
+                        <p i18n:translate="description_advanced_base">
+                           The settings below control the presentation of the
+                           <em>content</em> produced by Plone before a Diazo theme
+                           is applied. Note that these settings will have an effect
+                           even if no Diazo theme is currently enabled.
+                        </p>
+
+                        <div
+                            class="field"
+                            tal:define="selected python:request.get('themeBase', view.skinsSettings.theme)">
+
+                            <label for="themeBase" i18n:translate="label_theme_base">Theme base</label>
+
+                            <div class="formHelp" i18n:translate="help_theme_base">
+                                The theme base defines a collection of templates and other
+                                resources that makes up the raw content to which a theme is
+                                applied. Most Diazo themes will assume the default theme base,
+                                so only change this if you know what you are doing.
+                            </div>
+
+                            <select size="1" name="themeBase" id="themeBase">
+                                <option
+                                    tal:repeat="skin view/skinsVocabulary"
+                                    tal:attributes="value skin/value;
+                                                    selected python:skin.value == selected and 'selected' or None"
+                                    tal:content="skin/title"
+                                    />
+                            </select>
+
+                        </div>
+
+                        <div
+                            class="field"
+                            tal:define="selected python:request.get('markSpecialLinks', view.skinsSettings.mark_special_links)">
+
+                            <input type="hidden" value="" name="markSpecialLinks:boolean:default" />
+                            <input type="checkbox" value="1" name="markSpecialLinks:boolean" id="markSpecialLinks"
+                                tal:attributes="checked python:'markSpecialLinks' if selected else None"
+                                />
+                            <label for="markSpecialLinks" i18n:translate="label_mark_special_links">Mark special links</label>
+                            <div class="formHelp" i18n:translate="help_mark_special_links">
+                                If enabled all external links will be marked with link type specific icons.
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="field"
+                            tal:define="selected python:request.get('extLinksOpenInNewWindow', view.skinsSettings.ext_links_open_new_window)">
+
+                            <input type="hidden" value="" name="extLinksOpenInNewWindow:boolean:default" />
+                            <input type="checkbox" value="1" name="extLinksOpenInNewWindow:boolean" id="extLinksOpenInNewWindow"
+                                tal:attributes="checked python:'extLinksOpenInNewWindow' if selected else None"
+                                />
+                            <label for="extLinksOpenInNewWindow" i18n:translate="label_ext_links_open_new_window">External links open in new window</label>
+                            <div class="formHelp" i18n:translate="help_ext_links_open_new_window">
+                                If enabled all external links in the content region open in a new window.
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="field radio"
+                            tal:define="selected python:request.get('iconVisibility', view.skinsSettings.icon_visibility)">
+
+                            <label i18n:translate="label_icon_visibility">Show content type icons </label>
+                            <div class="formHelp" i18n:translate="help_icon_visibility">
+                                If disabled the content icons in folder listings and portlets won't be visible.
+                            </div>
+
+                            <div>
+                                <input type="radio" name="iconVisibility" id="iconVisibility_enabled" value="enabled"
+                                    tal:attributes="checked python:selected == 'enabled' and 'selected' or None" />
+                                <label class="radioLabel" for="iconVisibility_enabled" i18n:translate="">Always shown icons</label>
+                            </div>
+
+                            <div>
+                                <input type="radio" name="iconVisibility" id="iconVisibility_authenticated" value="authenticated"
+                                    tal:attributes="checked python:selected == 'authenticated' and 'selected' or None" />
+                                <label class="radioLabel" for="iconVisibility_authenticated" i18n:translate="">Only for users who are logged in</label>
+                            </div>
+
+                            <div>
+                                <input type="radio" name="iconVisibility" id="iconVisibility_disabled" value="disabled"
+                                    tal:attributes="checked python:selected == 'disabled' and 'selected' or None" />
+                                <label class="radioLabel" for="iconVisibility_disabled" i18n:translate="">Never show icons</label>
+                            </div>
+
+                        </div>
 
 
 
-                </fieldset>
+                    </fieldset>
+                </div>
 
 
-                    <div class="formControls">
-                        <input
-                            type="submit"
-                            name="form.button.AdvancedSave"
-                            class="context"
-                            value="Save"
-                            i18n:attributes="value" />
+                <div class="plone-btn-group">
+                    <input
+                        type="submit"
+                        name="form.button.AdvancedSave"
+                        class="plone-btn plone-btn-success save"
+                        value="Save"
+                        i18n:attributes="value" />
 
-                        <input
-                            type="submit"
-                            name="form.button.Cancel"
-                            class="context"
-                            value="Cancel"
-                            i18n:attributes="value" />
-                    </div>
+                    <input
+                        type="submit"
+                        name="form.button.Cancel"
+                        class="plone-btn plone-btn-default cancel"
+                        value="Cancel"
+                        i18n:attributes="value" />
+                </div>
 
-                    <input tal:replace="structure context/@@authenticator/authenticator" />
+                <input tal:replace="structure context/@@authenticator/authenticator" />
 
 
 
             </form>
 
-        </dd>
+        </section>
 
-    </dl>
+    </div>
 
     <!-- Delete confirmation overlay -->
     <div id="overlay-delete-confirm" class="overlay overlay-ajax">
