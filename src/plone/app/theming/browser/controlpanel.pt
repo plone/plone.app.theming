@@ -530,7 +530,8 @@
 
                     <div
                         class="field"
-                        tal:define="selected python:request.get('usePopups', view.skinsSettings.use_popups)">
+                        tal:define="selected_default view/skinsSettings/use_popups|python:False;
+                                    selected python:request.get('usePopups', selected_default)">
 
                         <input type="hidden" value="" name="usePopups:boolean:default" />
                         <input type="checkbox" value="1" name="usePopups:boolean" id="usePopups"
