@@ -1,0 +1,11 @@
+{
+  "name": "thememapperbundle",
+  "version": "0.0.1",
+  "description": "",
+  "dependencies": {
+    "plone-mockup": "1.7.0"
+  },
+  "devDependencies": {
+    "chai": "1.7.2"
+  }
+}

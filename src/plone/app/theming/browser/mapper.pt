@@ -19,6 +19,8 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
+    <link rel="stylesheet" type="text/css"
+        tal:attributes="href string:${portal_url}/++resource++plone.app.theming/thememapperbundle.min.css"/>
     <div tal:replace="structure provider:plone.htmlhead" />
     <link tal:replace="structure provider:plone.htmlhead.links" />
 
@@ -27,6 +29,8 @@
     </tal:comment>
 
     <div tal:replace="structure provider:plone.scripts" />
+    <script
+        tal:attributes="src string:${portal_url}/++resource++plone.app.theming/thememapperbundle.min.js"></script>
 
     <meta name="generator" content="Plone - http://plone.org" />
 

@@ -10,3 +10,6 @@ develop-eggs/
 extras/
 parts/
 var/
+bower_components/
+build/
+node_modules/
