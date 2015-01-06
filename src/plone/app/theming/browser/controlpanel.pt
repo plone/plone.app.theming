@@ -587,6 +587,22 @@
                     </div>
 
                     <div
+                        class="field"
+                        tal:define="selected_default view/skinsSettings/use_popups|python:False;
+                                    selected python:request.get('usePopups', selected_default)">
+
+                        <input type="hidden" value="" name="usePopups:boolean:default" />
+                        <input type="checkbox" value="1" name="usePopups:boolean" id="usePopups"
+                            tal:attributes="checked python:'usePopups' if selected else None"
+                            />
+                        <label for="usePopups" i18n:translate="label_use_popups">Use popup overlays for simple forms</label>
+                        <div class="formHelp" i18n:translate="help_use_popups">
+                            If enabled popup overlays will be used for simple forms like login, contact and delete confirmation.
+                        </div>
+
+                    </div>
+
+                    <div
                         class="field radio"
                         tal:define="selected python:request.get('iconVisibility', view.skinsSettings.icon_visibility)">
 
