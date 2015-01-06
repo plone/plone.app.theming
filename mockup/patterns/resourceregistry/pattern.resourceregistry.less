@@ -1,0 +1,61 @@
+@import "@{mockuplessPath}/ui.less";
+@import (less) "@{bowerPath}/select2/select2.css";
+
+
+.pat-resourceregistry {
+    @import "@{bowerPath}/bootstrap/less/list-group.less";
+    @import "@{bowerPath}/bootstrap/less/forms.less";
+    @import "@{bowerPath}/bootstrap/less/input-groups.less";
+
+    .nav-tabs{
+        a {
+            color: black;
+        }
+    }
+    .tab-pane.overrides{
+        .list-group-item a{
+            font-size: 11px; /* need to try and fit long strings */
+        }
+    }
+    .resources.list-group{
+        .list-group-item-warning{
+            position: relative;
+
+            input{
+                width: 224px;
+                position: absolute;
+                right: 3px;
+                top: 3px;
+            }
+        }
+    }
+
+    .resource-entry .form-group .pat-sortable li,
+    .tab-pane.manual ul.js li:not(.list-group-item-warning),
+    .tab-pane.manual ul.css li:not(.list-group-item-warning){
+        cursor: move;
+    }
+
+    .lessvariables, .patternoptionsuse {
+        .form{
+            padding-top: 15px;
+            clear: both;
+        }
+    }
+
+    .pat-resourceregistry .lessvariables .form {
+        padding-top: 10px;
+        clear: both;
+    }
+
+    .patternoptions{
+        .form-control-feedback {
+            top: 0;
+            right: 12px;
+        }
+    }
+
+    .development-mode{
+        padding-left: 15px;
+    }
+}

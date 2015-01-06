@@ -3,6 +3,7 @@ define([
   'jquery',
   'mockup-registry',
   'mockup-patterns-base',
+  'mockup-patterns-filemanager',
   'mockup-patterns-thememapper'
 ], function($, Registry, Base) {
   'use strict';

@@ -13,3 +13,6 @@ var/
 bower_components/
 build/
 node_modules/
+coverage/
+sauce_connect.log*
+test-results.xml

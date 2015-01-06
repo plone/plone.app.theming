@@ -1,8 +1,8 @@
 {
-  "name": "thememapperbundle",
-  "version": "0.0.1",
-  "description": "",
-  "homepage": "",
+  "name": "mockup",
+  "version": "1.8.2",
+  "description": "A collection of client side patterns for faster and easier web development",
+  "homepage": "http://plone.github.io/mockup",
   "devDependencies": {
     "bower": "~1.3.2",
     "coveralls": "~2.10.0",
@@ -24,9 +24,8 @@
     "karma-mocha": "~0.1.3",
     "karma-phantomjs-launcher": "~0.1.4",
     "karma-requirejs": "~0.2.1",
-    "karma-sauce-launcher": "~0.2.7",
+    "karma-sauce-launcher": "~0.2.10",
     "karma-script-launcher": "~0.1.0",
-    "karma-spec-reporter": "~0.0.13",
     "lcov-result-merger": "~0.0.2",
     "less": "~1.7.0",
     "mocha": "~1.18.2",
@@ -34,19 +33,23 @@
   },
   "maintainers": [
     {
-      "name": "Eric BREHAULT",
-      "email": "ebrehault@gmail.com",
-      "url": ""
+      "name": "Plone Foundation",
+      "email": "plone-developers@lists.sourceforge.net",
+      "url": "http://plone.org"
     }
   ],
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/collective/thememapperbundle"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/plone/mockup.git"
+  },
+  "bugs": {
+    "url": "https://github.com/plone/mockup/issues",
+    "email": "plone-developers@lists.sourceforge.net"
   },
   "licenses": [
     {
-      "type": "GPLv2",
-      "url": "http://opensource.org/licenses/GPL-2.0"
+      "type": "BSD",
+      "url": "http://opensource.org/licenses/BSD-3-Clause"
     }
   ]
 }
