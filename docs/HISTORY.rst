@@ -4,7 +4,8 @@ Changelog
 1.2.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Integrate thememapper mockup pattern
+  [ebrehault]
 
 
 1.2.1 (2014-10-23)
