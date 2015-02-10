@@ -1,11 +1,11 @@
 Changelog
 =========
 
-1.2.2 (unreleased)
+1.3.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- fix main theming control panel page to work with Plone 5
+  [vangheem]
 
 1.2.1 (2014-10-23)
 ------------------
