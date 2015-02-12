@@ -4,8 +4,10 @@ Changelog
 1.3.0 (unreleased)
 ------------------
 
-- fix main theming control panel page to work with Plone 5
-  [vangheem]
+- Integrate thememapper mockup pattern and fix theming control panel
+  to be more usable
+  [ebrehault]
+
 
 1.2.1 (2014-10-23)
 ------------------

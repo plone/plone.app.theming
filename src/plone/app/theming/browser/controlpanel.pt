@@ -1,184 +1,352 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+<tal:doctype tal:replace="structure string:&lt;!DOCTYPE html&gt;" />
+
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    lang="en"
-    metal:use-macro="context/main_template/macros/master"
-    i18n:domain="plone">
+      tal:define="portal_state context/@@plone_portal_state;
+          plone_view context/@@plone;
+          plone_layout context/@@plone_layout;
+          lang portal_state/language;
+          view nocall:view | nocall: plone_view;
+          portal_url portal_state/portal_url;
+          ajax_load python:False;
+          toolbar_class python:request.cookies.get('plone-toolbar', 'plone-toolbar-left pat-toolbar')"
+      tal:attributes="lang lang;">
 
-<metal:block fill-slot="top_slot">
+    <metal:cache tal:replace="structure provider:plone.httpheaders" />
 
-    <tal:defines tal:define="dummy python:request.set('disable_border',1);
-                             disable_column_one python:request.set('disable_plone.leftcolumn',0);
-                             disable_column_two python:request.set('disable_plone.rightcolumn',1);"/>
-</metal:block>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-<metal:block fill-slot="head_slot">
-
+    <div tal:replace="structure provider:plone.htmlhead" />
+    <link tal:replace="structure provider:plone.htmlhead.links" />
     <link
         rel="stylesheet"
         type="text/css"
         tal:attributes="href string:${context/portal_url}/++resource++plone.app.theming/controlpanel.css"
         />
 
-</metal:block>
+    <tal:comment replace="nothing">
+        Various slots where you can insert elements in the header from a template.
+    </tal:comment>
 
-<metal:block fill-slot="javascript_head_slot">
+    <div tal:replace="structure provider:plone.scripts" />
 
-<script type="text/javascript" charset="utf-8" tal:content="string:var OPEN_OVERLAY='${view/overlay}';;"></script>
-<script type="text/javascript" charset="utf-8"
-        tal:attributes="src string:${context/portal_url}/++resource++plone.app.theming/controlpanel.js">
-</script>
+    <meta name="generator" content="Plone - http://plone.org" />
 
-</metal:block>
+  </head>
 
-<body>
+  <body tal:define="isRTL portal_state/is_rtl;
+                    sl python:plone_layout.have_portlets('plone.leftcolumn', view);
+                    sr python:plone_layout.have_portlets('plone.rightcolumn', view);
+                    body_class python:plone_layout.bodyClass(template, view);"
+        tal:attributes="class body_class;
+                        dir python:isRTL and 'rtl' or 'ltr';
+                        python:plone_view.patterns_settings()"
+        id="visual-portal-wrapper">
 
-<metal:override fill-slot="portlets_one_slot">
-    <metal:prefs use-macro="context/portlet_prefs/macros/portlet" />
-</metal:override>
+    <section id="edit-bar" role="toolbar">
+      <div id="edit-zone" role="toolbar" tal:attributes="class toolbar_class">
+        <div class="plone-toolbar-container">
+          <a class="plone-toolbar-logo">
+            <img alt="Plone Toolbar" tal:attributes="src string:${context/portal_url}/++plone++static/plone-toolbarlogo.svg" />
+          </a>
+          <a class="plone-toolbar-switcher"><span>Left-Top switcher</span></a>
+          <nav role="navigation">
+            <ul>
+              <div tal:replace="structure provider:plone.toolbar">
+              </div>
+            </ul>
+        </div>
+      </div>
+    </section>
 
-<div metal:fill-slot="main" id="themeControlPanel">
-
-    <h1 class="documentFirstHeading"
-        i18n:translate="heading_theme_settings">Theme settings</h1>
-
-    <a href=""
-        class="link-parent"
-        tal:attributes="href string:${portal_url}/plone_control_panel"
-        i18n:translate="label_up_to_plone_setup">
-            Up to Site Setup
-    </a>
-
-    <div class="portalMessage info">
+    <aside id="global_statusmessage">
+      <div class="portalMessage info">
         <strong i18n:translate="">Note</strong>
         <span tal:omit-tag="" i18n:translate="description_notheme_controlpanel">
-            Please note that this control panel page will never be themed.
+          Please note that this control panel page will never be themed.
         </span>
-    </div>
+      </div>
+      <tal:message tal:content="structure provider:plone.globalstatusmessage"/>
+    </aside>
 
-    <dl class="enableFormTabbing">
-        <dt id="fieldsetlegend-basic" i18n:translate="">Themes</dt>
-        <dd id="fieldset-basic">
 
-            <p i18n:translate="description_basic_settings">
-                Use the buttons to create or upload a new Diazo theme,
-                or select an existing theme from a the list below.
-            </p>
+    <article id="portal-column-content">
 
-            <div class="formControls">
-                <button
-                    id="createButton"
-                    class="standalone"
-                    i18n:translate="">New theme</button>
+      <div metal:define-macro="content">
 
-                <button
-                    id="uploadButton"
-                    class="standalone"
-                    i18n:translate="">Upload Zip file</button>
+        <article id="content">
 
-                <button
-                    id="testStylesButton"
-                    class="standalone"
-                    i18n:translate="">Test Styles</button>
+          <header>
+            <div id="viewlet-above-content-title" tal:content="structure provider:plone.abovecontenttitle" />
+            <h1 class="documentFirstHeading"
+                i18n:translate="heading_theme_settings">Theme settings</h1>
 
-                <form id="helpButtonForm" method="get" tal:attributes="action string:${portal_url}/@@theming-controlpanel-help">
-                    <button
-                        class="standalone"
-                        i18n:translate="">Help</button>
-                </form>
+            <a href=""
+                class="link-parent"
+                tal:attributes="href string:${context/portal_url}/plone_control_panel"
+                i18n:translate="label_up_to_plone_setup">
+                    Up to Site Setup
+            </a>
+          </header>
 
-            </div>
+          <section id="content-core">
 
-            <div id="themesList">
+<div id="themeControlPanel" class="pat-autotoc autotabs"
+    data-pat-autotoc="section:section;levels:h2;">
 
-                <div class="themeEntry"
-                    tal:repeat="theme view/themeList"
-                    tal:attributes="class python:theme['selected'] and 'themeEntry activeThemeEntry' or 'themeEntry';
-                                    id string:themeEntry-${theme/name};
-                                    data-theme theme/name;
-                                    data-theme-title theme/title;">
+    <section>
+        <h2 i18n:translate="">Themes</h2>
 
-                    <div clas="themeEntryDetail">
+        <p i18n:translate="description_basic_settings">
+            Use the buttons to create or upload a new Diazo theme,
+            or select an existing theme from a the list below.
+        </p>
 
-                        <span class="themeEntryTitle">
-                            <span tal:replace="theme/title">Title</span>
-                            <span
-                                tal:condition="theme/selected"
-                                class="themeActive"
-                                i18n:translate="">(active)</span>
-                        </span>
+        <div class="plone-btn-group">
+            <a href="#overlay-new-theme" class="plone-btn plone-btn-large plone-btn-primary pat-modal"
+                data-pat-modal="width: 80%"
+                i18n:translate="">New theme</a>
 
-                        <div class="themeEntryWrapper">
+            <a href="#overlay-upload" class="plone-btn plone-btn-large plone-btn-primary pat-modal"
+                data-pat-modal="width: 80%"
+                i18n:translate="">Upload Zip file</a>
 
-                            <a class="previewImageContainer"
-                                title="Click to view a live preview. Forms will be disabled in the preview."
-                                i18n:attributes="title tooltip_theme_preview"
-                                tal:attributes="href string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${theme/title}"
-                                target="_new"
-                                href="#">
-                                <img
-                                    tal:attributes="src theme/preview"
-                                    />
-                            </a>
+            <a tal:attributes="href string:${context/portal_url}/test_rendering#top"
+                class="plone-btn plone-btn-large plone-btn-primary"
+                target="_blank"
+                i18n:translate="">Test Styles</a>
 
-                            <div class="themeDescription" tal:content="theme/description" />
+            <a tal:attributes="href string:${context/portal_url}/@@theming-controlpanel-help"
+                class="plone-btn plone-btn-large plone-btn-primary pat-modal"
+                data-pat-modal="
+                    width: 85%;
+                    loadLinksWithinModal: true;
+                    content: .content"
+                i18n:translate="">Help</a>
 
-                            <div class="themeEntryControls">
 
-                                <form method="post" tal:attributes="action request/URL">
+        </div>
+
+        <div id="themesList">
+
+            <div class="themeEntry"
+                tal:repeat="theme view/themeList"
+                tal:attributes="class python:theme['selected'] and 'themeEntry activeThemeEntry' or 'themeEntry';
+                                id string:themeEntry-${theme/name};
+                                data-theme theme/name;
+                                data-theme-title theme/title;">
+
+                <div clas="themeEntryDetail">
+
+                    <span class="themeEntryTitle">
+                        <span tal:replace="theme/title">Title</span>
+                        <span
+                            tal:condition="theme/selected"
+                            class="themeActive"
+                            i18n:translate="">(active)</span>
+                    </span>
+
+                    <div class="themeEntryWrapper">
+
+                        <a class="previewImageContainer"
+                            title="Click to view a live preview. Forms will be disabled in the preview."
+                            i18n:attributes="title tooltip_theme_preview"
+                            tal:attributes="href string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${theme/title}"
+                            target="_new"
+                            href="#">
+                            <img
+                                tal:attributes="src theme/preview"
+                                />
+                        </a>
+
+                        <div class="themeDescription" tal:content="theme/description" />
+
+                        <div class="themeEntryControls">
+
+                            <form method="post" tal:attributes="action request/URL">
+                                <input tal:replace="structure context/@@authenticator/authenticator" />
+                                <input type="hidden" name="themeName" tal:attributes="value theme/name" />
+                                <button
+                                    tal:condition="not:theme/selected"
+                                    i18n:translate=""
+                                    class="plone-btn plone-btn-default"
+                                    type="submit"
+                                    name="form.button.Enable">Activate</button>
+                                <button
+                                    tal:condition="theme/selected"
+                                    i18n:translate=""
+                                    class="plone-btn plone-btn-default"
+                                    type="submit"
+                                    name="form.button.Disable">Deactivate</button>
+                            </form>
+
+                            <a href="#" class="plone-btn plone-btn-default pat-modal"
+                                tal:attributes="href string:#modal-copy-${theme/name}"
+                                i18n:translate="">Copy</a>
+                            <!-- Copy theme overlay -->
+                            <div class="plone-modal"
+                                tal:attributes="id string:modal-copy-${theme/name}">
+                                <h1 id="overlayTitleCopyTheme" class="documentFirstHeading" i18n:translate="theming_controlpanel_copy_theme">Create copy of <span i18n:name="theme_name"
+                                    tal:content="string:${theme/name}"></span></h1>
+
+                                <p class="documentDescription" i18n:translate="theming_controlpanel_new_theme_description">
+                                    Please enter the details of your new theme
+                                </p>
+
+                                <form name="create" method="post" tal:attributes="action request/URL" tal:define="errors view/errors">
+
+                                    <div
+                                        tal:define="error errors/title | nothing"
+                                        tal:attributes="class python:'field error' if error else 'field'">
+
+                                        <label for="title" i18n:translate="label_new_theme_title">Title</label>
+                                        <div class="formHelp" i18n:translate="help_new_theme_title">
+                                            Enter a short, descriptive title for your theme
+                                        </div>
+
+                                        <div class="errorMessage" tal:content="error" tal:condition="error" />
+
+                                        <input
+                                            type="text"
+                                            name="title"
+                                            id="title"
+                                            tal:attributes="value request/title | nothing"
+                                            />
+                                    </div>
+
+                                    <div class="field">
+                                        <label for="description" i18n:translate="label_new_theme_description">Description</label>
+                                        <div class="formHelp" i18n:translate="help_new_theme_description">
+                                            You may also provide a longer description for your theme.
+                                        </div>
+                                        <textarea
+                                            name="description"
+                                            id="description"
+                                            tal:content="request/description | nothing"></textarea>
+                                    </div>
+
+                                    <input type="hidden" name="baseOn" id="baseOn" tal:attributes="value string:${theme/name}" />
+
+                                    <div
+                                        class="field"
+                                        tal:define="selected python:request.get('enableImmediately', False)">
+                                        <input type="hidden" value="" name="enableImmediately:boolean:default" />
+                                        <input type="checkbox" value="1" name="enableImmediately:boolean" id="enableImmediately"
+                                            tal:attributes="checked python:'enableImmediately' if selected else None"
+                                            />
+                                        <label for="enableImmediately" i18n:translate="label_enable_immediately">Immediately enable new theme</label>
+                                        <div class="formHelp" i18n:translate="help_enable_immediately">
+                                            Select this option to enable the newly created theme
+                                            immediately.
+                                        </div>
+                                    </div>
+
+                                    <div class="plone-btn-group">
+                                        <input
+                                            type="submit"
+                                            name="form.button.CreateTheme"
+                                            class="plone-btn plone-btn-success save"
+                                            value="Create"
+                                            i18n:attributes="value"
+                                            />
+                                        <input
+                                            type="submit"
+                                            name="form.button.Cancel"
+                                            class="plone-btn plone-btn-default cancel"
+                                            value="Cancel"
+                                            i18n:attributes="value"
+                                            />
+                                    </div>
+
                                     <input tal:replace="structure context/@@authenticator/authenticator" />
-                                    <input type="hidden" name="themeName" tal:attributes="value theme/name" />
-                                    <button
-                                        tal:condition="not:theme/selected"
-                                        i18n:translate=""
-                                        type="submit"
-                                        name="form.button.Enable">Activate</button>
-                                    <button
-                                        tal:condition="theme/selected"
-                                        i18n:translate=""
-                                        type="submit"
-                                        name="form.button.Disable">Deactivate</button>
+
                                 </form>
+                            </div>
 
-                                <button class="copyButton" i18n:translate="">Copy</button>
+                            <form method="get" target="_blank" tal:attributes="action string:${context/absolute_url}/++theme++${theme/name}/@@download-zip">
+                                <button i18n:translate=""
+                                    class="plone-btn plone-btn-default">Download</button>
+                            </form>
 
-                                <form method="get" target="_blank" tal:attributes="action string:${context/absolute_url}/++theme++${theme/name}/@@download-zip">
-                                    <button i18n:translate="">Download</button>
+                            <form method="get" tal:attributes="action string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-mapper">
+                                <button tal:condition="theme/editable"
+                                    class="plone-btn plone-btn-default"
+                                    i18n:translate="">Modify theme</button>
+                                <button tal:condition="not:theme/editable"
+                                    class="plone-btn plone-btn-default"
+                                    i18n:translate="">Inspect theme</button>
+                            </form>
+
+                            <a href="#" class="plone-btn plone-btn-danger pat-modal"
+                                tal:condition="theme/editable"
+                                tal:attributes="href string:#modal-delete-${theme/name}"
+                                i18n:translate="">Delete</a>
+                                <!-- Delete confirmation overlay -->
+                            <div class="plone-modal"
+                                tal:attributes="id string:modal-delete-${theme/name}"
+                                tal:condition="theme/editable">
+                                <h1 class="documentFirstHeading" i18n:translate="theming_controlpanel_delete_confirm">
+                                    Are you sure you want to delete <span 
+                                        tal:content="string:${theme/name}"
+                                        i18n:name="theme_name"></span>
+                                </h1>
+
+                                <p class="documentDescription" i18n:translate="theming_controlpanel_delete_confirm_description">
+                                    This operation cannot be undone. Note that filesystem themes
+                                    cannot be deleted from within Plone.
+                                </p>
+
+                                <form name="delete" method="post" tal:attributes="action request/URL">
+                                    <input tal:replace="structure context/@@authenticator/authenticator" />
+                                    <input type="hidden" name="themes:list"
+                                        id="deleteConfirmTheme"
+                                        tal:attributes="value string:${theme/name}" />
+                                    <div class="plone-btn-group">
+                                        <input
+                                            type="submit"
+                                            name="form.button.DeleteSelected"
+                                            class="plone-btn plone-btn-danger save"
+                                            value="Delete"
+                                            i18n:attributes="value"
+                                            />
+                                        <input
+                                            type="submit"
+                                            class="plone-btn plone-btn-default cancel"
+                                            type="submit"
+                                            name="form.button.Cancel"
+                                            value="Cancel"
+                                            i18n:attributes="value"
+                                            />
+                                    </div>
                                 </form>
-
-                                <form method="get" tal:attributes="action string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-mapper">
-                                    <button tal:condition="theme/editable" i18n:translate="">Modify theme</button>
-                                    <button tal:condition="not:theme/editable" i18n:translate="">Inspect theme</button>
-                                </form>
-
-                                <a href="#" class="deleteLink"
-                                    tal:condition="theme/editable"
-                                    i18n:translate="">Delete</a>
-
                             </div>
 
                         </div>
 
-                     </div>
-                </div>
+                    </div>
 
-                <div class="visualClear"><!-- --></div>
-
+                 </div>
             </div>
 
-        </dd>
+            <div class="visualClear"><!-- --></div>
 
-        <dt id="fieldsetlegend-advanced" i18n:translate="">Advanced settings</dt>
-        <dd id="fieldset-advanced">
+        </div>
+    </section>
+    <section>
+        <h2 i18n:translate="">Advanced settings</h2>
 
-            <form
-                name="advanced"
-                method="post"
-                class="enableUnloadProtection"
-                tal:attributes="action request/URL"
-                tal:define="errors view/errors">
+        <form
+            name="advanced"
+            method="post"
+            class="enableUnloadProtection"
+            tal:attributes="action request/URL"
+            tal:define="errors view/errors">
 
+            <div class="pat-autotoc autotabs"
+                data-pat-autotoc="section:fieldset;levels:legend;">
                 <fieldset>
                     <legend i18n:translate="">Theme details</legend>
 
@@ -466,257 +634,208 @@
 
 
                 </fieldset>
-
-
-                    <div class="formControls">
-                        <input
-                            type="submit"
-                            name="form.button.AdvancedSave"
-                            class="context"
-                            value="Save"
-                            i18n:attributes="value" />
-
-                        <input
-                            type="submit"
-                            name="form.button.Cancel"
-                            class="context"
-                            value="Cancel"
-                            i18n:attributes="value" />
-                    </div>
-
-                    <input tal:replace="structure context/@@authenticator/authenticator" />
-
-
-
-            </form>
-
-        </dd>
-
-    </dl>
-
-    <!-- Delete confirmation overlay -->
-    <div id="overlay-delete-confirm" class="overlay overlay-ajax">
-        <div class="close"><span i18n:translate="">Close</span></div>
-        <div class="pb-ajax">
-            <div>
-                <h1 id="overlayTitleDeleteConfirm" class="documentFirstHeading" i18n:translate="theming_controlpanel_delete_confirm">
-                    Are you sure you want to delete <span i18n:name="theme_name"></span>
-                </h1>
-
-                <p class="documentDescription" i18n:translate="theming_controlpanel_delete_confirm_description">
-                    This operation cannot be undone. Note that filesystem themes
-                    cannot be deleted from within Plone.
-                </p>
-
-                <form name="delete" method="post" tal:attributes="action request/URL">
-                    <input tal:replace="structure context/@@authenticator/authenticator" />
-                    <input type="hidden" name="themes:list" id="deleteConfirmTheme" value="" />
-                    <div class="formControls">
-                        <input
-                            type="submit"
-                            name="form.button.DeleteSelected"
-                            class="destructive"
-                            value="Delete"
-                            i18n:attributes="value"
-                            />
-                        <input
-                            type="submit"
-                            class="standalone allowMultiSubmit"
-                            type="submit"
-                            name="form.button.Cancel"
-                            value="Cancel"
-                            i18n:attributes="value"
-                            />
-                    </div>
-                </form>
             </div>
-        </div>
-    </div>
 
-    <!-- New/copy overlay -->
-    <div id="overlay-new-theme" class="overlay overlay-ajax">
-        <div class="close">
-            <span i18n:translate="">Close</span>
-        </div>
-        <div class="pb-ajax">
-            <div>
-                <h1 id="overlayTitleNewTheme"  class="documentFirstHeading" i18n:translate="theming_controlpanel_new_theme">New theme</h1>
-                <h1 id="overlayTitleCopyTheme" class="documentFirstHeading" i18n:translate="theming_controlpanel_copy_theme">Create copy of <span i18n:name="theme_name"></span></h1>
 
-                <p class="documentDescription" i18n:translate="theming_controlpanel_new_theme_description">
-                    Please enter the details of your new theme
-                </p>
+            <div class="plone-btn-group">
+                <input
+                    type="submit"
+                    name="form.button.AdvancedSave"
+                    class="plone-btn plone-btn-success save"
+                    value="Save"
+                    i18n:attributes="value" />
 
-                <form name="create" method="post" tal:attributes="action request/URL" tal:define="errors view/errors">
-
-                    <div
-                        tal:define="error errors/title | nothing"
-                        tal:attributes="class python:'field error' if error else 'field'">
-
-                        <label for="title" i18n:translate="label_new_theme_title">Title</label>
-                        <div class="formHelp" i18n:translate="help_new_theme_title">
-                            Enter a short, descriptive title for your theme
-                        </div>
-
-                        <div class="errorMessage" tal:content="error" tal:condition="error" />
-
-                        <input
-                            type="text"
-                            name="title"
-                            id="title"
-                            tal:attributes="value request/title | nothing"
-                            />
-                    </div>
-
-                    <div class="field">
-                        <label for="description" i18n:translate="label_new_theme_description">Description</label>
-                        <div class="formHelp" i18n:translate="help_new_theme_description">
-                            You may also provide a longer description for your theme.
-                        </div>
-                        <textarea
-                            name="description"
-                            id="description"
-                            tal:content="request/description | nothing"></textarea>
-                    </div>
-
-                    <input type="hidden" name="baseOn" id="baseOn" tal:attributes="value request/baseOn | string:template" />
-
-                    <div
-                        class="field"
-                        tal:define="selected python:request.get('enableImmediately', False)">
-                        <input type="hidden" value="" name="enableImmediately:boolean:default" />
-                        <input type="checkbox" value="1" name="enableImmediately:boolean" id="enableImmediately"
-                            tal:attributes="checked python:'enableImmediately' if selected else None"
-                            />
-                        <label for="enableImmediately" i18n:translate="label_enable_immediately">Immediately enable new theme</label>
-                        <div class="formHelp" i18n:translate="help_enable_immediately">
-                            Select this option to enable the newly created theme
-                            immediately.
-                        </div>
-                    </div>
-
-                    <div class="formControls">
-                        <input
-                            type="submit"
-                            name="form.button.CreateTheme"
-                            class="standalone"
-                            value="Create"
-                            i18n:attributes="value"
-                            />
-                        <input
-                            type="submit"
-                            name="form.button.Cancel"
-                            class="standalone allowMultiSubmit"
-                            value="Cancel"
-                            i18n:attributes="value"
-                            />
-                    </div>
-
-                    <input tal:replace="structure context/@@authenticator/authenticator" />
-
-                </form>
-
+                <input
+                    type="submit"
+                    name="form.button.Cancel"
+                    class="plone-btn plone-btn-default cancel"
+                    value="Cancel"
+                    i18n:attributes="value" />
             </div>
-        </div>
-    </div>
 
-    <!-- Upload overlay -->
-    <div id="overlay-upload" class="overlay overlay-ajax">
-        <div class="close">
-            <span i18n:translate="">Close</span>
-        </div>
-        <div class="pb-ajax">
-            <div>
-                <h1 class="documentFirstHeading" i18n:translate="theming_controlpanel_upload">Upload theme</h1>
+            <input tal:replace="structure context/@@authenticator/authenticator" />
 
-                <p class="documentDescription" i18n:translate="description_import">
-                   You can import a Zip file containing an existing theme.
-                   This should contain a single top level directory, which will be used as
-                   the theme identifier. If no Diazo <code>rules.xml</code> or
-                   <code>manifest.cfg</code> file is found in this directory, a
-                   default <code>rules.xml</code> file will be created.
-                </p>
 
-                <form
-                    name="import"
-                    method="post"
-                    enctype="multipart/form-data"
-                    class="enableUnloadProtection"
-                    tal:attributes="action request/URL"
-                    tal:define="errors view/errors">
 
-                    <div
-                        class="field"
-                        tal:define="error errors/themeArchive | nothing"
-                        tal:attributes="class python:'field error' if error else 'field'">
+        </form>
 
-                        <div class="formHelp" i18n:translate="help_theme_archive">
-                            Select a file to upload.
-                        </div>
-
-                        <div class="errorMessage" tal:content="error" tal:condition="error" />
-
-                        <input
-                            type="file"
-                            name="themeArchive"
-                            id="themeArchive"
-                            />
-
-                    </div>
-
-                    <div
-                        class="field"
-                        tal:define="selected python:request.get('enableNewTheme', False)">
-                        <input type="hidden" value="" name="enableNewTheme:boolean:default" />
-                        <input type="checkbox" value="1" name="enableNewTheme:boolean" id="enableNewTheme"
-                            tal:attributes="checked python:'enableNewTheme' if selected else None"
-                            />
-                        <label for="enableNewTheme" i18n:translate="label_enable_new_theme">Immediately enable new theme</label>
-                        <div class="formHelp" i18n:translate="help_enable_new_theme">
-                            Select this option to enable the newly uploaded theme
-                            immediately.
-                        </div>
-                    </div>
-
-                    <div
-                        class="field"
-                        tal:define="selected python:request.get('replaceExisting', False)">
-                        <input type="hidden" value="" name="replaceExisting:boolean:default" />
-                        <input type="checkbox" value="1" name="replaceExisting:boolean" id="replaceExisting"
-                            tal:attributes="checked python:'replaceExisting' if selected else None"
-                            />
-                        <label for="replaceExisting" i18n:translate="label_replace_existing">Replace existing theme</label>
-                        <div class="formHelp" i18n:translate="help_replace_existing">
-                            Select this option to replace any existing theme that
-                            may have been uploaded previously.
-                        </div>
-                    </div>
-
-                    <div class="formControls">
-                        <input
-                            type="submit"
-                            name="form.button.Import"
-                            class="context"
-                            value="Import"
-                            i18n:attributes="value" />
-
-                        <input
-                            type="submit"
-                            name="form.button.Cancel"
-                            class="context allowMultiSubmit"
-                            value="Cancel"
-                            i18n:attributes="value" />
-                    </div>
-
-                    <input tal:replace="structure context/@@authenticator/authenticator" />
-
-                </form>
-
-            </div>
-        </div>
-    </div>
+    </section>
 
 </div>
 
-</body>
+<!-- New theme overlay -->
+<div id="overlay-new-theme" class="plone-modal">
+    <h1 id="overlayTitleNewTheme"  class="documentFirstHeading" i18n:translate="theming_controlpanel_new_theme">New theme</h1>
+
+    <p class="documentDescription" i18n:translate="theming_controlpanel_new_theme_description">
+        Please enter the details of your new theme
+    </p>
+
+    <form name="create" method="post" tal:attributes="action request/URL" tal:define="errors view/errors">
+
+        <div
+            tal:define="error errors/title | nothing"
+            tal:attributes="class python:'field error' if error else 'field'">
+
+            <label for="title" i18n:translate="label_new_theme_title">Title</label>
+            <div class="formHelp" i18n:translate="help_new_theme_title">
+                Enter a short, descriptive title for your theme
+            </div>
+
+            <div class="errorMessage" tal:content="error" tal:condition="error" />
+
+            <input
+                type="text"
+                name="title"
+                id="title"
+                tal:attributes="value request/title | nothing"
+                />
+        </div>
+
+        <div class="field">
+            <label for="description" i18n:translate="label_new_theme_description">Description</label>
+            <div class="formHelp" i18n:translate="help_new_theme_description">
+                You may also provide a longer description for your theme.
+            </div>
+            <textarea
+                name="description"
+                id="description"
+                tal:content="request/description | nothing"></textarea>
+        </div>
+
+        <input type="hidden" name="baseOn" id="baseOn" tal:attributes="value request/baseOn | string:template" />
+
+        <div
+            class="field"
+            tal:define="selected python:request.get('enableImmediately', False)">
+            <input type="hidden" value="" name="enableImmediately:boolean:default" />
+            <input type="checkbox" value="1" name="enableImmediately:boolean" id="enableImmediately"
+                tal:attributes="checked python:'enableImmediately' if selected else None"
+                />
+            <label for="enableImmediately" i18n:translate="label_enable_immediately">Immediately enable new theme</label>
+            <div class="formHelp" i18n:translate="help_enable_immediately">
+                Select this option to enable the newly created theme
+                immediately.
+            </div>
+        </div>
+
+        <div class="plone-btn-group">
+            <input
+                type="submit"
+                name="form.button.CreateTheme"
+                class="plone-btn plone-btn-success save"
+                value="Create"
+                i18n:attributes="value"
+                />
+            <input
+                type="submit"
+                name="form.button.Cancel"
+                class="plone-btn plone-btn-default cancel"
+                value="Cancel"
+                i18n:attributes="value"
+                />
+        </div>
+
+        <input tal:replace="structure context/@@authenticator/authenticator" />
+
+    </form>
+</div>
+
+<!-- Upload overlay -->
+<div id="overlay-upload" class="plone-modal">
+    <div>
+        <h1 class="documentFirstHeading" i18n:translate="theming_controlpanel_upload">Upload theme</h1>
+
+        <p class="documentDescription" i18n:translate="description_import">
+           You can import a Zip file containing an existing theme.
+           This should contain a single top level directory, which will be used as
+           the theme identifier. If no Diazo <code>rules.xml</code> or
+           <code>manifest.cfg</code> file is found in this directory, a
+           default <code>rules.xml</code> file will be created.
+        </p>
+
+        <form
+            name="import"
+            method="post"
+            enctype="multipart/form-data"
+            class="enableUnloadProtection"
+            tal:attributes="action request/URL"
+            tal:define="errors view/errors">
+
+            <div
+                class="field"
+                tal:define="error errors/themeArchive | nothing"
+                tal:attributes="class python:'field error' if error else 'field'">
+
+                <div class="formHelp" i18n:translate="help_theme_archive">
+                    Select a file to upload.
+                </div>
+
+                <div class="errorMessage" tal:content="error" tal:condition="error" />
+
+                <input
+                    type="file"
+                    name="themeArchive"
+                    id="themeArchive"
+                    />
+
+            </div>
+
+            <div
+                class="field"
+                tal:define="selected python:request.get('enableNewTheme', False)">
+                <input type="hidden" value="" name="enableNewTheme:boolean:default" />
+                <input type="checkbox" value="1" name="enableNewTheme:boolean" id="enableNewTheme"
+                    tal:attributes="checked python:'enableNewTheme' if selected else None"
+                    />
+                <label for="enableNewTheme" i18n:translate="label_enable_new_theme">Immediately enable new theme</label>
+                <div class="formHelp" i18n:translate="help_enable_new_theme">
+                    Select this option to enable the newly uploaded theme
+                    immediately.
+                </div>
+            </div>
+
+            <div
+                class="field"
+                tal:define="selected python:request.get('replaceExisting', False)">
+                <input type="hidden" value="" name="replaceExisting:boolean:default" />
+                <input type="checkbox" value="1" name="replaceExisting:boolean" id="replaceExisting"
+                    tal:attributes="checked python:'replaceExisting' if selected else None"
+                    />
+                <label for="replaceExisting" i18n:translate="label_replace_existing">Replace existing theme</label>
+                <div class="formHelp" i18n:translate="help_replace_existing">
+                    Select this option to replace any existing theme that
+                    may have been uploaded previously.
+                </div>
+            </div>
+
+            <div class="plone-btn-group">
+                <input
+                    type="submit"
+                    name="form.button.Import"
+                    class="plone-btn plone-btn-success save"
+                    value="Import"
+                    i18n:attributes="value" />
+
+                <input
+                    type="submit"
+                    name="form.button.Cancel"
+                    class="plone-btn plone-btn-default cancel"
+                    value="Cancel"
+                    i18n:attributes="value" />
+            </div>
+
+            <input tal:replace="structure context/@@authenticator/authenticator" />
+
+        </form>
+
+    </div>
+</div>
+
+
+    </section>
+        </article>
+      </div>
+    </article>
+  </body>
 </html>
