@@ -19,19 +19,28 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <link rel="stylesheet" type="text/css"
-        tal:attributes="href string:${portal_url}/++resource++plone.app.theming/thememapperbundle.min.css"/>
-    <div tal:replace="structure provider:plone.htmlhead" />
-    <link tal:replace="structure provider:plone.htmlhead.links" />
+    <!-- provide this so menu still shows and is styled -->
+    <link rel="stylesheet"
+          tal:attributes="href string:${portal_url}/++plone++static/plone-compiled.css" />
+    <!--
+    <link rel="stylesheet/less" type="text/css"
+          tal:attributes="href string:${portal_url}/++resource++mockup/thememapper/pattern.thememapper.less" />
+    -->
+    <link rel="stylesheet"
+          tal:attributes="href string:${portal_url}/++resource++plone.app.theming/thememapperbundle.min.css" />
 
     <tal:comment replace="nothing">
         Various slots where you can insert elements in the header from a template.
     </tal:comment>
 
     <div tal:replace="structure provider:plone.scripts" />
-    <script
-        tal:attributes="src string:${portal_url}/++resource++plone.app.theming/thememapperbundle.min.js"></script>
 
+    <!--
+    <script
+        tal:attributes="src string:${portal_url}/++resource++plone.app.theming/thememapperbundle.js"></script>
+      -->
+    <script
+        tal:attributes="src string:${portal_url}/++resource++plone.app.theming/thememapperbundle.js"></script>
     <meta name="generator" content="Plone - http://plone.org" />
 
   </head>
@@ -95,11 +104,12 @@
           <section id="content-core">
             <input tal:replace="structure context/@@authenticator/authenticator" />
             <div class="pat-thememapper"
-                  data-pat-thememapper='filemanagerConfig:{"actionUrl":"${view/themeBaseUrl}/@@plone.resourceeditor.filemanager-actions"};
-                                        mockupUrl:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off;
-                                        unthemedUrl:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=off;
-                                        previewUrl:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${view/title};
-                                        helpUrl:http://docs.diazo.org/en/latest'></div>
+                  data-pat-thememapper='
+                      filemanagerConfig:{"actionUrl":"${view/themeBaseUrl}/@@plone.resourceeditor.filemanager-actions"};
+                      mockupUrl:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off;
+                      unthemedUrl:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;diazo.off=1;
+                      previewUrl:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${view/title};
+                      helpUrl:http://docs.diazo.org/en/latest'></div>
           </section>
         </article>
       </div>
