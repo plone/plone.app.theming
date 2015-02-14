@@ -34,6 +34,8 @@ from plone.app.theming.utils import getPortal
 from plone.app.theming.utils import findContext
 from plone.app.theming.utils import getThemeFromResourceDirectory
 
+from plone.memoize import view
+
 from AccessControl import Unauthorized
 from zExceptions import NotFound
 
@@ -41,6 +43,8 @@ from Products.Five.browser.decode import processInputs
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.resources import add_bundle_on_request
+from Products.CMFCore.utils import _getAuthenticatedUser
 
 
 class ThemeMapper(BrowserView):
@@ -48,6 +52,7 @@ class ThemeMapper(BrowserView):
     theme_error_template = ViewPageTemplateFile("theme-error.pt")
 
     def __call__(self):
+        add_bundle_on_request(self.request, 'thememapper')
         self.setup()
 
         if self.update():
@@ -56,6 +61,14 @@ class ThemeMapper(BrowserView):
             self.context = getSite()
             return self.index()
         return ''
+
+    @view.memoize
+    def development(self):
+        import pdb; pdb.set_trace()
+        registry = getUtility(IRegistry)
+        if _getAuthenticatedUser(self.context).getUserName() == 'Anonymous User':
+            return False
+        return registry.records['plone.resources.development'].value
 
     def setup(self):
         self.request.response.setHeader('X-Theme-Disabled', '1')
@@ -78,14 +91,6 @@ class ThemeMapper(BrowserView):
 
         self.rulesFileName = RULE_FILENAME
 
-        self.jsVariables = "var CURRENT_SELECTION='%s'; var THEME_BASE_URL='%s'; var THEME_BASE_PATH_ENCODED='%s'; var EDITABLE=%s; var RULE_FILENAME='%s';" % (
-                self.request.get('file-selector') or '',
-                self.themeBaseUrl,
-                self.themeBasePathEncoded,
-                str(self.editable).lower(),
-                self.rulesFileName
-            )
-
     def update(self):
         self.themeFiles = self.findThemeFiles(self.resourceDirectory)
 
@@ -97,14 +102,16 @@ class ThemeMapper(BrowserView):
                 self.defaultThemeFile = t['path']
 
             # Prefer the first index.html or theme.html
-            if t['filename'].lower() in ('index.html', 'index.htm', 'theme.html', 'theme.htm',):
+            if t['filename'].lower() in ('index.html', 'index.htm',
+                                         'theme.html', 'theme.htm',):
                 self.defaultThemeFile = t['path']
                 break
 
         return True
 
     def authorize(self):
-        authenticator = getMultiAdapter((self.context, self.request), name=u"authenticator")
+        authenticator = getMultiAdapter((self.context, self.request),
+                                        name=u"authenticator")
         if not authenticator.verify():
             raise Unauthorized
 
@@ -227,11 +234,14 @@ class ThemeMapper(BrowserView):
             serializer = getHTMLSerializer([result], pretty_print=False)
 
             try:
-                transform = compileThemeTransform(themeInfo.rules, themeInfo.absolutePrefix, settings.readNetwork, themeInfo.parameterExpressions or {})
+                transform = compileThemeTransform(
+                    themeInfo.rules, themeInfo.absolutePrefix,
+                    settings.readNetwork, themeInfo.parameterExpressions or {})
             except lxml.etree.XMLSyntaxError, e:
                 return self.theme_error_template(error=e.msg)
 
-            params = prepareThemeParameters(context, self.request, themeInfo.parameterExpressions or {})
+            params = prepareThemeParameters(
+                context, self.request, themeInfo.parameterExpressions or {})
 
             # Fix url and path since the request gave us this view
             params['url'] = quote_param("%s%s" % (portal_url, path,))
@@ -255,7 +265,8 @@ class ThemeMapper(BrowserView):
 
                 # relative?
                 if not origUrl.netloc:
-                    newPath = urlparse.urljoin(path.rstrip("/") + "/", newPath.lstrip("/"))
+                    newPath = urlparse.urljoin(
+                        path.rstrip("/") + "/", newPath.lstrip("/"))
                 elif not orig.lower().startswith(portal_url.lower()):
                     # Not an internal URL - ignore
                     return orig
@@ -301,4 +312,3 @@ class ThemeMapper(BrowserView):
             result = lxml.html.tostring(tree)
 
         return result
-

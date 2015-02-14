@@ -1,4 +1,45 @@
 <?xml version="1.0"?>
 <registry>
     <records interface="plone.app.theming.interfaces.IThemeSettings" />
+
+    <!-- resources -->
+
+    <!-- pattern -->
+    <records prefix="plone.resources/mockup-patterns-filemanager"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="url">++resource++mockup/filemanager</value>
+      <value key="js">++resource++mockup/filemanager/pattern.js</value>
+      <value key="css">
+        <element>++resource++mockup/filemanager/pattern.filemanager.less</element>
+      </value>
+    </records>
+    <records prefix="plone.resources/mockup-patterns-thememapper"
+            interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="url">++resource++mockup/thememapper</value>
+      <value key="js">++resource++mockup/thememapper/pattern.js</value>
+      <value key="css">
+        <element>++resource++mockup/thememapper/pattern.thememapper.less</element>
+      </value>
+    </records>
+
+    <!-- bundle resource -->
+    <records prefix="plone.resources/thememapper"
+             interface='Products.CMFPlone.interfaces.IResourceRegistry'>
+      <value key="js">++resource++plone.app.theming/thememapper.js</value>
+      <value key="css">
+        <element>++resource++plone.app.theming/thememapper.less</element>
+      </value>
+    </records>
+
+    <!-- bundle -->
+    <records prefix="plone.bundles/thememapper"
+             interface='Products.CMFPlone.interfaces.IBundleRegistry'>
+      <value key="resources">
+        <element>thememapper</element>
+       </value>
+       <value key="enabled">False</value>
+       <value key="jscompilation">++resource++plone.app.theming/thememapper-compiled.min.js</value>
+       <value key="csscompilation">++resource++plone.app.theming/thememapper-compiled.css</value>
+       <value key="last_compilation">2015-02-13 00:00:00</value>
+    </records>
 </registry>
