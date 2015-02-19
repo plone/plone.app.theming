@@ -64,7 +64,6 @@ class ThemeMapper(BrowserView):
 
     @view.memoize
     def development(self):
-        import pdb; pdb.set_trace()
         registry = getUtility(IRegistry)
         if _getAuthenticatedUser(self.context).getUserName() == 'Anonymous User':
             return False
