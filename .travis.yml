@@ -1,12 +1,16 @@
 language: python
 python:
-  - 2.6
+  - 2.7
+sudo: false
+cache:
+  directories:
+  - eggs
 before_install:
   - pip install http://effbot.org/downloads/Imaging-1.1.6.tar.gz
-  - sudo apt-get install -qq libxml2-dev libxslt-dev
+# - sudo apt-get install -qq libxml2-dev libxslt-dev
 install:
   - python bootstrap.py
-  - bin/buildout -c travis.cfg -q
+  - bin/buildout -N -t 3
 script:
   - bin/test -s plone.app.theming
   - bin/test -s plone.app.themingplugins
