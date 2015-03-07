@@ -4,6 +4,9 @@ Changelog
 1.3.0 (unreleased)
 ------------------
 
+- Fix transform to not affect the result when theming is disabled
+  [datakurre]
+
 - Integrate thememapper mockup pattern and fix theming control panel
   to be more usable
   [ebrehault]
