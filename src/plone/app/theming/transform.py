@@ -149,6 +149,14 @@ class ThemeTransform(object):
     def transformIterable(self, result, encoding):
         """Apply the transform if required
         """
+        # Obtain settings. Do nothing if not found
+        settings = self.getSettings()
+
+        if settings is None:
+            return None
+
+        if not isThemeEnabled(self.request, settings):
+            return None
 
         result = self.parseTree(result)
         if result is None:
@@ -161,7 +169,6 @@ class ThemeTransform(object):
         try:
             etree.clear_error_log()
 
-            settings = self.getSettings()
             if settings.doctype:
                 result.doctype = settings.doctype
                 if not result.doctype.endswith('\n'):
