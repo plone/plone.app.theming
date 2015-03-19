@@ -4,6 +4,11 @@ Changelog
 1.3.0 (unreleased)
 ------------------
 
+- Add an error log if the subrequest failed (probably a relative xi:include)
+  instead of silently returning None (and so having a xi:include returning
+  nothing).
+  [vincentfretin]
+
 - Fix transform to not affect the result when theming is disabled
   [datakurre]
 
