@@ -1,3 +1,4 @@
+import logging
 import Globals
 
 import pkg_resources
@@ -45,6 +46,8 @@ from Products.PageTemplates.Expressions import getEngine
 from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFPlone.utils import safe_unicode
+
+LOGGER = logging.getLogger('plone.app.theming')
 
 
 class NetworkResolver(etree.Resolver):
@@ -115,6 +118,7 @@ class InternalResolver(etree.Resolver):
 
         response = subrequest(system_url, root=root)
         if response.status != 200:
+            LOGGER.error("Couldn't resolve %s", system_url)
             return None
         result = response.getBody()
         content_type = response.headers.get('content-type')

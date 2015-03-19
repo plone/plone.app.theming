@@ -4,7 +4,10 @@ Changelog
 1.1.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add an error log if the subrequest failed (probably a relative xi:include)
+  instead of silently returning None (and so having a xi:include returning
+  nothing).
+  [vincentfretin]
 
 
 1.1.4 (2015-02-24)
