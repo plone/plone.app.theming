@@ -4,6 +4,10 @@ Changelog
 1.3.0 (unreleased)
 ------------------
 
+- Change deprecated import of ``zope.site.hooks.getSite`` to
+  ``zope.component.hooks.getSite``.
+  [thet]
+
 - Add an error log if the subrequest failed (probably a relative xi:include)
   instead of silently returning None (and so having a xi:include returning
   nothing).

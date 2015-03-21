@@ -11,7 +11,7 @@ from diazo.utils import quote_param
 from zope.component import getMultiAdapter
 from zope.component import getUtility
 
-from zope.site.hooks import getSite
+from zope.component.hooks import getSite
 from zope.publisher.browser import BrowserView
 
 from repoze.xmliter.utils import getHTMLSerializer

@@ -8,7 +8,7 @@ from repoze.xmliter.utils import getHTMLSerializer
 from zope.interface import implements, Interface
 from zope.component import adapts
 from zope.component import queryUtility
-from zope.site.hooks import getSite
+from zope.component.hooks import getSite
 
 from plone.registry.interfaces import IRegistry
 from plone.transformchain.interfaces import ITransform
