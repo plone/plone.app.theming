@@ -35,11 +35,13 @@ def disable_theming(func):
 def patch_zmi():
     from App.Management import Navigation
     for name in NO_THEME_DTML:
-        dtml = getattr(Navigation, name)
-        dtml.__class__ = NoThemeDTMLFile
+        dtml = getattr(Navigation, name, None)
+        if dtml:
+            dtml.__class__ = NoThemeDTMLFile
 
     from App.ApplicationManager import ApplicationManager
-    ApplicationManager.manage_shutdown = disable_theming(
-        ApplicationManager.manage_shutdown)
+    if getattr(ApplicationManager, 'manage_shutdown', False):
+        ApplicationManager.manage_shutdown = disable_theming(
+            ApplicationManager.manage_shutdown)
 
     LOGGER.debug('Patched Zope Management Interface to disable theming.')

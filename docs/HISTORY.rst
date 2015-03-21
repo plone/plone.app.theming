@@ -4,6 +4,9 @@ Changelog
 1.3.0 (unreleased)
 ------------------
 
+- Patch the ZMI only for available ZMI pages.
+  [thet]
+
 - Change deprecated import of ``zope.site.hooks.getSite`` to
   ``zope.component.hooks.getSite``.
   [thet]
