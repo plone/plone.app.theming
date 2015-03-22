@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.3.0 (unreleased)
+1.2.2 (2015-03-22)
 ------------------
 
 - Patch the ZMI only for available ZMI pages.
