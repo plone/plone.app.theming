@@ -515,6 +515,15 @@ def applyTheme(theme):
             for name, plugin in plugins:
                 plugin.onDisabled(currentTheme, pluginSettings[name],
                                   pluginSettings)
+
+        themeDirectory = queryResourceDirectory(
+            THEME_RESOURCE_NAME, settings.currentTheme)
+        if themeDirectory is not None:
+            plugins = getPlugins()
+            pluginSettings = getPluginSettings(themeDirectory, plugins)
+
+        if pluginSettings is not None:
+            for name, plugin in plugins:
                 plugin.onEnabled(theme, pluginSettings[name], pluginSettings)
         notify(ThemeAppliedEvent(theme))
 
