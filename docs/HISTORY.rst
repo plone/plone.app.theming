@@ -4,7 +4,9 @@ Changelog
 1.2.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix load pluginSettings for the enabled theme before calling plugins for
+  onEnabled
+  [datakurre]
 
 
 1.2.1 (2014-10-23)
