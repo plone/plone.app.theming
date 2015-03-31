@@ -10,6 +10,10 @@ Changelog
 - pat-modal pattern has been renamed to pat-plone-modal
   [jcbrand]
 
+- Fix load pluginSettings for the enabled theme before calling plugins for
+  onEnabled
+  [datakurre]
+
 
 1.2.2 (2015-03-22)
 ------------------
