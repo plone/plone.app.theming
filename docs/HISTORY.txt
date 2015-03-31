@@ -4,6 +4,10 @@ Changelog
 1.1.5 (unreleased)
 ------------------
 
+- Fix load pluginSettings for the enabled theme before calling plugins for
+  onEnabled and call onEnabled plugins with correct parameters
+  [datakurre]
+
 - Add an error log if the subrequest failed (probably a relative xi:include)
   instead of silently returning None (and so having a xi:include returning
   nothing).
