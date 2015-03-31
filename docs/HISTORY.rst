@@ -11,7 +11,7 @@ Changelog
   [jcbrand]
 
 - Fix load pluginSettings for the enabled theme before calling plugins for
-  onEnabled
+  onEnabled and call onEnabled plugins with correct parameters
   [datakurre]
 
 
