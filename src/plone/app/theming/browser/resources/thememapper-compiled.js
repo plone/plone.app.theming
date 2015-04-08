@@ -526,7 +526,7 @@ define('pat-compat',[],function() {
     {
         Array.prototype.every = function(fun /*, thisp */)
         {
-            
+            "use strict";
 
             if (this === null)
                 throw new TypeError();
@@ -551,7 +551,7 @@ define('pat-compat',[],function() {
     // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/filter (JS 1.6)
     if (!Array.prototype.filter) {
         Array.prototype.filter = function(fun /*, thisp */) {
-            
+            "use strict";
 
             if (this === null)
                 throw new TypeError();
@@ -642,7 +642,7 @@ define('pat-compat',[],function() {
     // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/indexOf (JS 1.6)
     if (!Array.prototype.indexOf) {
         Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
-            
+            "use strict";
             if (this === null) {
                 throw new TypeError();
             }
@@ -677,7 +677,7 @@ define('pat-compat',[],function() {
     // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/lastIndexOf (JS 1.6)
     if (!Array.prototype.lastIndexOf) {
         Array.prototype.lastIndexOf = function(searchElement /*, fromIndex*/) {
-            
+            "use strict";
 
             if (this === null)
                 throw new TypeError();
@@ -817,7 +817,7 @@ define('pat-compat',[],function() {
     {
         Array.prototype.reduceRight = function(callbackfn /*, initialValue */)
         {
-            
+            "use strict";
 
             if (this === null)
                 throw new TypeError();
@@ -871,7 +871,7 @@ define('pat-compat',[],function() {
     {
         Array.prototype.some = function(fun /*, thisp */)
         {
-            
+            "use strict";
 
             if (this === null)
                 throw new TypeError();
@@ -1443,7 +1443,7 @@ define('pat-registry',[
 define('mockup-parser',[
   'jquery'
 ], function($) {
-  
+  'use strict';
 
   var parser = {
     getOptions: function getOptions($el, patternName, options) {
@@ -1492,7 +1492,7 @@ define('mockup-patterns-base',[
   'mockup-parser',
   "pat-logger"
 ], function($, Registry, mockupParser, logger) {
-  
+  'use strict';
   var log = logger.getLogger("Mockup Base");
 
   var initMockup = function initMockup($el, options, trigger) {
@@ -6577,7 +6577,7 @@ define('mockup-patterns-base',[
   java, location, Components, FileUtils */
 
 define('text',['module'], function (module) {
-    
+    'use strict';
 
     var text, fs, Cc, Ci, xpcIsWindows,
         progIds = ['Msxml2.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.4.0'],
@@ -8584,7 +8584,7 @@ define('text!mockup-patterns-thememapper-url/templates/inspector.xml',[],functio
 define('mockup-i18n',[
   'jquery'
 ], function($) {
-  
+  'use strict';
 
   var I18N = function() {
     var self = this;
@@ -8700,7 +8700,7 @@ define('mockup-i18n',[
 define('translate',[
   'mockup-i18n'
 ], function(i18n) {
-  
+  'use strict';
   i18n.loadCatalog('widgets');
   return i18n.MessageFactory('widgets');
 });
@@ -8711,7 +8711,7 @@ define('mockup-ui-url/views/base',[
   'backbone',
   'translate'
 ], function($, _, Backbone, _t) {
-  
+  'use strict';
 
   var BaseView = Backbone.View.extend({
     isUIView: true,
@@ -8786,7 +8786,7 @@ define('mockup-ui-url/views/base',[
 define('mockup-utils',[
   'jquery'
 ], function($) {
-  
+  'use strict';
 
   var QueryHelper = function(options) {
     /* if pattern argument provided, it can implement the interface of:
@@ -8800,7 +8800,7 @@ define('mockup-utils',[
       pattern: null, // must be passed in
       vocabularyUrl: null,
       searchParam: 'SearchableText', // query string param to pass to search url
-      attributes: ['UID','Title', 'Description', 'getURL', 'Type'],
+      attributes: ['UID', 'Title', 'Description', 'getURL', 'portal_type'],
       batchSize: 10, // number of results to retrive
       baseCriteria: [],
       pathDepth: 1
@@ -12204,7 +12204,7 @@ define('mockup-patterns-tree',[
   'mockup-utils',
   'jqtree'
 ], function($, _, Base, utils) {
-  
+  'use strict';
 
   var Tree = Base.extend({
     name: 'tree',
@@ -12448,7 +12448,7 @@ exportAce(ACE_NAMESPACE);
 })();
 
 define("ace/lib/regexp",["require","exports","module"], function(require, exports, module) {
-
+"use strict";
 
     var real = {
             exec: RegExp.prototype.exec,
@@ -13218,7 +13218,7 @@ var toObject = function (o) {
 });
 
 define("ace/lib/fixoldbrowsers",["require","exports","module","ace/lib/regexp","ace/lib/es5-shim"], function(require, exports, module) {
-
+"use strict";
 
 require("./regexp");
 require("./es5-shim");
@@ -13226,7 +13226,7 @@ require("./es5-shim");
 });
 
 define("ace/lib/dom",["require","exports","module"], function(require, exports, module) {
-
+"use strict";
 
 if (typeof document == "undefined")
     return;
@@ -13459,7 +13459,7 @@ exports.getParentWindow = function(document) {
 });
 
 define("ace/lib/oop",["require","exports","module"], function(require, exports, module) {
-
+"use strict";
 
 exports.inherits = function(ctor, superCtor) {
     ctor.super_ = superCtor;
@@ -13487,7 +13487,7 @@ exports.implement = function(proto, mixin) {
 });
 
 define("ace/lib/keys",["require","exports","module","ace/lib/fixoldbrowsers","ace/lib/oop"], function(require, exports, module) {
-
+"use strict";
 
 require("./fixoldbrowsers");
 
@@ -13599,7 +13599,7 @@ exports.keyCodeToString = function(keyCode) {
 });
 
 define("ace/lib/useragent",["require","exports","module"], function(require, exports, module) {
-
+"use strict";
 exports.OS = {
     LINUX: "LINUX",
     MAC: "MAC",
@@ -13646,7 +13646,7 @@ exports.isChromeOS = ua.indexOf(" CrOS ") >= 0;
 });
 
 define("ace/lib/event",["require","exports","module","ace/lib/keys","ace/lib/useragent"], function(require, exports, module) {
-
+"use strict";
 
 var keys = require("./keys");
 var useragent = require("./useragent");
@@ -13977,7 +13977,7 @@ else
 });
 
 define("ace/lib/lang",["require","exports","module"], function(require, exports, module) {
-
+"use strict";
 
 exports.last = function(a) {
     return a[a.length - 1];
@@ -14164,7 +14164,7 @@ exports.delayedCall = function(fcn, defaultTimeout) {
 });
 
 define("ace/keyboard/textinput",["require","exports","module","ace/lib/event","ace/lib/useragent","ace/lib/dom","ace/lib/lang"], function(require, exports, module) {
-
+"use strict";
 
 var event = require("../lib/event");
 var useragent = require("../lib/useragent");
@@ -14600,7 +14600,7 @@ exports.TextInput = TextInput;
 });
 
 define("ace/mouse/default_handlers",["require","exports","module","ace/lib/dom","ace/lib/event","ace/lib/useragent"], function(require, exports, module) {
-
+"use strict";
 
 var dom = require("../lib/dom");
 var event = require("../lib/event");
@@ -14842,7 +14842,7 @@ function calcRangeOrientation(range, cursor) {
 });
 
 define("ace/tooltip",["require","exports","module","ace/lib/oop","ace/lib/dom"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("./lib/oop");
 var dom = require("./lib/dom");
@@ -14906,7 +14906,7 @@ exports.Tooltip = Tooltip;
 });
 
 define("ace/mouse/default_gutter_handler",["require","exports","module","ace/lib/dom","ace/lib/oop","ace/lib/event","ace/tooltip"], function(require, exports, module) {
-
+"use strict";
 var dom = require("../lib/dom");
 var oop = require("../lib/oop");
 var event = require("../lib/event");
@@ -15058,7 +15058,7 @@ exports.GutterHandler = GutterHandler;
 });
 
 define("ace/mouse/mouse_event",["require","exports","module","ace/lib/event","ace/lib/useragent"], function(require, exports, module) {
-
+"use strict";
 
 var event = require("../lib/event");
 var useragent = require("../lib/useragent");
@@ -15132,7 +15132,7 @@ var MouseEvent = exports.MouseEvent = function(domEvent, editor) {
 });
 
 define("ace/mouse/dragdrop_handler",["require","exports","module","ace/lib/dom","ace/lib/event","ace/lib/useragent"], function(require, exports, module) {
-
+"use strict";
 
 var dom = require("../lib/dom");
 var event = require("../lib/event");
@@ -15514,7 +15514,7 @@ exports.DragdropHandler = DragdropHandler;
 });
 
 define("ace/lib/net",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
-
+"use strict";
 var dom = require("./dom");
 
 exports.get = function (url, callback) {
@@ -15552,7 +15552,7 @@ exports.qualifyURL = function(url) {
 });
 
 define("ace/lib/event_emitter",["require","exports","module"], function(require, exports, module) {
-
+"use strict";
 
 var EventEmitter = {};
 var stopPropagation = function() { this.propagationStopped = true; };
@@ -15936,7 +15936,7 @@ exports.setDefaultValues = function(path, optionHash) {
 });
 
 define("ace/mouse/mouse_handler",["require","exports","module","ace/lib/event","ace/lib/useragent","ace/mouse/default_handlers","ace/mouse/default_gutter_handler","ace/mouse/mouse_event","ace/mouse/dragdrop_handler","ace/config"], function(require, exports, module) {
-
+"use strict";
 
 var event = require("../lib/event");
 var useragent = require("../lib/useragent");
@@ -16105,7 +16105,7 @@ exports.MouseHandler = MouseHandler;
 });
 
 define("ace/mouse/fold_handler",["require","exports","module"], function(require, exports, module) {
-
+"use strict";
 
 function FoldHandler(editor) {
 
@@ -16167,7 +16167,7 @@ exports.FoldHandler = FoldHandler;
 });
 
 define("ace/keyboard/keybinding",["require","exports","module","ace/lib/keys","ace/lib/event"], function(require, exports, module) {
-
+"use strict";
 
 var keyUtil  = require("../lib/keys");
 var event = require("../lib/event");
@@ -16272,7 +16272,7 @@ exports.KeyBinding = KeyBinding;
 });
 
 define("ace/range",["require","exports","module"], function(require, exports, module) {
-
+"use strict";
 var comparePoints = function(p1, p2) {
     return p1.row - p2.row || p1.column - p2.column;
 };
@@ -16511,7 +16511,7 @@ exports.Range = Range;
 });
 
 define("ace/selection",["require","exports","module","ace/lib/oop","ace/lib/lang","ace/lib/event_emitter","ace/range"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("./lib/oop");
 var lang = require("./lib/lang");
@@ -17119,7 +17119,7 @@ exports.Selection = Selection;
 });
 
 define("ace/tokenizer",["require","exports","module"], function(require, exports, module) {
-
+"use strict";
 var MAX_TOKEN_COUNT = 1000;
 var Tokenizer = function(rules) {
     this.states = rules;
@@ -17413,7 +17413,7 @@ exports.Tokenizer = Tokenizer;
 });
 
 define("ace/mode/text_highlight_rules",["require","exports","module","ace/lib/lang"], function(require, exports, module) {
-
+"use strict";
 
 var lang = require("../lib/lang");
 
@@ -17610,7 +17610,7 @@ exports.TextHighlightRules = TextHighlightRules;
 });
 
 define("ace/mode/behaviour",["require","exports","module"], function(require, exports, module) {
-
+"use strict";
 
 var Behaviour = function() {
    this.$behaviours = {};
@@ -17671,7 +17671,7 @@ exports.Behaviour = Behaviour;
 });
 
 define("ace/unicode",["require","exports","module"], function(require, exports, module) {
-
+"use strict";
 exports.packages = {};
 
 addUnicodePackage({
@@ -17723,7 +17723,7 @@ function addUnicodePackage (pack) {
 });
 
 define("ace/token_iterator",["require","exports","module"], function(require, exports, module) {
-
+"use strict";
 var TokenIterator = function(session, initialRow, initialColumn) {
     this.$session = session;
     this.$row = initialRow;
@@ -17796,7 +17796,7 @@ exports.TokenIterator = TokenIterator;
 });
 
 define("ace/mode/text",["require","exports","module","ace/tokenizer","ace/mode/text_highlight_rules","ace/mode/behaviour","ace/unicode","ace/lib/lang","ace/token_iterator","ace/range"], function(require, exports, module) {
-
+"use strict";
 
 var Tokenizer = require("../tokenizer").Tokenizer;
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
@@ -18149,7 +18149,7 @@ exports.Mode = Mode;
 });
 
 define("ace/anchor",["require","exports","module","ace/lib/oop","ace/lib/event_emitter"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("./lib/oop");
 var EventEmitter = require("./lib/event_emitter").EventEmitter;
@@ -18298,7 +18298,7 @@ var Anchor = exports.Anchor = function(doc, row, column) {
 });
 
 define("ace/document",["require","exports","module","ace/lib/oop","ace/lib/event_emitter","ace/range","ace/anchor"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("./lib/oop");
 var EventEmitter = require("./lib/event_emitter").EventEmitter;
@@ -18657,7 +18657,7 @@ exports.Document = Document;
 });
 
 define("ace/background_tokenizer",["require","exports","module","ace/lib/oop","ace/lib/event_emitter"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("./lib/oop");
 var EventEmitter = require("./lib/event_emitter").EventEmitter;
@@ -18803,7 +18803,7 @@ exports.BackgroundTokenizer = BackgroundTokenizer;
 });
 
 define("ace/search_highlight",["require","exports","module","ace/lib/lang","ace/lib/oop","ace/range"], function(require, exports, module) {
-
+"use strict";
 
 var lang = require("./lib/lang");
 var oop = require("./lib/oop");
@@ -18855,7 +18855,7 @@ exports.SearchHighlight = SearchHighlight;
 });
 
 define("ace/edit_session/fold_line",["require","exports","module","ace/range"], function(require, exports, module) {
-
+"use strict";
 
 var Range = require("../range").Range;
 function FoldLine(foldData, folds) {
@@ -19074,7 +19074,7 @@ exports.FoldLine = FoldLine;
 });
 
 define("ace/range_list",["require","exports","module","ace/range"], function(require, exports, module) {
-
+"use strict";
 var Range = require("./range").Range;
 var comparePoints = Range.comparePoints;
 
@@ -19281,7 +19281,7 @@ exports.RangeList = RangeList;
 });
 
 define("ace/edit_session/fold",["require","exports","module","ace/range","ace/range_list","ace/lib/oop"], function(require, exports, module) {
-
+"use strict";
 
 var Range = require("../range").Range;
 var RangeList = require("../range_list").RangeList;
@@ -19385,7 +19385,7 @@ function restoreRange(range, anchor) {
 });
 
 define("ace/edit_session/folding",["require","exports","module","ace/range","ace/edit_session/fold_line","ace/edit_session/fold","ace/token_iterator"], function(require, exports, module) {
-
+"use strict";
 
 var Range = require("../range").Range;
 var FoldLine = require("./fold_line").FoldLine;
@@ -20116,7 +20116,7 @@ exports.Folding = Folding;
 });
 
 define("ace/edit_session/bracket_match",["require","exports","module","ace/token_iterator","ace/range"], function(require, exports, module) {
-
+"use strict";
 
 var TokenIterator = require("../token_iterator").TokenIterator;
 var Range = require("../range").Range;
@@ -20298,7 +20298,7 @@ exports.BracketMatch = BracketMatch;
 });
 
 define("ace/edit_session",["require","exports","module","ace/lib/oop","ace/lib/lang","ace/config","ace/lib/event_emitter","ace/selection","ace/mode/text","ace/range","ace/document","ace/background_tokenizer","ace/search_highlight","ace/edit_session/folding","ace/edit_session/bracket_match"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("./lib/oop");
 var lang = require("./lib/lang");
@@ -21996,7 +21996,7 @@ exports.EditSession = EditSession;
 });
 
 define("ace/search",["require","exports","module","ace/lib/lang","ace/lib/oop","ace/range"], function(require, exports, module) {
-
+"use strict";
 
 var lang = require("./lib/lang");
 var oop = require("./lib/oop");
@@ -22293,7 +22293,7 @@ exports.Search = Search;
 });
 
 define("ace/keyboard/hash_handler",["require","exports","module","ace/lib/keys","ace/lib/useragent"], function(require, exports, module) {
-
+"use strict";
 
 var keyUtil = require("../lib/keys");
 var useragent = require("../lib/useragent");
@@ -22453,7 +22453,7 @@ exports.HashHandler = HashHandler;
 });
 
 define("ace/commands/command_manager",["require","exports","module","ace/lib/oop","ace/keyboard/hash_handler","ace/lib/event_emitter"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("../lib/oop");
 var HashHandler = require("../keyboard/hash_handler").HashHandler;
@@ -22553,7 +22553,7 @@ exports.CommandManager = CommandManager;
 });
 
 define("ace/commands/default_commands",["require","exports","module","ace/lib/lang","ace/config","ace/range"], function(require, exports, module) {
-
+"use strict";
 
 var lang = require("../lib/lang");
 var config = require("../config");
@@ -23218,7 +23218,7 @@ exports.commands = [{
 });
 
 define("ace/editor",["require","exports","module","ace/lib/fixoldbrowsers","ace/lib/oop","ace/lib/dom","ace/lib/lang","ace/lib/useragent","ace/keyboard/textinput","ace/mouse/mouse_handler","ace/mouse/fold_handler","ace/keyboard/keybinding","ace/edit_session","ace/search","ace/range","ace/lib/event_emitter","ace/commands/command_manager","ace/commands/default_commands","ace/config","ace/token_iterator"], function(require, exports, module) {
-
+"use strict";
 
 require("./lib/fixoldbrowsers");
 
@@ -25050,7 +25050,7 @@ exports.Editor = Editor;
 });
 
 define("ace/undomanager",["require","exports","module"], function(require, exports, module) {
-
+"use strict";
 var UndoManager = function() {
     this.reset();
 };
@@ -25119,7 +25119,7 @@ exports.UndoManager = UndoManager;
 });
 
 define("ace/layer/gutter",["require","exports","module","ace/lib/dom","ace/lib/oop","ace/lib/lang","ace/lib/event_emitter"], function(require, exports, module) {
-
+"use strict";
 
 var dom = require("../lib/dom");
 var oop = require("../lib/oop");
@@ -25374,7 +25374,7 @@ exports.Gutter = Gutter;
 });
 
 define("ace/layer/marker",["require","exports","module","ace/range","ace/lib/dom"], function(require, exports, module) {
-
+"use strict";
 
 var Range = require("../range").Range;
 var dom = require("../lib/dom");
@@ -25549,7 +25549,7 @@ exports.Marker = Marker;
 });
 
 define("ace/layer/text",["require","exports","module","ace/lib/oop","ace/lib/dom","ace/lib/lang","ace/lib/useragent","ace/lib/event_emitter"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("../lib/oop");
 var dom = require("../lib/dom");
@@ -26080,7 +26080,7 @@ exports.Text = Text;
 });
 
 define("ace/layer/cursor",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
-
+"use strict";
 
 var dom = require("../lib/dom");
 var IE8;
@@ -26283,7 +26283,7 @@ exports.Cursor = Cursor;
 });
 
 define("ace/scrollbar",["require","exports","module","ace/lib/oop","ace/lib/dom","ace/lib/event","ace/lib/event_emitter"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("./lib/oop");
 var dom = require("./lib/dom");
@@ -26406,7 +26406,7 @@ exports.HScrollBar = HScrollBar;
 });
 
 define("ace/renderloop",["require","exports","module","ace/lib/event"], function(require, exports, module) {
-
+"use strict";
 
 var event = require("./lib/event");
 
@@ -26588,7 +26588,7 @@ var FontMetrics = exports.FontMetrics = function(parentEl, interval) {
 });
 
 define("ace/virtual_renderer",["require","exports","module","ace/lib/oop","ace/lib/dom","ace/config","ace/lib/useragent","ace/layer/gutter","ace/layer/marker","ace/layer/text","ace/layer/cursor","ace/scrollbar","ace/scrollbar","ace/renderloop","ace/layer/font_metrics","ace/lib/event_emitter"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("./lib/oop");
 var dom = require("./lib/dom");
@@ -28206,7 +28206,7 @@ exports.VirtualRenderer = VirtualRenderer;
 });
 
 define("ace/worker/worker_client",["require","exports","module","ace/lib/oop","ace/lib/net","ace/lib/event_emitter","ace/config"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("../lib/oop");
 var net = require("../lib/net");
@@ -28419,7 +28419,7 @@ exports.WorkerClient = WorkerClient;
 });
 
 define("ace/placeholder",["require","exports","module","ace/range","ace/lib/event_emitter","ace/lib/oop"], function(require, exports, module) {
-
+"use strict";
 
 var Range = require("./range").Range;
 var EventEmitter = require("./lib/event_emitter").EventEmitter;
@@ -29667,7 +29667,7 @@ require("./config").defineOptions(Editor.prototype, "editor", {
 });
 
 define("ace/mode/folding/fold_mode",["require","exports","module","ace/range"], function(require, exports, module) {
-
+"use strict";
 
 var Range = require("../../range").Range;
 
@@ -29756,7 +29756,7 @@ var FoldMode = exports.FoldMode = function() {};
 });
 
 define("ace/theme/textmate",["require","exports","module","ace/lib/dom"], function(require, exports, module) {
-
+"use strict";
 
 exports.isDark = false;
 exports.cssClass = "ace-tm";
@@ -29887,7 +29887,7 @@ dom.importCssString(exports.cssText, exports.cssClass);
 });
 
 define("ace/line_widgets",["require","exports","module","ace/lib/oop","ace/lib/dom","ace/range"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("./lib/oop");
 var dom = require("./lib/dom");
@@ -30150,7 +30150,7 @@ exports.LineWidgets = LineWidgets;
 });
 
 define("ace/ext/error_marker",["require","exports","module","ace/line_widgets","ace/lib/dom","ace/range"], function(require, exports, module) {
-
+"use strict";
 var LineWidgets = require("../line_widgets").LineWidgets;
 var dom = require("../lib/dom");
 var Range = require("../range").Range;
@@ -30333,7 +30333,7 @@ dom.importCssString("\
 });
 
 define("ace/ace",["require","exports","module","ace/lib/fixoldbrowsers","ace/lib/dom","ace/lib/event","ace/editor","ace/edit_session","ace/undomanager","ace/virtual_renderer","ace/worker/worker_client","ace/keyboard/hash_handler","ace/placeholder","ace/multi_select","ace/mode/folding/fold_mode","ace/theme/textmate","ace/ext/error_marker","ace/config"], function(require, exports, module) {
-
+"use strict";
 
 require("./lib/fixoldbrowsers");
 
@@ -30548,7 +30548,7 @@ define("ace-mode-text", [], function() {
 define("ace-mode-javascript", [], function() {
   return (function() {
 define("ace/mode/doc_comment_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("../lib/oop");
 var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
@@ -30592,7 +30592,7 @@ exports.DocCommentHighlightRules = DocCommentHighlightRules;
 });
 
 define("ace/mode/javascript_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/doc_comment_highlight_rules","ace/mode/text_highlight_rules"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("../lib/oop");
 var DocCommentHighlightRules = require("./doc_comment_highlight_rules").DocCommentHighlightRules;
@@ -30940,7 +30940,7 @@ exports.JavaScriptHighlightRules = JavaScriptHighlightRules;
 });
 
 define("ace/mode/matching_brace_outdent",["require","exports","module","ace/range"], function(require, exports, module) {
-
+"use strict";
 
 var Range = require("../range").Range;
 
@@ -30980,7 +30980,7 @@ exports.MatchingBraceOutdent = MatchingBraceOutdent;
 });
 
 define("ace/mode/behaviour/cstyle",["require","exports","module","ace/lib/oop","ace/mode/behaviour","ace/token_iterator","ace/lib/lang"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("../../lib/oop");
 var Behaviour = require("../behaviour").Behaviour;
@@ -31338,7 +31338,7 @@ exports.CstyleBehaviour = CstyleBehaviour;
 });
 
 define("ace/mode/folding/cstyle",["require","exports","module","ace/lib/oop","ace/range","ace/mode/folding/fold_mode"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("../../lib/oop");
 var Range = require("../../range").Range;
@@ -31433,7 +31433,7 @@ oop.inherits(FoldMode, BaseFoldMode);
 });
 
 define("ace/mode/javascript",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/javascript_highlight_rules","ace/mode/matching_brace_outdent","ace/range","ace/worker/worker_client","ace/mode/behaviour/cstyle","ace/mode/folding/cstyle"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("../lib/oop");
 var TextMode = require("./text").Mode;
@@ -31528,7 +31528,7 @@ exports.Mode = Mode;
 define("ace-mode-css", [], function() {
   return (function() {
 define("ace/mode/css_highlight_rules",["require","exports","module","ace/lib/oop","ace/lib/lang","ace/mode/text_highlight_rules"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("../lib/oop");
 var lang = require("../lib/lang");
@@ -31672,7 +31672,7 @@ exports.CssHighlightRules = CssHighlightRules;
 });
 
 define("ace/mode/matching_brace_outdent",["require","exports","module","ace/range"], function(require, exports, module) {
-
+"use strict";
 
 var Range = require("../range").Range;
 
@@ -31712,7 +31712,7 @@ exports.MatchingBraceOutdent = MatchingBraceOutdent;
 });
 
 define("ace/mode/behaviour/cstyle",["require","exports","module","ace/lib/oop","ace/mode/behaviour","ace/token_iterator","ace/lib/lang"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("../../lib/oop");
 var Behaviour = require("../behaviour").Behaviour;
@@ -32070,7 +32070,7 @@ exports.CstyleBehaviour = CstyleBehaviour;
 });
 
 define("ace/mode/behaviour/css",["require","exports","module","ace/lib/oop","ace/mode/behaviour","ace/mode/behaviour/cstyle","ace/token_iterator"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("../../lib/oop");
 var Behaviour = require("../behaviour").Behaviour;
@@ -32149,7 +32149,7 @@ exports.CssBehaviour = CssBehaviour;
 });
 
 define("ace/mode/folding/cstyle",["require","exports","module","ace/lib/oop","ace/range","ace/mode/folding/fold_mode"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("../../lib/oop");
 var Range = require("../../range").Range;
@@ -32244,7 +32244,7 @@ oop.inherits(FoldMode, BaseFoldMode);
 });
 
 define("ace/mode/css",["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/css_highlight_rules","ace/mode/matching_brace_outdent","ace/worker/worker_client","ace/mode/behaviour/css","ace/mode/folding/cstyle"], function(require, exports, module) {
-
+"use strict";
 
 var oop = require("../lib/oop");
 var TextMode = require("./text").Mode;
@@ -32383,7 +32383,7 @@ define('mockup-patterns-texteditor',[
   'ace-mode-javascript',
   'ace-mode-css'
 ], function($, Base, utils) {
-  
+  'use strict';
 
   var AcePattern = Base.extend({
     name: 'texteditor',
@@ -32480,7 +32480,7 @@ define('mockup-ui-url/views/container',[
   'backbone',
   'mockup-ui-url/views/base'
 ], function($, _, Backbone, BaseView) {
-  
+  'use strict';
 
   var Container = BaseView.extend({
     id: '',
@@ -32567,7 +32567,7 @@ define('mockup-ui-url/views/toolbar',[
   'backbone',
   'mockup-ui-url/views/container'
 ], function(_, Backbone, ContainerView) {
-  
+  'use strict';
 
   var Toolbar = ContainerView.extend({
     tagName: 'div',
@@ -32577,26 +32577,61 @@ define('mockup-ui-url/views/toolbar',[
   return Toolbar;
 });
 
-(function(root) {
-define("bootstrap-tooltip", ["jquery"], function() {
-  return (function() {
-/* ========================================================================
- * Bootstrap: tooltip.js v3.2.0
- * http://getbootstrap.com/javascript/#tooltip
- * Inspired by the original jQuery.tipsy by Jason Frame
- * ========================================================================
- * Copyright 2011-2014 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- * ======================================================================== */
+/* Tooltip pattern.
+ *
+ * Options:
+ *    enterEvent(string): Event used to trigger tooltip. ('mouseenter')
+ *    exitEvent(string): Event used to dismiss tooltip. ('mouseleave')
+ *
+ * Documentation:
+ *    # Directions
+ *
+ *    You can use this inside Plone or on any static page. Please check below
+ *    for additional directions for non-Plone sites as there are some lines
+ *    of code you need to add to the header of your webpage.
+ *
+ *    # Adding tooltip using Plone
+ *
+ *    - Make sure your viewing the page you want to add the tool tip too.
+ *    - Log in
+ *    - Create some text that you want to be the link that will reveal the
+ *      tooltip.
+ *    - Select the view html button
+ *    - Find your text, and surround it with an HTML tag. Any normal tag works fine.
+ *    - It should look like:
+ *      <span class="pat-tooltip" data-toggle="tooltip" title="Tooltip text">My link text</span>
+ *    - Choose Save
+ *
+ *    # Example
+ *
+ *    {{ example-1 }}
+ *
+ * Example: example-1
+ *      <a href="#" data-toggle="tooltip" class="pat-tooltip"
+ *            title="Setting the data-toggle and title makes this show up">
+ *            Hover over this line to see a tooltip
+ *      </a>
+ *
+ */
 
+define('mockup-patterns-tooltip',[
+  'jquery',
+  'mockup-patterns-base'
+], function($, Base, undefined) {
+  'use strict';
 
-+function ($) {
-  
+  var Tooltip = Base.extend({
+    name: 'tooltip',
+    trigger: '.pat-tooltip',
 
-  // TOOLTIP PUBLIC CLASS DEFINITION
-  // ===============================
+    init: function(element, options) {
+        this.data = new bootstrapTooltip(this.$el[0], this.options);
+    },
+  });
 
-  var Tooltip = function (element, options) {
+  //This is pulled almost directly from the Bootstrap Tooltip
+  //extension. We rename it just to differentiate from the pattern.
+  var bootstrapTooltip = function (element, options) {
     this.type       =
     this.options    =
     this.enabled    =
@@ -32607,9 +32642,9 @@ define("bootstrap-tooltip", ["jquery"], function() {
     this.init('tooltip', element, options)
   }
 
-  Tooltip.VERSION  = '3.2.0'
+  bootstrapTooltip.VERSION  = '3.2.0'
 
-  Tooltip.DEFAULTS = {
+  bootstrapTooltip.DEFAULTS = {
     animation: true,
     placement: 'top',
     selector: false,
@@ -32625,7 +32660,7 @@ define("bootstrap-tooltip", ["jquery"], function() {
     }
   }
 
-  Tooltip.prototype.init = function (type, element, options) {
+  bootstrapTooltip.prototype.init = function (type, element, options) {
     this.enabled   = true
     this.type      = type
     this.$element  = $(element)
@@ -32653,11 +32688,11 @@ define("bootstrap-tooltip", ["jquery"], function() {
       this.fixTitle()
   }
 
-  Tooltip.prototype.getDefaults = function () {
-    return Tooltip.DEFAULTS
+  bootstrapTooltip.prototype.getDefaults = function () {
+    return bootstrapTooltip.DEFAULTS
   }
 
-  Tooltip.prototype.getOptions = function (options) {
+  bootstrapTooltip.prototype.getOptions = function (options) {
     options = $.extend({}, this.getDefaults(), this.$element.data(), options)
 
     if (options.delay && typeof options.delay == 'number') {
@@ -32670,7 +32705,7 @@ define("bootstrap-tooltip", ["jquery"], function() {
     return options
   }
 
-  Tooltip.prototype.getDelegateOptions = function () {
+  bootstrapTooltip.prototype.getDelegateOptions = function () {
     var options  = {}
     var defaults = this.getDefaults()
 
@@ -32681,7 +32716,7 @@ define("bootstrap-tooltip", ["jquery"], function() {
     return options
   }
 
-  Tooltip.prototype.enter = function (obj) {
+  bootstrapTooltip.prototype.enter = function (obj) {
     var self = obj instanceof this.constructor ?
       obj : $(obj.currentTarget).data('bs.' + this.type)
 
@@ -32701,7 +32736,7 @@ define("bootstrap-tooltip", ["jquery"], function() {
     }, self.options.delay.show)
   }
 
-  Tooltip.prototype.leave = function (obj) {
+  bootstrapTooltip.prototype.leave = function (obj) {
     var self = obj instanceof this.constructor ?
       obj : $(obj.currentTarget).data('bs.' + this.type)
 
@@ -32721,7 +32756,7 @@ define("bootstrap-tooltip", ["jquery"], function() {
     }, self.options.delay.hide)
   }
 
-  Tooltip.prototype.show = function () {
+  bootstrapTooltip.prototype.show = function () {
     var e = $.Event('show.bs.' + this.type)
 
     if (this.hasContent() && this.enabled) {
@@ -32794,7 +32829,7 @@ define("bootstrap-tooltip", ["jquery"], function() {
     }
   }
 
-  Tooltip.prototype.applyPlacement = function (offset, placement) {
+  bootstrapTooltip.prototype.applyPlacement = function (offset, placement) {
     var $tip   = this.tip()
     var width  = $tip[0].offsetWidth
     var height = $tip[0].offsetHeight
@@ -32844,19 +32879,19 @@ define("bootstrap-tooltip", ["jquery"], function() {
     this.replaceArrow(arrowDelta, $tip[0][arrowOffsetPosition], arrowPosition)
   }
 
-  Tooltip.prototype.replaceArrow = function (delta, dimension, position) {
+  bootstrapTooltip.prototype.replaceArrow = function (delta, dimension, position) {
     this.arrow().css(position, delta ? (50 * (1 - delta / dimension) + '%') : '')
   }
 
-  Tooltip.prototype.setContent = function () {
+  bootstrapTooltip.prototype.setContent = function () {
     var $tip  = this.tip()
     var title = this.getTitle()
 
-    $tip.find('.tooltip-inner')[this.options.html ? 'html' : 'text'](title)
+    $tip.find('.tooltip-inner')[this.options.html ? 'ht`ml' : 'text'](title)
     $tip.removeClass('fade in top bottom left right')
   }
 
-  Tooltip.prototype.hide = function () {
+  bootstrapTooltip.prototype.hide = function () {
     var that = this
     var $tip = this.tip()
     var e    = $.Event('hide.bs.' + this.type)
@@ -32885,18 +32920,18 @@ define("bootstrap-tooltip", ["jquery"], function() {
     return this
   }
 
-  Tooltip.prototype.fixTitle = function () {
+  bootstrapTooltip.prototype.fixTitle = function () {
     var $e = this.$element
     if ($e.attr('title') || typeof ($e.attr('data-original-title')) != 'string') {
       $e.attr('data-original-title', $e.attr('title') || '').attr('title', '')
     }
   }
 
-  Tooltip.prototype.hasContent = function () {
+  bootstrapTooltip.prototype.hasContent = function () {
     return this.getTitle()
   }
 
-  Tooltip.prototype.getPosition = function ($element) {
+  bootstrapTooltip.prototype.getPosition = function ($element) {
     $element   = $element || this.$element
     var el     = $element[0]
     var isBody = el.tagName == 'BODY'
@@ -32907,7 +32942,7 @@ define("bootstrap-tooltip", ["jquery"], function() {
     }, isBody ? { top: 0, left: 0 } : $element.offset())
   }
 
-  Tooltip.prototype.getCalculatedOffset = function (placement, pos, actualWidth, actualHeight) {
+  bootstrapTooltip.prototype.getCalculatedOffset = function (placement, pos, actualWidth, actualHeight) {
     return placement == 'bottom' ? { top: pos.top + pos.height,   left: pos.left + pos.width / 2 - actualWidth / 2  } :
            placement == 'top'    ? { top: pos.top - actualHeight, left: pos.left + pos.width / 2 - actualWidth / 2  } :
            placement == 'left'   ? { top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left - actualWidth } :
@@ -32915,7 +32950,7 @@ define("bootstrap-tooltip", ["jquery"], function() {
 
   }
 
-  Tooltip.prototype.getViewportAdjustedDelta = function (placement, pos, actualWidth, actualHeight) {
+  bootstrapTooltip.prototype.getViewportAdjustedDelta = function (placement, pos, actualWidth, actualHeight) {
     var delta = { top: 0, left: 0 }
     if (!this.$viewport) return delta
 
@@ -32943,7 +32978,7 @@ define("bootstrap-tooltip", ["jquery"], function() {
     return delta
   }
 
-  Tooltip.prototype.getTitle = function () {
+  bootstrapTooltip.prototype.getTitle = function () {
     var title
     var $e = this.$element
     var o  = this.options
@@ -32954,21 +32989,21 @@ define("bootstrap-tooltip", ["jquery"], function() {
     return title
   }
 
-  Tooltip.prototype.getUID = function (prefix) {
+  bootstrapTooltip.prototype.getUID = function (prefix) {
     do prefix += ~~(Math.random() * 1000000)
     while (document.getElementById(prefix))
     return prefix
   }
 
-  Tooltip.prototype.tip = function () {
+  bootstrapTooltip.prototype.tip = function () {
     return (this.$tip = this.$tip || $(this.options.template))
   }
 
-  Tooltip.prototype.arrow = function () {
+  bootstrapTooltip.prototype.arrow = function () {
     return (this.$arrow = this.$arrow || this.tip().find('.tooltip-arrow'))
   }
 
-  Tooltip.prototype.validate = function () {
+  bootstrapTooltip.prototype.validate = function () {
     if (!this.$element[0].parentNode) {
       this.hide()
       this.$element = null
@@ -32976,19 +33011,19 @@ define("bootstrap-tooltip", ["jquery"], function() {
     }
   }
 
-  Tooltip.prototype.enable = function () {
+  bootstrapTooltip.prototype.enable = function () {
     this.enabled = true
   }
 
-  Tooltip.prototype.disable = function () {
+  bootstrapTooltip.prototype.disable = function () {
     this.enabled = false
   }
 
-  Tooltip.prototype.toggleEnabled = function () {
+  bootstrapTooltip.prototype.toggleEnabled = function () {
     this.enabled = !this.enabled
   }
 
-  Tooltip.prototype.toggle = function (e) {
+  bootstrapTooltip.prototype.toggle = function (e) {
     var self = this
     if (e) {
       self = $(e.currentTarget).data('bs.' + this.type)
@@ -33001,56 +33036,23 @@ define("bootstrap-tooltip", ["jquery"], function() {
     self.tip().hasClass('in') ? self.leave(self) : self.enter(self)
   }
 
-  Tooltip.prototype.destroy = function () {
+  bootstrapTooltip.prototype.destroy = function () {
     clearTimeout(this.timeout)
     this.hide().$element.off('.' + this.type).removeData('bs.' + this.type)
   }
 
+  return Tooltip;
 
-  // TOOLTIP PLUGIN DEFINITION
-  // =========================
-
-  function Plugin(option) {
-    return this.each(function () {
-      var $this   = $(this)
-      var data    = $this.data('bs.tooltip')
-      var options = typeof option == 'object' && option
-
-      if (!data && option == 'destroy') return
-      if (!data) $this.data('bs.tooltip', (data = new Tooltip(this, options)))
-      if (typeof option == 'string') data[option]()
-    })
-  }
-
-  var old = $.fn.tooltip
-
-  $.fn.tooltip             = Plugin
-  $.fn.tooltip.Constructor = Tooltip
-
-
-  // TOOLTIP NO CONFLICT
-  // ===================
-
-  $.fn.tooltip.noConflict = function () {
-    $.fn.tooltip = old
-    return this
-  }
-
-}(jQuery);
-
-
-  }).apply(root, arguments);
 });
-}(this));
 
 define('mockup-ui-url/views/button',[
   'jquery',
   'backbone',
   'underscore',
   'mockup-ui-url/views/base',
-  'bootstrap-tooltip'
-], function($, Backbone, _, BaseView) {
-  
+  'mockup-patterns-tooltip'
+], function($, Backbone, _, BaseView, Tooltip) {
+  'use strict';
 
   var ButtonView = BaseView.extend({
     tagName: 'a',
@@ -33090,9 +33092,9 @@ define('mockup-ui-url/views/button',[
         });
 
         if (this.tooltip !== null) {
-          this.$el.tooltip({
-            title: this.tooltip
-          });
+
+          this.$el.attr('title', this.tooltip);
+          var tooltipPattern = new Tooltip(this.$el);
           // XXX since tooltip triggers hidden
           // suppress so it plays nice with modals, backdrops, etc
           this.$el.on('hidden', function(e) {
@@ -33130,7 +33132,7 @@ define('mockup-ui-url/views/buttongroup',[
   'backbone',
   'mockup-ui-url/views/container'
 ], function(_, Backbone, ContainerView) {
-  
+  'use strict';
 
   var ButtonGroup = ContainerView.extend({
     tagName: 'div',
@@ -33172,7 +33174,7 @@ define('mockup-patterns-backdrop',[
   'jquery',
   'mockup-patterns-base'
 ], function($, Base) {
-  
+  'use strict';
 
   var Backdrop = Base.extend({
     name: 'backdrop',
@@ -33250,7 +33252,7 @@ define('mockup-ui-url/views/popover',[
   'mockup-patterns-backdrop',
   'text!mockup-ui-url/templates/popover.xml',
 ], function($, _, Backbone, ContainerView, Backdrop, PopoverTemplate) {
-  
+  'use strict';
 
   var PopoverView = ContainerView.extend({
     tagName: 'div',
@@ -33457,7 +33459,7 @@ define('mockup-patterns-filemanager-url/js/basepopover',[
   'backbone',
   'mockup-ui-url/views/popover'
 ], function($, _, Backbone, PopoverView) {
-  
+  'use strict';
 
   var FileManagerPopover = PopoverView.extend({
     className: 'popover',
@@ -33498,7 +33500,7 @@ define('mockup-patterns-filemanager-url/js/addnew',[
   'backbone',
   'mockup-patterns-filemanager-url/js/basepopover'
 ], function($, _, Backbone, PopoverView) {
-  
+  'use strict';
 
   var AddNewView = PopoverView.extend({
     className: 'popover addnew',
@@ -33550,7 +33552,7 @@ define('mockup-patterns-filemanager-url/js/newfolder',[
   'backbone',
   'mockup-patterns-filemanager-url/js/basepopover'
 ], function($, _, Backbone, PopoverView) {
-  
+  'use strict';
 
   var AddNewView = PopoverView.extend({
     className: 'popover addfolder',
@@ -33602,7 +33604,7 @@ define('mockup-patterns-filemanager-url/js/delete',[
   'backbone',
   'mockup-patterns-filemanager-url/js/basepopover'
 ], function($, _, Backbone, PopoverView) {
-  
+  'use strict';
 
   var DeleteView = PopoverView.extend({
     className: 'popover delete',
@@ -33648,7 +33650,7 @@ define('mockup-patterns-filemanager-url/js/customize',[
   'backbone',
   'mockup-patterns-filemanager-url/js/basepopover'
 ], function($, _, Backbone, PopoverView) {
-  
+  'use strict';
 
   var CustomizeView = PopoverView.extend({
     className: 'popover customize',
@@ -33725,7 +33727,7 @@ define('mockup-patterns-filemanager-url/js/rename',[
   'backbone',
   'mockup-patterns-filemanager-url/js/basepopover'
 ], function($, _, Backbone, PopoverView) {
-  
+  'use strict';
 
   var RenameView = PopoverView.extend({
     className: 'popover addnew',
@@ -33827,7 +33829,7 @@ the specific language governing permissions and limitations under the Apache Lic
 })(jQuery);
 
 (function ($, undefined) {
-    
+    "use strict";
     /*global document, window, jQuery, console */
 
     if (window.Select2 !== undefined) {
@@ -38090,7 +38092,7 @@ define('mockup-patterns-select2',[
   'jquery.event.drag',
   'jquery.event.drop'
 ], function($, Base) {
-  
+  'use strict';
 
   var Select2 = Base.extend({
     name: 'select2',
@@ -38313,8 +38315,9 @@ define('mockup-patterns-select2',[
  *
  * Options:
  *    vocabularyUrl(string): This is a URL to a JSON-formatted file used to populate the list (null)
- *    attributes(array): This list is passed to the server during an AJAX request to specify the attributes which should be included on each item. (['UID', 'Title', 'Type', 'path'])
+ *    attributes(array): This list is passed to the server during an AJAX request to specify the attributes which should be included on each item. (['UID', 'Title', 'portal_type', 'path'])
  *    basePath(string): If this is set the widget will start in "Browse" mode and will pass the path to the server to filter the results. ('/')
+ *    mode(string): Possible values: 'search', 'browse'. If set to 'search', the catalog is searched for a searchterm. If set to 'browse', browsing starts at basePath. Default: 'search'.
  *    breadCrumbTemplate(string): Template to use for a single item in the breadcrumbs. ('/<a href="<%= path %>"><%= text %></a>')
  *    breadCrumbTemplateSelector(string): Select an element from the DOM from which to grab the breadCrumbTemplate. (null)
  *    breadCrumbsTemplate(string): Template for element to which breadCrumbs will be appended. ('<span><span class="pattern-relateditems-path-label"><%= searchText %></span><a class="icon-home" href="/"></a><%= items %></span>')
@@ -38390,7 +38393,7 @@ define('mockup-patterns-relateditems',[
   'mockup-patterns-tree',
   'translate'
 ], function($, _, Base, Select2, utils, Tree, _t) {
-  
+  'use strict';
 
   var RelatedItems = Base.extend({
     name: 'relateditems',
@@ -38413,12 +38416,13 @@ define('mockup-patterns-relateditems',[
       homeText: _t('home'),
       folderTypes: ['Folder'],
       selectableTypes: null, // null means everything is selectable, otherwise a list of strings to match types that are selectable
-      attributes: ['UID', 'Title', 'Type', 'path'],
+      attributes: ['UID', 'Title', 'portal_type', 'path', 'getIcon'],
       dropdownCssClass: 'pattern-relateditems-dropdown',
       maximumSelectionSize: -1,
       resultTemplate: '' +
-        '<div class="pattern-relateditems-result pattern-relateditems-type-<%= Type %> <% if (selected) { %>pattern-relateditems-active<% } %>">' +
-        '  <a href="#" class="pattern-relateditems-result-select <% if (selectable) { %>selectable<% } %>">' +
+        '<div class="pattern-relateditems-result pattern-relateditems-type-<%= portal_type %> <% if (selected) { %>pattern-relateditems-active<% } %>">' +
+        '  <a href="#" class="pattern-relateditems-result-select <% if (selectable) { %>selectable<% } %> contenttype-<%= portal_type.toLowerCase() %>">' +
+        '    <% if (getIcon) { %><span class="pattern-relateditems-result-icon"><img src="<%= getIcon %>" /></span><% } %>' +
         '    <span class="pattern-relateditems-result-title"><%= Title %></span>' +
         '    <span class="pattern-relateditems-result-path"><%= path %></span>' +
         '  </a>' +
@@ -38430,7 +38434,8 @@ define('mockup-patterns-relateditems',[
         '</div>',
       resultTemplateSelector: null,
       selectionTemplate: '' +
-        '<span class="pattern-relateditems-item pattern-relateditems-type-<%= Type %>">' +
+        '<span class="pattern-relateditems-item pattern-relateditems-type-<%= portal_type %>">' +
+        ' <% if (getIcon) { %><span class="pattern-relateditems-result-icon"><img src="<%= getIcon %>" /></span><% } %>' +
         ' <span class="pattern-relateditems-item-title"><%= Title %></span>' +
         ' <span class="pattern-relateditems-item-path"><%= path %></span>' +
         '</span>',
@@ -38548,11 +38553,13 @@ define('mockup-patterns-relateditems',[
         dataFilter: function(data) {
           var nodes = [];
           _.each(data.results, function(item) {
-            nodes.push({
+            var node = {
               label: item.Title,
               id: item.UID,
-              path: item.path
-            });
+              path: item.path,
+              folder: self.options.folderTypes.indexOf(item.portal_type) !== -1
+            };
+            nodes.push(node);
           });
           return nodes;
         }
@@ -38562,8 +38569,17 @@ define('mockup-patterns-relateditems',[
         if (node && !node._loaded) {
           self.currentPath = node.path;
           selectedNode = node;
-          treePattern.$el.tree('loadDataFromUrl', self.treeQuery.getUrl(), node);
+          treePattern.$el.tree('loadDataFromUrl', self.treeQuery.getUrl(), node, function(){
+            treePattern.$el.tree('openNode', node);
+          });
           node._loaded = true;
+        }
+      });
+      treePattern.$el.bind('tree.dblclick', function(e){
+        if(e.node){
+          self.currentPath = e.node.path;
+          self.browseTo(self.currentPath);
+          $treeContainer.fadeOut();
         }
       });
       treePattern.$el.bind('tree.refresh', function() {
@@ -38623,7 +38639,7 @@ define('mockup-patterns-relateditems',[
       if (self.options.selectableTypes === null) {
         return true;
       } else {
-        return _.indexOf(self.options.selectableTypes, item.Type) > -1;
+        return _.indexOf(self.options.selectableTypes, item.portal_type) > -1;
       }
     },
     init: function() {
@@ -38636,7 +38652,7 @@ define('mockup-patterns-relateditems',[
         $.extend(true, {}, self.options, {
           pattern: self,
           baseCriteria: [{
-            i: 'Type',
+            i: 'portal_type',
             o: 'plone.app.querystring.operation.list.contains',
             v: self.options.folderTypes
           }]
@@ -38659,7 +38675,7 @@ define('mockup-patterns-relateditems',[
       Select2.prototype.initializeOrdering.call(self);
 
       self.options.formatResult = function(item) {
-        if (!item.Type || _.indexOf(self.options.folderTypes, item.Type) === -1) {
+        if (!item.portal_type || _.indexOf(self.options.folderTypes, item.portal_type) === -1) {
           item.folderish = false;
         } else {
           item.folderish = true;
@@ -40597,7 +40613,7 @@ define('text!mockup-patterns-upload-url/templates/preview.xml',[],function () { 
  *    autoCleanResults(boolean): condition value for the file preview in div element to fadeout after file upload is completed. (true)
  *    previewsContainer(selector): JavaScript selector for file preview in div element. (.upload-previews)
  *    container(selector): JavaScript selector for where to put upload stuff into in case of form. If not provided it will be place before the first submit button. ('')
- *    relatedItems(object): Related items pattern options. Will only use only if relativePath is used to use correct upload destination ({ attributes: ["UID", "Title", "Description", "getURL", "Type", "path", "ModificationDate"], batchSize: 20, basePath: "/", vocabularyUrl: null, width: 500, maximumSelectionSize: 1, placeholder: "Search for item on site..." })
+ *    relatedItems(object): Related items pattern options. Will only use only if relativePath is used to use correct upload destination ({ attributes: ["UID", "Title", "Description", "getURL", "portal_type", "path", "ModificationDate"], batchSize: 20, basePath: "/", vocabularyUrl: null, width: 500, maximumSelectionSize: 1, placeholder: "Search for item on site..." })
  *
  * Documentation:
  *
@@ -40631,7 +40647,7 @@ define('mockup-patterns-upload',[
   'translate'
 ], function($, _, Base, RelatedItems, Dropzone,
             UploadTemplate, PreviewTemplate, _t) {
-  
+  'use strict';
 
   /* we do not want this plugin to auto discover */
   Dropzone.autoDiscover = false;
@@ -40661,7 +40677,7 @@ define('mockup-patterns-upload',[
 
       relatedItems: {
         // UID attribute is required here since we're working with related items
-        attributes: ['UID', 'Title', 'Description', 'getURL', 'Type', 'path', 'ModificationDate'],
+        attributes: ['UID', 'Title', 'Description', 'getURL', 'portal_type', 'path', 'ModificationDate'],
         batchSize: 20,
         basePath: '/',
         vocabularyUrl: null,
@@ -41009,7 +41025,7 @@ define('mockup-patterns-filemanager-url/js/upload',[
   'mockup-patterns-filemanager-url/js/basepopover',
   'mockup-patterns-upload'
 ], function($, _, Backbone, PopoverView, Upload) {
-  
+  'use strict';
 
   var UploadView = PopoverView.extend({
     className: 'popover upload',
@@ -41099,7 +41115,7 @@ define('mockup-patterns-filemanager',[
 ], function($, Base, _, Backbone, BaseView, Tree, TextEditor, AppTemplate, Toolbar,
             ButtonView, ButtonGroup, AddNewView, NewFolderView, DeleteView,
             CustomizeView, RenameView, UploadView, utils) {
-  
+  'use strict';
 
   var FileManager = Base.extend({
     name: 'filemanager',
@@ -41467,7 +41483,7 @@ define('mockup-patterns-thememapper',[
   'mockup-ui-url/views/button',
   'mockup-ui-url/views/buttongroup'
 ], function($, Base, _, InspectorTemplate, FileManager, ButtonView, ButtonGroup) {
-  
+  'use strict';
 
   var inspectorTemplate = _.template(InspectorTemplate);
 
@@ -42001,7 +42017,7 @@ define('mockup-patterns-thememapper',[
 
 if (window.jQuery) {
   define( 'jquery', [], function () {
-    
+    'use strict';
     return window.jQuery;
   } );
 }
@@ -42009,8 +42025,8 @@ if (window.jQuery) {
 require([
   'mockup-patterns-thememapper'
 ], function() {
-  
+  'use strict';
 });
 
-define("/Users/nathan/code/fbigov.policy/src/plone.app.theming/src/plone/app/theming/browser/resources/thememapper.js", function(){});
+define("/Users/nathan/code/coredev5/src/plone.app.theming/src/plone/app/theming/browser/resources/thememapper.js", function(){});
 

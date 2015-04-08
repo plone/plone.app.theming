@@ -3635,6 +3635,9 @@ tbody.pat-filemanager .collapse.in {
 .pat-filemanager .tree {
   float: left;
   width: 17%;
+  word-wrap: break-word;
+  font-size: 0.8em;
+  margin-top: 2.5em;
 }
 .pat-filemanager .tree ul.jqtree-tree li.jqtree-selected > .jqtree-element,
 .pat-filemanager .tree ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover {
@@ -3643,8 +3646,11 @@ tbody.pat-filemanager .collapse.in {
 .pat-filemanager .tree ul.jqtree-tree {
   margin-left: 0px;
 }
-.pat-filemanager .tree ul.jqtree-tree li span {
-  padding-left: 12px;
+.pat-filemanager .tree ul.jqtree-tree li.jqtree_common {
+  margin-bottom: 0.2em;
+}
+.pat-filemanager .tree ul.jqtree-tree .jqtree-title {
+  margin-left: 0em;
 }
 .pat-filemanager .navbar-default {
   min-height: 250px;
