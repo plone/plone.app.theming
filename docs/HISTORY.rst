@@ -4,7 +4,8 @@ Changelog
 1.2.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Specify i18n:domain in controlpanel.pt.
+  [vincentfretin]
 
 
 1.2.2 (2015-03-22)
