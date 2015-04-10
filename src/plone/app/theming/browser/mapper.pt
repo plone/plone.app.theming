@@ -12,6 +12,7 @@
           portal_url portal_state/portal_url;
           ajax_load python:False;
           toolbar_class python:request.cookies.get('plone-toolbar', 'plone-toolbar-left pat-toolbar')"
+      i18n:domain="plone"
       tal:attributes="lang lang;">
 
     <metal:cache tal:replace="structure provider:plone.httpheaders" />
