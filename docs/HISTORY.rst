@@ -7,6 +7,9 @@ Changelog
 - Specify i18n:domain in controlpanel.pt.
   [vincentfretin]
 
+- pat-modal pattern has been renamed to pat-plone-modal
+  [jcbrand]
+
 
 1.2.2 (2015-03-22)
 ------------------

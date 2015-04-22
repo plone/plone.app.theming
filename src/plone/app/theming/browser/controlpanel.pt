@@ -107,12 +107,12 @@
         </p>
 
         <div class="plone-btn-group">
-            <a href="#overlay-new-theme" class="plone-btn plone-btn-large plone-btn-primary pat-modal"
-                data-pat-modal="width: 80%"
+            <a href="#overlay-new-theme" class="plone-btn plone-btn-large plone-btn-primary pat-plone-modal"
+                data-pat-plone-modal="width: 80%"
                 i18n:translate="">New theme</a>
 
-            <a href="#overlay-upload" class="plone-btn plone-btn-large plone-btn-primary pat-modal"
-                data-pat-modal="width: 80%"
+            <a href="#overlay-upload" class="plone-btn plone-btn-large plone-btn-primary pat-plone-modal"
+                data-pat-plone-modal="width: 80%"
                 i18n:translate="">Upload Zip file</a>
 
             <a tal:attributes="href string:${context/portal_url}/test_rendering#top"
@@ -121,8 +121,8 @@
                 i18n:translate="">Test Styles</a>
 
             <a tal:attributes="href string:${context/portal_url}/@@theming-controlpanel-help"
-                class="plone-btn plone-btn-large plone-btn-primary pat-modal"
-                data-pat-modal="
+                class="plone-btn plone-btn-large plone-btn-primary pat-plone-modal"
+                data-pat-plone-modal="
                     width: 85%;
                     loadLinksWithinModal: true;
                     content: .content"
@@ -184,7 +184,7 @@
                                     name="form.button.Disable">Deactivate</button>
                             </form>
 
-                            <a href="#" class="plone-btn plone-btn-default pat-modal"
+                            <a href="#" class="plone-btn plone-btn-default pat-plone-modal"
                                 tal:attributes="href string:#modal-copy-${theme/name}"
                                 i18n:translate="">Copy</a>
                             <!-- Copy theme overlay -->
@@ -281,7 +281,7 @@
                                     i18n:translate="">Inspect theme</button>
                             </form>
 
-                            <a href="#" class="plone-btn plone-btn-danger pat-modal"
+                            <a href="#" class="plone-btn plone-btn-danger pat-plone-modal"
                                 tal:condition="theme/editable"
                                 tal:attributes="href string:#modal-delete-${theme/name}"
                                 i18n:translate="">Delete</a>
