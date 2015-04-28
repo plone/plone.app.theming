@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.5 (unreleased)
+1.1.5 (2015-04-28)
 ------------------
 
 - Add an error log if the subrequest failed (probably a relative xi:include)
