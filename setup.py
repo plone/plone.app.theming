@@ -52,7 +52,7 @@ setup(
         'plone.subrequest',
         'plone.transformchain',
         'repoze.xmliter>=0.3',
-        'roman>=2.0.0',
+        'roman',
         'setuptools',
         'zope.traversing',
     ],
