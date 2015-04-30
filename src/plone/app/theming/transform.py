@@ -1,31 +1,28 @@
-import logging
-import Globals
-
+# -*- coding: utf-8 -*-
 from lxml import etree
-
-from repoze.xmliter.utils import getHTMLSerializer
-
-from zope.interface import implements, Interface
-from zope.component import adapts
-from zope.component import queryUtility
-from zope.component.hooks import getSite
-
-from plone.registry.interfaces import IRegistry
-from plone.transformchain.interfaces import ITransform
-
 from plone.app.theming.interfaces import IThemeSettings, IThemingLayer
-
 from plone.app.theming.utils import compileThemeTransform
-from plone.app.theming.utils import prepareThemeParameters
-from plone.app.theming.utils import isThemeEnabled
 from plone.app.theming.utils import findContext
 from plone.app.theming.utils import getParser
+from plone.app.theming.utils import isThemeEnabled
+from plone.app.theming.utils import prepareThemeParameters
 from plone.app.theming.zmi import patch_zmi
+from plone.registry.interfaces import IRegistry
+from plone.transformchain.interfaces import ITransform
+from repoze.xmliter.utils import getHTMLSerializer
+from zope.component import adapter
+from zope.component import queryUtility
+from zope.component.hooks import getSite
+from zope.interface import Interface
+from zope.interface import implementer
+import Globals
+import logging
 
 # Disable theming of ZMI
 patch_zmi()
 
 LOGGER = logging.getLogger('plone.app.theming')
+
 
 class _Cache(object):
     """Simple cache for the transform
@@ -40,6 +37,7 @@ class _Cache(object):
 
     def updateExpressions(self, expressions):
         self.expressions = expressions
+
 
 def getCache(settings):
     # We need a persistent object to hang a _v_ attribute off for caching.
@@ -56,6 +54,7 @@ def getCache(settings):
         cache = caches[key] = _Cache()
     return cache
 
+
 def invalidateCache(settings, event):
     """When our settings are changed, invalidate the cache on all zeo clients
     """
@@ -64,13 +63,13 @@ def invalidateCache(settings, event):
     if hasattr(registry, '_v_plone_app_theming_caches'):
         del registry._v_plone_app_theming_caches
 
+
+@implementer(ITransform)
+@adapter(Interface, IThemingLayer)
 class ThemeTransform(object):
     """Late stage in the 8000's transform chain. When plone.app.blocks is
     used, we can benefit from lxml parsing having taken place already.
     """
-
-    implements(ITransform)
-    adapts(Interface, IThemingLayer)
 
     order = 8850
 
@@ -105,7 +104,13 @@ class ThemeTransform(object):
             readNetwork = settings.readNetwork
             parameterExpressions = settings.parameterExpressions
 
-            transform = compileThemeTransform(rules, absolutePrefix, readNetwork, parameterExpressions, runtrace=runtrace)
+            transform = compileThemeTransform(
+                rules,
+                absolutePrefix,
+                readNetwork,
+                parameterExpressions,
+                runtrace=runtrace
+            )
             if transform is None:
                 return None
 
@@ -132,7 +137,8 @@ class ThemeTransform(object):
             return None
 
         contentEncoding = self.request.response.getHeader('Content-Encoding')
-        if contentEncoding and contentEncoding in ('zip', 'deflate', 'compress',):
+        if contentEncoding \
+           and contentEncoding in ('zip', 'deflate', 'compress',):
             return None
 
         try:
@@ -151,20 +157,20 @@ class ThemeTransform(object):
         """
         # Obtain settings. Do nothing if not found
         settings = self.getSettings()
-
         if settings is None:
             return None
-
         if not isThemeEnabled(self.request, settings):
             return None
-
         result = self.parseTree(result)
         if result is None:
             return None
 
         DevelopmentMode = Globals.DevelopmentMode
-        runtrace = (DevelopmentMode and
-            self.request.get('diazo.debug', '').lower() in ('1', 'y', 'yes', 't', 'true'))
+        diazo_debug = self.request.get('diazo.debug', '').lower()
+        runtrace = (
+            DevelopmentMode
+            and diazo_debug in ('1', 'y', 'yes', 't', 'true')
+        )
 
         try:
             etree.clear_error_log()
@@ -183,7 +189,12 @@ class ThemeTransform(object):
                 cache = getCache(settings)
 
             parameterExpressions = settings.parameterExpressions or {}
-            params = prepareThemeParameters(findContext(self.request), self.request, parameterExpressions, cache)
+            params = prepareThemeParameters(
+                findContext(self.request),
+                self.request,
+                parameterExpressions,
+                cache
+            )
 
             transformed = transform(result.tree, **params)
             error_log = transform.error_log
@@ -200,11 +211,16 @@ class ThemeTransform(object):
             from diazo.runtrace import generate_debug_html
             # Add debug information to end of body
             body = result.tree.xpath('/html/body')[0]
-            body.insert(-1, generate_debug_html(
-                findContext(self.request).portal_url() + '/++resource++diazo-debug',
-                rules=settings.rules,
-                rules_parser=getParser('rules', settings.readNetwork),
-                error_log = error_log,
-            ))
-
+            debug_url = findContext(
+                self.request
+            ).portal_url() + '/++resource++diazo-debug'
+            body.insert(
+                -1,
+                generate_debug_html(
+                    debug_url,
+                    rules=settings.rules,
+                    rules_parser=getParser('rules', settings.readNetwork),
+                    error_log=error_log,
+                )
+            )
         return result

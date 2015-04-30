@@ -1,53 +1,41 @@
-import logging
-import Globals
-
-import pkg_resources
-
-from StringIO import StringIO
+# -*- coding: utf-8 -*-
 from ConfigParser import SafeConfigParser
-
-from urlparse import urlsplit
-
-from lxml import etree
-
-from diazo.compiler import compile_theme
-from diazo.compiler import quote_param
-
-from zope.component import getUtility
-from zope.component import queryUtility
-from zope.component import queryMultiAdapter
-from zope.globalrequest import getRequest
-from zope.event import notify
-
-from plone.subrequest import subrequest
-
-from plone.resource.interfaces import IResourceDirectory
-from plone.resource.utils import queryResourceDirectory
-from plone.resource.utils import cloneResourceDirectory
-from plone.resource.manifest import getManifest
-from plone.resource.manifest import extractManifestFromZipFile
-from plone.resource.manifest import getAllResources
-from plone.resource.manifest import getZODBResources
-from plone.resource.manifest import MANIFEST_FILENAME
-
-from plone.registry.interfaces import IRegistry
-
-from plone.i18n.normalizer.interfaces import IURLNormalizer
-
-from plone.app.theming.interfaces import THEME_RESOURCE_NAME
-from plone.app.theming.interfaces import MANIFEST_FORMAT
-from plone.app.theming.interfaces import RULE_FILENAME
-from plone.app.theming.interfaces import IThemeSettings
-
-from plone.app.theming.events import ThemeAppliedEvent
-from plone.app.theming.theme import Theme
-from plone.app.theming.plugins.utils import getPlugins
-from plone.app.theming.plugins.utils import getPluginSettings
-
-from Products.PageTemplates.Expressions import getEngine
 from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFPlone.utils import safe_unicode
+from Products.PageTemplates.Expressions import getEngine
+from StringIO import StringIO
+from diazo.compiler import compile_theme
+from diazo.compiler import quote_param
+from lxml import etree
+from plone.app.theming.events import ThemeAppliedEvent
+from plone.app.theming.interfaces import IThemeSettings
+from plone.app.theming.interfaces import MANIFEST_FORMAT
+from plone.app.theming.interfaces import RULE_FILENAME
+from plone.app.theming.interfaces import THEME_RESOURCE_NAME
+from plone.app.theming.plugins.utils import getPluginSettings
+from plone.app.theming.plugins.utils import getPlugins
+from plone.app.theming.theme import Theme
+from plone.i18n.normalizer.interfaces import IURLNormalizer
+from plone.registry.interfaces import IRegistry
+from plone.resource.interfaces import IResourceDirectory
+from plone.resource.manifest import MANIFEST_FILENAME
+from plone.resource.manifest import extractManifestFromZipFile
+from plone.resource.manifest import getAllResources
+from plone.resource.manifest import getManifest
+from plone.resource.manifest import getZODBResources
+from plone.resource.utils import cloneResourceDirectory
+from plone.resource.utils import queryResourceDirectory
+from plone.subrequest import subrequest
+from urlparse import urlsplit
+from zope.component import getUtility
+from zope.component import queryMultiAdapter
+from zope.component import queryUtility
+from zope.event import notify
+from zope.globalrequest import getRequest
+import Globals
+import logging
+import pkg_resources
 
 LOGGER = logging.getLogger('plone.app.theming')
 
@@ -156,7 +144,9 @@ def getPortal():
     request = getRequest()
     context = findContext(request)
     portalState = queryMultiAdapter(
-        (context, request), name=u"plone_portal_state")
+        (context, request),
+        name=u"plone_portal_state"
+    )
     if portalState is None:
         return None
     return portalState.portal()
@@ -236,8 +226,8 @@ def isValidThemeDirectory(directory):
     """Determine if the given plone.resource directory is a valid theme
     directory
     """
-    return directory.isFile(MANIFEST_FILENAME) or \
-           directory.isFile(RULE_FILENAME)
+    return directory.isFile(MANIFEST_FILENAME) \
+        or directory.isFile(RULE_FILENAME)
 
 
 def extractThemeInfo(zipfile, checkRules=True):
@@ -249,128 +239,92 @@ def extractThemeInfo(zipfile, checkRules=True):
     Set checkRules=False to disable the rules check.
     """
 
-    resourceName, manifestDict = extractManifestFromZipFile(zipfile, MANIFEST_FORMAT)
-
-    rulesFile = None
-    absolutePrefix = '/++%s++%s' % (THEME_RESOURCE_NAME, resourceName)
-    title = None
-    description = None
-    parameters = {}
-    doctype = ""
-    preview = None
-    enabled_bundles = ''
-    disabled_bundles = ''
-    development_css = ''
-    production_css = ''
-    tinymce_content_css = ''
-    development_js = ''
-    production_js = ''
-
-    if manifestDict is not None:
-        rulesFile = manifestDict.get('rules', rulesFile)
-        absolutePrefix = manifestDict['prefix'] or absolutePrefix
-        title = manifestDict.get('title', None)
-        description = manifestDict.get('title', None)
-        parameters = manifestDict.get('parameters', {})
-        doctype = manifestDict.get('doctype', "")
-        preview = manifestDict.get('preview', None)
-        enabled_bundles = manifestDict.get('enabled-bundles', '')
-        disabled_bundles = manifestDict.get('disabled-bundles', '')
-        development_css = manifestDict.get('development-css', '')
-        production_css = manifestDict.get('production-css', '')
-        tinymce_content_css = manifestDict.get('tinymce-content-css', '')
-        development_js = manifestDict.get('development-js', '')
-        production_js = manifestDict.get('production-js', '')
-
-    if not rulesFile:
+    name, manifest = extractManifestFromZipFile(
+        zipfile,
+        MANIFEST_FORMAT
+    )
+    if not manifest:
+        manifest = {}
+    rules = manifest.get('rules', None)
+    if rules is None:
         if checkRules:
             try:
-                zipfile.getinfo("%s/%s" % (resourceName, RULE_FILENAME,))
+                zipfile.getinfo(
+                    "{0:s}/{1:s}".format(name, RULE_FILENAME)
+                )
             except KeyError:
                 raise ValueError("Could not find theme name and rules file")
-        rulesFile = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, resourceName, RULE_FILENAME,)
-
-    return Theme(resourceName, rulesFile,
-            title=title,
-            description=description,
-            absolutePrefix=absolutePrefix,
-            parameterExpressions=parameters,
-            doctype=doctype,
-            preview=preview,
-            enabled_bundles=enabled_bundles.split(',') if enabled_bundles else [],
-            disabled_bundles=disabled_bundles.split(',') if disabled_bundles else [],
-            development_css=development_css,
-            production_css=production_css,
-            development_js=development_js,
-            production_js=production_js,
-            tinymce_content_css=tinymce_content_css
+        rules = u"/++{0:s}++{1:s}/{0:s}".format(
+            THEME_RESOURCE_NAME,
+            name,
+            RULE_FILENAME
         )
+    return getTheme(name, manifest)
 
 
 def getTheme(name, manifest=None, resources=None):
     if manifest is None:
         if resources is None:
             resources = getAllResources(
-                MANIFEST_FORMAT, filter=isValidThemeDirectory)
+                MANIFEST_FORMAT,
+                filter=isValidThemeDirectory
+            )
         if name not in resources:
             return None
-        manifest = resources[name]
-    title = name.capitalize().replace('-', ' ').replace('.', ' ')
-    description = None
-    rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
-    prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
-    params = {}
-    doctype = ""
-    preview = None
-    enabled_bundles = ''
-    disabled_bundles = ''
-    development_css = ''
-    development_js = ''
-    production_css = ''
-    production_js = ''
-    tinymce_content_css = ''
+        manifest = resources[name] or {}
 
-    if manifest is not None:
-        title = manifest['title'] or title
-        description = manifest['description'] or description
-        rules = manifest['rules'] or rules
-        prefix = manifest['prefix'] or prefix
-        params = manifest['parameters'] or params
-        doctype = manifest['doctype'] or doctype
-        preview = manifest['preview'] or preview
-        enabled_bundles = manifest['enabled-bundles'] or ''
-        disabled_bundles = manifest['disabled-bundles'] or ''
-        development_css = manifest['development-css'] or ''
-        development_js = manifest['development-js'] or ''
-        production_css = manifest['production-css'] or ''
-        production_js = manifest['production-js'] or ''
-        tinymce_content_css = manifest['tinymce-content-css'] or ''
-
+    title = manifest.get('title', None)
+    if title is None:
+        title = name.capitalize().replace('-', ' ').replace('.', ' ')
+    description = manifest.get('description', None)
+    rules = manifest.get('rules', None)
+    if rules is None:
+        rules = u"/++{0:s}++{1:s}/{2:s}".format(
+            THEME_RESOURCE_NAME,
+            name,
+            RULE_FILENAME,
+        )
+    prefix = manifest.get('prefix', None)
+    if prefix is None:
+        prefix = u"/++{0:s}++{1:s}".format(THEME_RESOURCE_NAME, name)
+    params = manifest.get('parameters', None) or {}
+    doctype = manifest.get('doctype', None) or ""
+    preview = manifest.get('preview', None)
+    enabled_bundles = manifest.get('enabled-bundles', None) or ''
+    enabled_bundles = enabled_bundles.split(',') if enabled_bundles else []
+    disabled_bundles = manifest.get('disabled-bundles', None) or ''
+    disabled_bundles = disabled_bundles.split(',') if disabled_bundles else []
+    development_css = manifest.get('development-css', None) or ''
+    development_js = manifest.get('development-js', None) or ''
+    production_css = manifest.get('production-css', None) or ''
+    production_js = manifest.get('production-js', None) or ''
+    tinymce_content_css = manifest.get('tinymce-content-css', None) or ''
     if isinstance(rules, str):
         rules = rules.decode('utf-8')
     if isinstance(prefix, str):
         prefix = prefix.decode('utf-8')
-    return Theme(name, rules,
-            title=title,
-            description=description,
-            absolutePrefix=prefix,
-            parameterExpressions=params,
-            doctype=doctype,
-            preview=preview,
-            enabled_bundles=enabled_bundles.split(',') if enabled_bundles else [],
-            disabled_bundles=disabled_bundles.split(',') if disabled_bundles else [],
-            development_css=development_css,
-            development_js=development_js,
-            production_css=production_css,
-            production_js=production_js,
-            tinymce_content_css=tinymce_content_css
-        )
+    return Theme(
+        name,
+        rules,
+        title=title,
+        description=description,
+        absolutePrefix=prefix,
+        parameterExpressions=params,
+        doctype=doctype,
+        preview=preview,
+        enabled_bundles=enabled_bundles,
+        disabled_bundles=disabled_bundles,
+        development_css=development_css,
+        development_js=development_js,
+        production_css=production_css,
+        production_js=production_js,
+        tinymce_content_css=tinymce_content_css
+    )
 
 
 def getAvailableThemes():
     """Get a list of all ITheme's available in resource directories.
     """
-
     resources = getAllResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
     themes = []
     for name, manifest in resources.items():
@@ -383,60 +337,15 @@ def getAvailableThemes():
 def getThemeFromResourceDirectory(resourceDirectory):
     """Return a Theme object from a resource directory
     """
-
     name = resourceDirectory.__name__
-
-    title = name.capitalize().replace('-', ' ').replace('.', ' ')
-    description = None
-    rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, name, RULE_FILENAME,)
-    prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, name,)
-    params = {}
-    doctype = ""
-    enabled_bundles = ''
-    disabled_bundles = ''
-    development_css = ''
-    development_js = ''
-    production_css = ''
-    production_js = ''
-    tinymce_content_css = ''
-
     if resourceDirectory.isFile(MANIFEST_FILENAME):
         manifest = getManifest(
-            resourceDirectory.openFile(MANIFEST_FILENAME), MANIFEST_FORMAT)
+            resourceDirectory.openFile(MANIFEST_FILENAME), MANIFEST_FORMAT
+        )
+    else:
+        manifest = {}
 
-        title = manifest['title'] or title
-        description = manifest['description'] or description
-        rules = manifest['rules'] or rules
-        prefix = manifest['prefix'] or prefix
-        params = manifest['parameters'] or params
-        doctype = manifest['doctype'] or doctype
-        enabled_bundles = manifest['enabled-bundles'] or ''
-        disabled_bundles = manifest['disabled-bundles'] or ''
-        development_css = manifest['development-css'] or ''
-        development_js = manifest['development-js'] or ''
-        production_css = manifest['production-css'] or ''
-        production_js = manifest['production-js'] or ''
-        tinymce_content_css = manifest['tinymce-content-css'] or ''
-
-    if isinstance(rules, str):
-        rules = rules.decode('utf-8')
-    if isinstance(prefix, str):
-        prefix = prefix.decode('utf-8')
-
-    return Theme(name, rules,
-                title=title,
-                description=description,
-                absolutePrefix=prefix,
-                parameterExpressions=params,
-                doctype=doctype,
-                enabled_bundles=enabled_bundles.split(',') if enabled_bundles else [],
-                disabled_bundles=disabled_bundles.split(',') if disabled_bundles else [],
-                development_css=development_css,
-                development_js=development_js,
-                production_css=production_css,
-                production_js=production_js,
-                tinymce_content_css=tinymce_content_css
-            )
+    return getTheme(name, manifest)
 
 
 def getZODBThemes():
@@ -484,23 +393,21 @@ def isThemeEnabled(request, settings=None):
         return False
 
     # Check for diazo.off request parameter
-    if (DevelopmentMode and
-        request.get('diazo.off', '').lower() in ('1', 'y', 'yes', 't', 'true')
-    ):
+    true_vals = ('1', 'y', 'yes', 't', 'true')
+    if (DevelopmentMode and request.get('diazo.off', '').lower() in true_vals):
         return False
 
     if settings is None:
         registry = queryUtility(IRegistry)
         if registry is None:
             return False
-
         settings = registry.forInterface(IThemeSettings, False)
 
     if not settings.enabled or not settings.rules:
         return False
 
     server_url = request.get('SERVER_URL')
-    _, host = server_url.split('://', 1)
+    proto, host = server_url.split('://', 1)
     host = host.lower()
     serverPort = request.get('SERVER_PORT')
 
@@ -624,6 +531,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
 
     return themeName
 
+
 def getParser(type, readNetwork):
     """Set up a parser for either rules, theme or compiler
     """
@@ -640,39 +548,54 @@ def getParser(type, readNetwork):
         parser.resolvers.add(NetworkResolver())
     return parser
 
-def compileThemeTransform(rules, absolutePrefix=None, readNetwork=False, parameterExpressions=None, runtrace=False):
+
+def compileThemeTransform(
+    rules,
+    absolutePrefix=None,
+    readNetwork=False,
+    parameterExpressions=None,
+    runtrace=False
+):
     """Prepare the theme transform by compiling the rules with the given options
     """
 
     if parameterExpressions is None:
         parameterExpressions = {}
 
-    accessControl = etree.XSLTAccessControl(read_file=True, write_file=False, create_dir=False, read_network=readNetwork, write_network=False)
+    accessControl = etree.XSLTAccessControl(
+        read_file=True,
+        write_file=False,
+        create_dir=False,
+        read_network=readNetwork,
+        write_network=False
+    )
 
     if absolutePrefix:
         absolutePrefix = expandAbsolutePrefix(absolutePrefix)
+    params = set(['url', 'base', 'path', 'scheme', 'host'])
+    params.update(parameterExpressions.keys())
+    xslParams = {k: '' for k in params}
 
-    params = set(parameterExpressions.keys() + ['url', 'base', 'path', 'scheme', 'host'])
-    xslParams = dict((k, '') for k in params)
-
-    compiledTheme = compile_theme(rules,
-            absolute_prefix=absolutePrefix,
-            parser=getParser('theme', readNetwork),
-            rules_parser=getParser('rules', readNetwork),
-            compiler_parser=getParser('compiler', readNetwork),
-            read_network=readNetwork,
-            access_control=accessControl,
-            update=True,
-            xsl_params=xslParams,
-            runtrace=runtrace,
-        )
+    compiledTheme = compile_theme(
+        rules,
+        absolute_prefix=absolutePrefix,
+        parser=getParser('theme', readNetwork),
+        rules_parser=getParser('rules', readNetwork),
+        compiler_parser=getParser('compiler', readNetwork),
+        read_network=readNetwork,
+        access_control=accessControl,
+        update=True,
+        xsl_params=xslParams,
+        runtrace=runtrace,
+    )
 
     if not compiledTheme:
         return None
 
-    return etree.XSLT(compiledTheme,
-            access_control=accessControl,
-        )
+    return etree.XSLT(
+        compiledTheme,
+        access_control=accessControl,
+    )
 
 
 def prepareThemeParameters(context, request, parameterExpressions, cache=None):
@@ -688,32 +611,33 @@ def prepareThemeParameters(context, request, parameterExpressions, cache=None):
     parts = urlsplit(base.lower())
 
     params = dict(
-            url=quote_param(url),
-            base=quote_param(base),
-            path=quote_param(path),
-            scheme=quote_param(parts.scheme),
-            host=quote_param(parts.netloc),
-        )
+        url=quote_param(url),
+        base=quote_param(base),
+        path=quote_param(path),
+        scheme=quote_param(parts.scheme),
+        host=quote_param(parts.netloc),
+    )
 
     # Add expression-based parameters
-    if parameterExpressions:
+    if not parameterExpressions:
+        return params
 
-        # Compile and cache expressions
-        expressions = None
+    # Compile and cache expressions
+    expressions = None
+    if cache is not None:
+        expressions = cache.expressions
+
+    if expressions is None:
+        expressions = {}
+        for name, expressionText in parameterExpressions.items():
+            expressions[name] = compileExpression(expressionText)
+
         if cache is not None:
-            expressions = cache.expressions
+            cache.updateExpressions(expressions)
 
-        if expressions is None:
-            expressions = {}
-            for name, expressionText in parameterExpressions.items():
-                expressions[name] = compileExpression(expressionText)
-
-            if cache is not None:
-                cache.updateExpressions(expressions)
-
-        # Execute all expressions
-        expressionContext = createExpressionContext(context, request)
-        for name, expression in expressions.items():
-            params[name] = quote_param(expression(expressionContext))
+    # Execute all expressions
+    expressionContext = createExpressionContext(context, request)
+    for name, expression in expressions.items():
+        params[name] = quote_param(expression(expressionContext))
 
     return params

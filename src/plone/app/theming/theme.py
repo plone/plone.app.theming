@@ -1,27 +1,30 @@
-from zope.interface import implements
+# -*- coding: utf-8 -*-
 from plone.app.theming.interfaces import ITheme
+from zope.interface import implementer
 
 
+@implementer(ITheme)
 class Theme(object):
     """A theme, loaded from a resource directory
     """
 
-    implements(ITheme)
-
-    def __init__(self, name, rules,
-            title=None,
-            description=None,
-            absolutePrefix=None,
-            parameterExpressions=None,
-            doctype=None,
-            preview=None,
-            enabled_bundles=[],
-            disabled_bundles=[],
-            development_css='',
-            development_js='',
-            production_css='',
-            production_js='',
-            tinymce_content_css=''
+    def __init__(
+        self,
+        name,
+        rules,
+        title=None,
+        description=None,
+        absolutePrefix=None,
+        parameterExpressions=None,
+        doctype=None,
+        preview=None,
+        enabled_bundles=[],
+        disabled_bundles=[],
+        development_css='',
+        development_js='',
+        production_css='',
+        production_js='',
+        tinymce_content_css=''
     ):
 
         self.__name__ = name
