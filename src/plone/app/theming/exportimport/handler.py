@@ -1,12 +1,11 @@
+# -*- coding: utf-8 -*-
 from lxml import etree
-
-from zope.component import getUtility
-
-from plone.registry.interfaces import IRegistry
-
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.utils import applyTheme
 from plone.app.theming.utils import getAvailableThemes
+from plone.registry.interfaces import IRegistry
+from zope.component import getUtility
+
 
 def importTheme(context):
     """Apply the theme with the id contained in the profile file theme.xml
@@ -21,9 +20,8 @@ def importTheme(context):
 
     tree = etree.fromstring(data)
 
+    # apply theme if given and valid
     themeName = tree.find("name")
-    themeEnabled = tree.find("enabled")
-
     if themeName is not None:
         themeName = themeName.text.strip()
         themeInfo = None
@@ -35,21 +33,26 @@ def importTheme(context):
                 break
 
         if themeInfo is None:
-            raise ValueError("Theme %s is not available" % themeName)
+            raise ValueError("Theme {0:s} is not available".format(themeName))
 
         applyTheme(themeInfo)
-        logger.info('Theme %s applied' % themeName)
+        logger.info('Theme {0:s} applied'.format(themeName))
+
+    # enable/disable theme
+    themeEnabled = tree.find("enabled")
+    if themeEnabled is None:
+        return
 
     settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
 
-    if themeEnabled is not None:
-        themeEnabled = themeEnabled.text.strip().lower()
-
-        if themeEnabled in ("y", "yes", "true", "t", "1", "on",):
-            settings.enabled = True
-            logger.info('Theme enabled')
-        elif themeEnabled in ("n", "no", "false", "f", "0", "off",):
-            settings.enabled = False
-            logger.info('Theme disabled')
-        else:
-            raise ValueError("%s is not a valid value for <enabled />" % themeEnabled)
+    themeEnabled = themeEnabled.text.strip().lower()
+    if themeEnabled in ("y", "yes", "true", "t", "1", "on",):
+        settings.enabled = True
+        logger.info('Theme enabled')
+    elif themeEnabled in ("n", "no", "false", "f", "0", "off",):
+        settings.enabled = False
+        logger.info('Theme disabled')
+    else:
+        raise ValueError(
+            "{0:s} is not a valid value for <enabled />".format(themeEnabled)
+        )

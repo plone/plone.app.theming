@@ -4,6 +4,12 @@ Changelog
 1.2.3 (unreleased)
 ------------------
 
+- unified different getTheme functions.
+  [jensens]
+
+- pep8ified, housekeeping, cleanup
+  [jensens]
+
 - Specify i18n:domain in controlpanel.pt.
   [vincentfretin]
 

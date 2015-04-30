@@ -1,50 +1,38 @@
-import urllib
-import urlparse
-import os.path
-
-import lxml.etree
-import lxml.html
-import lxml.html.builder
-
-from diazo.utils import quote_param
-
-from zope.component import getMultiAdapter
-from zope.component import getUtility
-
-from zope.component.hooks import getSite
-from zope.publisher.browser import BrowserView
-
-from repoze.xmliter.utils import getHTMLSerializer
-from plone.app.theming.utils import compileThemeTransform
-from plone.app.theming.utils import prepareThemeParameters
-from plone.app.theming.utils import getCurrentTheme
-
-from plone.registry.interfaces import IRegistry
-
-from plone.subrequest import subrequest
-
-from plone.resource.interfaces import IWritableResourceDirectory
-
-from plone.app.theming.interfaces import IThemeSettings
-from plone.app.theming.interfaces import THEME_RESOURCE_NAME
-from plone.app.theming.interfaces import RULE_FILENAME
-from plone.app.theming.interfaces import THEME_EXTENSIONS
-
-from plone.app.theming.utils import getPortal
-from plone.app.theming.utils import findContext
-from plone.app.theming.utils import getThemeFromResourceDirectory
-
-from plone.memoize import view
-
+# -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
-from zExceptions import NotFound
-
+from Products.CMFCore.utils import _getAuthenticatedUser
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.resources import add_bundle_on_request
 from Products.Five.browser.decode import processInputs
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.resources import add_bundle_on_request
-from Products.CMFCore.utils import _getAuthenticatedUser
+from diazo.utils import quote_param
+from plone.app.theming.interfaces import IThemeSettings
+from plone.app.theming.interfaces import RULE_FILENAME
+from plone.app.theming.interfaces import THEME_EXTENSIONS
+from plone.app.theming.interfaces import THEME_RESOURCE_NAME
+from plone.app.theming.utils import compileThemeTransform
+from plone.app.theming.utils import findContext
+from plone.app.theming.utils import getCurrentTheme
+from plone.app.theming.utils import getPortal
+from plone.app.theming.utils import getThemeFromResourceDirectory
+from plone.app.theming.utils import prepareThemeParameters
+from plone.memoize import view
+from plone.registry.interfaces import IRegistry
+from plone.resource.interfaces import IWritableResourceDirectory
+from plone.subrequest import subrequest
+from repoze.xmliter.utils import getHTMLSerializer
+from zExceptions import NotFound
+from zope.component import getMultiAdapter
+from zope.component import getUtility
+from zope.component.hooks import getSite
+from zope.publisher.browser import BrowserView
+import lxml.etree
+import lxml.html
+import lxml.html.builder
+import os.path
+import urllib
+import urlparse
 
 
 class ThemeMapper(BrowserView):
@@ -65,7 +53,8 @@ class ThemeMapper(BrowserView):
     @view.memoize
     def development(self):
         registry = getUtility(IRegistry)
-        if _getAuthenticatedUser(self.context).getUserName() == 'Anonymous User':
+        current_username = _getAuthenticatedUser(self.context).getUserName()
+        if current_username == 'Anonymous User':
             return False
         return registry.records['plone.resources.development'].value
 
@@ -83,7 +72,9 @@ class ThemeMapper(BrowserView):
         self.themeBasePathEncoded = urllib.quote_plus(self.themeBasePath)
         self.themeBaseUrl = "%s/%s" % (self.portalUrl, self.themeBasePath,)
 
-        self.editable = IWritableResourceDirectory.providedBy(self.resourceDirectory)
+        self.editable = IWritableResourceDirectory.providedBy(
+            self.resourceDirectory
+        )
 
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
         self.active = (settings.enabled and self.name == getCurrentTheme())
@@ -116,7 +107,9 @@ class ThemeMapper(BrowserView):
 
     def redirect(self, message):
         IStatusMessage(self.request).add(message)
-        self.request.response.redirect("%s/@@theming-controlpanel" % self.portalUrl)
+        self.request.response.redirect(
+            "{0:s}/@@theming-controlpanel".format(self.portalUrl)
+        )
 
     def findThemeFiles(self, directory, files=None, prefix=''):
         """Depth-first search of files with known extensions.
@@ -128,33 +121,33 @@ class ThemeMapper(BrowserView):
 
         dirs = []
 
-        for f in directory.listDirectory():
-            if not f or f == RULE_FILENAME:
+        for filename in directory.listDirectory():
+            if not filename or filename == RULE_FILENAME:
                 continue
 
-            if directory.isDirectory(f):
-                dirs.append(f)
+            if directory.isDirectory(filename):
+                dirs.append(filename)
             else:
 
-                path = f
+                path = filename
                 if prefix:
-                    path = prefix + '/' + f
+                    path = prefix + '/' + filename
 
-                basename, ext = os.path.splitext(f)
+                basename, ext = os.path.splitext(filename)
                 ext = ext[1:].lower()
                 if ext in THEME_EXTENSIONS:
                     files.append({
                         'path': '/' + path,
-                        'filename': f,
+                        'filename': filename,
                         'extension': ext,
                     })
 
         # Do directories last
-        for f in dirs:
-            path = f
+        for filename in dirs:
+            path = filename
             if prefix:
-                path = prefix + '/' + f
-            self.findThemeFiles(directory[f], files=files, prefix=path)
+                path = prefix + '/' + filename
+            self.findThemeFiles(directory[filename], files=files, prefix=path)
 
         return files
 
@@ -169,12 +162,12 @@ class ThemeMapper(BrowserView):
 
         - a query string parameter ``links`` can be set to one of ``disable``
           or ``replace``. The former will disable hyperlinks; the latter will
-          replace them with links using the ``@@themeing-controlpanel-getframe``
-          view.
+          replace them with links using the
+          ``@@themeing-controlpanel-getframe`` view.
         - a query string parameter ``forms`` can be set to one of ``disable``
           or ``replace``. The former will disable forms ; the latter will
-          replace them with links using the ``@@themeing-controlpanel-getframe``
-          view.
+          replace them with links using the
+          ``@@themeing-controlpanel-getframe`` view.
         - a query string parameter ``title`` can be set to give a new page
           title
         """
@@ -243,8 +236,10 @@ class ThemeMapper(BrowserView):
                 context, self.request, themeInfo.parameterExpressions or {})
 
             # Fix url and path since the request gave us this view
-            params['url'] = quote_param("%s%s" % (portal_url, path,))
-            params['path'] = quote_param("%s%s" % (portal.absolute_url_path(), path,))
+            params['url'] = quote_param(''.join((portal_url, path,)))
+            params['path'] = quote_param(
+                ''.join((portal.absolute_url_path(), path,))
+            )
 
             if themeInfo.doctype:
                 serializer.doctype = themeInfo.doctype

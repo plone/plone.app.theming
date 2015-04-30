@@ -1,6 +1,6 @@
-import unittest2 as unittest
-
+# -*- coding: utf-8 -*-
 from plone.app.theming.testing import THEMING_INTEGRATION_TESTING
+import unittest2 as unittest
 
 
 class TestIntegration(unittest.TestCase):
@@ -8,7 +8,7 @@ class TestIntegration(unittest.TestCase):
     layer = THEMING_INTEGRATION_TESTING
 
     def test_getOrCreatePersistentResourceDirectory_new(self):
-        from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
+        from plone.app.theming.utils import getOrCreatePersistentResourceDirectory  # noqa
 
         d = getOrCreatePersistentResourceDirectory()
         self.assertEqual(d.__name__, "theme")
@@ -16,7 +16,7 @@ class TestIntegration(unittest.TestCase):
     def test_getOrCreatePersistentResourceDirectory_exists(self):
         from zope.component import getUtility
         from plone.resource.interfaces import IResourceDirectory
-        from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
+        from plone.app.theming.utils import getOrCreatePersistentResourceDirectory  # noqa
 
         persistentDirectory = getUtility(IResourceDirectory, name="persistent")
         persistentDirectory.makeDirectory("theme")
@@ -36,33 +36,51 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(theme.__name__, 'plone.app.theming.tests')
         self.assertEqual(theme.title, 'Test theme')
         self.assertEqual(theme.description, 'A theme for testing')
-        self.assertEqual(theme.rules, '/++theme++plone.app.theming.tests/rules.xml')
-        self.assertEqual(theme.absolutePrefix, '/++theme++plone.app.theming.tests')
-        self.assertEqual(theme.parameterExpressions, {'foo': "python:request.get('bar')"})
+        self.assertEqual(
+            theme.rules,
+            '/++theme++plone.app.theming.tests/rules.xml'
+        )
+        self.assertEqual(
+            theme.absolutePrefix,
+            '/++theme++plone.app.theming.tests'
+        )
+        self.assertEqual(
+            theme.parameterExpressions,
+            {'foo': "python:request.get('bar')"}
+        )
         self.assertEqual(theme.doctype, "<!DOCTYPE html>")
 
     def test_getZODBThemes(self):
         import zipfile
         import os.path
-        from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
+        from plone.app.theming.utils import getOrCreatePersistentResourceDirectory  # noqa
         from plone.app.theming.utils import getZODBThemes
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'default_rules.zip'))
+        with open(
+            os.path.join(
+                os.path.dirname(__file__),
+                'zipfiles',
+                'default_rules.zip'
+            )
+        ) as fp:
+            zf = zipfile.ZipFile(fp)
 
-        z = zipfile.ZipFile(f)
+            themeContainer = getOrCreatePersistentResourceDirectory()
+            themeContainer.importZip(zf)
 
-        themeContainer = getOrCreatePersistentResourceDirectory()
-        themeContainer.importZip(z)
+            zodbThemes = getZODBThemes()
 
-        zodbThemes = getZODBThemes()
+            self.assertEqual(len(zodbThemes), 1)
 
-        self.assertEqual(len(zodbThemes), 1)
-
-        self.assertEqual(zodbThemes[0].__name__, 'default_rules')
-        self.assertEqual(zodbThemes[0].rules, '/++theme++default_rules/rules.xml')
-        self.assertEqual(zodbThemes[0].absolutePrefix, '/++theme++default_rules')
-
-        f.close()
+            self.assertEqual(zodbThemes[0].__name__, 'default_rules')
+            self.assertEqual(
+                zodbThemes[0].rules,
+                '/++theme++default_rules/rules.xml'
+            )
+            self.assertEqual(
+                zodbThemes[0].absolutePrefix,
+                '/++theme++default_rules'
+            )
 
     def test_applyTheme(self):
         from zope.component import getUtility
@@ -85,7 +103,10 @@ class TestIntegration(unittest.TestCase):
 
         self.assertEqual(settings.rules, theme.rules)
         self.assertEqual(settings.absolutePrefix, theme.absolutePrefix)
-        self.assertEqual(settings.parameterExpressions, theme.parameterExpressions)
+        self.assertEqual(
+            settings.parameterExpressions,
+            theme.parameterExpressions
+        )
         self.assertEqual(settings.doctype, theme.doctype)
 
     def test_applyTheme_None(self):
@@ -142,7 +163,7 @@ class TestIntegration(unittest.TestCase):
         self.assertTrue(isThemeEnabled(request, settings))
         self.assertEqual(request.get('SERVER_URL'), 'http://nohost')
 
-        #Should pay no attention to BASE1 and only use SERVER_URL
+        # Should pay no attention to BASE1 and only use SERVER_URL
         settings.hostnameBlacklist.append('nohost')
         self.assertFalse(isThemeEnabled(request, settings))
 
@@ -154,155 +175,205 @@ class TestUnit(unittest.TestCase):
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'default_rules.zip'))
-        z = zipfile.ZipFile(f)
+        with open(
+            os.path.join(
+                os.path.dirname(__file__),
+                'zipfiles',
+                'default_rules.zip'
+            )
+        ) as fp:
+            zf = zipfile.ZipFile(fp)
 
-        theme = extractThemeInfo(z)
+            theme = extractThemeInfo(zf)
 
-        self.assertEqual(theme.__name__, 'default_rules')
-        self.assertEqual(theme.rules, u'/++theme++default_rules/rules.xml')
-        self.assertEqual(theme.absolutePrefix, '/++theme++default_rules')
-
-        f.close()
+            self.assertEqual(theme.__name__, 'default_rules')
+            self.assertEqual(theme.rules, u'/++theme++default_rules/rules.xml')
+            self.assertEqual(theme.absolutePrefix, '/++theme++default_rules')
 
     def test_extractThemeInfo_manifest_rules(self):
         import zipfile
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_rules.zip'))
-        z = zipfile.ZipFile(f)
+        with open(
+            os.path.join(
+                os.path.dirname(__file__),
+                'zipfiles',
+                'manifest_rules.zip')
+        ) as fp:
+            zf = zipfile.ZipFile(fp)
 
-        theme = extractThemeInfo(z)
+            theme = extractThemeInfo(zf)
 
-        self.assertEqual(theme.__name__, 'manifest_rules')
-        self.assertEqual(theme.rules, 'other.xml')
-        self.assertEqual(theme.absolutePrefix, '/++theme++manifest_rules')
-        self.assertEqual(theme.title, 'Test theme')
-
-        f.close()
+            self.assertEqual(theme.__name__, 'manifest_rules')
+            self.assertEqual(theme.rules, 'other.xml')
+            self.assertEqual(theme.absolutePrefix, '/++theme++manifest_rules')
+            self.assertEqual(theme.title, 'Test theme')
 
     def test_extractThemeInfo_manifest_prefix(self):
         import zipfile
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_prefix.zip'))
-        z = zipfile.ZipFile(f)
+        with open(
+            os.path.join(
+                os.path.dirname(__file__),
+                'zipfiles',
+                'manifest_prefix.zip')
+        ) as fp:
+            zf = zipfile.ZipFile(fp)
 
-        theme = extractThemeInfo(z)
+            theme = extractThemeInfo(zf)
 
-        self.assertEqual(theme.__name__, 'manifest_prefix')
-        self.assertEqual(theme.rules, u'/++theme++manifest_prefix/rules.xml')
-        self.assertEqual(theme.absolutePrefix, '/foo')
-        self.assertEqual(theme.title,  'Test theme')
-
-        f.close()
+            self.assertEqual(theme.__name__, 'manifest_prefix')
+            self.assertEqual(
+                theme.rules,
+                u'/++theme++manifest_prefix/rules.xml'
+            )
+            self.assertEqual(theme.absolutePrefix, '/foo')
+            self.assertEqual(theme.title,  'Test theme')
 
     def test_extractThemeInfo_manifest_default_rules(self):
         import zipfile
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_default_rules.zip'))
-        z = zipfile.ZipFile(f)
+        with open(
+            os.path.join(
+                os.path.dirname(__file__),
+                'zipfiles',
+                'manifest_default_rules.zip')
+        ) as fp:
+            zf = zipfile.ZipFile(fp)
 
-        theme = extractThemeInfo(z)
+            theme = extractThemeInfo(zf)
 
-        self.assertEqual(theme.__name__, 'manifest_default_rules')
-        self.assertEqual(theme.rules, u'/++theme++manifest_default_rules/rules.xml')
-        self.assertEqual(theme.absolutePrefix, '/++theme++manifest_default_rules')
-        self.assertEqual(theme.title,  'Test theme')
-
-        f.close()
+            self.assertEqual(theme.__name__, 'manifest_default_rules')
+            self.assertEqual(
+                theme.rules,
+                u'/++theme++manifest_default_rules/rules.xml'
+            )
+            self.assertEqual(
+                theme.absolutePrefix,
+                '/++theme++manifest_default_rules'
+            )
+            self.assertEqual(theme.title,  'Test theme')
 
     def test_extractThemeInfo_manifest_preview(self):
         import zipfile
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_preview.zip'))
-        z = zipfile.ZipFile(f)
+        with open(
+            os.path.join(
+                os.path.dirname(__file__),
+                'zipfiles',
+                'manifest_preview.zip')
+        ) as fp:
+            zf = zipfile.ZipFile(fp)
 
-        theme = extractThemeInfo(z)
+            theme = extractThemeInfo(zf)
 
-        self.assertEqual(theme.__name__, 'manifest_preview')
-        self.assertEqual(theme.rules, u'/++theme++manifest_preview/rules.xml')
-        self.assertEqual(theme.absolutePrefix, '/++theme++manifest_preview')
-        self.assertEqual(theme.title,  'Test theme')
-        self.assertEqual(theme.preview,  'preview.png')
-
-        f.close()
+            self.assertEqual(theme.__name__, 'manifest_preview')
+            self.assertEqual(
+                theme.rules,
+                u'/++theme++manifest_preview/rules.xml'
+            )
+            self.assertEqual(
+                theme.absolutePrefix,
+                '/++theme++manifest_preview'
+            )
+            self.assertEqual(theme.title,  'Test theme')
+            self.assertEqual(theme.preview,  'preview.png')
 
     def test_extractThemeInfo_manifest_default_rules_override(self):
         import zipfile
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'manifest_default_rules_override.zip'))
-        z = zipfile.ZipFile(f)
+        with open(
+            os.path.join(
+                os.path.dirname(__file__),
+                'zipfiles',
+                'manifest_default_rules_override.zip')
+        ) as fp:
+            zf = zipfile.ZipFile(fp)
 
-        theme = extractThemeInfo(z)
+            theme = extractThemeInfo(zf)
 
-        self.assertEqual(theme.__name__, 'manifest_default_rules_override')
-        self.assertEqual(theme.rules, 'other.xml')
-        self.assertEqual(theme.absolutePrefix, '/++theme++manifest_default_rules_override')
-        self.assertEqual(theme.title,  'Test theme')
-
-        f.close()
+            self.assertEqual(theme.__name__, 'manifest_default_rules_override')
+            self.assertEqual(theme.rules, 'other.xml')
+            self.assertEqual(
+                theme.absolutePrefix,
+                '/++theme++manifest_default_rules_override'
+            )
+            self.assertEqual(theme.title,  'Test theme')
 
     def test_extractThemeInfo_nodir(self):
         import zipfile
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'nodir.zip'))
-        z = zipfile.ZipFile(f)
-
-        self.assertRaises(ValueError, extractThemeInfo, z)
-
-        f.close()
+        with open(
+            os.path.join(
+                os.path.dirname(__file__),
+                'zipfiles',
+                'nodir.zip')
+        ) as fp:
+            zf = zipfile.ZipFile(fp)
+            self.assertRaises(ValueError, extractThemeInfo, zf)
 
     def test_extractThemeInfo_multiple_dir(self):
         import zipfile
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'multiple_dir.zip'))
-        z = zipfile.ZipFile(f)
-
-        self.assertRaises(ValueError, extractThemeInfo, z)
-
-        f.close()
+        with open(
+            os.path.join(
+                os.path.dirname(__file__),
+                'zipfiles',
+                'multiple_dir.zip')
+        ) as fp:
+            zf = zipfile.ZipFile(fp)
+            self.assertRaises(ValueError, extractThemeInfo, zf)
 
     def test_extractThemeInfo_ignores_dotfiles_resource_forks(self):
         import zipfile
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'ignores_dotfiles_resource_forks.zip'))
-        z = zipfile.ZipFile(f)
+        with open(
+            os.path.join(
+                os.path.dirname(__file__),
+                'zipfiles',
+                'ignores_dotfiles_resource_forks.zip')
+        ) as fp:
+            zf = zipfile.ZipFile(fp)
 
-        theme = extractThemeInfo(z)
+            theme = extractThemeInfo(zf)
 
-        self.assertEqual(theme.__name__, 'default_rules')
-        self.assertEqual(theme.rules, u'/++theme++default_rules/rules.xml')
-        self.assertEqual(theme.absolutePrefix, '/++theme++default_rules')
-
-        f.close()
+            self.assertEqual(theme.__name__, 'default_rules')
+            self.assertEqual(theme.rules, u'/++theme++default_rules/rules.xml')
+            self.assertEqual(theme.absolutePrefix, '/++theme++default_rules')
 
     def test_extractThemeInfo_with_subdirectories(self):
         import zipfile
         import os.path
         from plone.app.theming.utils import extractThemeInfo
 
-        f = open(os.path.join(os.path.dirname(__file__), 'zipfiles', 'subdirectories.zip'))
-        z = zipfile.ZipFile(f)
+        with open(
+            os.path.join(
+                os.path.dirname(__file__),
+                'zipfiles',
+                'subdirectories.zip')
+        ) as fp:
+            zf = zipfile.ZipFile(fp)
 
-        theme = extractThemeInfo(z)
+            theme = extractThemeInfo(zf)
 
-        self.assertEqual(theme.__name__, 'subdirectories')
-        self.assertEqual(theme.rules, u'/++theme++subdirectories/rules.xml')
-        self.assertEqual(theme.absolutePrefix, '/++theme++subdirectories')
-
-        f.close()
+            self.assertEqual(theme.__name__, 'subdirectories')
+            self.assertEqual(
+                theme.rules,
+                u'/++theme++subdirectories/rules.xml'
+            )
+            self.assertEqual(theme.absolutePrefix, '/++theme++subdirectories')
