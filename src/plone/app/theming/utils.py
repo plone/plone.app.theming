@@ -167,7 +167,7 @@ def findContext(request):
     context = getattr(published, '__parent__', None)
     if context is not None:
         return context
-    
+
     for parent in request.PARENTS:
         if IContentish.providedBy(parent) or ISiteRoot.providedBy(parent):
             return parent
@@ -499,7 +499,18 @@ def applyTheme(theme):
             for name, plugin in plugins:
                 plugin.onDisabled(currentTheme, pluginSettings[name],
                                   pluginSettings)
-                plugin.onEnabled(theme, pluginSettings[name], pluginSettings)
+
+        currentTheme = settings.currentTheme
+        themeDirectory = queryResourceDirectory(
+            THEME_RESOURCE_NAME, currentTheme)
+        if themeDirectory is not None:
+            plugins = getPlugins()
+            pluginSettings = getPluginSettings(themeDirectory, plugins)
+
+        if pluginSettings is not None:
+            for name, plugin in plugins:
+                plugin.onEnabled(currentTheme, pluginSettings[name],
+                                 pluginSettings)
 
 
 def createThemeFromTemplate(title, description, baseOn='template'):
