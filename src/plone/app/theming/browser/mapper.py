@@ -68,9 +68,12 @@ class ThemeMapper(BrowserView):
         self.title = self.theme.title
 
         self.portalUrl = getToolByName(self.context, 'portal_url')()
-        self.themeBasePath = "++%s++%s" % (THEME_RESOURCE_NAME, self.name,)
+        self.themeBasePath = "++{0:s}++{1:s}".format(
+            THEME_RESOURCE_NAME,
+            self.name
+        )
         self.themeBasePathEncoded = urllib.quote_plus(self.themeBasePath)
-        self.themeBaseUrl = "%s/%s" % (self.portalUrl, self.themeBasePath,)
+        self.themeBaseUrl = '/'.join([self.portalUrl, self.themeBasePath])
 
         self.editable = IWritableResourceDirectory.providedBy(
             self.resourceDirectory

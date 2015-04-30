@@ -1,19 +1,20 @@
-import unittest2 as unittest
-from plone.testing.z2 import Browser
-from plone.app.testing import applyProfile, setRoles
-from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, TEST_USER_PASSWORD
-
-import cStringIO
-import gzip
-
-from zope.component import getUtility
-from zope.globalrequest import setRequest
-from plone.registry.interfaces import IRegistry
-
+# -*- coding: utf-8 -*-
 from plone.app.caching.interfaces import IPloneCacheSettings
-from plone.caching.interfaces import ICacheSettings
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import TEST_USER_PASSWORD
+from plone.app.testing import applyProfile
+from plone.app.testing import setRoles
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.testing import THEMINGWITHCACHING_TESTING
+from plone.caching.interfaces import ICacheSettings
+from plone.registry.interfaces import IRegistry
+from plone.testing.z2 import Browser
+from zope.component import getUtility
+from zope.globalrequest import setRequest
+import cStringIO
+import gzip
+import unittest2 as unittest
 
 
 class TestIntegration(unittest.TestCase):
@@ -143,8 +144,10 @@ class TestIntegration(unittest.TestCase):
 
         browser = Browser(app)
         browser.addHeader('Accept-Encoding', 'gzip')
-        browser.addHeader('Authorization', 'Basic %s:%s' % (
-            TEST_USER_NAME, TEST_USER_PASSWORD))
+        browser.addHeader(
+            'Authorization',
+            'Basic {0:s}:{1:s}'.format(TEST_USER_NAME, TEST_USER_PASSWORD)
+        )
         browser.open(portal['f3'].absolute_url())
         content_handler = cStringIO.StringIO(browser.contents)
         uncompressed = gzip.GzipFile(fileobj=content_handler).read()
