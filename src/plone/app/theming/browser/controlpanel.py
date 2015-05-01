@@ -3,7 +3,6 @@ from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.decode import processInputs
 from Products.statusmessages.interfaces import IStatusMessage
-from plone.app.controlpanel.skins import ISkinsSchema
 from plone.app.theming.interfaces import DEFAULT_THEME_FILENAME
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.interfaces import RULE_FILENAME
@@ -40,6 +39,10 @@ def authorize(context, request):
 class ThemingControlpanel(BrowserView):
 
     def __call__(self):
+        ptool = getToolByName(self.context, 'portal_properties')
+        self.props = ptool.site_properties
+        self.pskin = getToolByName(self.context, 'portal_skins')
+
         if self.update():
             return self.index()
         return ''
@@ -57,7 +60,6 @@ class ThemingControlpanel(BrowserView):
         )
         self.overlay = ''
 
-        self.skinsSettings = ISkinsSchema(self.context)
         self.skinsVocabulary = getUtility(
             IVocabularyFactory,
             name='plone.app.vocabularies.Skins'
@@ -70,6 +72,41 @@ class ThemingControlpanel(BrowserView):
 
     def redirect(self, url):
         self.request.response.redirect(url)
+
+    def get_mark_special_links(self):
+        msl = getattr(self.props, 'mark_special_links', False)
+        if msl == 'true':
+            return True
+        return False
+
+    def set_mark_special_links(self, value):
+        if value:
+            mark_special_links = 'true'
+        else:
+            mark_special_links = 'false'
+        if self.props.hasProperty('mark_special_links'):
+            self.props.manage_changeProperties(mark_special_links=mark_special_links)
+        else:
+            self.props.manage_addProperty(
+                'mark_special_links', mark_special_links, 'string')
+
+    mark_special_links = property(get_mark_special_links,
+                                  set_mark_special_links)
+
+    def get_ext_links_open_new_window(self):
+        elonw = self.props.external_links_open_new_window
+        if elonw == 'true':
+            return True
+        return False
+
+    def set_ext_links_open_new_window(self, value):
+        if value:
+            self.props.manage_changeProperties(external_links_open_new_window='true')
+        else:
+            self.props.manage_changeProperties(external_links_open_new_window='false')
+
+    ext_links_open_new_window = property(get_ext_links_open_new_window,
+                                         set_ext_links_open_new_window)
 
     def update(self):
         # XXX: complexity too high: refactoring needed
@@ -152,10 +189,8 @@ class ThemingControlpanel(BrowserView):
             themeBase = form.get('themeBase', None)
             markSpecialLinks = form.get('markSpecialLinks', None)
             extLinksOpenInNewWindow = form.get('extLinksOpenInNewWindow', None)
-            usePopups = form.get('usePopups', None)
-            iconVisibility = form.get('iconVisibility', None)
 
-            if self.errors:
+            if not self.errors:
                 # Trigger onDisabled() on plugins if theme was active
                 # previously and rules were changed
                 if self.settings.rules != rules:
@@ -170,17 +205,11 @@ class ThemingControlpanel(BrowserView):
 
                 # Theme base settings
                 if themeBase is not None:
-                    self.skinsSettings.theme = themeBase.encode('utf-8')
+                    self.pskin.default_skin = themeBase.encode('utf-8')
                 if markSpecialLinks is not None:
-                    self.skinsSettings.mark_special_links = markSpecialLinks
+                    self.mark_special_links = markSpecialLinks
                 if extLinksOpenInNewWindow is not None:
-                    self.skinsSettings.ext_links_open_new_window = \
-                        extLinksOpenInNewWindow
-                if usePopups is not None:
-                    self.skinsSettings.use_popups = usePopups
-                if iconVisibility is not None:
-                    self.skinsSettings.icon_visibility = \
-                        iconVisibility.encode('utf-8')
+                    self.ext_links_open_new_window = extLinksOpenInNewWindow
 
                 IStatusMessage(self.request).add(_(u"Changes saved"))
                 self._setup()

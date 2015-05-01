@@ -4,6 +4,10 @@ Changelog
 1.2.3 (unreleased)
 ------------------
 
+- make control panel usable again. Fixed problem where skins
+  control panel is no longer present.
+  [vangheem]
+
 - unified different getTheme functions.
   [jensens]
 
