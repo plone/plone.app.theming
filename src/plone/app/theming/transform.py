@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from lxml import etree
-from plone.app.theming.interfaces import IThemeSettings, IThemingLayer
+from plone.app.theming.interfaces import IThemeSettings
+from plone.app.theming.interfaces import IThemingLayer
 from plone.app.theming.utils import compileThemeTransform
 from plone.app.theming.utils import findContext
 from plone.app.theming.utils import getParser

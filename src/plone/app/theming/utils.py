@@ -104,11 +104,14 @@ class InternalResolver(etree.Resolver):
             if len(context_path) == 0:
                 system_url = '/' + system_url
             else:
-                system_url = '/%s/%s' % ('/'.join(context_path), system_url)
+                system_url = '/{0:s}/{1:s}'.format(
+                    '/'.join(context_path),
+                    system_url
+                )
 
         response = subrequest(system_url, root=root)
         if response.status != 200:
-            LOGGER.error("Couldn't resolve %s", system_url)
+            LOGGER.error("Couldn't resolve {0:s}".format(system_url))
             return None
         result = response.getBody()
         content_type = response.headers.get('content-type')
@@ -412,7 +415,7 @@ def isThemeEnabled(request, settings=None):
     serverPort = request.get('SERVER_PORT')
 
     for hostname in settings.hostnameBlacklist or ():
-        if host == hostname or host == "%s:%s" % (hostname, serverPort):
+        if host == hostname or host == ':'.join((hostname, serverPort)):
             return False
 
     return True
@@ -492,7 +495,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
 
     source = queryResourceDirectory(THEME_RESOURCE_NAME, baseOn)
     if source is None:
-        raise KeyError("Theme %s not found" % baseOn)
+        raise KeyError("Theme {0:s} not found".format(baseOn))
 
     themeName = getUtility(IURLNormalizer).normalize(title)
     if isinstance(themeName, unicode):
@@ -501,9 +504,9 @@ def createThemeFromTemplate(title, description, baseOn='template'):
     resources = getOrCreatePersistentResourceDirectory()
     if themeName in resources:
         idx = 1
-        while "%s-%d" % (themeName, idx,) in resources:
+        while '-'.join((themeName, idx)) in resources:
             idx += 1
-        themeName = "%s-%d" % (themeName, idx,)
+        themeName = '-'.join((themeName, idx))
 
     resources.makeDirectory(themeName)
     target = resources[themeName]

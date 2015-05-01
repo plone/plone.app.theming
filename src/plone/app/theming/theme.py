@@ -44,4 +44,4 @@ class Theme(object):
         self.development_css = development_css
 
     def __repr__(self):
-        return '<Theme "%s">' % self.__name__
+        return '<Theme "{0:s}">'.format(self.__name__)

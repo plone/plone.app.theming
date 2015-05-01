@@ -82,7 +82,7 @@ class ThemingControlpanel(BrowserView):
             IStatusMessage(self.request).add(_(u"Changes cancelled"))
 
             portalUrl = getToolByName(self.context, 'portal_url')()
-            self.redirect("%s/plone_control_panel" % portalUrl)
+            self.redirect("{0:s}/plone_control_panel".format(portalUrl))
 
             return False
 
@@ -292,14 +292,17 @@ class ThemingControlpanel(BrowserView):
             if not self.errors:
                 portalUrl = getToolByName(self.context, 'portal_url')()
                 self.redirect(
-                    "%s/++theme++%s/@@theming-controlpanel-mapper" % (
-                        portalUrl, themeData.__name__,)
+                    "{0}/++theme++{1}/@@theming-controlpanel-mapper".format(
+                        portalUrl,
+                        themeData.__name__
                     )
+                )
                 return False
             else:
                 IStatusMessage(self.request).add(
-                        _(u"There were errors"), "error"
-                    )
+                    _(u"There were errors"),
+                    "error"
+                )
 
                 self.renderOverlay('upload')
                 return True
@@ -334,9 +337,11 @@ class ThemingControlpanel(BrowserView):
 
                 portalUrl = getToolByName(self.context, 'portal_url')()
                 self.redirect(
-                    "%s/++theme++%s/@@theming-controlpanel-mapper" % (
-                        portalUrl, name,)
+                    "{0}/++theme++{1}/@@theming-controlpanel-mapper".format(
+                        portalUrl,
+                        name
                     )
+                )
                 return False
 
         if 'form.button.DeleteSelected' in form:
@@ -390,7 +395,7 @@ class ThemingControlpanel(BrowserView):
                 'title': theme.title,
                 'description': theme.description,
                 'editable': theme.__name__ in zodbNames,
-                'preview': "%s/%s" % (portalUrl, previewUrl,),
+                'preview': "{0}/{1}".format(portalUrl, previewUrl),
                 'selected': theme.__name__ == self.selectedTheme,
             })
 
@@ -400,8 +405,13 @@ class ThemingControlpanel(BrowserView):
 
     def redirectToFieldset(self, fieldset):
         portalUrl = getToolByName(self.context, 'portal_url')()
-        self.redirect("%s/%s#fieldsetlegend-%s" % (
-            portalUrl, self.__name__, fieldset,))
+        self.redirect(
+            "{0}/{1}#fieldsetlegend-{2}".format(
+                portalUrl,
+                self.__name__,
+                fieldset
+            )
+        )
 
     def renderOverlay(self, overlay):
         self.overlay = overlay

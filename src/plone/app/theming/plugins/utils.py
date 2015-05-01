@@ -40,7 +40,9 @@ def sortDependencies(plugins):
                 del waiting[(nw, pw)]
 
     if waiting:
-        raise ValueError("Could not resolve dependencies for: %s" % waiting)
+        raise ValueError(
+            "Could not resolve dependencies for: {0:s}".format(waiting)
+        )
 
 
 @cache(pluginsCacheKey)

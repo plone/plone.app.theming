@@ -1,7 +1,7 @@
-import logging
-
+# -*- coding: utf-8 -*-
 from App.special_dtml import DTMLFile
 from zope.globalrequest import getRequest
+import logging
 
 LOGGER = logging.getLogger('plone.app.theming')
 
