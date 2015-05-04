@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.3 (unreleased)
+1.2.3 (2015-05-04)
 ------------------
 
 - make control panel usable again. Fixed problem where skins
