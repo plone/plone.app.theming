@@ -4,8 +4,8 @@ Changelog
 1.2.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- Add setting for tinymce automatically detected styles
+  [vangheem]
 
 1.2.3 (2015-05-04)
 ------------------

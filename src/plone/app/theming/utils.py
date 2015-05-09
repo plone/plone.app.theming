@@ -302,6 +302,7 @@ def getTheme(name, manifest=None, resources=None):
     production_css = manifest.get('production-css', None) or ''
     production_js = manifest.get('production-js', None) or ''
     tinymce_content_css = manifest.get('tinymce-content-css', None) or ''
+    tinymce_styles_css = manifest.get('tinymce-styles-css', None) or ''
     if isinstance(rules, str):
         rules = rules.decode('utf-8')
     if isinstance(prefix, str):
@@ -321,7 +322,8 @@ def getTheme(name, manifest=None, resources=None):
         development_js=development_js,
         production_css=production_css,
         production_js=production_js,
-        tinymce_content_css=tinymce_content_css
+        tinymce_content_css=tinymce_content_css,
+        tinymce_styles_css=tinymce_styles_css
     )
 
 

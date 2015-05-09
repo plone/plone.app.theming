@@ -438,34 +438,68 @@ This file may look like this::
     [theme]
     title = My theme
     description = A test theme
+    rules = http://example.org/myrules.xml
+    prefix = /some/prefix
+    doctype = <!DOCTYPE html>
+    preview = preview.png
+    enabled-bundles = mybundle
+    disabled-bundles = plone
+    development-css = /++theme++barceloneta/less/barceloneta.plone.less
+    production-css = /++theme++barceloneta/less/barceloneta-compiled.css
+    development-js = /++theme++barceloneta/barceloneta.js
+    production-js = /++theme++barceloneta/barceloneta.min.js
+    tinymce-content-css = /++theme++barceloneta/tinymce-styles.css
+
 
 As shown here, the manifest file can be used to provide a more user friendly
 title and a longer description for the theme, for use in the control panel.
 Only the ``[theme]`` header is required - all other keys are optional.
 
-You can also set::
 
-    rules = http://example.org/myrules.xml
+Manifest settings:
 
-to use a different rule file name than ``rules.xml`` (you should provide a URL
-or relative path).
+rules
+    to use a different rule file name than ``rules.xml`` (you should provide a URL
+    or relative path).
 
-To change the absolute path prefix (see *Advanced settings*), use::
+prefix
+    To change the absolute path prefix (see *Advanced settings*), use::
 
-    prefix = /some/prefix
+doctype
+    To employ a ``DOCTYPE`` in the themed content other than ``XHTML 1.0
+    Transitional``, add e.g.::
 
-To employ a ``DOCTYPE`` in the themed content other than ``XHTML 1.0
-Transitional``, add e.g.::
+preview
+    To provide a user-friendly preview of your theme in the *Theming* control panel.
+    Here, ``preview.png`` is an image file relative to the location of the
+    ``manifest.cfg`` file.
 
-    doctype = <!DOCTYPE html>
+enabled-bundles
+    Bundles that will automatically be enabled when a theme is activated
 
-To provide a user-friendly preview of your theme in the *Theming* control panel,
-add::
+disabled-bundles
+    Bundles that will automatically be disabled when a theme is activated
 
-    preview = preview.png
+development-css
+    CSS to automatically include when in development mode and theme is active
 
-Here, ``preview.png`` is an image file relative to the location of the
-``manifest.cfg`` file.
+development-js
+    JavaScript file to automatically include when in development mode when
+    theme is active
+
+production-css
+    CSS to automatically include when theme is active and in production mode
+
+production-js
+    JavaScript to automatically include when theme is active and in production mode
+
+tinymce-content-css
+    CSS file tinymce should load to apply styles to content inside the editor
+
+tinymce-styles-css
+    CSS file tinymce should load to provide additionally automatically detected
+    drop-down styles in the editor
+
 
 Extensions to the Diazo theming engine can add support for additional blocks of
 configurable parameters.

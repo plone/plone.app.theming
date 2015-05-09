@@ -24,7 +24,8 @@ class Theme(object):
         development_js='',
         production_css='',
         production_js='',
-        tinymce_content_css=''
+        tinymce_content_css='',
+        tinymce_styles_css=''
     ):
 
         self.__name__ = name
@@ -42,6 +43,7 @@ class Theme(object):
         self.production_css = production_css
         self.development_js = development_js
         self.development_css = development_css
+        self.tinymce_styles_css = tinymce_styles_css
 
     def __repr__(self):
         return '<Theme "{0:s}">'.format(self.__name__)
