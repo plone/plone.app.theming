@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.4 (unreleased)
+1.2.4 (2015-05-12)
 ------------------
 
 - Add setting for tinymce automatically detected styles
