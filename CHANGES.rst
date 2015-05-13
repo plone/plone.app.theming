@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.5 (unreleased)
+1.2.5 (2015-05-13)
 ------------------
 
 - Fix RestructuredText representation on PyPI by bringing back a few
