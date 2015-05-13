@@ -4,7 +4,8 @@ Changelog
 1.2.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Minor ReStructuredText fixes for documentation.
+  [maurits]
 
 
 1.2.5 (2015-05-13)
