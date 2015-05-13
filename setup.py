@@ -18,7 +18,7 @@ longdescription += open(
         "userguide.rst"
     )
 ).read()
-longdescription += open(os.path.join("docs", "CHANGES.rst")).read()
+longdescription += open("CHANGES.rst").read()
 
 setup(
     name='plone.app.theming',
