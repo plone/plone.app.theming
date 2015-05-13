@@ -1,5 +1,5 @@
 plone.app.theming manual
-==========================
+========================
 
 This guide provides an overview of Diazo theming in Plone versions 4.3 and higher.
 
@@ -7,7 +7,7 @@ This guide provides an overview of Diazo theming in Plone versions 4.3 and highe
     :local:
 
 Introduction
----------------
+------------
 
 In `Plone <http://plone.org>`_ versions 4.3 and higher you
 can edit your website theme through web browser in Plone's site setup control panel.
