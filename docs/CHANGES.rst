@@ -4,7 +4,9 @@ Changelog
 1.2.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix RestructuredText representation on PyPI by bringing back a few
+  example lines in the manifest.
+  [maurits]
 
 
 1.2.4 (2015-05-12)

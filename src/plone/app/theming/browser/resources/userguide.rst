@@ -463,16 +463,23 @@ rules
     or relative path).
 
 prefix
-    To change the absolute path prefix (see *Advanced settings*), use::
+    To change the absolute path prefix (see *Advanced settings*),
+    use::
+
+      prefix = /some/prefix
 
 doctype
     To employ a ``DOCTYPE`` in the themed content other than ``XHTML 1.0
     Transitional``, add e.g.::
 
+      doctype = <!DOCTYPE html>
+
 preview
     To provide a user-friendly preview of your theme in the *Theming* control panel.
     Here, ``preview.png`` is an image file relative to the location of the
-    ``manifest.cfg`` file.
+    ``manifest.cfg`` file::
+
+      preview = preview.png
 
 enabled-bundles
     Bundles that will automatically be enabled when a theme is activated
