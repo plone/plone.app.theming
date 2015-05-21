@@ -1,3 +1,28 @@
+body {
+    font-family: Roboto, sans-serif;
+}
+
+body a {
+    color: #888
+}
+
+fieldset {
+    color: #333;
+}
+
+fieldset .field {
+    margin-top: 20px;
+}
+
+fieldset label {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+#content-core {
+    margin-top: 10px;
+}
+
 #themesList {
     background-color: #eee;
     padding: 10px;
@@ -7,12 +32,15 @@
     margin-bottom: 10px;
 }
 
+a.plone-btn {
+    text-decoration: none;
+}
+
 .themeEntry {
-    float: left;
-    position:relative;
+    display: inline-block;
     overflow: hidden;
     height: 275px;
-    width: 243px;
+    width: 400px;
     margin: 5px;
     padding: 0 6px 0 9px;
     text-align: center;
@@ -31,7 +59,6 @@
 }
 .themeEntryWrapper {
     height: 230px;
-    width: 238px;
     margin: 0 auto 7px;
 }
 
@@ -56,9 +83,7 @@
 }
 
 .themeEntryTitle {
-    display: block;
-    width: 228px;
-    height: 3.6em;
+    font-size: 20px;
 }
 
 .themeDescription {
@@ -66,8 +91,8 @@
 }
 
 .themeEntry .themeEntryControls {
-    position: absolute;
-    bottom: 5px;
+    clear: both;
+    margin: 10px;
 }
 
 .themeEntry input, .themeEntry form {
@@ -76,4 +101,8 @@
 
 .radioLabel {
     font-weight: normal;
+}
+
+.plone-btn-group {
+    margin: 10px;
 }
