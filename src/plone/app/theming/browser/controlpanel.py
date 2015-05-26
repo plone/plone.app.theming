@@ -355,6 +355,14 @@ class ThemingControlpanel(BrowserView):
                 self.renderOverlay('new-theme')
                 return True
 
+            elif any(t.title == title for t in getAvailableThemes()):
+                self.errors['title'] = _(u"Title is already in use")
+
+                IStatusMessage(self.request).add(
+                    _(u"This title is already in use"),
+                    'error'
+                )
+                return True
             else:
                 name = createThemeFromTemplate(title, description, baseOn)
                 self._setup()

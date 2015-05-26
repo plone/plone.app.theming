@@ -106,3 +106,7 @@ a.plone-btn {
 .plone-btn-group {
     margin: 10px;
 }
+
+.error {
+    color: red;
+}
