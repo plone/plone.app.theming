@@ -345,6 +345,18 @@ class ThemingControlpanel(BrowserView):
             enableImmediately = form.get('enableImmediately', True)
             override = ''
 
+            if any(t.__name__ == title for t in getZODBThemes()):
+                #we only want to allow overrides on built-in themes,
+                #not TTW themes.
+                self.errors['title'] = _(u"Title is already in use")
+
+                IStatusMessage(self.request).add(
+                    _(u"The title you entered is already in use"),
+                    'error'
+                )
+
+                return True
+
             if any(t.__name__ == title for t in getAvailableThemes()):
                 override = baseOn
 
