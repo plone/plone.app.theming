@@ -343,6 +343,10 @@ class ThemingControlpanel(BrowserView):
             description = form.get('description') or ''
             baseOn = form.get('baseOn', TEMPLATE_THEME)
             enableImmediately = form.get('enableImmediately', True)
+            override = ''
+
+            if any(t.__name__ == title for t in getAvailableThemes()):
+                override = baseOn
 
             if not title:
                 self.errors['title'] = _(u"Title is required")
@@ -355,16 +359,8 @@ class ThemingControlpanel(BrowserView):
                 self.renderOverlay('new-theme')
                 return True
 
-            elif any(t.title == title for t in getAvailableThemes()):
-                self.errors['title'] = _(u"Title is already in use")
-
-                IStatusMessage(self.request).add(
-                    _(u"This title is already in use"),
-                    'error'
-                )
-                return True
             else:
-                name = createThemeFromTemplate(title, description, baseOn)
+                name = createThemeFromTemplate(title, description, baseOn, override)
                 self._setup()
 
                 if enableImmediately:
@@ -430,6 +426,7 @@ class ThemingControlpanel(BrowserView):
             themes.append({
                 'name': theme.__name__,
                 'title': theme.title,
+                'override': theme.override,
                 'description': theme.description,
                 'editable': theme.__name__ in zodbNames,
                 'preview': "{0}/{1}".format(portalUrl, previewUrl),

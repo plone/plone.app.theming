@@ -18,6 +18,7 @@ class Theme(object):
         parameterExpressions=None,
         doctype=None,
         preview=None,
+        override='',
         enabled_bundles=[],
         disabled_bundles=[],
         development_css='',
@@ -36,6 +37,7 @@ class Theme(object):
         self.parameterExpressions = parameterExpressions
         self.doctype = doctype
         self.preview = preview
+        self.override = override
         self.enabled_bundles = [b for b in enabled_bundles if b]
         self.disabled_bundles = [b for b in disabled_bundles if b]
         self.tinymce_content_css = tinymce_content_css
