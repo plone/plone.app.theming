@@ -266,15 +266,16 @@ def extractThemeInfo(zipfile, checkRules=True):
 
 
 def getTheme(name, manifest=None, resources=None):
-    if resources is None:
-        resources = getAllResources(
-            MANIFEST_FORMAT,
-            filter=isValidThemeDirectory
-        )
-        manifest = filter(lambda x: x['name'] == name, resources)[0]
+    if manifest is None:
+        if resources is None:
+            resources = getAllResources(
+                MANIFEST_FORMAT,
+                filter=isValidThemeDirectory
+            )
+            manifest = filter(lambda x: x['name'] == name, resources)[0]
 
-        if manifest is None:
-            manifest = {}
+            if manifest is None:
+                manifest = {}
 
     title = manifest.get('title', None)
     if title is None:
