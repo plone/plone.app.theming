@@ -529,11 +529,6 @@ def createThemeFromTemplate(title, description, baseOn='template'):
         themeName = themeName.encode('utf-8')
 
     resources = getOrCreatePersistentResourceDirectory()
-    if themeName in resources:
-        idx = 1
-        while '-'.join((themeName, str(idx))) in resources:
-            idx += 1
-        themeName = '-'.join((themeName, str(idx)))
 
     resources.makeDirectory(themeName)
     target = resources[themeName]
