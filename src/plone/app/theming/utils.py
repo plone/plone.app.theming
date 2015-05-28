@@ -21,10 +21,10 @@ from plone.registry.interfaces import IRegistry
 from plone.resource.interfaces import IResourceDirectory
 from plone.resource.manifest import MANIFEST_FILENAME
 from plone.resource.manifest import extractManifestFromZipFile
-from plone.resource.manifest import getAllResources
 from plone.resource.manifest import getManifest
 from plone.resource.manifest import getZODBResources
 from plone.resource.utils import cloneResourceDirectory
+from plone.resource.utils import iterDirectoriesOfType
 from plone.resource.utils import queryResourceDirectory
 from plone.subrequest import subrequest
 from urlparse import urlsplit
@@ -332,11 +332,36 @@ def getAvailableThemes():
     """
     resources = getAllResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
     themes = []
-    for name, manifest in resources.items():
-        themes.append(getTheme(name, manifest))
+    for theme in resources:
+        themes.append(getTheme(theme['name'], theme))
 
     themes.sort(key=lambda x: safe_unicode(x.title))
     return themes
+
+def getAllResources(format, defaults=None, filter=None, manifestFilename=MANIFEST_FILENAME):
+
+    resources = []
+
+    for directory in iterDirectoriesOfType(format.resourceType, filter_duplicates=False):
+
+        if filter is not None and not filter(directory):
+            continue
+
+        name = directory.__name__
+
+        if directory.isFile(manifestFilename):
+
+            manifest = directory.openFile(manifestFilename)
+            try:
+                theme = getManifest(manifest, format, defaults)
+                theme['name'] = name
+                resources.append(theme)
+            except:
+                LOGGER.exception("Unable to read manifest for theme directory %s", name)
+            finally:
+                manifest.close()
+
+    return resources
 
 
 def getThemeFromResourceDirectory(resourceDirectory):
@@ -504,11 +529,6 @@ def createThemeFromTemplate(title, description, baseOn='template'):
         themeName = themeName.encode('utf-8')
 
     resources = getOrCreatePersistentResourceDirectory()
-    if themeName in resources:
-        idx = 1
-        while '-'.join((themeName, idx)) in resources:
-            idx += 1
-        themeName = '-'.join((themeName, idx))
 
     resources.makeDirectory(themeName)
     target = resources[themeName]
