@@ -272,9 +272,10 @@ def getTheme(name, manifest=None, resources=None):
                 MANIFEST_FORMAT,
                 filter=isValidThemeDirectory
             )
-        if name not in resources:
-            return None
-        manifest = resources[name] or {}
+            manifest = filter(lambda x: x['name'] == name, resources)[0]
+
+            if manifest is None:
+                manifest = {}
 
     title = manifest.get('title', None)
     if title is None:
