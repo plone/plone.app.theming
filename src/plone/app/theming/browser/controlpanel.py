@@ -356,17 +356,6 @@ class ThemingControlpanel(BrowserView):
                 return True
 
             else:
-
-                if any(x.__name__ == title for x in getZODBThemes()):
-                    self.errors['title'] = _(u"Duplicate title")
-
-                    IStatusMessage(self.request).add(
-                        _(u"This title is already in use"),
-                        'error'
-                    )
-
-                    return True
-
                 name = createThemeFromTemplate(title, description, baseOn)
                 self._setup()
 
@@ -419,23 +408,9 @@ class ThemingControlpanel(BrowserView):
 
         portalUrl = getToolByName(self.context, 'portal_url')()
 
-        complete = [];
-
         for theme in self.availableThemes:
             if theme.__name__ == TEMPLATE_THEME:
                 continue
-
-            #We've overwritten this theme, skip it
-            if complete.__contains__(theme.__name__):
-                continue
-
-            override = False
-
-            #Is there more than one theme with the same name?
-            if len( filter(lambda x: x.__name__ == theme.__name__, self.availableThemes) ) > 1:
-                #Then we make sure we're using the TTW version, not the filesystem version.
-                theme = filter(lambda x: x.__name__ == theme.__name__, self.zodbThemes)[0]
-                override = True
 
             previewUrl = "++resource++plone.app.theming/defaultPreview.png"
             if theme.preview:
@@ -448,13 +423,10 @@ class ThemingControlpanel(BrowserView):
                 'name': theme.__name__,
                 'title': theme.title,
                 'description': theme.description,
-                'override': override,
                 'editable': theme.__name__ in zodbNames,
                 'preview': "{0}/{1}".format(portalUrl, previewUrl),
                 'selected': theme.__name__ == self.selectedTheme,
             })
-
-            complete.append(theme.__name__)
 
         themes.sort(key=lambda x: x['title'])
 
