@@ -1,13 +1,6 @@
 Changelog
 =========
 
-1.2.7 (2015-05-28)
-------------------
-
-- Now shows a warning when a built-in theme is being overriden.
-  TTW themes can no longer be overriden
-  [obct537]
-
 1.2.6 (unreleased)
 ------------------
 
