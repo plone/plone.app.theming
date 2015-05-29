@@ -280,6 +280,7 @@ def getTheme(name, manifest=None, resources=None):
     if title is None:
         title = name.capitalize().replace('-', ' ').replace('.', ' ')
     description = manifest.get('description', None)
+    override = manifest.get('override', '')
     rules = manifest.get('rules', None)
     if rules is None:
         rules = u"/++{0:s}++{1:s}/{2:s}".format(
@@ -312,6 +313,7 @@ def getTheme(name, manifest=None, resources=None):
         rules,
         title=title,
         description=description,
+        override=override,
         absolutePrefix=prefix,
         parameterExpressions=params,
         doctype=doctype,
@@ -490,7 +492,7 @@ def applyTheme(theme):
         notify(ThemeAppliedEvent(theme))
 
 
-def createThemeFromTemplate(title, description, baseOn='template'):
+def createThemeFromTemplate(title, description, baseOn='template', override=''):
     """Create a new theme from the given title and description based on
     another theme resource directory
     """
@@ -529,6 +531,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
 
     manifest.set('theme', 'title', title)
     manifest.set('theme', 'description', description)
+    manifest.set('theme', 'override', override)
 
     manifestContents = StringIO()
     manifest.write(manifestContents)

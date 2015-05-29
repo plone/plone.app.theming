@@ -14,7 +14,7 @@ TEMPLATE_THEME = 'template'
 
 MANIFEST_FORMAT = ManifestFormat(
     THEME_RESOURCE_NAME,
-    keys=['title', 'description', 'rules', 'prefix', 'doctype', 'preview',
+    keys=['title', 'description', 'rules','override', 'prefix', 'doctype', 'preview',
           'enabled-bundles', 'disabled-bundles',
           'development-css', 'production-css',
           'tinymce-content-css', 'tinymce-styles-css',
@@ -39,6 +39,11 @@ class ITheme(Interface):
 
     title = schema.TextLine(
         title=_(u"Title"),
+        required=False,
+    )
+
+    override = schema.TextLine(
+        title=_(u"Overrides another template"),
         required=False,
     )
 

@@ -144,6 +144,7 @@
 
                     <span class="themeEntryTitle">
                         <span tal:replace="theme/title">Title</span>
+                        <span class="error" tal:condition="theme/override">(this overrides a filesystem theme)</span>
                         <span
                             tal:condition="theme/selected"
                             class="themeActive"
@@ -290,7 +291,7 @@
                                 tal:attributes="id string:modal-delete-${theme/name}"
                                 tal:condition="theme/editable">
                                 <h1 class="documentFirstHeading" i18n:translate="theming_controlpanel_delete_confirm">
-                                    Are you sure you want to delete <span 
+                                    Are you sure you want to delete <span
                                         tal:content="string:${theme/name}"
                                         i18n:name="theme_name"></span>
                                 </h1>
