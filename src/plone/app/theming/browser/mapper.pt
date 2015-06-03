@@ -99,7 +99,8 @@
           <section id="content-core">
             <input tal:replace="structure context/@@authenticator/authenticator" />
             <div class="pat-thememapper"
-                  data-pat-thememapper='
+				data-pat-thememapper='
+					  themeUrl: ${view/resourceUrl};
                       filemanagerConfig:{"actionUrl":"${view/themeBaseUrl}/@@plone.resourceeditor.filemanager-actions"};
                       mockupUrl:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off;
                       unthemedUrl:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;diazo.off=1;
