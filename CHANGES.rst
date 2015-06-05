@@ -4,6 +4,18 @@ Changelog
 1.2.6 (unreleased)
 ------------------
 
+- removed irrelevant theme renaming code
+  [schwartz]
+
+- Filesystem themes are now correctly overridden. TTW themes can no longer be overriden
+  [schwartz]
+
+- re-added manifest check
+  [schwartz]
+
+- Fixed broken getTheme method
+  [schwartz]
+
 - Minor ReStructuredText fixes for documentation.
   [maurits]
 
