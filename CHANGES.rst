@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.6 (unreleased)
+1.2.6 (2015-06-05)
 ------------------
 
 - removed irrelevant theme renaming code
