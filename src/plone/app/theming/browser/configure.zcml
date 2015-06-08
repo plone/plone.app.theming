@@ -47,7 +47,7 @@
 
 	<browser:page
         name="themeFileUpload"
-        for="plone.resource.interfaces.IResourceDirectory"
+        for="*"
         class=".themefile.FileUploadView"
         permission="plone.app.controlpanel.Themes"
         />
