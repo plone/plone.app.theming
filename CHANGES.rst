@@ -4,8 +4,8 @@ Changelog
 1.2.7 (unreleased)
 ------------------
 
-- Nothing changed yet.
-
+- implemented upload for theme manager
+  [schwartz]
 
 1.2.6 (2015-06-05)
 ------------------

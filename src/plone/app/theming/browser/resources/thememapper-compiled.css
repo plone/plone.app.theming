@@ -4148,4 +4148,54 @@ tbody.pat-filemanager .collapse.in {
 .pat-thememapper .nav-and-editor .pat-filemanager .collapse {
   padding-left: 0;
 }
+.pat-thememapper .upload-area {
+  border: 2px dashed #ddd;
+  background-color: #eee;
+  padding: 10px;
+}
+.pat-thememapper .upload-area p {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  text-align: center;
+  font-size: xx-large;
+  color: #aaa;
+}
+.pat-thememapper .upload-area #fakeUploadFile {
+  display: none;
+}
+.pat-thememapper .upload-area .row > div {
+  display: inline;
+}
+.pat-thememapper .upload-area .item {
+  margin: 10px 0;
+}
+.pat-thememapper .upload-area .item div {
+  display: table-cell;
+}
+.pat-thememapper .upload-area .browse {
+  width: 100%;
+}
+.pat-thememapper .upload-area .title {
+  width: 250px;
+}
+.pat-thememapper .upload-area .action {
+  width: 20px;
+}
+.pat-thememapper .upload-area .info {
+  width: 100px;
+}
+.pat-thememapper .upload-area .info img {
+  display: inline;
+  background-color: white;
+  max-height: 50px;
+  float: right;
+  max-width: 50px;
+  margin-top: -35px;
+}
+.pat-thememapper .upload-area .controls {
+  display: none;
+}
+.pat-thememapper .upload-area .sr-only {
+  display: none;
+}
 /*# sourceMappingURL=thememapper-compiled.css.map */
