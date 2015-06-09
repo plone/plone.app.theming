@@ -74,6 +74,7 @@ class ThemeMapper(BrowserView):
         )
         self.themeBasePathEncoded = urllib.quote_plus(self.themeBasePath)
         self.themeBaseUrl = '/'.join([self.portalUrl, self.themeBasePath])
+        self.resourceUrl = self.resourceDirectory.context.absolute_url()        
 
         self.editable = IWritableResourceDirectory.providedBy(
             self.resourceDirectory

@@ -45,4 +45,11 @@
         permission="plone.app.controlpanel.Themes"
         />
 
+	<browser:page
+        name="themeFileUpload"
+        for="*"
+        class=".themefile.FileUploadView"
+        permission="plone.app.controlpanel.Themes"
+        />
+
 </configure>
