@@ -59,7 +59,21 @@
     <subscriber
         for=".interfaces.IThemeSettings
               plone.registry.interfaces.IRecordModifiedEvent"
-        handler=".transform.invalidateCache"
+        handler=".policy.invalidateCache"
+        />
+
+    <!-- policy adapter
+         You can plug in a custom adapter by registering it for your own layer
+         eg for="your.product.interfaces.IThemeSwitcher".  -->
+    <adapter
+        factory=".policy.ThemingPolicy"
+        for="zope.publisher.interfaces.IRequest"
+        />
+    <!-- fallback default policy adapter
+         Do not override this, it is used by applyTheme -->
+    <adapter
+        factory=".policy.ThemingPolicy"
+        for="plone.app.theming.interfaces.INoRequest"
         />
 
     <!-- Set X-Theme-Enabled header in the request if theming is enabled -->

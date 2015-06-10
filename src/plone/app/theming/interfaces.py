@@ -231,3 +231,39 @@ class IThemePlugin(Interface):
 
 class IThemeAppliedEvent(Interface):
     theme = Attribute('theme that is getting applied')
+
+
+class INoRequest(Interface):
+    """Fallback to enable querying for the policy adapter
+    even in the absence of a proper IRequest."""
+
+
+class IThemingPolicy(Interface):
+    """An adapter on request that provides access to the current
+    theme and theme settings.
+    """
+
+    def getSettings():
+        """Settings for current theme."""
+
+    def getCurrentTheme():
+        """The name of the current theme."""
+
+    def isThemeEnabled():
+        """Whether theming is enabled."""
+
+    def getCache(theme=None):
+        """Managing the cache is a policy decision."""
+
+    def getCacheKey(theme=None):
+        """Managing the cache is a policy decision."""
+
+    def invalidateCache():
+        """When our settings are changed, invalidate the cache on all zeo clients.
+        """
+
+    def get_theme():
+        """Returns the current theme object, cached."""
+
+    def set_theme(themeName, themeObj):
+        """Update the theme cache."""

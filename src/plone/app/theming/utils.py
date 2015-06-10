@@ -8,8 +8,8 @@ from StringIO import StringIO
 from diazo.compiler import compile_theme
 from diazo.compiler import quote_param
 from lxml import etree
-from plone.app.theming.events import ThemeAppliedEvent
-from plone.app.theming.interfaces import IThemeSettings
+from plone.app.theming.interfaces import IThemingPolicy
+from plone.app.theming.interfaces import INoRequest
 from plone.app.theming.interfaces import MANIFEST_FORMAT
 from plone.app.theming.interfaces import RULE_FILENAME
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
@@ -17,7 +17,6 @@ from plone.app.theming.plugins.utils import getPluginSettings
 from plone.app.theming.plugins.utils import getPlugins
 from plone.app.theming.theme import Theme
 from plone.i18n.normalizer.interfaces import IURLNormalizer
-from plone.registry.interfaces import IRegistry
 from plone.resource.interfaces import IResourceDirectory
 from plone.resource.manifest import MANIFEST_FILENAME
 from plone.resource.manifest import extractManifestFromZipFile
@@ -31,14 +30,28 @@ from plone.subrequest import subrequest
 from urlparse import urlsplit
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
-from zope.component import queryUtility
-from zope.event import notify
 from zope.globalrequest import getRequest
-import Globals
+from zope.interface import implementer
 import logging
 import pkg_resources
 
 LOGGER = logging.getLogger('plone.app.theming')
+
+
+@implementer(INoRequest)
+class NoRequest(object):
+    """Fallback to enable querying for the policy adapter
+    even in the absence of a proper IRequest."""
+
+
+def theming_policy(request=None):
+    """Primary policy accessor, uses pluggable ZCA lookup.
+    Resolves into a IThemingPolicy adapter."""
+    if not request:
+        request = getRequest()
+    if not request:
+        request = NoRequest()  # the adapter knows how to handle this
+    return IThemingPolicy(request)
 
 
 class NetworkResolver(etree.Resolver):
@@ -392,70 +405,26 @@ def getZODBThemes():
 def getCurrentTheme():
     """Get the name of the currently enabled theme
     """
-    settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
-    if not settings.rules:
-        return None
-
-    if settings.currentTheme:
-        return settings.currentTheme
-
-    # BBB: If currentTheme isn't set, look for a theme with a rules file
-    # matching that of the current theme
-    for theme in getAvailableThemes():
-        if theme.rules == settings.rules:
-            return theme.__name__
-
-    return None
+    return theming_policy().getCurrentTheme()
 
 
 def isThemeEnabled(request, settings=None):
     """Determine if a theme is enabled for the given request
     """
-
-    # Resolve DevelopmentMode late (i.e. not on import time) since it may
-    # be set during import or test setup time
-    DevelopmentMode = Globals.DevelopmentMode
-
-    # Disable theming if the response sets a header
-    if request.response.getHeader('X-Theme-Disabled'):
-        return False
-
-    # Check for diazo.off request parameter
-    true_vals = ('1', 'y', 'yes', 't', 'true')
-    if (DevelopmentMode and request.get('diazo.off', '').lower() in true_vals):
-        return False
-
-    if settings is None:
-        registry = queryUtility(IRegistry)
-        if registry is None:
-            return False
-        settings = registry.forInterface(IThemeSettings, False)
-
-    if not settings.enabled or not settings.rules:
-        return False
-
-    server_url = request.get('SERVER_URL')
-    proto, host = server_url.split('://', 1)
-    host = host.lower()
-    serverPort = request.get('SERVER_PORT')
-
-    for hostname in settings.hostnameBlacklist or ():
-        if host == hostname or host == ':'.join((hostname, serverPort)):
-            return False
-
-    return True
+    return theming_policy(request).isThemeEnabled(settings)
 
 
 def applyTheme(theme):
     """Apply an ITheme
     """
-
-    settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
+    # on write, force using default policy
+    policy = IThemingPolicy(NoRequest())
+    settings = policy.getSettings()
 
     plugins = None
     themeDirectory = None
     pluginSettings = None
-    currentTheme = getCurrentTheme()
+    currentTheme = policy.getCurrentTheme()
 
     if currentTheme is not None:
         themeDirectory = queryResourceDirectory(
@@ -510,7 +479,7 @@ def applyTheme(theme):
             for name, plugin in plugins:
                 plugin.onEnabled(currentTheme, pluginSettings[name],
                                  pluginSettings)
-        notify(ThemeAppliedEvent(theme))
+        policy.set_theme(currentTheme, theme)
 
 
 def createThemeFromTemplate(title, description, baseOn='template'):
