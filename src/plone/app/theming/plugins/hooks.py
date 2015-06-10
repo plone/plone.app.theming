@@ -2,8 +2,7 @@
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.plugins.utils import getPluginSettings
 from plone.app.theming.plugins.utils import getPlugins
-from plone.app.theming.utils import getCurrentTheme
-from plone.app.theming.utils import isThemeEnabled
+from plone.app.theming.utils import theming_policy
 from plone.resource.utils import iterDirectoriesOfType
 from plone.resource.utils import queryResourceDirectory
 
@@ -29,11 +28,12 @@ def onRequest(object, event):
     """
 
     request = event.request
+    policy = theming_policy(request)
 
-    if not isThemeEnabled(request):
+    if not policy.isThemeEnabled():
         return
 
-    theme = getCurrentTheme()
+    theme = policy.getCurrentTheme()
     if theme is None:
         return
 

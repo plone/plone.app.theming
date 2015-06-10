@@ -7,16 +7,15 @@ from Products.Five.browser.decode import processInputs
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from diazo.utils import quote_param
-from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.interfaces import RULE_FILENAME
 from plone.app.theming.interfaces import THEME_EXTENSIONS
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.utils import compileThemeTransform
 from plone.app.theming.utils import findContext
-from plone.app.theming.utils import getCurrentTheme
 from plone.app.theming.utils import getPortal
 from plone.app.theming.utils import getThemeFromResourceDirectory
 from plone.app.theming.utils import prepareThemeParameters
+from plone.app.theming.utils import theming_policy
 from plone.memoize import view
 from plone.registry.interfaces import IRegistry
 from plone.resource.interfaces import IWritableResourceDirectory
@@ -79,8 +78,10 @@ class ThemeMapper(BrowserView):
             self.resourceDirectory
         )
 
-        settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
-        self.active = (settings.enabled and self.name == getCurrentTheme())
+        policy = theming_policy(self.request)
+        settings = policy.getSettings()
+        self.active = (settings.enabled
+                       and self.name == policy.getCurrentTheme())
 
         self.rulesFileName = RULE_FILENAME
 
@@ -217,8 +218,8 @@ class ThemeMapper(BrowserView):
             self.request.response.setHeader('X-Theme-Disabled', '1')
             themeInfo = getThemeFromResourceDirectory(self.context)
 
-            registry = getUtility(IRegistry)
-            settings = registry.forInterface(IThemeSettings, False)
+            policy = theming_policy(self.request)
+            settings = policy.getSettings()
 
             context = self.context
             try:
