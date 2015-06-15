@@ -75,6 +75,13 @@
             reflected on the live site.
         </span>
       </div>
+      <div class="portalMessage warning"
+        tal:condition="not: view/editable">
+        <strong i18n:translate="">Warning</strong>
+        <span tal:omit-tag="" i18n:translate="theming_mapper_warning_live">
+			This is a built-in theme, and cannot be edited.
+        </span>
+      </div>
     </aside>
 
 
@@ -98,9 +105,8 @@
 
           <section id="content-core">
             <input tal:replace="structure context/@@authenticator/authenticator" />
-            <div class="pat-thememapper"
-				data-pat-thememapper='
-					  themeUrl: ${view/resourceUrl};
+            <div class="pat-thememapper" data-pat-thememapper='themeUrl: ${view/resourceUrl};
+					  editable: ${view/editable};
                       filemanagerConfig:{"actionUrl":"${view/themeBaseUrl}/@@plone.resourceeditor.filemanager-actions"};
                       mockupUrl:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off;
                       unthemedUrl:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;diazo.off=1;
