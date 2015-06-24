@@ -77,6 +77,10 @@ class ThemeMapper(BrowserView):
         self.editable = IWritableResourceDirectory.providedBy(
             self.resourceDirectory
         )
+        if self.editable:
+            self.resourceUrl = self.resourceDirectory.context.absolute_url()
+        else:
+            self.resourceUrl = None
 
         policy = theming_policy(self.request)
         settings = policy.getSettings()

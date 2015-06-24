@@ -1,8 +1,26 @@
 Changelog
 =========
 
-1.2.6 (unreleased)
+1.2.7 (unreleased)
 ------------------
+
+- implemented upload for theme manager
+  [schwartz]
+
+1.2.6 (2015-06-05)
+------------------
+
+- removed irrelevant theme renaming code
+  [schwartz]
+
+- Filesystem themes are now correctly overridden. TTW themes can no longer be overriden
+  [schwartz]
+
+- re-added manifest check
+  [schwartz]
+
+- Fixed broken getTheme method
+  [schwartz]
 
 - Minor ReStructuredText fixes for documentation.
   [maurits]

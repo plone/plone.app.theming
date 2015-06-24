@@ -8829,6 +8829,8 @@ define('mockup-utils',[
       attributes: ['UID', 'Title', 'Description', 'getURL', 'portal_type'],
       batchSize: 10, // number of results to retrive
       baseCriteria: [],
+      sort_on: 'is_folderish',
+      sort_order: 'reverse',
       pathDepth: 1
     };
     self.options = $.extend({}, defaults, options);
@@ -8951,7 +8953,9 @@ define('mockup-utils',[
     self.getQueryData = function(term, page) {
       var data = {
         query: JSON.stringify({
-          criteria: self.getCriterias(term)
+          criteria: self.getCriterias(term),
+          sort_on: self.options.sort_on,
+          sort_order: self.options.sort_order
         }),
         attributes: JSON.stringify(self.options.attributes)
       };
@@ -30677,12 +30681,14 @@ define('mockup-patterns-texteditor',[
 
       // set id on current element
       var id = utils.setId(self.$el);
-      self.$wrapper = $('<div/>').css({
+      self.$wrapper = $('<div class="editorWrapper" />').css({
         height: self.options.height + 25, // weird sizing issue here...
         width: self.options.width,
         position: 'relative'
       });
-      self.$el.wrap(self.$wrapper);
+      if( !self.$el.parent().hasClass('editorWrapper') ) {
+          self.$el.wrap(self.$wrapper);
+      }
       self.$el.css({
         width: self.options.width,
         height: self.options.height,
@@ -30888,8 +30894,16 @@ define('mockup-patterns-tooltip',[
   var Tooltip = Base.extend({
     name: 'tooltip',
     trigger: '.pat-tooltip',
-
-    init: function(element, options) {
+    defaults: {
+      html: false
+    },
+    init: function() {
+        if (this.options.html === 'true') {
+          // TODO: fix the parser!
+          this.options.html = true;
+        } else {
+          this.options.html = false;
+        }
         this.data = new bootstrapTooltip(this.$el[0], this.options);
     },
   });
@@ -30917,7 +30931,7 @@ define('mockup-patterns-tooltip',[
     trigger: 'hover focus',
     title: '',
     delay: 0,
-    html: false,
+    html: true,  // TODO: fix bug, where this setting overwrites whatever is set in options
     container: false,
     viewport: {
       selector: 'body',
@@ -31152,7 +31166,7 @@ define('mockup-patterns-tooltip',[
     var $tip  = this.tip()
     var title = this.getTitle()
 
-    $tip.find('.tooltip-inner')[this.options.html ? 'ht`ml' : 'text'](title)
+    $tip.find('.tooltip-inner')[this.options.html ? 'html' : 'text'](title)
     $tip.removeClass('fade in top bottom left right')
   }
 
@@ -38779,7 +38793,7 @@ define('mockup-patterns-relateditems',[
     return module.exports;
 }));
 
-define('text!mockup-patterns-upload-url/templates/upload.xml',[],function () { return '<div class="upload-container upload-multiple">\n    <h2 class="title"><%- _t("Upload stuff here") %></h2>\n    <p class="help">\n        <%- _t(\'Just drag N drop stuff on the area below or press "upload" button.\') %>\n    </p>\n    <div class="upload-area">\n        <div class="fallback">\n            <input name="file" type="file" multiple />\n        </div>\n        <div class="dz-message"><p><%-_t("Drop files here...")%></p></div>\n        <div class="row">\n            <div class="col-md-9">\n                <input\n                    id="fakeUploadFile"\n                    placeholder="<%- _t("Choose File") %>"\n                    disabled="disabled"\n                    />\n            </div>\n            <div class="col-md-3">\n                <button\n                    type="button"\n                    class="btn btn-primary browse">\n                    Browse\n                </button>\n            </div>\n        </div>\n        <div class="upload-queue">\n            <div class="previews">\n            </div>\n            <div class="controls">\n                <div class="path">\n                    <label><%- _t("Upload to...") %></label>\n                    <p class="form-help">\n                        <%- _t("If nothing selected files we be added to current context.") %>\n                    </p>\n                    <input\n                        type="text"\n                        name="location"\n                        />\n                </div>\n                <div class="actions row">\n                    <div class="col-md-9">\n                        <div class="progress progress-striped active">\n                            <div class="progress-bar progress-bar-success"\n                                 role="progressbar"\n                                 aria-valuenow="0"\n                                 aria-valuemin="0"\n                                 aria-valuemax="100"\n                                 style="width: 0%">\n                                <span class="sr-only">40% Complete (success)</span>\n                            </div>\n                        </div>\n                    </div>\n                    <div class="col-md-3 align-right">\n                        <button\n                            type="button"\n                            class="btn btn-primary upload-all">\n                            <%- _t("Upload") %>\n                        </button>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n';});
+define('text!mockup-patterns-upload-url/templates/upload.xml',[],function () { return '<div class="upload-container upload-multiple">\n    <h2 class="title"><%- _t("Upload stuff here") %></h2>\n    <p class="help">\n        <%- _t(\'Just drag N drop stuff on the area below or press the "browse" button.\') %>\n    </p>\n    <div class="upload-area">\n        <div class="fallback">\n            <input name="file" type="file" multiple />\n        </div>\n        <div class="dz-message"><p><%-_t("Drop files here...")%></p></div>\n        <div class="row">\n            <div class="col-md-9">\n                <input\n                    id="fakeUploadFile"\n                    placeholder="<%- _t("Choose File") %>"\n                    disabled="disabled"\n                    />\n            </div>\n            <div class="col-md-3">\n                <button\n                    type="button"\n                    class="btn btn-primary browse">\n                    Browse\n                </button>\n            </div>\n        </div>\n        <div class="upload-queue">\n            <div class="previews">\n            </div>\n            <div class="controls">\n                <div class="path">\n                    <label><%- _t("Upload to...") %></label>\n                    <p class="form-help">\n                        <%- _t("If nothing selected files we be added to current context.") %>\n                    </p>\n                    <input\n                        type="text"\n                        name="location"\n                        />\n                </div>\n                <div class="actions row">\n                    <div class="col-md-9">\n                        <div class="progress progress-striped active">\n                            <div class="progress-bar progress-bar-success"\n                                 role="progressbar"\n                                 aria-valuenow="0"\n                                 aria-valuemin="0"\n                                 aria-valuemax="100"\n                                 style="width: 0%">\n                                <span class="sr-only">40% Complete (success)</span>\n                            </div>\n                        </div>\n                    </div>\n                    <div class="col-md-3 align-right">\n                        <button\n                            type="button"\n                            class="btn btn-primary upload-all">\n                            <%- _t("Upload") %>\n                        </button>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n';});
 
 
 define('text!mockup-patterns-upload-url/templates/preview.xml',[],function () { return '<div class="row item form-inline">\n    <div class="col-md-1 action">\n        <button\n            type="button"\n            class="btn btn-danger btn-xs remove-item"\n            data-dz-remove=""\n            href="javascript:undefined;">\n            <span class="glyphicon glyphicon-remove"></span>\n        </button>\n    </div>\n    <div class="col-md-8 title">\n        <div class="dz-preview">\n          <div class="dz-details">\n            <div class="dz-filename"><span data-dz-name></span></div>\n          </div>\n          <div class="dz-error-message"><span data-dz-errormessage></span></div>\n        </div>\n        <div class="dz-progress">\n            <span class="dz-upload" data-dz-uploadprogress></span>\n        </div>\n    </div>\n    <div class="col-md-3 info">\n        <div class="dz-size" data-dz-size></div>\n        <img data-dz-thumbnail />\n    </div>\n</div>\n';});
@@ -38976,7 +38990,7 @@ define('mockup-patterns-upload',[
         // upload pattern, e.g. the TinyMCE pattern's link plugin.
         self.$el.trigger('uploadAllCompleted', {
           'data': response,
-          'path_uid': self.$pathInput.val()
+          'path_uid': (self.$pathInput) ? self.$pathInput.val() : null
         });
       });
 
@@ -39247,7 +39261,7 @@ define('mockup-patterns-filemanager-url/js/upload',[
     className: 'popover upload',
     title: _.template('<%= _t("Upload") %>'),
     content: _.template(
-      '<span class="current-path"></span>' +
+      '<span>Location: <span class="current-path"></span></span>' +
       '<input type="text" name="upload" style="display:none" />' +
       '<div class="uploadify-me"></div>'),
     render: function() {
@@ -39255,7 +39269,10 @@ define('mockup-patterns-filemanager-url/js/upload',[
       PopoverView.prototype.render.call(this);
       self.upload = new Upload(self.$('.uploadify-me').addClass('pat-upload'), {
         url: self.app.options.uploadUrl,
-        success: function() {
+        success: function(response) {
+          if( self.callback ) {
+            self.callback.apply(self.app, [response]);
+          }
         }
       });
       return this;
@@ -39430,7 +39447,8 @@ define('mockup-patterns-filemanager',[
             tooltip: _t('Upload file to current directory'),
             context: 'default'
           }),
-          app: self
+          app: self,
+          callback: self.addTreeElement
         });
         self.views.push(uploadView);
         mainButtons.push(uploadView.triggerView);
@@ -39490,6 +39508,55 @@ define('mockup-patterns-filemanager',[
     $: function(selector){
       return this.$el.find(selector);
     },
+    addTreeElement: function(file) {
+      var self = this;
+
+      if( file.status !== 'success' )
+      {
+          alert('There was a problem during the upload process.');
+          return;
+      }
+
+      if( self.$tree === undefined ) {
+        return;
+      }
+
+      var node = self.getSelectedNode();
+      var path = "";
+      var name = file.name;
+
+      if( node.filename ) {
+        //We just want the selected folder, not an object in it.
+        path = node.path.substr(0, node.path.indexOf(node.filename) - 1);
+        node = self.$tree.tree('moveUp');
+      }
+      else if( node.path ){
+        path = node.path;
+      }
+
+      var options = {
+        label: name,
+        path: path + '/' + name,
+        filename: name,
+        fileType: name.substr(name.lastIndexOf('.') + 1, name.length),
+        folder: false,
+        name: name
+      };
+
+      if( node === false )
+      {
+        //If node is empty, jqtree makes the new node a root
+        node = null
+      }
+      var newNode = self.$tree.tree('appendNode', options, node);
+      self.$tree.tree('selectNode', newNode);
+      self.openFile({node: newNode});
+      //Close the upload popover
+      var upload = self.getUpload();
+      if( upload.triggerView.$el.hasClass('active') ) {
+        upload.options.triggerView.$el.click();
+      }
+    },
     render: function(){
       var self = this;
       self.$el.html(self.template(self.options));
@@ -39522,6 +39589,9 @@ define('mockup-patterns-filemanager',[
       var self = this;
       var doc = event.node.path;
       if (event.node.folder){
+        if( self.options.theme ) {
+          self.setUploadUrl(event.node.path);
+        }
         return true;
       }
       if(self.fileData[doc]) {
@@ -39545,10 +39615,11 @@ define('mockup-patterns-filemanager',[
                 $item.addClass('active');
                 self.openEditor($item.attr('data-path'));
               } else {
-                self.ace.setText('');
+                self.openEditor();
               }
             }
             $(this).parent().remove();
+            self.resizeEditor();
           });
           $('.select', $item).click(function(e){
             e.preventDefault();
@@ -39603,7 +39674,12 @@ define('mockup-patterns-filemanager',[
 
       self.resizeEditor();
 
-      if( typeof self.fileData[path].info !== 'undefined' )
+      if( self.currentPath === undefined ) {
+          self.ace.setText();
+          self.ace.setSyntax('text');
+          self.ace.editor.clearSelection();
+      }
+      else if( typeof self.fileData[path].info !== 'undefined' )
       {
           var preview = self.fileData[path].info;
           self.ace.editor.off();
@@ -39662,7 +39738,11 @@ define('mockup-patterns-filemanager',[
       parts.reverse();
       return '/' + parts.join('/');
     },
+    getUpload: function() {
+      var self = this;
 
+      return _.find(self.views, function(x) { return x.upload !== undefined });
+    },
     resizeEditor: function() {
         var self = this;
 
@@ -39675,7 +39755,6 @@ define('mockup-patterns-filemanager',[
 
         //+2 for the editor borders
         h -= 2;
-
         //accounts for the borders/margin
         self.$editor.height(h);
         var w = container.innerWidth();
@@ -39687,6 +39766,24 @@ define('mockup-patterns-filemanager',[
           self.ace.editor.resize();
           self.ace.editor.$blockScrolling = Infinity;
         }
+    },
+    setUploadUrl: function(path) {
+      var self = this;
+
+      if( path === undefined ) {
+        path = "";
+      }
+
+      var view = self.getUpload();
+      if( view !== undefined ) {
+        var url = self.options.uploadUrl +
+                  path +
+                  "/themeFileUpload" +
+                  "?_authenticator=" +
+                  utils.getAuthenticator();
+
+        view.upload.dropzone.options.url = url;
+      }
     }
   });
 
@@ -40120,6 +40217,7 @@ define('mockup-patterns-thememapper',[
     trigger: '.pat-thememapper',
     defaults: {
       filemanagerConfig: {},
+      themeUrl: null,
       mockupUrl: null,
       unthemedUrl: null,
       helpUrl: null,
@@ -40152,7 +40250,12 @@ define('mockup-patterns-thememapper',[
       self.ruleBuilder = new RuleBuilder(function(){
         debugger; //callback
       });
+
+      self.options.filemanagerConfig.uploadUrl = self.options.themeUrl;
+      self.options.filemanagerConfig.theme = true;
       self.fileManager = new FileManager(self.$fileManager, self.options.filemanagerConfig);
+      self.fileManager.setUploadUrl();
+
       self.mockupInspector = new Inspector(self.$mockupInspector, {
         name: _t('HTML mockup'),
         ruleBuilder: self.ruleBuilder,
