@@ -6,6 +6,7 @@
     <include package="plone.app.theming"/>
 
     <plone:static directory="resources" type="theme" />
+    <plone:static directory="secondary-theme" name="secondary-theme" type="theme" />
 
     <browser:page
         for="*"
