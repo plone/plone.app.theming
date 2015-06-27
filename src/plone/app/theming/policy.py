@@ -148,7 +148,7 @@ class ThemingPolicy(object):
         theme caches."""
         registry = queryUtility(IRegistry)
         setattr(registry, '_theme_cache_mtime', time.time())
-        registry._p_modified = True
+        registry._p_changed = True
         log.info("shared cache invalidation marker updated")
 
     def _get_shared_invalidation(self):
