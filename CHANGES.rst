@@ -4,6 +4,9 @@ Changelog
 1.2.7 (unreleased)
 ------------------
 
+- fixed configuration of copied theme
+  [vmaksymiv]
+
 - implemented upload for theme manager
   [schwartz]
 
