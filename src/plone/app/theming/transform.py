@@ -1,19 +1,15 @@
 # -*- coding: utf-8 -*-
 from lxml import etree
-from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.interfaces import IThemingLayer
 from plone.app.theming.utils import compileThemeTransform
 from plone.app.theming.utils import findContext
 from plone.app.theming.utils import getParser
-from plone.app.theming.utils import isThemeEnabled
 from plone.app.theming.utils import prepareThemeParameters
+from plone.app.theming.utils import theming_policy
 from plone.app.theming.zmi import patch_zmi
-from plone.registry.interfaces import IRegistry
 from plone.transformchain.interfaces import ITransform
 from repoze.xmliter.utils import getHTMLSerializer
 from zope.component import adapter
-from zope.component import queryUtility
-from zope.component.hooks import getSite
 from zope.interface import Interface
 from zope.interface import implementer
 import Globals
@@ -23,46 +19,6 @@ import logging
 patch_zmi()
 
 LOGGER = logging.getLogger('plone.app.theming')
-
-
-class _Cache(object):
-    """Simple cache for the transform
-    """
-
-    def __init__(self):
-        self.transform = None
-        self.expressions = None
-
-    def updateTransform(self, transform):
-        self.transform = transform
-
-    def updateExpressions(self, expressions):
-        self.expressions = expressions
-
-
-def getCache(settings):
-    # We need a persistent object to hang a _v_ attribute off for caching.
-
-    registry = settings.__registry__
-    caches = getattr(registry, '_v_plone_app_theming_caches', None)
-    if caches is None:
-        caches = registry._v_plone_app_theming_caches = {}
-
-    key = getSite().absolute_url()
-
-    cache = caches.get(key)
-    if cache is None:
-        cache = caches[key] = _Cache()
-    return cache
-
-
-def invalidateCache(settings, event):
-    """When our settings are changed, invalidate the cache on all zeo clients
-    """
-    registry = settings.__registry__
-    registry._p_changed = True
-    if hasattr(registry, '_v_plone_app_theming_caches'):
-        del registry._v_plone_app_theming_caches
 
 
 @implementer(ITransform)
@@ -79,19 +35,19 @@ class ThemeTransform(object):
         self.request = request
 
     def setupTransform(self, runtrace=False):
-        request = self.request
         DevelopmentMode = Globals.DevelopmentMode
+        policy = theming_policy(self.request)
 
         # Obtain settings. Do nothing if not found
-        settings = self.getSettings()
+        settings = policy.getSettings()
 
         if settings is None:
             return None
 
-        if not isThemeEnabled(request, settings):
+        if not policy.isThemeEnabled():
             return None
 
-        cache = getCache(settings)
+        cache = policy.getCache()
 
         # Apply theme
         transform = None
@@ -121,16 +77,7 @@ class ThemeTransform(object):
         return transform
 
     def getSettings(self):
-        registry = queryUtility(IRegistry)
-        if registry is None:
-            return None
-
-        try:
-            settings = registry.forInterface(IThemeSettings, False)
-        except KeyError:
-            return None
-
-        return settings
+        return theming_policy(self.request).getSettings()
 
     def parseTree(self, result):
         contentType = self.request.response.getHeader('Content-Type')
@@ -157,10 +104,11 @@ class ThemeTransform(object):
         """Apply the transform if required
         """
         # Obtain settings. Do nothing if not found
-        settings = self.getSettings()
+        policy = theming_policy(self.request)
+        settings = policy.getSettings()
         if settings is None:
             return None
-        if not isThemeEnabled(self.request, settings):
+        if not policy.isThemeEnabled():
             return None
         result = self.parseTree(result)
         if result is None:
@@ -187,7 +135,7 @@ class ThemeTransform(object):
 
             cache = None
             if not DevelopmentMode:
-                cache = getCache(settings)
+                cache = policy.getCache()
 
             parameterExpressions = settings.parameterExpressions or {}
             params = prepareThemeParameters(
