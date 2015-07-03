@@ -167,6 +167,52 @@ class TestIntegration(unittest.TestCase):
         settings.hostnameBlacklist.append('nohost')
         self.assertFalse(isThemeEnabled(request, settings))
 
+    def test_createThemeFromTemplate(self):
+        from plone.app.theming.utils import createThemeFromTemplate
+        from plone.app.theming.utils import getAvailableThemes
+        from plone.app.theming.utils import getTheme
+        from plone.app.theming.interfaces import THEME_RESOURCE_NAME
+        from plone.app.theming.interfaces import RULE_FILENAME
+        title = "copy of test theme"
+        description = "test theme creation"
+        themeName = createThemeFromTemplate(title, description,
+                                            baseOn="plone.app.theming.tests")
+        titles = [theme.title for theme in getAvailableThemes()]
+        self.assertTrue(title in titles)
+
+        theme = getTheme(themeName)
+        expected_prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME,
+                                          title.replace(" ", "-"))
+        self.assertEqual(theme.absolutePrefix, expected_prefix)
+
+        expected_rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME,
+                                            title.replace(" ", "-"),
+                                            RULE_FILENAME)
+        self.assertEqual(theme.rules, expected_rules)
+
+    def test_createThemeFromTemplate_custom_prefix(self):
+        from plone.app.theming.utils import createThemeFromTemplate
+        from plone.app.theming.utils import getAvailableThemes
+        from plone.app.theming.utils import getTheme
+        from plone.app.theming.interfaces import THEME_RESOURCE_NAME
+        from plone.app.theming.interfaces import RULE_FILENAME
+        title = "copy of test theme with custom prefix"
+        description = "test theme creation"
+        themeName = createThemeFromTemplate(title, description,
+                                            baseOn="secondary-theme")
+        titles = [theme.title for theme in getAvailableThemes()]
+        self.assertTrue(title in titles)
+
+        theme = getTheme(themeName)
+        expected_prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME,
+                                          title.replace(" ", "-"))
+        self.assertEqual(theme.absolutePrefix, expected_prefix)
+
+        expected_rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME,
+                                            title.replace(" ", "-"),
+                                            RULE_FILENAME)
+        self.assertEqual(theme.rules, expected_rules)
+
 
 class TestUnit(unittest.TestCase):
 

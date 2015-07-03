@@ -548,6 +548,17 @@ def createThemeFromTemplate(title, description, baseOn='template'):
     manifest.set('theme', 'title', title)
     manifest.set('theme', 'description', description)
 
+    if manifest.has_option('theme', 'prefix'):
+        prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, themeName)
+        manifest.set('theme', 'prefix', prefix)
+
+    if manifest.has_option('theme', 'rules'):
+        rule = manifest.get('theme', 'rules')
+        rule_file_name = rule.split('/')[-1]  # extract real rules file name
+        rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, themeName,
+                                   rule_file_name)
+        manifest.set('theme', 'rules', rules)
+
     manifestContents = StringIO()
     manifest.write(manifestContents)
     target.writeFile(MANIFEST_FILENAME, manifestContents)
