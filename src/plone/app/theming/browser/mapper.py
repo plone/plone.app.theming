@@ -73,8 +73,16 @@ class ThemeMapper(BrowserView):
             self.name
         )
         self.themeBasePathEncoded = urllib.quote_plus(self.themeBasePath)
-        self.themeBaseUrl = '/'.join([self.portalUrl, self.themeBasePath])
-            
+        self.themeBaseUrl = '/'.join([self.portalUrl, self.themeBasePath]) 
+
+        try:
+            registry = getUtility(IRegistry)
+            self.lessUrl = registry['plone.resources.lessc']
+            self.lessVariables = self.portalUrl + '/' + registry['plone.resources.less-variables']
+        except:
+            self.lessUrl = None
+            self.lessVariables = None
+
         self.editable = IWritableResourceDirectory.providedBy(
             self.resourceDirectory
         )
