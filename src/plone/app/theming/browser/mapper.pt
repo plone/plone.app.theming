@@ -108,7 +108,7 @@
             <div class="pat-thememapper" data-pat-thememapper='themeUrl: ${view/resourceUrl};
                       editable: ${view/editable};
                       lessUrl: ${view/lessUrl};
-                      lessVariables: ${views/lessVariables};  
+                      lessVariables: ${view/lessVariables};
                       filemanagerConfig:{"actionUrl":"${view/themeBaseUrl}/@@plone.resourceeditor.filemanager-actions"};
                       mockupUrl:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off;
                       unthemedUrl:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;diazo.off=1;
