@@ -1581,6 +1581,9 @@ ul.jqtree-tree .jqtree-moving > .jqtree-element .jqtree-title {
     outline: dashed 1px #0000ff;
 }
 
+.autotabs ul li.jqtree_common {
+  display: block;
+}
 .popover,
 .pat-filemanager .popover {
   min-width: 111px;
@@ -4021,10 +4024,6 @@ tbody.pat-filemanager .collapse.in {
 .pat-thememapper iframe.fullscreen-frame {
   height: 600px;
 }
-.pat-thememapper .mockup-inspector {
-  clear: both;
-  padding: 10px 0 10px 0;
-}
 .pat-thememapper .fullscreen {
   vertical-align: top;
   display: inline-block;
@@ -4085,6 +4084,13 @@ tbody.pat-filemanager .collapse.in {
 }
 .pat-thememapper .ace_editor {
   border: 1px solid #999;
+}
+.pat-thememapper .ace_editor .info {
+  width: 100%;
+  height: 100%;
+}
+.pat-thememapper .ace_editor .info img {
+  max-height: 80%;
 }
 .pat-thememapper .navbar-nav a,
 .pat-thememapper .pat-filemanager .navbar-nav a {
@@ -4148,6 +4154,15 @@ tbody.pat-filemanager .collapse.in {
 .pat-thememapper .nav-and-editor .pat-filemanager .collapse {
   padding-left: 0;
 }
+.pat-thememapper .navbar-nav > li.active a,
+.pat-thememapper .pat-filemanager .navbar-nav > li.active a {
+  background-color: transparent;
+}
+.pat-thememapper .nav.smallTabs li,
+.pat-thememapper .pat-filemanager .nav.smallTabs li {
+  padding: 0 5px 0 5px;
+  font-size: x-small;
+}
 .pat-thememapper .upload-area {
   border: 2px dashed #ddd;
   background-color: #eee;
@@ -4197,5 +4212,32 @@ tbody.pat-filemanager .collapse.in {
 }
 .pat-thememapper .upload-area .sr-only {
   display: none;
+}
+.pat-thememapper .rulebuilderView {
+  max-width: 500px;
+}
+.pat-thememapper .rulebuilderView .inputs {
+  border: 1px solid #999;
+  padding: 5px;
+}
+.pat-thememapper .rulebuilderView .new-rule-type-panel > div {
+  margin-top: 5px;
+}
+.pat-thememapper .rulebuilderView .formControls {
+  margin-top: 5px;
+}
+.pat-thememapper .rulebuilderView #new-rule-output {
+  margin: 5px 0 5px 0;
+  width: 100%;
+  height: 80px;
+}
+.pat-thememapper .rulebuilderView #new-rule-reuse-panel {
+  margin-top: 15px;
+}
+.pat-thememapper #btn-inspectors {
+  clear: both;
+}
+.pat-thememapper #btn-inspectors .frame-shelf-container {
+  margin-right: 5px;
 }
 /*# sourceMappingURL=thememapper-compiled.css.map */

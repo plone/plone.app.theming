@@ -7119,7 +7119,7 @@ define('text',['module'], function (module) {
 });
 
 
-define('text!mockup-patterns-thememapper-url/templates/inspector.xml',[],function () { return '<div class="frame-panel mapper-box col-md-6">\n  <div class="panel-toolbar">\n    <a class="refresh" href="#" title="Refresh mockup. You can also right-click on the mockup to use your browser\'s native refresh."\n      i18n:attributes="title">\n      <span class="glyphicon glyphicon-refresh"></span>\n    </a>\n    <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">\n      <span class="glyphicon glyphicon-fullscreen"></span>\n    </a>\n  </div>\n\n  <label i18n:translate="heading_theme"><%= name %></label>\n\n  <iframe class="frame" src="<%= url %>"></iframe>\n\n  <div class="frame-info">\n    <div class="frame-shelf-container" style="display:none">\n      <span i18n:translate="theming_mapper_shelf_label">Selected:</span>\n      <span class="selector-info"></span>\n      <a class="clear" href="#clear"\n         title="Clear selection" i18n:attributes="title">x</a>\n    </div>\n    <span class="current-selector"></span>\n  </div>\n\n  <div class="panel-footer">\n    <div class="btn-group">\n      <button class="btn btn-default turnon" disabled="disabled" i18n:translate="">Inspector on</button>\n      <button class="btn btn-default turnoff" i18n:translate="">Inspector off</button>\n    </div>\n  </div>\n\n  <div class="discreet footer-help" i18n:translate="help_highlighter_selection">\n    Hover over an element to see its selector.\n    Left-click or press <em>Enter</em> to save.\n    Press <em>Esc</em> to select parent.\n  </div>\n\n</div>';});
+define('text!mockup-patterns-thememapper-url/templates/inspector.xml',[],function () { return '<div class="frame-panel mapper-box col-md-6">\n  <div class="panel-toolbar">\n    <a class="refresh" href="#" title="Refresh mockup. You can also right-click on the mockup to use your browser\'s native refresh."\n      i18n:attributes="title">\n      <span class="glyphicon glyphicon-refresh"></span>\n    </a>\n    <a class="fullscreen" href="#" title="Toggle fullscreen" i18n:attributes="title">\n      <span class="glyphicon glyphicon-fullscreen"></span>\n    </a>\n  </div>\n\n  <label i18n:translate="heading_theme"><%= name %></label>\n\n  <iframe class="frame" src="<%= url %>"></iframe>\n\n  <div class="frame-info">\n    <div class="frame-shelf-container" style="display:none">\n      <span i18n:translate="theming_mapper_shelf_label">Selected:</span>\n      <span class="selector-info"></span>\n      <a class="clearInspector" href="#clearInspector"\n         title="Clear selection" i18n:attributes="title">x</a>\n    </div>\n    <span class="current-selector"></span>\n  </div>\n\n  <div class="panel-footer">\n    <div class="btn-group">\n      <button class="btn btn-default turnon" disabled="disabled" i18n:translate="">Inspector on</button>\n      <button class="btn btn-default turnoff" i18n:translate="">Inspector off</button>\n    </div>\n  </div>\n\n  <div class="discreet footer-help" i18n:translate="help_highlighter_selection">\n    Hover over an element to see its selector.\n    Left-click or press <em>Enter</em> to save.\n    Press <em>Esc</em> to select parent.\n  </div>\n\n</div>\n';});
 
 //     Backbone.js 1.1.2
 
@@ -8742,6 +8742,7 @@ define('mockup-ui-url/views/base',[
     isUIView: true,
     eventPrefix: 'ui',
     template: null,
+    idPrefix: 'base-',
     appendInContainer: true,
     initialize: function(options) {
       this.options = options;
@@ -8756,9 +8757,9 @@ define('mockup-ui-url/views/base',[
       this.trigger('render', this);
       this.afterRender();
 
-      if (!this.$el.attr('id') && this.options.id) {
+      if (this.options.id) {
         // apply id to element
-        this.$el.attr('id', 'gen-' + this.options.id);
+        this.$el.attr('id', this.idPrefix + this.options.id);
       }
       return this;
     },
@@ -8903,7 +8904,13 @@ define('mockup-utils',[
           v: term
         });
       }
-      if (self.pattern.browsing) {
+      if(options.searchPath){
+        criterias.push({
+          i: 'path',
+          o: 'plone.app.querystring.operation.string.path',
+          v: options.searchPath + '::' + self.options.pathDepth
+        });
+      }else if (self.pattern.browsing) {
         criterias.push({
           i: 'path',
           o: 'plone.app.querystring.operation.string.path',
@@ -8965,9 +8972,12 @@ define('mockup-utils',[
       return data;
     };
 
-    self.search = function(term, operation, value, callback, useBaseCriteria) {
+    self.search = function(term, operation, value, callback, useBaseCriteria, type) {
       if (useBaseCriteria === undefined) {
         useBaseCriteria = true;
+      }
+      if(type === undefined){
+        type = 'GET';
       }
       var criteria = [];
       if (useBaseCriteria) {
@@ -8986,6 +8996,7 @@ define('mockup-utils',[
         url: self.options.vocabularyUrl,
         dataType: 'JSON',
         data: data,
+        type: type,
         success: callback
       });
     };
@@ -30758,7 +30769,12 @@ define('mockup-ui-url/views/container',[
     items: [],
     itemContainer: null,
     isOffsetParent: true,
+    idPrefix: 'container-',
     render: function() {
+      if (this.options.id) {
+        this.$el.attr('id', this.idPrefix + this.options.id);
+      }
+
       this.applyTemplate();
 
       this.renderItems();
@@ -30772,6 +30788,7 @@ define('mockup-ui-url/views/container',[
 
       this.afterRender();
 
+      this.$el.data('component', this);
       return this;
     },
     renderItems: function() {
@@ -30842,7 +30859,8 @@ define('mockup-ui-url/views/toolbar',[
 
   var Toolbar = ContainerView.extend({
     tagName: 'div',
-    className: 'navbar'
+    className: 'navbar',
+    idPrefix: 'toolbar-'
   });
 
   return Toolbar;
@@ -31338,6 +31356,7 @@ define('mockup-ui-url/views/button',[
     className: 'btn',
     eventPrefix: 'button',
     context: 'default',
+    idPrefix: 'btn-',
     attributes: {
       'href': '#'
     },
@@ -31416,6 +31435,7 @@ define('mockup-ui-url/views/buttongroup',[
   var ButtonGroup = ContainerView.extend({
     tagName: 'div',
     className: 'btn-group',
+    idPrefix: 'btngroup-',
     disable: function() {
       _.each(this.items, function(button) {
         button.trigger('disable');
@@ -31541,6 +31561,7 @@ define('mockup-ui-url/views/popover',[
     content: null,
     title: null,
     triggerView: null,
+    idPrefix: 'popover-',
     triggerEvents: {
       'button:click': 'toggle'
     },
@@ -31563,20 +31584,27 @@ define('mockup-ui-url/views/popover',[
     },
     initialize: function(options) {
       ContainerView.prototype.initialize.apply(this, [options]);
+      this.bindTriggerEvents();
 
       this.on('render', function() {
-        this.bindTriggerEvents();
         this.renderTitle();
         this.renderContent();
       }, this);
     },
     afterRender: function () {
     },
+    getTemplateOptions: function(){
+      return this.options;
+    },
     renderTitle: function() {
-      this.$('.popover-title').append(this.title(this.options));
+      var title = this.title;
+      if(typeof(title) === 'function'){
+        title = title(this.getTemplateOptions());
+      }
+      this.$('.popover-title').empty().append(title);
     },
     renderContent: function() {
-      this.$('.popover-content').append(this.content(this.options));
+      this.$('.popover-content').empty().append(this.content(this.getTemplateOptions()));
     },
     bindTriggerEvents: function() {
       if (this.triggerView) {
@@ -31598,13 +31626,20 @@ define('mockup-ui-url/views/popover',[
       }, $el.offset());
     },
     show: function() {
+      /* hide existing */
+      $('.popover:visible').each(function(){
+        var popover = $(this).data('component');
+        if(popover){
+          popover.hide();
+        }
+      });
+
       var pos = this.getPosition();
       var $tip = this.$el, tp, placement, actualWidth, actualHeight;
 
       placement = this.placement;
 
       $tip.css({ top: 0, left: 0 }).addClass('active');
-
 
       actualWidth = $tip[0].offsetWidth;
       actualHeight = $tip[0].offsetHeight;
@@ -36718,10 +36753,13 @@ define('mockup-patterns-relateditems',[
         '<span class="pattern-relateditems-tree">' +
           '<a href="#" class="pattern-relateditems-tree-select"><span class="glyphicon glyphicon-indent-left"></span></a> ' +
           '<div class="tree-container">' +
-            '<span class="select-folder-label">Select folder</span>' +
-            '<a href="#" class="btn close pattern-relateditems-tree-cancel">X</a>' +
+            '<div class="title-container">' +
+              '<a href="#" class="btn close pattern-relateditems-tree-cancel">' +
+                '<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>' +
+              '</a>' +
+              '<span class="select-folder-label">Select folder</span>' +
+            '</div>' +
             '<div class="pat-tree" />' +
-            '<a href="#" class="btn btn-default pattern-relateditems-tree-itemselect">Select</a>' +
           '</div>' +
         '</span>' +
         '<span class="pattern-relateditems-path-label">' +
@@ -36836,6 +36874,20 @@ define('mockup-patterns-relateditems',[
             nodes.push(node);
           });
           return nodes;
+        },
+        onCreateLi: function(node, $li) {
+          if(node._loaded){
+            if(node.children.length === 0){
+              $li.find('.jqtree-title').append('<span class="tree-node-empty">' + _t('(empty)') + '</span>');
+            }
+          }
+          $li.append('<span class="pattern-relateditems-buttons"><a class="pattern-relateditems-result-browse" href="#"></a></span>');
+          $li.find('.pattern-relateditems-result-browse').click(function(e){
+            e.preventDefault();
+            self.currentPath = node.path;
+            self.browseTo(self.currentPath);
+            $treeContainer.fadeOut();
+          });
         }
       });
       treePattern.$el.bind('tree.select', function(e) {
@@ -36869,21 +36921,20 @@ define('mockup-patterns-relateditems',[
         return false;
       });
 
-      $('a.pattern-relateditems-tree-itemselect', $treeContainer).click(function(e) {
-        e.preventDefault();
-        self.browseTo(self.currentPath); // just browse to current path since it's set elsewhere
-        $treeContainer.fadeOut();
-        return false;
-      });
-
       $treeSelect.on('click', function(e) {
         e.preventDefault();
         self.browsing = true;
         self.currentPath = '/';
+        self.$el.select2('close');
         $treeContainer.fadeIn();
         treePattern.$el.tree('loadDataFromUrl', self.treeQuery.getUrl());
         return false;
       });
+
+      self.$el.on('select2-opening', function(){
+        $treeContainer.fadeOut();
+      });
+
       self.$browsePath.html($crumbs);
     },
     selectItem: function(item) {
@@ -38793,7 +38844,7 @@ define('mockup-patterns-relateditems',[
     return module.exports;
 }));
 
-define('text!mockup-patterns-upload-url/templates/upload.xml',[],function () { return '<div class="upload-container upload-multiple">\n    <h2 class="title"><%- _t("Upload stuff here") %></h2>\n    <p class="help">\n        <%- _t(\'Just drag N drop stuff on the area below or press the "browse" button.\') %>\n    </p>\n    <div class="upload-area">\n        <div class="fallback">\n            <input name="file" type="file" multiple />\n        </div>\n        <div class="dz-message"><p><%-_t("Drop files here...")%></p></div>\n        <div class="row">\n            <div class="col-md-9">\n                <input\n                    id="fakeUploadFile"\n                    placeholder="<%- _t("Choose File") %>"\n                    disabled="disabled"\n                    />\n            </div>\n            <div class="col-md-3">\n                <button\n                    type="button"\n                    class="btn btn-primary browse">\n                    Browse\n                </button>\n            </div>\n        </div>\n        <div class="upload-queue">\n            <div class="previews">\n            </div>\n            <div class="controls">\n                <div class="path">\n                    <label><%- _t("Upload to...") %></label>\n                    <p class="form-help">\n                        <%- _t("If nothing selected files we be added to current context.") %>\n                    </p>\n                    <input\n                        type="text"\n                        name="location"\n                        />\n                </div>\n                <div class="actions row">\n                    <div class="col-md-9">\n                        <div class="progress progress-striped active">\n                            <div class="progress-bar progress-bar-success"\n                                 role="progressbar"\n                                 aria-valuenow="0"\n                                 aria-valuemin="0"\n                                 aria-valuemax="100"\n                                 style="width: 0%">\n                                <span class="sr-only">40% Complete (success)</span>\n                            </div>\n                        </div>\n                    </div>\n                    <div class="col-md-3 align-right">\n                        <button\n                            type="button"\n                            class="btn btn-primary upload-all">\n                            <%- _t("Upload") %>\n                        </button>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n';});
+define('text!mockup-patterns-upload-url/templates/upload.xml',[],function () { return '<div class="upload-container upload-multiple">\n    <h2 class="title"><%- _t("Upload here") %></h2>\n    <p class="help">\n        <%- _t(\'Just drag N drop files on the area below or press the "browse" button.\') %>\n    </p>\n    <div class="upload-area">\n        <div class="fallback">\n            <input name="file" type="file" multiple />\n        </div>\n        <div class="dz-message"><p><%-_t("Drop files here...")%></p></div>\n        <div class="row">\n            <div class="col-md-9">\n                <input\n                    id="fakeUploadFile"\n                    placeholder="<%- _t("Choose File") %>"\n                    disabled="disabled"\n                    />\n            </div>\n            <div class="col-md-3">\n                <button\n                    type="button"\n                    class="btn btn-primary browse">\n                    Browse\n                </button>\n            </div>\n        </div>\n        <div class="upload-queue">\n            <div class="previews">\n            </div>\n            <div class="controls">\n                <div class="path">\n                    <label><%- _t("Upload to...") %></label>\n                    <p class="form-help">\n                        <%- _t("If nothing selected files we be added to current context.") %>\n                    </p>\n                    <input\n                        type="text"\n                        name="location"\n                        />\n                </div>\n                <div class="actions row">\n                    <div class="col-md-9">\n                        <div class="progress progress-striped active">\n                            <div class="progress-bar progress-bar-success"\n                                 role="progressbar"\n                                 aria-valuenow="0"\n                                 aria-valuemin="0"\n                                 aria-valuemax="100"\n                                 style="width: 0%">\n                                <span class="sr-only">40% Complete (success)</span>\n                            </div>\n                        </div>\n                    </div>\n                    <div class="col-md-3 align-right">\n                        <button\n                            type="button"\n                            class="btn btn-primary upload-all">\n                            <%- _t("Upload") %>\n                        </button>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n';});
 
 
 define('text!mockup-patterns-upload-url/templates/preview.xml',[],function () { return '<div class="row item form-inline">\n    <div class="col-md-1 action">\n        <button\n            type="button"\n            class="btn btn-danger btn-xs remove-item"\n            data-dz-remove=""\n            href="javascript:undefined;">\n            <span class="glyphicon glyphicon-remove"></span>\n        </button>\n    </div>\n    <div class="col-md-8 title">\n        <div class="dz-preview">\n          <div class="dz-details">\n            <div class="dz-filename"><span data-dz-name></span></div>\n          </div>\n          <div class="dz-error-message"><span data-dz-errormessage></span></div>\n        </div>\n        <div class="dz-progress">\n            <span class="dz-upload" data-dz-uploadprogress></span>\n        </div>\n    </div>\n    <div class="col-md-3 info">\n        <div class="dz-size" data-dz-size></div>\n        <img data-dz-thumbnail />\n    </div>\n</div>\n';});
@@ -38981,6 +39032,10 @@ define('mockup-patterns-upload',[
       self.dropzone.on('removedfile', function() {
         if (self.dropzone.files.length < 1) {
           self.hideControls();
+        } else {
+          // Clear the "you can not upload any more files" message
+          var file = self.dropzone.files[0];
+          $(".dz-error-message span", file.previewElement).html("");
         }
       });
 
@@ -38996,15 +39051,24 @@ define('mockup-patterns-upload',[
 
       if (self.options.autoCleanResults) {
         self.dropzone.on('complete', function(file) {
-          setTimeout(function() {
-            $(file.previewElement).fadeOut();
-          }, 3000);
+          if (file.status === Dropzone.SUCCESS){
+            setTimeout(function() {
+              $(file.previewElement).fadeOut();
+            }, 3000);
+          }
         });
       }
 
       self.dropzone.on('complete', function(file) {
-        if (self.dropzone.files.length < 1) {
+        if (file.status === Dropzone.SUCCESS && self.dropzone.files.length < 1) {
           self.hideControls();
+        }
+      });
+
+      self.dropzone.on('error', function(file, response, xmlhr) {
+        if (typeof xmlhr !== "undefined" && xmlhr.status !== 403){
+          // If error other than 403, just print a generic message
+          $(".dz-error-message span", file.previewElement).html("The file transfer failed");
         }
       });
 
@@ -39143,14 +39207,27 @@ define('mockup-patterns-upload',[
         processing = true;
         if (self.dropzone.files.length === 0) {
           processing = false;
+        }
+
+        if (processing){
+          var file = self.dropzone.files[0];
+
+          if (file.status === Dropzone.ERROR){
+            // Put the file back as "queued" for retrying
+            file.status = Dropzone.QUEUED;
+            processing = false;
+          }
+        }
+
+        if (!processing){
           self.$el.removeClass(fileaddedClassName);
           if (finished !== undefined && typeof(finished) === 'function'){
             finished();
           }
           return;
         }
-        var file = self.dropzone.files[0];
-        if ([Dropzone.SUCCESS, Dropzone.ERROR, Dropzone.CANCELED]
+
+        if ([Dropzone.SUCCESS, Dropzone.CANCELED]
             .indexOf(file.status) !== -1) {
           // remove it
           self.dropzone.removeFile(file);
@@ -39221,6 +39298,7 @@ define('mockup-patterns-upload',[
     setPath: function(path){
       var self = this;
       self.currentPath = path;
+      self.options.url = null;
       self.options.url = self.dropzone.options.url = self.getUrl();
     },
 
@@ -39585,6 +39663,18 @@ define('mockup-patterns-filemanager',[
         self.resizeEditor();
       });
     },
+    shrinkTab: function(tab) {
+        var self = this;
+        if( self.$tabs.hasClass('smallTabs') ) {
+            tab = $(tab);
+            var text = tab.text();
+            if( text.lastIndexOf('/') > 0 )
+            {
+                text = text.substr(text.lastIndexOf('/') + 1);
+                tab.find('.select').text(text);
+            }
+        }
+    },
     openFile: function(event) {
       var self = this;
       var doc = event.node.path;
@@ -39599,6 +39689,7 @@ define('mockup-patterns-filemanager',[
         var $existing = $('[data-path="' + doc + '"]');
         if ($existing.length === 0){
           var $item = $(self.tabItemTemplate({path: doc}));
+          self.shrinkTab($item);
           self.$tabs.append($item);
           $('.remove', $item).click(function(e){
             e.preventDefault();
@@ -39669,6 +39760,10 @@ define('mockup-patterns-filemanager',[
       self.currentPath = path;
       if (self.ace !== undefined){
         self.ace.editor.destroy();
+        self.ace.editor.container.parentNode.replaceChild(
+          self.ace.editor.container.cloneNode(true),
+          self.ace.editor.container
+        );
       }
       self.ace = new TextEditor(self.$editor);
 
@@ -39746,6 +39841,14 @@ define('mockup-patterns-filemanager',[
     resizeEditor: function() {
         var self = this;
 
+        var tab = self.$tabs.children()[0];
+
+        if( $(tab).height() < (self.$tabs.height() - 1) ) {
+            self.$tabs.addClass('smallTabs');
+            $(self.$tabs.children()).each(function() {
+                self.shrinkTab(this);
+            });
+        }
         var tabBox = self.$tabs.parent();
 
         //Contains both the tabs, and editor window
@@ -39791,65 +39894,31 @@ define('mockup-patterns-filemanager',[
 
 });
 
-/* Theme Mapper pattern.
- *
- * Options:
- *    filemanagerConfig(object): The file manager pattern config ({})
- *    mockupUrl(string): Mockup url (null)
- *    unthemedUrl(string): unthemed site url (null)
- *    helpUrl(string): Helper docs url (null)
- *    previewUrl(string): url to preview theme (null)
- *
- *
- * Documentation:
- *
- *    # Basic example
- *
- *    {{ example-1 }}
- *
- *
- * Example: example-1
- *
- *    <div class="pat-thememapper"
- *         data-pat-thememapper='filemanagerConfig:{"actionUrl":"/filemanager-actions"};
- *                               mockupUrl:/tests/files/mapper.html;
- *                               unthemedUrl:/tests/files/mapper.html;
- *                               previewUrl:http://www.google.com;
- *                               helpUrl:http://docs.diazo.org/en/latest'></div>
- *
- */
-
-
-define('mockup-patterns-thememapper',[
+define('mockup-patterns-thememapper-url/js/rulebuilder',[
   'jquery',
-  'mockup-patterns-base',
   'underscore',
-  'translate',
-  'text!mockup-patterns-thememapper-url/templates/inspector.xml',
-  'mockup-patterns-filemanager',
-  'mockup-ui-url/views/button',
-  'mockup-ui-url/views/buttongroup'
-], function($, Base, _, _t, InspectorTemplate, FileManager, ButtonView, ButtonGroup) {
+  'backbone',
+], function($, _, Backbone) {
   'use strict';
 
-  var inspectorTemplate = _.template(InspectorTemplate);
-
-
-  var RuleBuilder = function(callback){
+  var RuleBuilder = function(thememapper){
     /**
       * Rule builder
       *
       * Contains functions to build CSS and XPath selectors as well as a Diazo rule
       * from a given node, and acts as a state machine for the rules wizard.
       *
-      * The callback is called whenever the state machine progresses.
       */
 
     var self = this;
-    self.callback = callback;
+    self.thememapper = thememapper;
+
+    self.themeInspector = null;
+    self.unthemedInspector = null;
 
     self.active = false;
     self.currentScope = null;
+    self.haveScrolled = false;
 
     self.ruleType = null;
     self.subtype = null;
@@ -39857,6 +39926,195 @@ define('mockup-patterns-thememapper',[
     self._contentElement = null;
     self._themeElement = null;
 
+    self.rulesFilename = 'rules.xml';
+
+    self.ruleBuilderPopover = {
+      el: self.thememapper.rulebuilderView.el,
+      button: self.thememapper.rulebuilderView.triggerView.el,
+      isOpened: function() {
+        return $(this.el).is(":visible");
+      },
+      close: function() {
+        if( this.isOpened() ) {
+          if( self.active && $els.step2.is(":visible") )
+          {
+            self.end();
+          }
+          else
+          {
+            $(this.button).click();
+          }
+        }
+      },
+      load: function() {
+        if( !this.isOpened() ) {
+          $(this.button).click();
+        }
+      }
+    };
+
+    var $els = {
+      reusePanel: $('#new-rule-reuse-panel'),
+      reuseSelectors: $("#new-rule-reuse-selectors"),
+      selectTheme: $("#new-rule-select-theme"),
+      selectThemeNext: $("#new-rule-select-theme .next"),
+      selectContentNext: $("#new-rule-select-content .next"),
+      wizardSteps: $(".rule-wizard-step"),
+      selectContent: $("#new-rule-select-content"),
+      step1: $("#new-rule-step-1"),
+      step1Next: $("#new-rule-step-1 .next"),
+      step2: $("#new-rule-step-2"),
+      step2Insert: $("#new-rule-step-2 .insert"),
+      step2Copy: $("#new-rule-step-2 .copy"),
+      inspectors: self.thememapper.$inspectorContainer,
+      ruleOutput: $('#new-rule-output'),
+      themePanel: $('#inspectors .mockup-inspector'),
+      themePanelTop: $('.mockup-inspector .panel-toolbar'),
+      unthemedPanel: $('#inspectors .unthemed-inspector'),
+      unthemedPanelTop: $('.unthemed-inspector .panel-toolbar'),
+      newRuleThemeChildren: $('#new-rule-theme-children'),
+      newRuleUnthemedChildren: $('#new-rule-content-children'),
+      modifiers: $('.rule-modifier'),
+      selectors: $('.selector-info'),
+      closers: $('.new-rule .close, .new-rule .wizard-cancel')
+    };
+
+    $els.step1Next.click(function() {
+      var ruleType = self.getSelectedType();
+      self.start(ruleType);
+    });
+
+    $els.closers.click(function() {
+      self.end();
+      self.ruleBuilderPopover.close();
+    });
+
+    $els.selectThemeNext.click(function() {
+      self.themeInspector.on();
+
+      if(!$els.inspectors.is(":visible")) {
+        self.thememapper.showInspectors();
+      }
+
+      self.scrollTo($els.themePanelTop);
+      self.ruleBuilderPopover.close();
+
+      $els.themePanel.expose({
+        color: "#fff",
+        closeOnClick: false,
+        closeOnEsc: false,
+        closeSpeed: 0,
+        onLoad: function() {
+          self.scrollTo(this.getExposed());
+        },
+      });
+    });
+
+    $els.step2Copy.hide();
+    $els.step2Insert.click(function() {
+
+      var rule = $els.ruleOutput.val();
+
+      var aceEditor = self.thememapper.fileManager.ace.editor;
+      var session = aceEditor.getSession();
+
+      function findStartTag(backwards) {
+        aceEditor.find('<\\w+', {
+          backwards: backwards,
+          wrap: false,
+          wholeWord: false,
+          regExp: true
+        });
+      }
+
+      function indent(string, amount) {
+        var padding = '';
+        for(var i = 0; i < amount; ++i) {
+          padding += ' ';
+        }
+        return '\n' + padding + string.replace(/\n/g, '\n' + padding) + '\n';
+      }
+
+      //If we're already starting at the very end, go back to the beginning
+      if( session.getDocument().$lines.length == aceEditor.getSelectionRange().end.row + 1)
+      {
+        aceEditor.navigateFileStart();
+      }
+
+      // Go to the next opening tag - we want to insert before this
+      findStartTag(false);
+      if(aceEditor.getCursorPosition().row <= 1) {
+        // Probably the opening rules tag
+        findStartTag(false);
+      }
+
+      var selectionText = aceEditor.getSelectedText();
+
+      // If we didn't find anything, look for the end of the current tag
+      if(selectionText == "") {
+        aceEditor.find("(/>|</)", {
+          backwards: false,
+          wrap: false,
+          wholeWord: false,
+          regExp: true
+        });
+
+        var selectionText = aceEditor.getSelectedText();
+        if(selectionText == "") {
+          // Still nothing? Go to the end
+          aceEditor.navigateFileEnd();
+        } else {
+          // Go one past the end tag, but first figure out how far we should i
+          aceEditor.navigateDown();
+        }
+      }
+
+      var indentation = aceEditor.getSelectionRange().start.column;
+      var cursorPosition = aceEditor.getCursorPosition();
+      var newlines = rule.match(/\n/g);
+      var rows = 0;
+      if(newlines != null) {
+        rows = newlines.length;
+      }
+
+      aceEditor.gotoLine(cursorPosition.row);
+      aceEditor.insert(indent(rule, indentation));
+      aceEditor.getSelection().selectTo(cursorPosition.row + rows + 1, 0);
+      aceEditor.gotoLine(cursorPosition.row);
+      aceEditor.container.focus();
+
+      self.ruleBuilderPopover.close();
+
+      self.scrollTo(self.thememapper.fileManager.$el);
+
+      // Clear the selection now that we're done with it
+      self.unthemedInspector.save(null);
+      self.themeInspector.save(null);
+    });
+
+    $els.selectContentNext.click(function() {
+      self.unthemedInspector.on();
+      if(!$els.inspectors.is(":visible")) {
+        self.thememapper.showInspectors();
+      }
+
+      self.scrollTo($els.unthemedPanelTop);
+      self.ruleBuilderPopover.close();
+
+      $els.unthemedPanel.expose({
+        color: "#fff",
+        closeOnClick: false,
+        closeOnEsc: false,
+        closeSpeed: 0,
+        onLoad: function() {
+          self.scrollTo(this.getExposed());
+        },
+      });
+    });
+
+    $els.modifiers.change(function() {
+      self.updateRule();
+    });
     self.end = function() {
       self._contentElement = null;
       self._themeElement = null;
@@ -39866,6 +40124,38 @@ define('mockup-patterns-thememapper',[
       self.subtype = null;
 
       self.callback(this);
+    };
+
+    self.start = function(ruleType) {
+      var self = this;
+
+      if( ruleType === undefined )
+      {
+        ruleType = self.getSelectedType();
+      }
+
+      self.themeInspector = self.thememapper.mockupInspector;
+      self.unthemedInspector = self.thememapper.unthemedInspector;
+
+      self._contentElement = null;
+      self._themeElement = null;
+      self.currentScope = "theme";
+
+      // Drop rules get e.g. drop:content or drop:theme,
+      // which predetermines the scope
+      var ruleSplit = ruleType.split(':');
+      if(ruleSplit.length >= 2) {
+          self.ruleType = ruleSplit[0];
+          self.subtype = ruleSplit[1];
+          self.currentScope = self.subtype;
+      } else{
+          self.ruleType = ruleType;
+          self.subtype = null;
+      }
+
+      self.active = true;
+
+      self.callback(self);
     };
 
     /**
@@ -39969,7 +40259,7 @@ define('mockup-patterns-thememapper',[
 
       var xpathString = '/' + element.tagName.toLowerCase();
       if(element.id) {
-        return '/' + xpathString + '[@id="' + element.id + '"]';
+        return '/' + xpathString + '[@id=\'' + element.id + '\']';
       } else {
         xpathString += elementIndex(element);
       }
@@ -39979,7 +40269,7 @@ define('mockup-patterns-thememapper',[
         var pString = '/' + p.tagName.toLowerCase();
 
         if(p.id) {
-          return '/' + pString + '[@id="' + p.id + '"]' + xpathString;
+          return '/' + pString + '[@id=\'' + p.id + '\']' + xpathString;
         } else {
           xpathString = pString + elementIndex(p) + xpathString;
         }
@@ -39994,6 +40284,27 @@ define('mockup-patterns-thememapper',[
     self.bestSelector = function(element) {
       return self.calculateUniqueCSSSelector(element) ||
              self.calculateUniqueXPathExpression(element);
+    };
+
+    self.openRuleFile = function() {
+
+      var fileManager = self.thememapper.fileManager;
+
+      var treeNodes = fileManager.$tree.tree('getTree')
+      var opened = false
+
+      _.each(treeNodes.children, function(node) {
+        if( node.name == self.rulesFilename )
+        {
+          //if it's open already, don't reopen it.
+          //That will move the cursors location
+          if( fileManager.$tabs.find('.active').data('path') != '/' + self.rulesFilename ) {
+            self.thememapper.fileManager.openFile({node: node});
+          }
+          opened = true;
+        }
+      });
+      return opened;
     };
 
     /**
@@ -40014,14 +40325,231 @@ define('mockup-patterns-thememapper',[
       }
 
     };
+
+    self.select = function(element) {
+      if(this.currentScope == "theme") {
+        this._themeElement = element;
+      } else if(this.currentScope == "content") {
+        this._contentElement = element;
+      }
+    };
+
+    self.getSelectedType = function() {
+      var type = $("input[name='new-rule-type']:checked").val();
+      return type;
+    };
+
+    self.next = function() {
+        var self = this;
+        if(self.subtype !== null) {
+            // Drop rules have only one scope
+            self.currentScope = null;
+        } else {
+            // Other rules have content and theme
+            if(self.currentScope == "theme") {
+                self.currentScope = "content";
+            } else if (self.currentScope == "content") {
+                self.currentScope = null;
+            }
+        }
+        this.callback(this);
+    };
+
+    self.updateRule = function() {
+        $els.ruleOutput.val(
+            self.buildRule(
+                $els.newRuleThemeChildren.is(':checked'),
+                $els.newRuleUnthemedChildren.is(':checked')
+            )
+        );
+    };
+
+    self.scrollTo = function(selector) {
+      if( $(selector).length == 0 ) {
+        return;
+      }
+
+      $('html,body').animate({scrollTop: $(selector).offset().top}, 600);
+    };
+
+    /**
+    *   Called by the rulebuilderView. If there are selected
+    *   elements in the inspectors, we want to give the user the
+    *   option to use those.
+    */
+    self.checkSelectors = function() {
+      var selected = false;
+      $('.selector-info').each(function() {
+        if( $(this).text() != "" ) {
+          //Theres an item selected, so show the option to use it
+          $els.reusePanel.show();
+          selected = true;
+        }
+      });
+      if( !selected ) {
+        //if we opened the panel previously, close it now
+        $els.reusePanel.hide();
+      }
+      return selected;
+    };
+    self.callback = function(ruleBuilder) {
+      $els.wizardSteps.hide();
+
+      var themeFrameHighlighter = this.thememapper.mockupInspector;
+      var unthemedFrameHighlighter = this.thememapper.unthemedInspector;
+
+      if($.mask.isLoaded(true) && !self.ruleBuilderPopover.isOpened()) {
+        self.scrollTo(self.thememapper.fileManager.$el);
+        $.mask.close();
+      }
+
+      if(ruleBuilder.currentScope == 'theme') {
+        if(themeFrameHighlighter.saved != null && $els.reuseSelectors.is(":checked")) {
+          self.ruleBuilderPopover.close();
+
+          // Use saved rule
+          ruleBuilder.select(themeFrameHighlighter.saved);
+          ruleBuilder.next();
+        } else {
+          // Let the frame highlighter perform a selection
+          $els.selectTheme.show();
+          if(!self.ruleBuilderPopover.isOpened()) {
+            self.ruleBuilderPopover.load();
+          }
+        }
+
+      } else if(ruleBuilder.currentScope == 'content') {
+        if(unthemedFrameHighlighter.saved != null && $els.reuseSelectors.is(":checked")) {
+          self.ruleBuilderPopover.close();
+
+          // Use saved rule
+          ruleBuilder.select(unthemedFrameHighlighter.saved);
+          ruleBuilder.next();
+        } else {
+          // Let the frame highlighter perform a selection
+          $els.selectContent.show();
+          if(!self.ruleBuilderPopover.isOpened()) {
+            self.ruleBuilderPopover.load();
+          }
+        }
+
+      } else if(ruleBuilder.ruleType != null && ruleBuilder.currentScope == null) {
+
+        $els.wizardSteps.hide();
+        $els.step2.show();
+        self.updateRule(ruleBuilder);
+
+        if( self.openRuleFile() ) {
+          $els.step2Insert.show();
+        } else {
+          $els.step2Insert.hide();
+        }
+
+        if(!self.ruleBuilderPopover.isOpened()) {
+          self.ruleBuilderPopover.load();
+        }
+
+      } else { // end
+
+        if(self.ruleBuilderPopover.isOpened()) {
+          self.ruleBuilderPopover.close();
+        }
+
+        $els.wizardSteps.hide();
+        $els.step1.show();
+      }
+    }
   };
+
+  return RuleBuilder;
+});
+
+
+define('text!mockup-patterns-thememapper-url/templates/rulebuilder.xml',[],function () { return '<div class="new-rule">\n    <h1 class="documentFirstHeading">Build rule</h1>\n\n    <div id="new-rule-step-1" class="rule-wizard-step" style="display: block;">\n        <div class="documentDescription">\n            This wizard will help you build a Diazo rule by selecting relevant elements using\n            the <strong>HTML mockup</strong> and <strong>Unthemed content</strong> inspectors.\n        </div>\n\n        <form>\n            <div id="new-rule-type-panel" class="inputs">\n                <div>\n                    <input type="radio" name="new-rule-type" value="replace" id="new-rule-replace" checked="checked" />\n                    <label for="new-rule-replace">\n                        <strong>Replace</strong> an element of the theme with an element from the content\n                    </label>\n                </div>\n                <div>\n                    <input type="radio" name="new-rule-type" value="before" id="new-rule-before" />\n                    <label for="new-rule-before">\n                        Insert an element from the content <strong>before</strong> an element in the theme\n                    </label>\n                </div>\n                <div>\n                    <input type="radio" name="new-rule-type" value="after" id="new-rule-after" />\n                    <label for="new-rule-after">\n                        Insert an element from the content <strong>after</strong> an element in the theme\n                    </label>\n                </div>\n                <div>\n                    <input type="radio" name="new-rule-type" value="drop:content" id="new-rule-drop-content" />\n                    <label for="new-rule-drop-content">\n                        <strong>Drop</strong> an element in the <strong>content</strong>\n                    </label>\n                </div>\n                <div>\n                    <input type="radio" name="new-rule-type" value="drop:theme" id="new-rule-drop-theme" />\n                    <label for="new-rule-drop-theme">\n                        <strong>Drop</strong> an element in the <strong>theme</strong>\n                    </label>\n                </div>\n            </div>\n            <div class="field inputs" id="new-rule-reuse-panel" style="display: none;">\n                <input type="checkbox" name="new-rule-reuse-selectors" value="yes" id="new-rule-reuse-selectors" checked="checked" />\n                <label for="new-rule-reuse-selectors">\n                    Use selected elements\n                </label>\n                <div class="formHelp">\n                    If selected, the rule builder will use the elements you have currently selected\n                    in the <strong>HTML mockup</strong> and/or <strong>Unthemed content</strong>\n                    inspectors instead of prompting you to select new ones.\n                </div>\n            </div>\n        </form>\n\n        <div class="formControls new-rule-actions">\n            <input type="submit" class="allowMultiSubmit context next submitting" value="Next" />\n            <input type="submit" class="allowMultiSubmit standalone close" value="Cancel" />\n        </div>\n\n    </div>\n    <div id="new-rule-select-theme" class="rule-wizard-step" style="display: none;">\n        <div class="documentDescription">\n            Please select an element using the <strong>HTML mockup</strong> inspector.\n        </div>\n        <div class="formControls new-rule-actions">\n            <input type="submit" class="allowMultiSubmit context next" value="Ok" />\n            <input type="submit" class="allowMultiSubmit standalone wizard-cancel" value="Cancel" />\n        </div>\n    </div>\n    <div id="new-rule-select-content" class="rule-wizard-step" style="display: none;">\n        <div class="documentDescription">\n            Please select an element using the <strong>Unthemed content</strong> inspector.\n        </div>\n        <div class="formControls new-rule-actions">\n            <input type="submit" class="allowMultiSubmit context next submitting" value="Ok" />\n            <input type="submit" class="allowMultiSubmit standalone wizard-cancel" value="Cancel" />\n        </div>\n    </div>\n    <div id="new-rule-step-2" class="rule-wizard-step" style="display: none;">\n        <div class="documentDescription">\n            The rule can be found below. Use the checkboxes\n            to further refine it.\n        </div>\n        <form>\n            <div id="new-rule-output-panel">\n                <textarea name="new-rule-output" id="new-rule-output"></textarea>\n            </div>\n            <div id="new-rule-selector-panel">\n                <div>\n                    <input type="checkbox" class="rule-modifier" name="new-rule-theme-children" value="replace" id="new-rule-theme-children" />\n                    <label for="new-rule-theme-children">Apply rule to children of the matched theme node(s)</label>\n                </div>\n                <div>\n                    <input type="checkbox" class="rule-modifier" name="new-rule-content-children" value="replace" id="new-rule-content-children" />\n                    <label for="new-rule-content-children">Apply rule to children of the matched content node(s)</label>\n                </div>\n            </div>\n\n        </form>\n        <div class="formControls new-rule-actions">\n            <input type="submit" class="allowMultiSubmit context insert submitting" title="Insert rule into the rules.xml file" value="Insert" />\n            <input type="submit" class="allowMultiSubmit context copy" value="Copy to clipboard" style="display: none;" />\n            <input type="submit" class="allowMultiSubmit standalone close" value="Close" />\n        </div>\n    </div>\n</div>\n';});
+
+define('mockup-patterns-thememapper-url/js/rulebuilderview',[
+  'jquery',
+  'underscore',
+  'backbone',
+  'mockup-patterns-filemanager-url/js/basepopover',
+  'text!mockup-patterns-thememapper-url/templates/rulebuilder.xml',
+], function($, _, Backbone, PopoverView, RulebuilderTemplate ) {
+  'use strict';
+  var rulebuilderTemplate = _.template(RulebuilderTemplate);
+
+  var RuleBuilderView = PopoverView.extend({
+    className: 'popover rulebuilderView',
+    title: _.template('<%= _t("Rule Builder") %>'),
+    content: rulebuilderTemplate,
+    render: function() {
+      var self = this;
+      PopoverView.prototype.render.call(this);
+      return this;
+    },
+    toggle: function(button, e) {
+      PopoverView.prototype.toggle.apply(this, [button, e]);
+      var self = this;
+      if (!this.opened) {
+        return;
+      }else {
+        this.app.ruleBuilder.checkSelectors();
+      }
+    }
+
+  });
+
+  return RuleBuilderView;
+});
+
+/* Theme Mapper pattern.
+ *
+ * Options:
+ *    filemanagerConfig(object): The file manager pattern config ({})
+ *    mockupUrl(string): Mockup url (null)
+ *    unthemedUrl(string): unthemed site url (null)
+ *    helpUrl(string): Helper docs url (null)
+ *    previewUrl(string): url to preview theme (null)
+ *
+ *
+ * Documentation:
+ *
+ *    # Basic example
+ *
+ *    {{ example-1 }}
+ *
+ *
+ * Example: example-1
+ *
+ *    <div class="pat-thememapper"
+ *         data-pat-thememapper='filemanagerConfig:{"actionUrl":"/filemanager-actions"};
+ *                               mockupUrl:/tests/files/mapper.html;
+ *                               unthemedUrl:/tests/files/mapper.html;
+ *                               previewUrl:http://www.google.com;
+ *                               helpUrl:http://docs.diazo.org/en/latest'></div>
+ *
+ */
+
+
+define('mockup-patterns-thememapper',[
+  'jquery',
+  'mockup-patterns-base',
+  'underscore',
+  'translate',
+  'text!mockup-patterns-thememapper-url/templates/inspector.xml',
+  'mockup-patterns-filemanager',
+  'mockup-patterns-thememapper-url/js/rulebuilder',
+  'mockup-patterns-thememapper-url/js/rulebuilderview',
+  'mockup-ui-url/views/button',
+  'mockup-ui-url/views/buttongroup'
+], function($, Base, _, _t, InspectorTemplate, FileManager, RuleBuilder, RuleBuilderView, ButtonView, ButtonGroup) {
+  'use strict';
+
+  var inspectorTemplate = _.template(InspectorTemplate);
 
   var Inspector = Base.extend({
     defaults: {
       name: 'name',
       ruleBuilder: null,
-      onsave: function() {},
-      onselect: function() {},
       showReload: false
     },
     init: function() {
@@ -40043,7 +40571,7 @@ define('mockup-patterns-thememapper',[
 
       self.$reloadBtn = $('a.refresh', self.$el);
 
-      $('a.clear', self.$frameShelfContainer).click(function(e) {
+      $('a.clearInspector', self.$frameShelfContainer).click(function(e) {
         e.preventDefault();
         self.save(null);
       });
@@ -40162,7 +40690,7 @@ define('mockup-patterns-thememapper',[
       self.animateSelector();
       self.$selectorInfo.text(element === null ? '' : self.ruleBuilder.bestSelector(element));
 
-      this.options.onsave(this, element);
+      self.onsave(this, element);
     },
     clearOutline: function(element){
       var self = this;
@@ -40173,7 +40701,7 @@ define('mockup-patterns-thememapper',[
 
       self.currentOutline = null;
       self.$currentSelector.text('');
-      self.options.onselect(self, null);
+      self.onselect(self, null);
     },
     setOutline: function(element) {
       var self = this;
@@ -40187,11 +40715,10 @@ define('mockup-patterns-thememapper',[
       if(self.currentOutline !== null) {
         self.clearOutline(self.currentOutline);
       }
-
       self.currentOutline = element;
       self.$currentSelector.text(self.ruleBuilder.bestSelector(element));
 
-      self.options.onselect(self, element);
+      self.onselect(self, element);
     },
     animateSelector: function(highlightColor, duration) {
       var self = this;
@@ -40208,6 +40735,27 @@ define('mockup-patterns-thememapper',[
         .animate({ backgroundColor: originalBg }, animateMs, null, function () {
           self.$frameInfo.css('backgroundColor', originalBg);
         });
+    },
+    onsave: function(highlighter, node) {
+      var self = this;
+      if(node == null) {
+        self.$el.find('.frame-shelf-container').hide();
+      } else {
+        self.$el.find('.frame-shelf-container').show();
+      }
+
+      self.animateSelector(self.$el.find('.frame-info'));
+      self.$el.find('.selector-info').text(node == null? "" : self.ruleBuilder.bestSelector(node));
+
+      if(self.ruleBuilder.active) {
+        self.ruleBuilder.select(node);
+        self.ruleBuilder.next();
+      }
+
+    },
+    onselect: function(highlighter, node) {
+      var self = this;
+      self.$currentSelector.text(node == null? "" : self.ruleBuilder.bestSelector(node));
     }
   });
 
@@ -40221,7 +40769,8 @@ define('mockup-patterns-thememapper',[
       mockupUrl: null,
       unthemedUrl: null,
       helpUrl: null,
-      previewUrl: null
+      previewUrl: null,
+      editable: false
     },
     buttonGroup: null,
     showInspectorsButton: null,
@@ -40232,8 +40781,11 @@ define('mockup-patterns-thememapper',[
     fileManager: null,
     mockupInspector: null,
     unthemedInspector: null,
+    ruleBuilder: null,
+    rulebuilderView: null,
     $fileManager: null,
     $container: null,
+    $inspectorContainer: null,
     $mockupInspector: null,
     $unthemedInspector: null,
     init: function() {
@@ -40243,31 +40795,41 @@ define('mockup-patterns-thememapper',[
       }
       self.$fileManager = $('<div class="pat-filemanager"/>').appendTo(self.$el);
       self.$container = $('<div class="row"></div>').appendTo(self.$el);
-      self.$mockupInspector = $('<div class="mockup-inspector"/>').appendTo(self.$container);
-      self.$unthemedInspector = $('<div class="unthemed-inspector"/>').appendTo(self.$container);
+      self.$inspectorContainer = $('<div id="inspectors"></div>').appendTo(self.$container);
+      self.$mockupInspector = $('<div class="mockup-inspector"/>').appendTo(self.$inspectorContainer);
+      self.$unthemedInspector = $('<div class="unthemed-inspector"/>').appendTo(self.$inspectorContainer);
 
       // initialize patterns now
-      self.ruleBuilder = new RuleBuilder(function(){
-        debugger; //callback
-      });
+      self.editable = (self.options.editable == "True") ? true : false;
 
       self.options.filemanagerConfig.uploadUrl = self.options.themeUrl;
       self.options.filemanagerConfig.theme = true;
       self.fileManager = new FileManager(self.$fileManager, self.options.filemanagerConfig);
       self.fileManager.setUploadUrl();
 
+      self.setupButtons();
+
+      self.ruleBuilder = new RuleBuilder(self, self.ruleBuilderCallback);
+
       self.mockupInspector = new Inspector(self.$mockupInspector, {
         name: _t('HTML mockup'),
         ruleBuilder: self.ruleBuilder,
         url: self.options.mockupUrl,
-        showReload: true
+        showReload: true,
       });
       self.unthemedInspector = new Inspector(self.$unthemedInspector, {
         name: _t('Unthemed content'),
         ruleBuilder: self.ruleBuilder,
-        url: self.options.unthemedUrl
+        url: self.options.unthemedUrl,
       });
-      self.setupButtons();
+      if( !self.editable ) {
+        if( self.fileManager.toolbar ) {
+          var items = self.fileManager.toolbar.items;
+          $(items).each(function() {
+            this.disable();
+          });
+        }
+      };
 
       // initially, let's hide the panels
       self.hideInspectors();
@@ -40281,7 +40843,7 @@ define('mockup-patterns-thememapper',[
       self.showInspectorsButton.applyTemplate();
       $('html, body').animate({
         scrollTop: $parent.offset().top - 50
-      }, 1000);
+      }, 500);
     },
     hideInspectors: function(){
       var self = this;
@@ -40350,7 +40912,10 @@ define('mockup-patterns-thememapper',[
       self.helpButton.on('button:click', function(){
         window.open(self.options.helpUrl);
       });
-
+      self.rulebuilderView = new RuleBuilderView({
+        triggerView: self.buildRuleButton,
+        app: self
+      });
       self.buttonGroup = new ButtonGroup({
         items: [
           self.showInspectorsButton,
@@ -40362,6 +40927,7 @@ define('mockup-patterns-thememapper',[
         id: 'mapper'
       });
       $('#toolbar .navbar', self.$el).append(self.buttonGroup.render().el);
+      $('#toolbar .navbar', self.$el).append(self.rulebuilderView.render().el);
     }
   });
 
