@@ -4,6 +4,9 @@ Changelog
 1.2.7 (unreleased)
 ------------------
 
+- implement switchable theming policy API, re-implement theme caching
+  [gyst]
+
 - fixed configuration of copied theme
   [vmaksymiv]
 
