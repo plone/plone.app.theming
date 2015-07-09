@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
-from plone.registry.interfaces import IRegistry
+from plone.app.theming.utils import theming_policy
 from plone.resource.traversal import ResourceTraverser
 from plone.resource.utils import queryResourceDirectory
 from zExceptions import NotFound
-from zope.component import getUtility
 import urllib
 
 
@@ -22,9 +20,7 @@ class ThemeTraverser(ResourceTraverser):
         self.context = context
 
     def current_theme(self):
-        registry = getUtility(IRegistry)
-        settings = registry.forInterface(IThemeSettings)
-        return settings.currentTheme
+        return theming_policy(self.request).getCurrentTheme()
 
     def traverse(self, name, remaining):
         if name == '':
