@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import time
-import multiprocessing
 import threading
 import transaction
 import unittest2 as unittest
@@ -16,10 +15,16 @@ class TestFunctional(unittest.TestCase):
 
     layer = THEMING_FUNCTIONAL_TESTING
 
+    def setUp(self):
+        request = self.layer['request']
+        policy = theming_policy(request)
+        # avoid cache pollution from other tests
+        policy.invalidateCache()
+
     def tearDown(self):
         request = self.layer['request']
         policy = theming_policy(request)
-        # static class attribute is cached across test runs
+        # clear local thread caches
         policy.invalidateCache()
 
     def test_getSettings(self):
