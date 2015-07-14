@@ -49,6 +49,10 @@ Changelog
 1.2.3 (2015-05-04)
 ------------------
 
+- fix AttributeError: 'NoneType' object has no attribute 'getroottree' when the result is not
+  html / is empty.
+  [sunew]
+
 - make control panel usable again. Fixed problem where skins
   control panel is no longer present.
   [vangheem]
