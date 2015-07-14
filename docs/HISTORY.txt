@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.7 (unreleased)
+1.1.7 (2015-07-14)
 ------------------
 
 - Fix AttributeError: 'NoneType' object has no attribute 'getroottree' when the result is not
