@@ -9,7 +9,7 @@
         title="Theming"
         action_id="plone.app.theming"
         appId="plone.app.theming"
-        category="Plone"
+        category="plone-general"
         condition_expr=""
         url_expr="string:${portal_url}/@@theming-controlpanel"
         icon_expr="string:${portal_url}/++resource++plone.app.theming.gif"
