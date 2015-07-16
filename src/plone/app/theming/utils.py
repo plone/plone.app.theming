@@ -528,6 +528,20 @@ def createThemeFromTemplate(title, description, baseOn='template'):
                                    rule_file_name)
         manifest.set('theme', 'rules', rules)
 
+    paths_to_fix = ['development-css', 'production-css', 'tinymce-content-css',
+                    'development-js', 'production-js']
+    for var_path in paths_to_fix:
+        if not manifest.has_option('theme', var_path):
+            continue
+        val = manifest.get('theme', var_path)
+        if not val:
+            continue
+        template_prefix = '/++%s++%s/' % (THEME_RESOURCE_NAME, baseOn)
+        if val.startswith(template_prefix):
+            # okay, fix
+            val = val.replace(template_prefix, '/++%s++%s/' % (THEME_RESOURCE_NAME, themeName))
+            manifest.set('theme', var_path, val)
+
     manifestContents = StringIO()
     manifest.write(manifestContents)
     target.writeFile(MANIFEST_FILENAME, manifestContents)

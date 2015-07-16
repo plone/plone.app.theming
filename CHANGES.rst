@@ -4,6 +4,10 @@ Changelog
 1.2.7 (unreleased)
 ------------------
 
+- make sure when copying themes that you try to modify the base urls
+  to match the new theme are all the manifest.cfg settings
+  [vangheem]
+
 - implement switchable theming policy API, re-implement theme caching
   [gyst]
 
