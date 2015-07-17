@@ -4,6 +4,9 @@ Changelog
 1.2.7 (unreleased)
 ------------------
 
+- Provide better styling to themeing control panel, less build, finish implementation
+  [obct537]
+
 - make sure when copying themes that you try to modify the base urls
   to match the new theme are all the manifest.cfg settings
   [vangheem]
