@@ -1510,11 +1510,7 @@ define('mockup-patterns-base',[
       try {
           pattern = new Registry.patterns[name]($el, options);
       } catch (e) {
-          log.error('Failed while initializing "' + name + '" pattern.');
-          if (window.DEBUG) {
-            // don't swallow errors in DEBUG mode.
-            log.error(e);
-          }
+          log.error('Failed while initializing "' + name + '" pattern.', e);
       }
       $el.data('pattern-' + name, pattern);
     }
@@ -9102,6 +9098,22 @@ define('mockup-utils',[
     loading: new Loading(),
     getAuthenticator: function() {
       return $('input[name="_authenticator"]').val();
+    },
+    featureSupport: {
+      /*
+        well tested feature support for things we use in mockup.
+        All gathered from: http://diveintohtml5.info/everything.html
+        Alternative to using some form of modernizr.
+      */
+      dragAndDrop: function(){
+        return 'draggable' in document.createElement('span');
+      },
+      fileApi: function(){
+        return typeof FileReader != 'undefined'; // jshint ignore:line
+      },
+      history: function(){
+        return !!(window.history && window.history.pushState);
+      }
     }
   };
 });
@@ -31382,6 +31394,8 @@ define('mockup-ui-url/views/button',[
       }, this);
 
       this.on('render', function() {
+        this.$el.attr('title', this.options.title || '');
+        this.$el.attr('aria-label', this.options.title || this.options.tooltip || '');
         if (this.context !== null) {
           this.$el.addClass('btn-' + this.context);
         }
@@ -31587,6 +31601,7 @@ define('mockup-ui-url/views/popover',[
       this.bindTriggerEvents();
 
       this.on('render', function() {
+        this.$el.attr('role', 'tooltip').attr('aria-hidden', 'true');
         this.renderTitle();
         this.renderContent();
       }, this);
@@ -31673,6 +31688,7 @@ define('mockup-ui-url/views/popover',[
       }
 
       this.uiEventTrigger('show', this);
+      this.$el.attr('aria-hidden', 'false');
     },
     applyPlacement: function(offset, placement) {
       var $el = this.$el,
@@ -31731,6 +31747,7 @@ define('mockup-ui-url/views/popover',[
         this.triggerView.$el.removeClass('active');
       }
       this.uiEventTrigger('hide', this);
+      this.$el.attr('aria-hidden', 'true');
     },
     toggle: function(button, e) {
       if (this.opened) {
@@ -31843,10 +31860,7 @@ define('mockup-patterns-filemanager-url/js/addnew',[
           },
           success: function(data) {
             self.hide();
-            self.app.$tree.tree(
-              'loadDataFromUrl',
-              self.app.options.actionUrl + '?action=dataTree'
-            );
+            self.app.refreshTree();          
           }
         });
         // XXX show loading
@@ -31895,10 +31909,7 @@ define('mockup-patterns-filemanager-url/js/newfolder',[
           },
           success: function(data) {
             self.hide();
-            self.app.$tree.tree(
-              'loadDataFromUrl',
-              self.app.options.actionUrl + '?action=dataTree'
-            );
+            self.app.refreshTree();
           }
         });
         // XXX show loading
@@ -31935,19 +31946,21 @@ define('mockup-patterns-filemanager-url/js/delete',[
     },
     deleteButtonClicked: function(e) {
       var self = this;
+      var path = self.app.getNodePath();
+      if( path === undefined ) {
+        alert("No file selected.");
+        return;
+      }
       self.app.doAction('delete', {
         type: 'POST',
         data: {
-          path: self.app.getNodePath()
+          path: path
         },
         success: function(data) {
           self.hide();
-          self.app.$tree.tree(
-            'loadDataFromUrl',
-            self.app.options.actionUrl + '?action=dataTree'
-          );
-          // ugly, $tabs should have an API
-          $('.nav .active .remove').click();
+          self.app.refreshTree()
+          self.app.closeActiveTab();
+          self.app.resizeEditor();
         }
       });
       // XXX show loading
@@ -32023,10 +32036,7 @@ define('mockup-patterns-filemanager-url/js/customize',[
           // clear out
           self.$('input.search').attr('value', '');
           self.$results.empty();
-          self.app.$tree.tree(
-              'loadDataFromUrl',
-              self.app.options.actionUrl + '?action=dataTree'
-            );
+          self.app.refreshTree();
         }
       });
     }
@@ -32081,10 +32091,7 @@ define('mockup-patterns-filemanager-url/js/rename',[
           },
           success: function(data) {
             self.hide();
-            self.app.$tree.tree(
-              'loadDataFromUrl',
-              self.app.options.actionUrl + '?action=dataTree'
-            );
+            self.app.refreshTree();
             // ugly, $tabs should have an API
             $('.nav .active .remove').click();
           }
@@ -36343,6 +36350,7 @@ return $.drop;
  *    separator(string): Analagous to the separator constructor parameter from Select2. Defines a custom separator used to distinguish the tag values. Ex: a value of ";" will allow tags and initialValues to have values separated by ";" instead of the default ",". (',')
  *    initialValues(string): This can be a json encoded string, or a list of id:text values. Ex: Red:The Color Red,Orange:The Color Orange  This is used inside the initSelection method, if AJAX options are NOT set. (null)
  *    vocabularyUrl(string): This is a URL to a JSON-formatted file used to populate the list (null)
+ *    allowNewItems(string): All new items to be entered into the widget(true)
  *    OTHER OPTIONS(): For more options on select2 go to http://ivaynberg.github.io/select2/#documentation ()
  *
  * Documentation:
@@ -36589,11 +36597,9 @@ define('mockup-patterns-select2',[
                 results.push({id: queryTerm, text: queryTerm});
               }
 
-              if (haveResult || self.options.allowNewItems) {
-                $.each(data.results, function(i, item) {
-                  results.push(item);
-                });
-              }
+              $.each(data.results, function(i, item) {
+                results.push(item);
+              });
             }
             return { results: results };
           }
@@ -39044,7 +39050,7 @@ define('mockup-patterns-upload',[
         // the path uid. This event can be listened to by patterns using the
         // upload pattern, e.g. the TinyMCE pattern's link plugin.
         self.$el.trigger('uploadAllCompleted', {
-          'data': response,
+          'data': $.parseJSON(response),
           'path_uid': (self.$pathInput) ? self.$pathInput.val() : null
         });
       });
@@ -39349,7 +39355,13 @@ define('mockup-patterns-filemanager-url/js/upload',[
         url: self.app.options.uploadUrl,
         success: function(response) {
           if( self.callback ) {
-            self.callback.apply(self.app, [response]);
+            if( response.status == "success" ) {  
+              self.callback.apply(self.app, [response]);
+            }
+            else
+            {
+                alert("There was a problem during the upload process");
+            }
           }
         }
       });
@@ -39440,6 +39452,7 @@ define('mockup-patterns-filemanager',[
         '</a>' +
       '</li>'),
     saveBtn: null,
+    uploadFolder: '',
     fileData: {},  /* mapping of files to data that it describes */
     defaults: {
       aceConfig: {},
@@ -39458,7 +39471,16 @@ define('mockup-patterns-filemanager',[
         return;
       }
       self.options.treeConfig = $.extend(true, {}, self.treeConfig, {
-        dataUrl: self.options.actionUrl + '?action=dataTree'
+        dataUrl: self.options.actionUrl + '?action=dataTree',
+        onCreateLi: function(node, li) {
+          $('span', li).addClass('glyphicon');
+          if( node.folder ) {
+            $('span', li).addClass('glyphicon-folder-close')
+          }
+          else {
+            $('span', li).addClass('glyphicon-file')
+          }
+        }
       });
 
       self.fileData = {};
@@ -39466,7 +39488,8 @@ define('mockup-patterns-filemanager',[
       self.saveBtn = new ButtonView({
         id: 'save',
         title: _t('Save'),
-        context: 'success'
+        icon: 'floppy-disk',
+        context: 'primary'
       });
 
       var newFolderView = new NewFolderView({
@@ -39474,6 +39497,7 @@ define('mockup-patterns-filemanager',[
           id: 'newfolder',
           title: _t('New folder'),
           tooltip: _t('Add new folder to current directory'),
+          icon: 'folder-open',
           context: 'default'
         }),
         app: self
@@ -39483,6 +39507,7 @@ define('mockup-patterns-filemanager',[
           id: 'addnew',
           title: _t('Add new file'),
           tooltip: _t('Add new file to current folder'),
+          icon: 'file',
           context: 'default'
         }),
         app: self
@@ -39492,6 +39517,7 @@ define('mockup-patterns-filemanager',[
           id: 'rename',
           title: _t('Rename'),
           tooltip: _t('Rename currently selected resource'),
+          icon: 'random',
           context: 'default'
         }),
         app: self
@@ -39500,7 +39526,8 @@ define('mockup-patterns-filemanager',[
         triggerView: new ButtonView({
           id: 'delete',
           title: _t('Delete'),
-          tooltip: _('Delete currently selected resource'),
+          tooltip: _t('Delete currently selected resource'),
+          icon: 'trash',
           context: 'danger'
         }),
         app: self
@@ -39513,20 +39540,31 @@ define('mockup-patterns-filemanager',[
         deleteView
       ];
       var mainButtons = [
+        self.saveBtn,
         newFolderView.triggerView,
-        addNewView.triggerView
+        addNewView.triggerView,
+        renameView.triggerView,
+        deleteView.triggerView
       ];
 
-      if (self.options.uploadUrl){
+      if (self.options.uploadUrl && utils.featureSupport.dragAndDrop() && utils.featureSupport.fileApi()){
         var uploadView = new UploadView({
           triggerView: new ButtonView({
             id: 'upload',
             title: _t('Upload'),
             tooltip: _t('Upload file to current directory'),
+            icon: 'upload',
             context: 'default'
           }),
           app: self,
-          callback: self.addTreeElement
+          callback: function(data) {
+            var path = self.uploadFolder + '/' + data.name;
+            self.refreshTree(function() {
+              self.selectItem(path);
+              self.getUpload().toggle();
+            });
+
+          }
         });
         self.views.push(uploadView);
         mainButtons.push(uploadView.triggerView);
@@ -39551,20 +39589,17 @@ define('mockup-patterns-filemanager',[
             items: mainButtons,
             id: 'main',
             app: self
-          }),
-          new ButtonGroup({
-            items: [
-              renameView.triggerView,
-              deleteView.triggerView
-            ],
-            id: 'secondary',
-            app: self
-          }),
-          self.saveBtn
+          })
         ]
       });
 
       self._save = function() {
+
+        var path = self.getNodePath();
+        if( path === undefined ) {
+          alert("No file selected.");
+          return;
+        }
         self.doAction('saveFile', {
           type: 'POST',
           data: {
@@ -39586,54 +39621,20 @@ define('mockup-patterns-filemanager',[
     $: function(selector){
       return this.$el.find(selector);
     },
-    addTreeElement: function(file) {
+    refreshTree: function(callback) {
       var self = this;
-
-      if( file.status !== 'success' )
-      {
-          alert('There was a problem during the upload process.');
-          return;
+      if( callback === undefined ) {
+        callback = function() {};
       }
-
-      if( self.$tree === undefined ) {
-        return;
-      }
-
-      var node = self.getSelectedNode();
-      var path = "";
-      var name = file.name;
-
-      if( node.filename ) {
-        //We just want the selected folder, not an object in it.
-        path = node.path.substr(0, node.path.indexOf(node.filename) - 1);
-        node = self.$tree.tree('moveUp');
-      }
-      else if( node.path ){
-        path = node.path;
-      }
-
-      var options = {
-        label: name,
-        path: path + '/' + name,
-        filename: name,
-        fileType: name.substr(name.lastIndexOf('.') + 1, name.length),
-        folder: false,
-        name: name
-      };
-
-      if( node === false )
-      {
-        //If node is empty, jqtree makes the new node a root
-        node = null
-      }
-      var newNode = self.$tree.tree('appendNode', options, node);
-      self.$tree.tree('selectNode', newNode);
-      self.openFile({node: newNode});
-      //Close the upload popover
-      var upload = self.getUpload();
-      if( upload.triggerView.$el.hasClass('active') ) {
-        upload.options.triggerView.$el.click();
-      }
+      var nodes = self.$tree.find('span');
+      $(nodes).each(function() {
+        $(this).addClass('glyphicon glyphicon-file');
+      });
+      self.$tree.tree('loadDataFromUrl',
+        self.options.actionUrl + '?action=dataTree',
+        null,
+        callback
+      );
     },
     render: function(){
       var self = this;
@@ -39645,23 +39646,126 @@ define('mockup-patterns-filemanager',[
       self.$tree = self.$('.tree');
       self.$nav = self.$('nav');
       self.$tabs = $('ul.nav', self.$nav);
-      self.options.treeConfig.onLoad = function() {
-        // on loading initial data, activate first node if available
-        var node = self.$tree.tree('getNodeById', 1);
-        if (node){
-          self.$tree.tree('selectNode', node);
-          self.openFile({node: node});
-        }
-      };
       self.tree = new Tree(self.$tree, self.options.treeConfig);
-      self.$tree.bind('tree.click', function(e) {
-        self.openFile(e);
-      });
       self.$editor = self.$('.editor');
 
+      self.$tree.bind('tree.select', function(e) {
+        if( e.node === null ) {
+          self.toggleButtons(false);
+        }
+        else{
+          self.toggleButtons(true);
+          self.handleClick(e);
+        }
+      });
+
+      self.$tree.bind('tree.open', function(e) {
+        var element = $(e.node.element).find(':first').find('.glyphicon');
+        $(element).addClass('glyphicon-folder-open');
+        $(element).removeClass('glyphicon-folder-close');
+      });
+
+      self.$tree.bind('tree.close', function(e) {
+        var element = $(e.node.element).find(':first').find('.glyphicon');
+        $(element).addClass('glyphicon-folder-close');
+        $(element).removeClass('glyphicon-folder-open');
+      });
+
+      self.$tree.bind('tree.init', function(e) {
+        var node = self.$tree.tree('getTree').children[0];
+        if( node ) {
+          self.$tree.tree('selectNode', node);
+        }
+      });
+
+      $(self.$tabs).on('click', function(e) {
+        var path = $(e.target).data('path');
+        if( path === undefined ) {
+          path = $(e.target.parentElement).data('path');
+          if( path === undefined ) {
+            return false;
+          }
+        }
+        self.selectItem(path);
+      });
       $(window).on('resize', function() {
         self.resizeEditor();
       });
+    },
+    toggleButtons: function(on) {
+      if( on === undefined ) {
+        return;
+      }
+
+      if( on ) {
+        $('#btn-delete', this.$el).attr('disabled', false);
+        $('#btn-save', this.$el).attr('disabled', false);
+        $('#btn-rename', this.$el).attr('disabled', false);
+      }
+      else{
+        $('#btn-delete', this.$el).attr('disabled', 'disabled');
+        $('#btn-save', this.$el).attr('disabled', 'disabled');
+        $('#btn-rename', this.$el).attr('disabled', 'disabled');
+      }
+    },
+    handleClick: function(event) {
+      var self = this;
+      self.openFile(event);
+    },
+    closeActiveTab: function() {
+      var self = this;
+      var active = self.$tabs.find('.active .remove');
+      var $siblings = $(active).parent().siblings();
+      if ($siblings.length > 0){
+        var $item;
+        if ($(active).parent().prev().length > 0){
+          $item = $(active).parent().prev();
+        } else {
+          $item = $(active).parent().next();
+        }
+        $(active).parent().remove();
+        $item.click();
+      } else {
+        $(active).parent().remove();
+        self.toggleButtons(false);
+        self.openEditor();
+      }
+    },
+    createTab: function(path) {
+      var self = this;
+      var $item = $(self.tabItemTemplate({path: path}));
+      self.shrinkTab($item);
+      self.$tabs.append($item);
+      $('.remove', $item).click(function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        if ($(this).parent().hasClass('active'))
+        {
+          self.closeActiveTab();
+        }
+        else {
+          $(this).parent().remove();
+        }
+      });
+      $('.select', $item).click(function(e){
+        e.preventDefault();
+        $('li', self.$tabs).removeClass('active');
+        var $li = $(this).parent();
+        $li.addClass('active');
+      });
+    },
+    updateTabs: function(path) {
+      var self = this;
+      if( path === undefined ) {
+        return;
+      }
+      $('li', self.$tabs).removeClass('active');
+      var $existing = $('[data-path="' + path + '"]', self.$tabs);
+      if ($existing.length === 0){
+        self.createTab(path);
+      }else{
+        $existing.addClass('active');
+      }
     },
     shrinkTab: function(tab) {
         var self = this;
@@ -39677,52 +39781,17 @@ define('mockup-patterns-filemanager',[
     },
     openFile: function(event) {
       var self = this;
-      var doc = event.node.path;
+      if( event.node === null ) {
+        return true;
+      }
       if (event.node.folder){
         if( self.options.theme ) {
           self.setUploadUrl(event.node.path);
         }
         return true;
       }
+      var doc = event.node.path;
       if(self.fileData[doc]) {
-        $('li', self.$tabs).removeClass('active');
-        var $existing = $('[data-path="' + doc + '"]');
-        if ($existing.length === 0){
-          var $item = $(self.tabItemTemplate({path: doc}));
-          self.shrinkTab($item);
-          self.$tabs.append($item);
-          $('.remove', $item).click(function(e){
-            e.preventDefault();
-            if ($(this).parent().hasClass('active'))
-            {
-              var $siblings = $(this).parent().siblings();
-              if ($siblings.length > 0){
-                var $item;
-                if ($(this).parent().prev().length > 0){
-                  $item = $(this).parent().prev();
-                } else {
-                  $item = $(this).parent().next();
-                }
-                $item.addClass('active');
-                self.openEditor($item.attr('data-path'));
-              } else {
-                self.openEditor();
-              }
-            }
-            $(this).parent().remove();
-            self.resizeEditor();
-          });
-          $('.select', $item).click(function(e){
-            e.preventDefault();
-            $('li', self.$tabs).removeClass('active');
-            var $li = $(this).parent();
-            $li.addClass('active');
-            self.$tree.tree('selectNode', event.node);
-            self.openFile({node: event.node});
-          });
-        }else{
-          $existing.addClass('active');
-        }
         self.openEditor(doc);
       } else {
         self.doAction('getFile', {
@@ -39730,10 +39799,43 @@ define('mockup-patterns-filemanager',[
           dataType: 'json',
           success: function(data) {
             self.fileData[doc] = data;
-            self.openFile(event);
+            self.openEditor(doc);
           }
         });
       }
+    },
+    getNodeByPath: function(path) {
+      var self = this;
+      if( path === undefined || path === "" )
+      {
+       return null;
+      }
+
+      if( path.indexOf('/') === 0 )
+      {
+        path = path.substr(1,path.length);
+      }
+
+      var folders = path.split('/');
+      var children = self.$tree.tree('getTree').children;
+
+      for( var i = 0; i < folders.length; i++ )
+      {
+        for( var z = 0; z < children.length; z++ )
+        {
+          if( children[z].name == folders[i] ) {
+            if( children[z].folder == true ) {
+              children = children[z].children;
+              break;
+            }
+            else {
+              return children[z];
+            }
+          }
+        }
+      }
+
+      return null;
     },
     doAction: function(action, options) {
       var self = this;
@@ -39753,6 +39855,11 @@ define('mockup-patterns-filemanager',[
     },
     openEditor: function(path) {
       var self = this;
+
+      if( path !== undefined ) {
+          self.updateTabs(path);
+      }
+
       // first we need to save the current editor content
       if(self.currentPath) {
         self.fileData[self.currentPath].contents = self.ace.editor.getValue();
@@ -39767,12 +39874,11 @@ define('mockup-patterns-filemanager',[
       }
       self.ace = new TextEditor(self.$editor);
 
-      self.resizeEditor();
-
       if( self.currentPath === undefined ) {
           self.ace.setText();
           self.ace.setSyntax('text');
           self.ace.editor.clearSelection();
+          self.$tree.tree('selectNode', null);
       }
       else if( typeof self.fileData[path].info !== 'undefined' )
       {
@@ -39787,6 +39893,8 @@ define('mockup-patterns-filemanager',[
           self.ace.editor.clearSelection();
       }
 
+      self.resizeEditor();
+      self.$el.trigger("fileChange");
       self.ace.editor.on('change', function() {
         if (self.ace.editor.curOp && self.ace.editor.curOp.command.name) {
           $('[data-path="' + path + '"]').addClass("modified");
@@ -39841,9 +39949,9 @@ define('mockup-patterns-filemanager',[
     resizeEditor: function() {
         var self = this;
 
+        self.$editor = $('.editor', self.$el);
         var tab = self.$tabs.children()[0];
-
-        if( $(tab).height() < (self.$tabs.height() - 1) ) {
+        if( $(tab).outerHeight() < (self.$tabs.height() - 1) ) {
             self.$tabs.addClass('smallTabs');
             $(self.$tabs.children()).each(function() {
                 self.shrinkTab(this);
@@ -39868,7 +39976,13 @@ define('mockup-patterns-filemanager',[
           //This forces ace to redraw if the container has changed size
           self.ace.editor.resize();
           self.ace.editor.$blockScrolling = Infinity;
+          self.ace.editor.focus();
         }
+    },
+    selectItem: function(path) {
+      var self = this;
+      var node = self.getNodeByPath(path);
+      self.$tree.tree('selectNode', node);
     },
     setUploadUrl: function(path) {
       var self = this;
@@ -39877,6 +39991,7 @@ define('mockup-patterns-filemanager',[
         path = "";
       }
 
+      self.uploadFolder = path;
       var view = self.getUpload();
       if( view !== undefined ) {
         var url = self.options.uploadUrl +
@@ -40501,6 +40616,261 @@ define('mockup-patterns-thememapper-url/js/rulebuilderview',[
   return RuleBuilderView;
 });
 
+/*
+ * much of this code is heavily barrowed from Rok Garbas's iframe
+ * code that has since been removed from mockup
+ */
+
+define('mockup-patterns-resourceregistry-url/js/iframe',[
+  'jquery'
+], function($) {
+  'use strict';
+
+  window.IFrame = function(options) { this.init(options); };
+  window.IFrame.prototype = {
+    defaults: {
+      doctype: '<!doctype html>',
+      title: '',
+      name: '',
+      resources: [],
+      callback: function(){},
+      configure: function(){},
+      onLoad: function(){}
+    },
+
+    init: function(options) {
+      var self = this;
+      self.options = $.extend({}, self.defaults, options);
+
+      // register this guy
+      if(!window.iframe){
+        window.iframe = {};
+      }
+      window.iframe[self.options.name] = self;
+
+      self.loaded = false;
+
+      // Create iframe
+      var iframe = window.document.createElement('iframe');
+
+      iframe.setAttribute('id', self.options.name);
+      iframe.setAttribute('name', self.options.name);
+      iframe.setAttribute('style', 'display:none;');
+      iframe.setAttribute('src', 'javascript:false');
+
+      window.document.body.appendChild(iframe);
+      self.el = iframe;
+      self.window = iframe.contentWindow;
+      self.document = self.window.document;
+
+      self.options.configure(self);
+
+      var resourcesData = '';
+      for(var i=0; i<self.options.resources.length; i=i+1){
+        var url = self.options.resources[i];
+        var resource;
+        if (url.slice( -3 ) === '.js') {
+          resource = window.document.createElement('script');
+          resource.src = url;
+          resource.type = 'text/javascript';
+          resource.async = false;
+        } else if (url.slice( -4 ) === '.css') {
+          resource = window.document.createElement('link');
+          resource.href = url;
+          resource.type = 'text/css';
+          resource.rel = 'stylesheet';
+        } else if (url.slice( -5 ) === '.less') {
+          resource = window.document.createElement('link');
+          resource.href = url;
+          resource.type = 'text/css';
+          resource.rel = 'stylesheet/less';
+        }
+        resourcesData += '\n' + resource.outerHTML;
+      }
+
+      self.document.open();
+      self.document.write(
+          self.options.doctype +
+          '<html>' +
+            '<head>' +
+              '<title>' + self.options.title + '</title>' +
+              '<meta http-equiv="X-UA-Compatible" content="IE=edge">' +
+            '</head>' +
+            '<body onload="parent.window.iframe[\'' +
+                self.options.name + '\'].load()">' +
+              resourcesData +
+            '</body>' +
+          '</html>'
+      );
+      self.document.close();
+    },
+
+    load: function() {
+      var self = this;
+
+      // check if already loaded
+      if ( self.loaded === true ) {
+        return;
+      }
+
+      // mark iframe as loaded
+      self.loaded = true;
+
+      self.options.onLoad(self);
+    },
+    destroy: function(){
+      delete window.iframe[this.options.name];
+      window.document.body.removeChild(this.el);
+    }
+  };
+
+  return window.IFrame;
+});
+
+define('mockup-patterns-thememapper-url/js/lessbuilderview',[
+  'jquery',
+  'underscore',
+  'backbone',
+  'mockup-patterns-filemanager-url/js/basepopover',
+  'mockup-patterns-resourceregistry-url/js/iframe'
+], function($, _, Backbone, PopoverView, IFrame ) {
+  'use strict';
+  var lessBuilderTemplate = _.template(
+    '<div id="lessBuilder">' +
+      '<span class="message"></span>' +
+      '<span style="display: none;" class="errorMessage"></span>' +
+      '<div class="buttonBox">' +
+        '<a id="compileBtn" class="btn btn-success" href="#">Compile</a>' +
+        '<a id="errorBtn" class="btn btn-default" href="#">Clear</a>' +
+      '</div>' +
+    '</div>'
+  );
+
+  var LessBuilderView = PopoverView.extend({
+    className: 'popover lessbuilderview',
+    title: _.template('<%= _t("LESS Builder") %>'),
+    content: lessBuilderTemplate,
+    $button: null,
+    $start: null,
+    $working: null,
+    $done: null,
+    $error: null,
+    render: function() {
+      var self = this;
+      PopoverView.prototype.render.call(this);
+      self.$message = $('.message', this.$el);
+      self.$error = $('.errorMessage', this.$el);
+      self.$button = $('#compileBtn', this.$el);
+      self.$errorButton = $('#errorBtn', this.$el);
+      self.$button.on('click', function() {
+        self.showLessBuilder();
+      });
+      self.$errorButton.on('click', function() {
+        self.start();
+        self.toggle();
+      });
+      self.start();
+      return this;
+    },
+    toggle: function(button, e) {
+      PopoverView.prototype.toggle.apply(this, [button, e]);
+    },
+    start: function() {
+      var self = this;
+      self.$button.show();
+      self.$errorButton.hide();
+      self.$message.text("Click to compile the current file");
+      self.$error.hide();
+    },
+    working: function() {
+      var self = this;
+      self.$button.hide();
+      self.$message.text("Working....");
+    },
+    end: function() {
+      var self = this;
+      self.$message.text("Compiled successfully");
+      setTimeout(self.reset.bind(self), 3000);
+    },
+    reset: function() {
+      var self = this;
+      self.start();
+      self.toggle();
+    },
+    showError: function(error) {
+      this.$message.text("");
+      this.$error.text(error).show();
+      this.$errorButton.show();
+    },
+    showLessBuilder: function() {
+      var self = this;
+
+      if( self.app.lessPaths['save'] === undefined ) {
+        self.showError("Error: invalid filetype");
+        return false;
+      }
+
+      self.working();
+
+      var config = {
+        less: [ self.app.lessVariableUrl,
+                self.app.lessPaths['less'],
+                self.app.lessUrl]
+      }
+
+      var iframe = new IFrame({
+        name: 'lessc',
+        resources: config.less,
+        callback: self.app.saveThemeCSS,
+        env: self.app,
+        configure: function(iframe){
+          iframe.window.lessErrorReporting = function(what, error, href){
+            if( error.href !== undefined )
+            {
+              self.app.fileManager.ace.editor.scrollToLine(error.line, true);
+              if( error.type == "Name" ) {
+                var reg = new RegExp(".*(@\\S+)\\s.*");
+                var matches = reg.exec(error.message);
+                if( matches !== null ) {
+                  var varName = matches[1];
+                  var result = self.app.fileManager.ace.editor.findAll(varName);
+                }
+              }
+              else {
+                //The line number is always off by 1? (and LESS indexes from 0) so -2
+                self.app.fileManager.ace.editor.moveCursorToPosition({row: error.line - 2, column: error.column});
+                self.app.fileManager.ace.editor.focus();
+              }
+              self.showError(error);
+            }
+          };
+          iframe.styles = [];
+        },
+        onLoad: function(self) {
+          less.pageLoadFinished.then(
+            function() {
+              var $ = window.parent.$;
+              var iframe = window.iframe['lessc'];
+              var styles = $('style', iframe.document);
+              var styleBox = $('#styleBox');
+
+              $(styleBox).empty();
+              $(styles).each(function() {
+                styleBox.append(this.innerHTML);
+              });
+
+              iframe.options.callback();
+            }
+          );
+        }
+      });
+
+    },
+  });
+
+  return LessBuilderView;
+});
+
 /* Theme Mapper pattern.
  *
  * Options:
@@ -40539,9 +40909,11 @@ define('mockup-patterns-thememapper',[
   'mockup-patterns-filemanager',
   'mockup-patterns-thememapper-url/js/rulebuilder',
   'mockup-patterns-thememapper-url/js/rulebuilderview',
+  'mockup-patterns-thememapper-url/js/lessbuilderview',
   'mockup-ui-url/views/button',
-  'mockup-ui-url/views/buttongroup'
-], function($, Base, _, _t, InspectorTemplate, FileManager, RuleBuilder, RuleBuilderView, ButtonView, ButtonGroup) {
+  'mockup-ui-url/views/buttongroup',
+  'mockup-utils'
+], function($, Base, _, _t, InspectorTemplate, FileManager, RuleBuilder, RuleBuilderView, LessBuilderView, ButtonView, ButtonGroup, utils) {
   'use strict';
 
   var inspectorTemplate = _.template(InspectorTemplate);
@@ -40783,6 +41155,9 @@ define('mockup-patterns-thememapper',[
     unthemedInspector: null,
     ruleBuilder: null,
     rulebuilderView: null,
+    lessUrl: null,
+    lessPaths: {},
+    lessVariableUrl: null,
     $fileManager: null,
     $container: null,
     $inspectorContainer: null,
@@ -40795,12 +41170,15 @@ define('mockup-patterns-thememapper',[
       }
       self.$fileManager = $('<div class="pat-filemanager"/>').appendTo(self.$el);
       self.$container = $('<div class="row"></div>').appendTo(self.$el);
+      self.$styleBox = $('<div id="styleBox"></div>').appendTo(self.$el);
       self.$inspectorContainer = $('<div id="inspectors"></div>').appendTo(self.$container);
       self.$mockupInspector = $('<div class="mockup-inspector"/>').appendTo(self.$inspectorContainer);
       self.$unthemedInspector = $('<div class="unthemed-inspector"/>').appendTo(self.$inspectorContainer);
 
       // initialize patterns now
       self.editable = (self.options.editable == "True") ? true : false;
+      self.lessUrl = (self.options.lessUrl !== undefined ) ? self.options.lessUrl : false;
+      self.lessVariableUrl = (self.options.lessVariables !== undefined ) ? self.options.lessVariables : false;
 
       self.options.filemanagerConfig.uploadUrl = self.options.themeUrl;
       self.options.filemanagerConfig.theme = true;
@@ -40810,6 +41188,11 @@ define('mockup-patterns-thememapper',[
       self.setupButtons();
 
       self.ruleBuilder = new RuleBuilder(self, self.ruleBuilderCallback);
+
+      self.fileManager.on("fileChange", function() {
+        var node = self.fileManager.getSelectedNode();
+        self.setLessPaths(node);
+      });
 
       self.mockupInspector = new Inspector(self.$mockupInspector, {
         name: _t('HTML mockup'),
@@ -40822,6 +41205,10 @@ define('mockup-patterns-thememapper',[
         ruleBuilder: self.ruleBuilder,
         url: self.options.unthemedUrl,
       });
+      self.fileManager.$tree.bind('tree.click', function(e){
+      });
+      self.buildLessButton.$el.hide();
+
       if( !self.editable ) {
         if( self.fileManager.toolbar ) {
           var items = self.fileManager.toolbar.items;
@@ -40833,6 +41220,70 @@ define('mockup-patterns-thememapper',[
 
       // initially, let's hide the panels
       self.hideInspectors();
+    },
+    setLessPaths: function(node) {
+      var self = this;
+
+      if( node.fileType == "less" ){
+        self.buildLessButton.$el.show();
+      }
+      else{
+        self.buildLessButton.$el.hide();
+      }
+
+      if( node.path != "" ) {
+        var reg = new RegExp("/(.*\\.)less$", "m");
+        var path = reg.exec(node.path);
+
+        if( path === null ) {
+          self.lessPaths = {};
+          return false;
+        }
+        var lessPath = path[1] + "less";
+        var cssPath = path[1] + "css";
+
+        //file paths should be in the form of:
+        // "[directory/]filename.less"
+        self.lessPaths = {
+          'less': lessPath,
+          'save': cssPath
+        };
+
+        return true;
+      }
+      else {
+        self.lessPaths = {};
+        return false;
+      }
+    },
+    saveThemeCSS: function() {
+      var self = this.env;
+      var css = self.$styleBox.html();
+
+      if( css === "" ) {
+        //There was probably a problem during compilation
+        return false;
+      }
+
+      self.fileManager.doAction('saveFile', {
+        type: 'POST',
+        data: {
+          path: self.lessPaths['save'],
+          data: css,
+          _authenticator: utils.getAuthenticator()
+        },
+        success: function(data) {
+          self.fileManager.refreshTree(function() {
+            //We need to make sure we open the newest version
+            delete self.fileManager.fileData['/' + self.lessPaths['save']]
+            self.fileManager.selectItem(self.lessPaths['save'])
+          });
+          self.lessbuilderView.end();
+        }
+      });
+
+      window.iframe['lessc'].destroy();
+
     },
     showInspectors: function(){
       var self = this;
@@ -40858,6 +41309,7 @@ define('mockup-patterns-thememapper',[
       self.showInspectorsButton = new ButtonView({
         id: 'showinspectors',
         title: _t('Show inspectors'),
+        icon: 'search',
         tooltip: _t('Show inspector panels'),
         context: 'default'
       });
@@ -40872,12 +41324,14 @@ define('mockup-patterns-thememapper',[
       self.buildRuleButton = new ButtonView({
         id: 'buildrule',
         title: _t('Build rule'),
+        icon: 'wrench',
         tooltip: _t('rule building wizard'),
         context: 'default'
       });
       self.fullscreenButton = new ButtonView({
         id: 'fullscreenEditor',
         title: _t('Fullscreen'),
+        icon: 'fullscreen',
         tooltip: _t('view the editor in fullscreen'),
         context: 'default'
       });
@@ -40896,16 +41350,24 @@ define('mockup-patterns-thememapper',[
       self.previewThemeButton = new ButtonView({
         id: 'previewtheme',
         title: _t('Preview theme'),
+        icon: 'new-window',
         tooltip: _t('preview theme in a new window'),
         context: 'default'
       });
       self.previewThemeButton.on('button:click', function(){
         window.open(self.options.previewUrl);
       });
-
+      self.buildLessButton = new ButtonView({
+        id: 'buildless',
+        title: _t('Build CSS'),
+        icon: 'cog',
+        tooltip: _t('Compile LESS file'),
+        context: 'default'
+      });
       self.helpButton = new ButtonView({
         id: 'helpbutton',
         title: _t('Help'),
+        icon: 'question-sign',
         tooltip: _t('Show help'),
         context: 'default'
       });
@@ -40916,18 +41378,24 @@ define('mockup-patterns-thememapper',[
         triggerView: self.buildRuleButton,
         app: self
       });
+      self.lessbuilderView = new LessBuilderView({
+        triggerView: self.buildLessButton,
+        app: self
+      });
       self.buttonGroup = new ButtonGroup({
         items: [
           self.showInspectorsButton,
           self.buildRuleButton,
           self.previewThemeButton,
           self.fullscreenButton,
+          self.buildLessButton,
           self.helpButton
         ],
         id: 'mapper'
       });
       $('#toolbar .navbar', self.$el).append(self.buttonGroup.render().el);
       $('#toolbar .navbar', self.$el).append(self.rulebuilderView.render().el);
+      $('#toolbar .navbar', self.$el).append(self.lessbuilderView.render().el);
     }
   });
 

@@ -1,3 +1,1044 @@
+#portal-header {
+  margin: 0 auto 15px;
+  padding-top: 15px;
+  margin-bottom: 20px;
+}
+#portal-header #portal-logo {
+  float: left;
+}
+#portal-header #portal-languageselector {
+  float: left;
+  clear: both;
+  display: inline-block;
+  margin-right: 29px;
+  padding-top: 5px;
+}
+#portal-header #portal-languageselector li {
+  display: inline-block;
+  margin-right: 10px;
+}
+#portal-header #portal-anontools {
+  float: right;
+}
+#portal-header #portal-anontools ul {
+  padding-right: 0px;
+}
+#portal-header #portal-searchbox {
+  padding-top: 20px;
+  clear: left;
+  width: 67%;
+  position: absolute;
+  z-index: 2;
+  margin-left: 3px;
+  margin-top: 60px;
+  white-space: nowrap;
+}
+#portal-header #portal-searchbox .searchSection {
+  display: none;
+}
+#portal-header #portal-searchbox [type="text"] {
+  width: 100%;
+  display: inline-block;
+}
+#portal-header #portal-searchbox [type="submit"] {
+  display: none;
+}
+#portal-header #portal-searchbox label {
+  font-size: 86.667%;
+}
+#portal-header #portal-searchbox form > div {
+  font-size: 0;
+}
+#portal-header #portal-searchbox form > div > * {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  #portal-header #portal-languageselector {
+    float: right;
+    clear: none;
+  }
+  #portal-header #portal-anontools {
+    float: right;
+  }
+  #portal-header #portal-searchbox {
+    position: relative;
+    margin-top: 5px;
+    margin-bottom: -5px;
+    margin-left: 1em;
+    padding-top: 0;
+    clear: none;
+    float: right;
+    max-width: 50%;
+    width: 250px;
+    white-space: nowrap;
+  }
+  #portal-header #portal-searchbox .searchSection {
+    display: inherit;
+  }
+  #portal-header #portal-searchbox [type="text"] {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    width: calc(180px);
+    display: inline-block;
+  }
+  #portal-header #portal-searchbox [type="submit"] {
+    display: none;
+    width: 70px;
+    display: inline-block;
+    margin-left: -1px;
+    vertical-align: top;
+  }
+  #portal-header #portal-searchbox label {
+    font-size: 86.667%;
+  }
+  #portal-header #portal-searchbox form > div {
+    font-size: 0;
+  }
+  #portal-header #portal-searchbox form > div > * {
+    font-size: 14px;
+  }
+}
+#portal-header:before,
+#portal-header:after {
+  content: " ";
+  display: table;
+}
+#portal-header:after {
+  clear: both;
+}
+#portal-header:before,
+#portal-header:after {
+  content: " ";
+  display: table;
+}
+#portal-header:after {
+  clear: both;
+}
+.standalone,
+.context,
+.destructive,
+[type="submit"],
+button {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: 500;
+  text-align: center;
+  text-shadow: 0 1px rgba(0, 0, 0, 0.25);
+  vertical-align: middle;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 2px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.standalone:focus,
+.context:focus,
+.destructive:focus,
+[type="submit"]:focus,
+button:focus,
+.standalone:active:focus,
+.context:active:focus,
+.destructive:active:focus,
+[type="submit"]:active:focus,
+button:active:focus,
+.standalone.active:focus,
+.context.active:focus,
+.destructive.active:focus,
+[type="submit"].active:focus,
+button.active:focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.standalone:hover,
+.context:hover,
+.destructive:hover,
+[type="submit"]:hover,
+button:hover,
+.standalone:focus,
+.context:focus,
+.destructive:focus,
+[type="submit"]:focus,
+button:focus {
+  color: #4d4d4d;
+  text-decoration: none;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+.standalone:active,
+.context:active,
+.destructive:active,
+[type="submit"]:active,
+button:active,
+.standalone.active,
+.context.active,
+.destructive.active,
+[type="submit"].active,
+button.active {
+  outline: 0;
+  background-image: none;
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.standalone.disabled,
+.context.disabled,
+.destructive.disabled,
+[type="submit"].disabled,
+button.disabled,
+.standalone[disabled],
+.context[disabled],
+.destructive[disabled],
+[type="submit"][disabled],
+button[disabled],
+fieldset[disabled] .standalone,
+fieldset[disabled] .context,
+fieldset[disabled] .destructive,
+fieldset[disabled] [type="submit"],
+fieldset[disabled] button {
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.standalone,
+[type="submit"],
+button {
+  color: #4d4d4d;
+  background-color: #e5e5e5;
+  border-color: #b2b2b2;
+}
+.standalone:hover,
+[type="submit"]:hover,
+button:hover,
+.standalone:focus,
+[type="submit"]:focus,
+button:focus,
+.standalone.focus,
+[type="submit"].focus,
+button.focus,
+.standalone:active,
+[type="submit"]:active,
+button:active,
+.standalone.active,
+[type="submit"].active,
+button.active,
+.open > .dropdown-toggle.standalone,
+.open > .dropdown-toggle[type="submit"],
+.open > .dropdown-togglebutton,
+.open > .pat-filemanager .dropdown-toggle.standalone,
+.open > .pat-filemanager .dropdown-toggle[type="submit"],
+.open > .pat-filemanager .dropdown-togglebutton,
+.pat-filemanager .open > .dropdown-toggle.standalone,
+.pat-filemanager .open > .dropdown-toggle[type="submit"],
+.pat-filemanager .open > .dropdown-togglebutton {
+  color: #4d4d4d;
+  background-color: #cccccc;
+  border-color: #939393;
+}
+.standalone:active,
+[type="submit"]:active,
+button:active,
+.standalone.active,
+[type="submit"].active,
+button.active,
+.open > .dropdown-toggle.standalone,
+.open > .dropdown-toggle[type="submit"],
+.open > .dropdown-togglebutton,
+.open > .pat-filemanager .dropdown-toggle.standalone,
+.open > .pat-filemanager .dropdown-toggle[type="submit"],
+.open > .pat-filemanager .dropdown-togglebutton,
+.pat-filemanager .open > .dropdown-toggle.standalone,
+.pat-filemanager .open > .dropdown-toggle[type="submit"],
+.pat-filemanager .open > .dropdown-togglebutton {
+  background-image: none;
+}
+.standalone.disabled,
+[type="submit"].disabled,
+button.disabled,
+.standalone[disabled],
+[type="submit"][disabled],
+button[disabled],
+fieldset[disabled] .standalone,
+fieldset[disabled] [type="submit"],
+fieldset[disabled] button,
+.standalone.disabled:hover,
+[type="submit"].disabled:hover,
+button.disabled:hover,
+.standalone[disabled]:hover,
+[type="submit"][disabled]:hover,
+button[disabled]:hover,
+fieldset[disabled] .standalone:hover,
+fieldset[disabled] [type="submit"]:hover,
+fieldset[disabled] button:hover,
+.standalone.disabled:focus,
+[type="submit"].disabled:focus,
+button.disabled:focus,
+.standalone[disabled]:focus,
+[type="submit"][disabled]:focus,
+button[disabled]:focus,
+fieldset[disabled] .standalone:focus,
+fieldset[disabled] [type="submit"]:focus,
+fieldset[disabled] button:focus,
+.standalone.disabled.focus,
+[type="submit"].disabled.focus,
+button.disabled.focus,
+.standalone[disabled].focus,
+[type="submit"][disabled].focus,
+button[disabled].focus,
+fieldset[disabled] .standalone.focus,
+fieldset[disabled] [type="submit"].focus,
+fieldset[disabled] button.focus,
+.standalone.disabled:active,
+[type="submit"].disabled:active,
+button.disabled:active,
+.standalone[disabled]:active,
+[type="submit"][disabled]:active,
+button[disabled]:active,
+fieldset[disabled] .standalone:active,
+fieldset[disabled] [type="submit"]:active,
+fieldset[disabled] button:active,
+.standalone.disabled.active,
+[type="submit"].disabled.active,
+button.disabled.active,
+.standalone[disabled].active,
+[type="submit"][disabled].active,
+button[disabled].active,
+fieldset[disabled] .standalone.active,
+fieldset[disabled] [type="submit"].active,
+fieldset[disabled] button.active {
+  background-color: #e5e5e5;
+  border-color: #b2b2b2;
+}
+.standalone .badge,
+[type="submit"] .badge,
+button .badge {
+  color: #e5e5e5;
+  background-color: #4d4d4d;
+}
+.context {
+  color: #ffffff;
+  background-color: #2385c4;
+  border-color: #1b6899;
+}
+.context:hover,
+.context:focus,
+.context.focus,
+.context:active,
+.context.active,
+.open > .dropdown-toggle.context,
+.open > .pat-filemanager .dropdown-toggle.context,
+.pat-filemanager .open > .dropdown-toggle.context {
+  color: #ffffff;
+  background-color: #1b6899;
+  border-color: #124465;
+}
+.context:active,
+.context.active,
+.open > .dropdown-toggle.context,
+.open > .pat-filemanager .dropdown-toggle.context,
+.pat-filemanager .open > .dropdown-toggle.context {
+  background-image: none;
+}
+.context.disabled,
+.context[disabled],
+fieldset[disabled] .context,
+.context.disabled:hover,
+.context[disabled]:hover,
+fieldset[disabled] .context:hover,
+.context.disabled:focus,
+.context[disabled]:focus,
+fieldset[disabled] .context:focus,
+.context.disabled.focus,
+.context[disabled].focus,
+fieldset[disabled] .context.focus,
+.context.disabled:active,
+.context[disabled]:active,
+fieldset[disabled] .context:active,
+.context.disabled.active,
+.context[disabled].active,
+fieldset[disabled] .context.active {
+  background-color: #2385c4;
+  border-color: #1b6899;
+}
+.context .badge {
+  color: #2385c4;
+  background-color: #ffffff;
+}
+.destructive {
+  color: #ffffff;
+  background-color: #bb4f45;
+  border-color: #963f37;
+}
+.destructive:hover,
+.destructive:focus,
+.destructive.focus,
+.destructive:active,
+.destructive.active,
+.open > .dropdown-toggle.destructive,
+.open > .pat-filemanager .dropdown-toggle.destructive,
+.pat-filemanager .open > .dropdown-toggle.destructive {
+  color: #ffffff;
+  background-color: #963f37;
+  border-color: #692c26;
+}
+.destructive:active,
+.destructive.active,
+.open > .dropdown-toggle.destructive,
+.open > .pat-filemanager .dropdown-toggle.destructive,
+.pat-filemanager .open > .dropdown-toggle.destructive {
+  background-image: none;
+}
+.destructive.disabled,
+.destructive[disabled],
+fieldset[disabled] .destructive,
+.destructive.disabled:hover,
+.destructive[disabled]:hover,
+fieldset[disabled] .destructive:hover,
+.destructive.disabled:focus,
+.destructive[disabled]:focus,
+fieldset[disabled] .destructive:focus,
+.destructive.disabled.focus,
+.destructive[disabled].focus,
+fieldset[disabled] .destructive.focus,
+.destructive.disabled:active,
+.destructive[disabled]:active,
+fieldset[disabled] .destructive:active,
+.destructive.disabled.active,
+.destructive[disabled].active,
+fieldset[disabled] .destructive.active {
+  background-color: #bb4f45;
+  border-color: #963f37;
+}
+.destructive .badge {
+  color: #bb4f45;
+  background-color: #ffffff;
+}
+.link-parent {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: 500;
+  text-align: center;
+  text-shadow: 0 1px rgba(0, 0, 0, 0.25);
+  vertical-align: middle;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 2px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  color: #4d4d4d;
+  background-color: #e5e5e5;
+  border-color: #b2b2b2;
+  margin-bottom: 12px;
+}
+.link-parent:focus,
+.link-parent:active:focus,
+.link-parent.active:focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.link-parent:hover,
+.link-parent:focus {
+  color: #4d4d4d;
+  text-decoration: none;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+.link-parent:active,
+.link-parent.active {
+  outline: 0;
+  background-image: none;
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.link-parent.disabled,
+.link-parent[disabled],
+fieldset[disabled] .link-parent {
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.link-parent:hover,
+.link-parent:focus,
+.link-parent.focus,
+.link-parent:active,
+.link-parent.active,
+.open > .dropdown-toggle.link-parent,
+.open > .pat-filemanager .dropdown-toggle.link-parent,
+.pat-filemanager .open > .dropdown-toggle.link-parent {
+  color: #4d4d4d;
+  background-color: #cccccc;
+  border-color: #939393;
+}
+.link-parent:active,
+.link-parent.active,
+.open > .dropdown-toggle.link-parent,
+.open > .pat-filemanager .dropdown-toggle.link-parent,
+.pat-filemanager .open > .dropdown-toggle.link-parent {
+  background-image: none;
+}
+.link-parent.disabled,
+.link-parent[disabled],
+fieldset[disabled] .link-parent,
+.link-parent.disabled:hover,
+.link-parent[disabled]:hover,
+fieldset[disabled] .link-parent:hover,
+.link-parent.disabled:focus,
+.link-parent[disabled]:focus,
+fieldset[disabled] .link-parent:focus,
+.link-parent.disabled.focus,
+.link-parent[disabled].focus,
+fieldset[disabled] .link-parent.focus,
+.link-parent.disabled:active,
+.link-parent[disabled]:active,
+fieldset[disabled] .link-parent:active,
+.link-parent.disabled.active,
+.link-parent[disabled].active,
+fieldset[disabled] .link-parent.active {
+  background-color: #e5e5e5;
+  border-color: #b2b2b2;
+}
+.link-parent .badge {
+  color: #e5e5e5;
+  background-color: #4d4d4d;
+}
+.link-parent:before {
+  content: "↩ ";
+  top: 3px;
+  position: relative;
+}
+.input-group,
+.pat-filemanager .input-group {
+  position: relative;
+  display: table;
+  border-collapse: separate;
+}
+.input-group[class*="col-"],
+.pat-filemanager .input-group[class*="col-"] {
+  float: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+.input-group .form-control,
+.pat-filemanager .input-group .form-control {
+  position: relative;
+  z-index: 2;
+  float: left;
+  width: 100%;
+  margin-bottom: 0;
+}
+.input-group-addon,
+.input-group-btn,
+.input-group .form-control,
+.pat-filemanager .input-group .form-control,
+.pat-filemanager .input-group-addon,
+.pat-filemanager .input-group-btn {
+  display: table-cell;
+}
+.input-group-addon:not(:first-child):not(:last-child),
+.input-group-btn:not(:first-child):not(:last-child),
+.input-group .form-control:not(:first-child):not(:last-child),
+.pat-filemanager .input-group .form-control:not(:first-child):not(:last-child),
+.pat-filemanager .input-group-addon:not(:first-child):not(:last-child),
+.pat-filemanager .input-group-btn:not(:first-child):not(:last-child) {
+  border-radius: 0;
+}
+.input-group-addon,
+.input-group-btn,
+.pat-filemanager .input-group-addon,
+.pat-filemanager .input-group-btn {
+  width: 1%;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.input-group .form-control:first-child,
+.input-group-addon:first-child,
+.input-group-btn:first-child > .btn,
+.input-group-btn:first-child > .btn-group > .btn,
+.input-group-btn:first-child > .dropdown-toggle,
+.input-group-btn:last-child > .btn:not(:last-child):not(.dropdown-toggle),
+.input-group-btn:last-child > .btn-group:not(:last-child) > .btn,
+.input-group-btn:first-child > .pat-filemanager .btn,
+.input-group-btn:first-child > .btn-group > .pat-filemanager .btn,
+.input-group-btn:last-child > .pat-filemanager .btn:not(:last-child):not(.dropdown-toggle),
+.input-group-btn:last-child > .btn-group:not(:last-child) > .pat-filemanager .btn,
+.input-group-btn:first-child > .pat-filemanager .btn-group > .btn,
+.input-group-btn:last-child > .pat-filemanager .btn-group:not(:last-child) > .btn,
+.pat-filemanager .input-group .form-control:first-child,
+.pat-filemanager .input-group-addon:first-child,
+.pat-filemanager .input-group-btn:first-child > .btn,
+.pat-filemanager .input-group-btn:first-child > .btn-group > .btn,
+.pat-filemanager .input-group-btn:first-child > .dropdown-toggle,
+.pat-filemanager .input-group-btn:last-child > .btn:not(:last-child):not(.dropdown-toggle),
+.pat-filemanager .input-group-btn:last-child > .btn-group:not(:last-child) > .btn,
+.input-group-btn:first-child > .pat-filemanager .dropdown-toggle {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+.input-group-addon:first-child,
+.pat-filemanager .input-group-addon:first-child {
+  border-right: 0;
+}
+.input-group .form-control:last-child,
+.input-group-addon:last-child,
+.input-group-btn:last-child > .btn,
+.input-group-btn:last-child > .btn-group > .btn,
+.input-group-btn:last-child > .dropdown-toggle,
+.input-group-btn:first-child > .btn:not(:first-child),
+.input-group-btn:first-child > .btn-group:not(:first-child) > .btn,
+.input-group-btn:last-child > .pat-filemanager .btn,
+.input-group-btn:last-child > .btn-group > .pat-filemanager .btn,
+.input-group-btn:first-child > .pat-filemanager .btn:not(:first-child),
+.input-group-btn:first-child > .btn-group:not(:first-child) > .pat-filemanager .btn,
+.input-group-btn:last-child > .pat-filemanager .btn-group > .btn,
+.input-group-btn:first-child > .pat-filemanager .btn-group:not(:first-child) > .btn,
+.pat-filemanager .input-group .form-control:last-child,
+.pat-filemanager .input-group-addon:last-child,
+.pat-filemanager .input-group-btn:last-child > .btn,
+.pat-filemanager .input-group-btn:last-child > .btn-group > .btn,
+.pat-filemanager .input-group-btn:last-child > .dropdown-toggle,
+.pat-filemanager .input-group-btn:first-child > .btn:not(:first-child),
+.pat-filemanager .input-group-btn:first-child > .btn-group:not(:first-child) > .btn,
+.input-group-btn:last-child > .pat-filemanager .dropdown-toggle {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+.input-group-addon:last-child,
+.pat-filemanager .input-group-addon:last-child {
+  border-left: 0;
+}
+.input-group-btn,
+.pat-filemanager .input-group-btn {
+  position: relative;
+  font-size: 0;
+  white-space: nowrap;
+}
+.input-group-btn > .btn,
+.input-group-btn > .pat-filemanager .btn,
+.pat-filemanager .input-group-btn > .btn {
+  position: relative;
+}
+.input-group-btn > .btn + .btn,
+.input-group-btn > .pat-filemanager .btn + .pat-filemanager .btn,
+.pat-filemanager .input-group-btn > .btn + .btn {
+  margin-left: -1px;
+}
+.input-group-btn > .btn:hover,
+.input-group-btn > .btn:focus,
+.input-group-btn > .btn:active,
+.input-group-btn > .pat-filemanager .btn:hover,
+.input-group-btn > .pat-filemanager .btn:focus,
+.input-group-btn > .pat-filemanager .btn:active,
+.pat-filemanager .input-group-btn > .btn:hover,
+.pat-filemanager .input-group-btn > .btn:focus,
+.pat-filemanager .input-group-btn > .btn:active {
+  z-index: 2;
+}
+.input-group-btn:first-child > .btn,
+.input-group-btn:first-child > .btn-group,
+.input-group-btn:first-child > .pat-filemanager .btn,
+.input-group-btn:first-child > .pat-filemanager .btn-group,
+.pat-filemanager .input-group-btn:first-child > .btn,
+.pat-filemanager .input-group-btn:first-child > .btn-group {
+  margin-right: -1px;
+}
+.input-group-btn:last-child > .btn,
+.input-group-btn:last-child > .btn-group,
+.input-group-btn:last-child > .pat-filemanager .btn,
+.input-group-btn:last-child > .pat-filemanager .btn-group,
+.pat-filemanager .input-group-btn:last-child > .btn,
+.pat-filemanager .input-group-btn:last-child > .btn-group {
+  margin-left: -1px;
+}
+.portalMessage {
+  padding: 15px;
+  padding-left: 45px;
+  margin-bottom: 20px;
+  border: 0;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.17);
+  font-size: 14px;
+  font-weight: 300;
+  text-shadow: 0 1px rgba(255, 255, 255, 0.1);
+}
+.portalMessage > strong,
+.portalMessage > dt {
+  font-weight: 500;
+  padding-right: 5px;
+  color: rgba(0, 0, 0, 0.5);
+}
+.portalMessage a {
+  font-weight: 300;
+  color: #005176;
+}
+.portalMessage > strong:before,
+.portalMessage > dt:before {
+  font-size: 14px;
+  font-weight: 300;
+  margin-left: -30px;
+  margin-right: 10px;
+  display: inline-block;
+  border-radius: 20px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.9);
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  text-shadow: 0 -1px rgba(0, 0, 0, 0.5);
+  top: -1px;
+  position: relative;
+}
+.portalMessage > dt,
+.portalMessage > dd {
+  display: inline;
+}
+.portalMessage > dd {
+  margin: 0;
+}
+.portlet .portletContent > .portalMessage {
+  padding: 15px;
+  padding-left: 45px;
+  margin: 15px;
+}
+.portalMessage.info {
+  background-color: #aad6ea;
+  border: 1px solid #9acee6;
+  color: rgba(0, 0, 0, 0.5);
+}
+.portalMessage.info > strong,
+.portalMessage.info > dt {
+  color: rgba(0, 0, 0, 0.67);
+}
+.portalMessage.info > strong:before,
+.portalMessage.info > dt:before {
+  background-color: #3e7b91;
+  content: "i";
+}
+.portalMessage.warning {
+  background-color: #ebd380;
+  border: 1px solid #e7ca66;
+  color: rgba(0, 0, 0, 0.5);
+}
+.portalMessage.warning > strong,
+.portalMessage.warning > dt {
+  color: rgba(0, 0, 0, 0.67);
+}
+.portalMessage.warning > strong:before,
+.portalMessage.warning > dt:before {
+  background-color: #bc8d0d;
+  content: "!";
+}
+.portalMessage.error {
+  background-color: #ec9c8d;
+  border: 1px solid #eb9484;
+  color: rgba(0, 0, 0, 0.5);
+}
+.portalMessage.error > strong,
+.portalMessage.error > dt {
+  color: rgba(0, 0, 0, 0.67);
+}
+.portalMessage.error > strong:before,
+.portalMessage.error > dt:before {
+  background-color: #ac493f;
+  content: "×";
+}
+/* special octogonal shape for error
+.portalMessage.error {
+	& > strong:before, & > dt:before {
+		border-radius: 8px; //soften border
+		background: @plone-alert-error-bullet;
+		background:
+			linear-gradient(135deg, transparent 4px, @plone-alert-error-bullet 0) top left,
+			linear-gradient(225deg, transparent 4px, @plone-alert-error-bullet 0) top right,
+			linear-gradient(315deg, transparent 4px, @plone-alert-error-bullet 0) bottom right,
+			linear-gradient(45deg,  transparent 4px, @plone-alert-error-bullet 0) bottom left;
+		background-size: 50% 50%;
+		background-repeat: no-repeat;
+	}
+}
+*/
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 100;
+  src: local('Roboto Thin'), local('Roboto-Thin'), url("roboto/Roboto-Thin.ttf") format('truetype');
+}
+@font-face {
+  font-family: "Roboto";
+  font-style: italic;
+  font-weight: 100;
+  src: local('Roboto Thin Italic'), local('Roboto-ThinItalic'), url("roboto/Roboto-ThinItalic.ttf") format('truetype');
+}
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 300;
+  src: local('Roboto Light'), local('Roboto-Light'), url("roboto/Roboto-Light.ttf") format('truetype');
+}
+@font-face {
+  font-family: "Roboto";
+  font-style: italic;
+  font-weight: 300;
+  src: local('Roboto Light Italic'), local('Roboto-LightItalic'), url("roboto/Roboto-LightItalic.ttf") format('truetype');
+}
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 500;
+  src: local('Roboto Medium'), local('Roboto-Medium'), url("roboto/Roboto-Medium.ttf") format('truetype');
+}
+@font-face {
+  font-family: "Roboto";
+  font-style: italic;
+  font-weight: 500;
+  src: local('Roboto Medium Italic'), local('Roboto-MediumItalic'), url("roboto/Roboto-MediumItalic.ttf") format('truetype');
+}
+@font-face {
+  font-family: "Roboto Condensed";
+  font-style: normal;
+  font-weight: 300;
+  src: local('Roboto Condensed Light'), local('RobotoCondensed-Light'), url("roboto/RobotoCondensed-Light.ttf") format('truetype');
+}
+@font-face {
+  font-family: "Roboto";
+  font-style: italic;
+  font-weight: 300;
+  src: local('Roboto Condensed Thin Italic'), local('RobotoCondensed-LightItalic'), url("roboto/RobotoCondensed-LightItalic.ttf") format('truetype');
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: inherit;
+  font-weight: 300;
+  line-height: 1.1;
+  color: inherit;
+}
+h1,
+h2,
+h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+h4,
+h5,
+h6 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+h1 {
+  font-size: 36px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 14px;
+}
+h6 {
+  font-size: 12px;
+}
+p {
+  margin: 0 0 10px;
+}
+.documentDescription {
+  font-size: 18px;
+  font-weight: 500;
+  color: #777777;
+}
+small {
+  font-size: 85%;
+}
+cite {
+  font-style: normal;
+}
+mark {
+  background-color: #ebd380;
+  padding: .2em;
+}
+.discreet {
+  color: #777777;
+  font-weight: 300;
+}
+.documentByLine {
+  color: #777777;
+  font-weight: 300;
+}
+.documentFirstHeading {
+  padding-bottom: 9px;
+  margin: 0 0 20px;
+  border-bottom: 1px solid #cccccc;
+}
+.tileHeadline {
+  padding-top: 20px;
+}
+ul,
+ol {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+ul ul,
+ol ul,
+ul ol,
+ol ol {
+  margin-bottom: 0;
+}
+dl {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+dt,
+dd {
+  line-height: 1.42857143;
+}
+dt {
+  font-weight: bold;
+}
+dd {
+  margin-left: 0;
+}
+abbr[title],
+abbr[data-original-title] {
+  cursor: help;
+  border-bottom: 1px dotted #777777;
+}
+address {
+  margin-bottom: 20px;
+  font-style: normal;
+  line-height: 1.42857143;
+}
+.pull-right {
+  float: right !important;
+}
+.pull-left {
+  float: left !important;
+}
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+html {
+  font-size: 62.5%;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+body {
+  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #4d4d4d;
+  background-color: #fafafa;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+input,
+button,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+a {
+  color: #007bb3;
+  text-decoration: none;
+}
+a:hover,
+a:focus {
+  color: #004666;
+  text-decoration: underline;
+}
+a:focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+figure {
+  margin: 0;
+}
+img {
+  vertical-align: middle;
+}
+hr {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border: 0;
+  border-top: 1px solid #cccccc;
+}
+.sr-only,
+.hiddenStructure,
+.crud-form .header-select {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.sr-only-focusable:active,
+.sr-only-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+}
+.tooltips {
+  opacity: 0;
+  transition: opacity .2s ease .5s;
+  position: absolute;
+  background: #333333;
+  background: rgba(0, 0, 0, 0.9);
+  color: #fafafa;
+  font-size: 12px;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.17);
+  max-width: 200px;
+  margin-left: -100px;
+  left: 200px;
+  text-align: center;
+  padding: 6px;
+}
+.tooltips.active {
+  opacity: 1;
+  transition: opacity .2s ease .5s;
+}
 /* ui helper less rules */
 @font-face {
   font-family: 'Glyphicons Halflings';
@@ -4011,6 +5052,12 @@ tbody.pat-filemanager .collapse.in {
 .pat-filemanager .pat-filemanager .navbar-nav > li.modified > a {
   color: #f0ad4e;
 }
+body.plone-toolbar-left-default {
+  padding-left: 0px;
+}
+#edit-zone {
+  display: none;
+}
 .pat-thememapper {
   font-family: Roboto, sans-serif;
   /* Frame info */
@@ -4098,6 +5145,11 @@ tbody.pat-filemanager .collapse.in {
   text-decoration: none;
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
+.pat-thememapper .navbar.ui-offset-parent,
+.pat-thememapper .pat-filemanager .navbar.ui-offset-parent,
+.pat-thememapper .navbar.pat-filemanager .ui-offset-parent {
+  margin-bottom: 0px;
+}
 .pat-thememapper .container.fullscreen {
   position: fixed;
   top: 0;
@@ -4136,7 +5188,15 @@ tbody.pat-filemanager .collapse.in {
   margin-top: 0px;
 }
 .pat-thememapper .tree .jqtree-tree li {
-  padding-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 3px 0 3px 0;
+}
+.pat-thememapper .tree .glyphicon {
+  top: -1px;
+}
+.pat-thememapper .tree .glyphicon:before {
+  margin-right: 5px;
 }
 .pat-thememapper .tree .jqtree-selected {
   font-weight: bold;
@@ -4154,9 +5214,17 @@ tbody.pat-filemanager .collapse.in {
 .pat-thememapper .nav-and-editor .pat-filemanager .collapse {
   padding-left: 0;
 }
-.pat-thememapper .navbar-nav > li.active a,
-.pat-thememapper .pat-filemanager .navbar-nav > li.active a {
+.pat-thememapper .navbar-nav > li,
+.pat-thememapper .pat-filemanager .navbar-nav > li {
+  background-color: #DDD;
+}
+.pat-thememapper .navbar-nav > li a,
+.pat-thememapper .pat-filemanager .navbar-nav > li a {
   background-color: transparent;
+}
+.pat-thememapper .navbar-nav > li.active,
+.pat-thememapper .pat-filemanager .navbar-nav > li.active {
+  background-color: #FFF;
 }
 .pat-thememapper .nav.smallTabs li,
 .pat-thememapper .pat-filemanager .nav.smallTabs li {
@@ -4234,10 +5302,24 @@ tbody.pat-filemanager .collapse.in {
 .pat-thememapper .rulebuilderView #new-rule-reuse-panel {
   margin-top: 15px;
 }
-.pat-thememapper #btn-inspectors {
+.pat-thememapper #inspectors {
   clear: both;
 }
-.pat-thememapper #btn-inspectors .frame-shelf-container {
+.pat-thememapper #inspectors .frame-shelf-container {
   margin-right: 5px;
+}
+.pat-thememapper .btn-group,
+.pat-thememapper .pat-filemanager .btn-group {
+  margin-right: 30px;
+}
+.pat-thememapper #lessBuilder .buttonBox {
+  margin-top: 10px;
+}
+.pat-thememapper .errorMessage {
+  word-wrap: break-word;
+  font-size: small;
+}
+.pat-thememapper #styleBox {
+  display: none;
 }
 /*# sourceMappingURL=thememapper-compiled.css.map */
