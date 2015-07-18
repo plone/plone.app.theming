@@ -20,7 +20,8 @@ Changelog
 - implemented upload for theme manager
   [schwartz]
 
-- Change the category of the configlet to 'plone-general' [sneridagh]
+- Change the category of the configlet to 'plone-general'.
+  [sneridagh]
 
 
 1.2.6 (2015-06-05)
