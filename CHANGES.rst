@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.7 (unreleased)
+1.2.7 (2015-07-18)
 ------------------
 
 - Provide better styling to themeing control panel, less build, finish implementation
