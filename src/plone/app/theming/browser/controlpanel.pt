@@ -186,11 +186,11 @@
                             </form>
 
                             <a href="#" class="plone-btn plone-btn-default pat-plone-modal"
-                                tal:attributes="href string:#modal-copy-${theme/name}"
+                                tal:attributes="href python:'#modal-copy-{0}'.format(theme['name'].replace('.', '-'))"
                                 i18n:translate="">Copy</a>
                             <!-- Copy theme overlay -->
                             <div class="plone-modal"
-                                tal:attributes="id string:modal-copy-${theme/name}">
+                                tal:attributes="id python:'modal-copy-{0}'.format(theme['name'].replace('.', '-'))">
                                 <h1 id="overlayTitleCopyTheme" class="documentFirstHeading" i18n:translate="theming_controlpanel_copy_theme">Create copy of <span i18n:name="theme_name"
                                     tal:content="string:${theme/name}"></span></h1>
 
