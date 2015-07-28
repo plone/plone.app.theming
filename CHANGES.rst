@@ -4,7 +4,8 @@ Changelog
 1.2.8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fixed copy modal for themes with a dot in the name.
+  [Gagaro]
 
 
 1.2.7 (2015-07-18)
