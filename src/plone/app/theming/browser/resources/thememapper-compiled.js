@@ -39470,15 +39470,25 @@ define('mockup-patterns-filemanager',[
         self.$el.html('Must specify actionUrl setting for pattern');
         return;
       }
+
       self.options.treeConfig = $.extend(true, {}, self.treeConfig, {
         dataUrl: self.options.actionUrl + '?action=dataTree',
         onCreateLi: function(node, li) {
+          var imageTypes = ['png', 'jpg', 'jpeg', 'gif', 'ico'];
+          var themeTypes = ['css', 'html', 'htm', 'txt', 'xml', 'js', 'cfg', 'less'];
+
           $('span', li).addClass('glyphicon');
           if( node.folder ) {
             $('span', li).addClass('glyphicon-folder-close')
           }
+          else if( $.inArray(node.fileType, imageTypes) >= 0) {
+            $('span', li).addClass('glyphicon-picture');
+          }
+          else if( $.inArray(node.fileType, themeTypes) >= 0) {
+            $('span', li).addClass('glyphicon-file');
+          }
           else {
-            $('span', li).addClass('glyphicon-file')
+            $('span', li).addClass('glyphicon-cog')
           }
         }
       });
@@ -39626,10 +39636,6 @@ define('mockup-patterns-filemanager',[
       if( callback === undefined ) {
         callback = function() {};
       }
-      var nodes = self.$tree.find('span');
-      $(nodes).each(function() {
-        $(this).addClass('glyphicon glyphicon-file');
-      });
       self.$tree.tree('loadDataFromUrl',
         self.options.actionUrl + '?action=dataTree',
         null,
@@ -40852,14 +40858,14 @@ define('mockup-patterns-thememapper-url/js/lessbuilderview',[
               var $ = window.parent.$;
               var iframe = window.iframe['lessc'];
               var styles = $('style', iframe.document);
-              var styleBox = $('#styleBox');
 
-              $(styleBox).empty();
+              var css = "";
+
               $(styles).each(function() {
-                styleBox.append(this.innerHTML);
+                 css += this.innerHTML;
               });
 
-              iframe.options.callback();
+              iframe.options.callback(css);
             }
           );
         }
@@ -41215,6 +41221,7 @@ define('mockup-patterns-thememapper',[
           $(items).each(function() {
             this.disable();
           });
+          self.lessbuilderView.triggerView.disable();
         }
       };
 
@@ -41256,11 +41263,10 @@ define('mockup-patterns-thememapper',[
         return false;
       }
     },
-    saveThemeCSS: function() {
+    saveThemeCSS: function(styles) {
       var self = this.env;
-      var css = self.$styleBox.html();
 
-      if( css === "" ) {
+      if( styles === "" || styles === undefined ) {
         //There was probably a problem during compilation
         return false;
       }
@@ -41269,7 +41275,7 @@ define('mockup-patterns-thememapper',[
         type: 'POST',
         data: {
           path: self.lessPaths['save'],
-          data: css,
+          data: styles,
           _authenticator: utils.getAuthenticator()
         },
         success: function(data) {

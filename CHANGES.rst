@@ -4,6 +4,9 @@ Changelog
 1.2.8 (unreleased)
 ------------------
 
+- fix less building
+  [obct537]
+
 - Fixed copy modal for themes with a dot in the name.
   [Gagaro]
 
