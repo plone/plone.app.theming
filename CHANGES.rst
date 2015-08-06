@@ -4,6 +4,9 @@ Changelog
 1.2.8 (unreleased)
 ------------------
 
+- fix toolbar on control panel
+  [vangheem]
+
 - fix less building
   [obct537]
 

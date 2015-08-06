@@ -12,7 +12,7 @@
           view nocall:view | nocall: plone_view;
           portal_url portal_state/portal_url;
           ajax_load python:False;
-          toolbar_class python:request.cookies.get('plone-toolbar', 'plone-toolbar-left pat-toolbar')"
+          dummy python: request.set('disable_toolbar', True);"
       tal:attributes="lang lang;">
 
     <metal:cache tal:replace="structure provider:plone.httpheaders" />
@@ -47,21 +47,7 @@
                         python:plone_view.patterns_settings()"
         id="visual-portal-wrapper">
 
-    <section id="edit-bar" role="toolbar">
-      <div id="edit-zone" role="toolbar" tal:attributes="class toolbar_class">
-        <div class="plone-toolbar-container">
-          <a class="plone-toolbar-logo">
-            <img alt="Plone Toolbar" tal:attributes="src string:${context/portal_url}/++plone++static/plone-toolbarlogo.svg" />
-          </a>
-          <a class="plone-toolbar-switcher"><span>Left-Top switcher</span></a>
-          <nav role="navigation">
-            <ul>
-              <div tal:replace="structure provider:plone.toolbar">
-              </div>
-            </ul>
-        </div>
-      </div>
-    </section>
+    <div tal:replace="structure provider:plone.toolbar" />
 
     <aside id="global_statusmessage">
       <div class="portalMessage info">
