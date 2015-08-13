@@ -169,6 +169,12 @@
                                     class="plone-btn plone-btn-default"
                                     type="submit"
                                     name="form.button.Disable">Deactivate</button>
+                                <button
+                                    tal:condition="theme/selected"
+                                    i18n:translate=""
+                                    class="plone-btn plone-btn-default"
+                                    type="submit"
+                                    name="form.button.InvalidateCache">Clear Cache</button>
                             </form>
 
                             <a href="#" class="plone-btn plone-btn-default pat-plone-modal"

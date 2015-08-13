@@ -11,6 +11,7 @@ from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.interfaces import _
 from plone.app.theming.plugins.utils import getPluginSettings
 from plone.app.theming.plugins.utils import getPlugins
+from plone.app.theming.utils import theming_policy
 from plone.app.theming.utils import applyTheme
 from plone.app.theming.utils import createThemeFromTemplate
 from plone.app.theming.utils import extractThemeInfo
@@ -145,6 +146,12 @@ class ThemingControlpanel(BrowserView):
                 )
             )
             self._setup()
+            return True
+
+        if 'form.button.InvalidateCache' in form:
+            self.authorize()
+            policy = theming_policy()
+            policy.invalidateCache()
             return True
 
         if 'form.button.Disable' in form:
