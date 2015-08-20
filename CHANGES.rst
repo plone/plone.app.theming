@@ -4,6 +4,9 @@ Changelog
 1.2.8 (unreleased)
 ------------------
 
+- change link from plone.org to plone.com.
+  [tkimnguyen]
+
 - fix toolbar on control panel
   [vangheem]
 
