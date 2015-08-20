@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.8 (unreleased)
+1.2.8 (2015-08-20)
 ------------------
 
 - change link from plone.org to plone.com.
