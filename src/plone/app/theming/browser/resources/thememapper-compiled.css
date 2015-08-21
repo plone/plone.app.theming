@@ -5196,6 +5196,9 @@ body.plone-toolbar-left-default {
 .pat-thememapper .tree .jqtree-tree {
   margin-top: 0px;
 }
+.pat-thememapper .tree .jqtree-tree .jqtree-title {
+  padding: 2px;
+}
 .pat-thememapper .tree .jqtree-tree li {
   white-space: nowrap;
   overflow: hidden;
@@ -5207,8 +5210,22 @@ body.plone-toolbar-left-default {
 .pat-thememapper .tree .glyphicon:before {
   margin-right: 5px;
 }
-.pat-thememapper .tree .jqtree-selected {
+.pat-thememapper .tree ul.jqtree-tree li.jqtree_common > div:hover {
+  background-color: #1C4257;
+}
+.pat-thememapper .tree ul.jqtree-tree li.jqtree_common > div:hover span {
+  color: white;
+  text-shadow: none;
+}
+.pat-thememapper .tree ul.jqtree-tree li.jqtree_common > div:hover a {
+  color: white;
+  text-shadow: none;
+}
+.pat-thememapper .tree ul.jqtree-tree li.jqtree-selected {
   font-weight: bold;
+}
+.pat-thememapper .tree ul.jqtree-tree li.jqtree-selected > .jqtree_common {
+  background-color: #E7E7E7;
 }
 .pat-thememapper .nav-and-editor {
   background-color: #ccc;
@@ -5317,12 +5334,32 @@ body.plone-toolbar-left-default {
 .pat-thememapper #inspectors .frame-shelf-container {
   margin-right: 5px;
 }
+.pat-thememapper .pat-filemanager .navbar a.btn,
+.pat-thememapper .pat-filemanager .navbar a.pat-filemanager .btn,
+.pat-thememapper .pat-filemanager .pat-filemanager .navbar a.btn {
+  line-height: 10px;
+  padding: 5px;
+  font-size: small;
+  padding-bottom: 8px;
+  margin-bottom: -15px;
+}
 .pat-thememapper .btn-group,
 .pat-thememapper .pat-filemanager .btn-group {
   margin-right: 30px;
 }
 .pat-thememapper #lessBuilder .buttonBox {
   margin-top: 10px;
+}
+.pat-thememapper #lessBuilder .buttonBox label {
+  display: block;
+}
+.pat-thememapper #lessBuilder .buttonBox a {
+  margin-bottom: 5px;
+  margin-left: 5px;
+  padding: 5px;
+}
+.pat-thememapper #lessFileName {
+  margin-bottom: 15px;
 }
 .pat-thememapper .errorMessage {
   word-wrap: break-word;

@@ -30758,7 +30758,9 @@ define('mockup-patterns-texteditor',[
     },
     setText: function(data) {
       var self = this;
-      self.editor.setValue(data);
+      if(self.editor){
+        self.editor.setValue(data);
+      }
     }
   });
 
@@ -31861,7 +31863,12 @@ define('mockup-patterns-filemanager-url/js/addnew',[
           },
           success: function(data) {
             self.hide();
-            self.app.refreshTree();          
+            self.data = data;
+            self.app.refreshTree(function() {
+              var path = self.data.parent + '/' +  self.data.name;
+              self.app.selectItem(path);
+              delete self.data;
+            });
           }
         });
         // XXX show loading
@@ -31910,7 +31917,12 @@ define('mockup-patterns-filemanager-url/js/newfolder',[
           },
           success: function(data) {
             self.hide();
-            self.app.refreshTree();
+            self.data = data;
+            self.app.refreshTree(function() {
+              var node = self.app.getNodeByPath(self.data.parent);
+              self.app.$tree.tree('openNode', node);
+              delete self.data;
+            });
           }
         });
         // XXX show loading
@@ -31959,8 +31971,21 @@ define('mockup-patterns-filemanager-url/js/delete',[
         },
         success: function(data) {
           self.hide();
-          self.app.refreshTree()
-          self.app.closeActiveTab();
+          self.data = data;
+          self.app.refreshTree(function() {
+
+            var parent = self.data.path;
+            parent = parent.substr(0, parent.lastIndexOf('/'));
+
+            var node = self.app.getNodeByPath(parent);
+            if( node !== null ) {
+                self.app.$tree.tree('openNode', node);
+            }
+
+            delete self.app.fileData[self.data.path];
+            delete self.data;
+          });
+          self.app.closeTab(data.path);
           self.app.resizeEditor();
         }
       });
@@ -32092,9 +32117,28 @@ define('mockup-patterns-filemanager-url/js/rename',[
           },
           success: function(data) {
             self.hide();
-            self.app.refreshTree();
-            // ugly, $tabs should have an API
-            $('.nav .active .remove').click();
+            self.data = data;
+            self.app.refreshTree(function() {
+              if( self.data.newParent != "/" ) {
+                var path = [self.data.newParent, self.data.newName].join('/');
+                var oldPath = [self.data.oldParent, self.data.oldName].join('/');
+              }
+              else {
+                var path = '/' + self.data.newName;
+                var oldPath = '/' + self.data.oldName
+              }
+
+              if( self.app.fileData[path] !== undefined ) {
+                self.app.refreshFile(path)
+              }
+              else {
+                var node = self.app.getNodeByPath(path);
+                self.app.selectItem(path);
+              }
+
+              self.app.closeTab(oldPath);
+              delete self.data;
+            });
           }
         });
         // XXX show loading
@@ -39755,6 +39799,21 @@ define('mockup-patterns-filemanager',[
         self.openEditor();
       }
     },
+    closeTab: function(path) {
+      var self = this;
+      if( path === undefined ) {
+        return;
+      }
+
+      var tabs = self.$tabs.children();
+
+      $(tabs).each(function() {
+        if( $(this).data('path') == path )
+        {
+          $(this).find('a.remove').trigger('click');
+        }
+      });
+    },
     createTab: function(path) {
       var self = this;
       var $item = $(self.tabItemTemplate({path: path}));
@@ -39817,6 +39876,20 @@ define('mockup-patterns-filemanager',[
       var doc = event.node.path;
       if(self.fileData[doc]) {
         self.openEditor(doc);
+
+        var resetLine = function() {
+          if( self.fileData[doc].line === undefined ) {
+            return;
+          }
+          self.ace.editor.scrollToLine(self.fileData[doc].line);
+          self.ace.editor.moveCursorToPosition(self.fileData[doc].cursorPosition)
+          //We only want this to fire after the intial render,
+          //Not after rendering a "scroll" or "focus" event,
+          //So we remove it immediately after.
+          self.ace.editor.renderer.off("afterRender", resetLine);
+        };
+        //This sets the listener before rendering finishes
+        self.ace.editor.renderer.on("afterRender", resetLine);
       } else {
         self.doAction('getFile', {
           data: { path: doc },
@@ -39848,7 +39921,7 @@ define('mockup-patterns-filemanager',[
         for( var z = 0; z < children.length; z++ )
         {
           if( children[z].name == folders[i] ) {
-            if( children[z].folder == true ) {
+            if( children[z].folder == true && i != (folders.length - 1) ) {
               children = children[z].children;
               break;
             }
@@ -39887,6 +39960,9 @@ define('mockup-patterns-filemanager',[
       // first we need to save the current editor content
       if(self.currentPath) {
         self.fileData[self.currentPath].contents = self.ace.editor.getValue();
+        var lineNum = self.ace.editor.getFirstVisibleRow();
+        self.fileData[self.currentPath].line = lineNum;
+        self.fileData[self.currentPath].cursorPosition = self.ace.editor.getCursorPosition();
       }
       self.currentPath = path;
       if (self.ace !== undefined){
@@ -39907,7 +39983,9 @@ define('mockup-patterns-filemanager',[
       else if( typeof self.fileData[path].info !== 'undefined' )
       {
           var preview = self.fileData[path].info;
-          self.ace.editor.off();
+          if( self.ace.editor !== undefined ) {
+              self.ace.editor.off();
+          }
           $('.ace_editor').empty().append(preview);
       }
       else
@@ -39923,6 +40001,9 @@ define('mockup-patterns-filemanager',[
         if (self.ace.editor.curOp && self.ace.editor.curOp.command.name) {
           $('[data-path="' + path + '"]').addClass("modified");
         }
+      });
+      self.ace.editor.on('paste', function() {
+        $('[data-path="' + path + '"]').addClass("modified");
       });
       self.ace.editor.commands.addCommand({
         name: 'saveFile',
@@ -40026,6 +40107,16 @@ define('mockup-patterns-filemanager',[
 
         view.upload.dropzone.options.url = url;
       }
+    },
+    refreshFile: function(path) {
+      var self = this;
+
+      if( path === undefined ) {
+        path = self.getSelectedNode().path;
+      }
+      self.closeTab(path);
+      delete self.fileData[path];
+      self.selectItem(path);
     }
   });
 
@@ -40764,7 +40855,9 @@ define('mockup-patterns-thememapper-url/js/lessbuilderview',[
       '<span class="message"></span>' +
       '<span style="display: none;" class="errorMessage"></span>' +
       '<div class="buttonBox">' +
-        '<a id="compileBtn" class="btn btn-success" href="#">Compile</a>' +
+        '<label for="lessFileName">Save as:</label>' +
+        '<input id="lessFileName" type="text" placeholder="filename" />' +
+        '<a id="compileBtn" class="context" href="#">Compile</a>' +
         '<a id="errorBtn" class="btn btn-default" href="#">Clear</a>' +
       '</div>' +
     '</div>'
@@ -40785,6 +40878,7 @@ define('mockup-patterns-thememapper-url/js/lessbuilderview',[
       self.$message = $('.message', this.$el);
       self.$error = $('.errorMessage', this.$el);
       self.$button = $('#compileBtn', this.$el);
+      self.$filename = $('#lessFileName', this.$el);
       self.$errorButton = $('#errorBtn', this.$el);
       self.$button.on('click', function() {
         self.showLessBuilder();
@@ -40798,6 +40892,16 @@ define('mockup-patterns-thememapper-url/js/lessbuilderview',[
     },
     toggle: function(button, e) {
       PopoverView.prototype.toggle.apply(this, [button, e]);
+      this.setFilename();
+    },
+    setFilename: function() {
+        var self = this;
+        if( self.app.lessPaths['save'] === undefined ) {
+            return;
+        }
+        var f = self.app.lessPaths['save'];
+        f = f.substr(f.lastIndexOf('/') + 1, f.length);
+        self.$filename.attr('placeholder', f);
     },
     start: function() {
       var self = this;
@@ -40870,8 +40974,8 @@ define('mockup-patterns-thememapper-url/js/lessbuilderview',[
           };
           iframe.styles = [];
         },
-        onLoad: function(self) {
-          less.pageLoadFinished.then(
+        onLoad: function(iframe) {
+          iframe.window.less.pageLoadFinished.then(
             function() {
               var $ = window.parent.$;
               var iframe = window.iframe['lessc'];
@@ -40893,6 +40997,71 @@ define('mockup-patterns-thememapper-url/js/lessbuilderview',[
   });
 
   return LessBuilderView;
+});
+
+define('mockup-patterns-thememapper-url/js/cacheview',[
+  'jquery',
+  'underscore',
+  'backbone',
+  'mockup-patterns-filemanager-url/js/basepopover',
+  'mockup-utils'
+], function($, _, Backbone, PopoverView, utils ) {
+  'use strict';
+  var template = _.template(
+    '<div>' +
+      '<span id="clearMessage">Click to clear the site\'s theme cache, forcing a reload from the source.</span>' +
+      '<span style="display: none;" id="clearSuccess">Cache cleared successfully.</span>' +
+      '<a href="#" id="clearBtn" class="context">Clear</a>' +
+    '</div>'
+  );
+
+  var CacheView = PopoverView.extend({
+    className: 'popover',
+    title: _.template('<%= _t("Clear Cache") %>'),
+    content: template,
+    render: function() {
+      var self = this;
+      PopoverView.prototype.render.call(this);
+      self.$clear = $('#clearBtn', this.$el);
+      self.$message = $('#clearMessage', this.$el);
+      self.$success = $('#clearSuccess', this.$el);
+
+      self.$clear.on('click', function() {
+
+        var url = self.app.options.themeUrl;
+        url = url.substr(0, url.indexOf('portal_resource'));
+        url += "/theming-controlpanel";
+
+        $.ajax({
+          url: url,
+          data: {
+            'form.button.InvalidateCache': true,
+            '_authenticator': utils.getAuthenticator()
+          },
+          success: function(response) {
+            self.$message.hide();
+            self.$success.show();
+            self.$clear.hide();
+
+            setTimeout(function() {
+              self.$message.show();
+              self.$success.hide();
+              self.$clear.show();
+              self.triggerView.el.click();
+            }, 3000);
+          }
+        });
+      });
+      return this;
+    },
+    toggle: function(button, e) {
+      PopoverView.prototype.toggle.apply(this, [button, e]);
+      var self = this;
+    }
+
+  });
+
+  return CacheView;
 });
 
 /* Theme Mapper pattern.
@@ -40934,10 +41103,11 @@ define('mockup-patterns-thememapper',[
   'mockup-patterns-thememapper-url/js/rulebuilder',
   'mockup-patterns-thememapper-url/js/rulebuilderview',
   'mockup-patterns-thememapper-url/js/lessbuilderview',
+  'mockup-patterns-thememapper-url/js/cacheview',
   'mockup-ui-url/views/button',
   'mockup-ui-url/views/buttongroup',
   'mockup-utils'
-], function($, Base, _, _t, InspectorTemplate, FileManager, RuleBuilder, RuleBuilderView, LessBuilderView, ButtonView, ButtonGroup, utils) {
+], function($, Base, _, _t, InspectorTemplate, FileManager, RuleBuilder, RuleBuilderView, LessBuilderView, CacheView, ButtonView, ButtonGroup, utils) {
   'use strict';
 
   var inspectorTemplate = _.template(InspectorTemplate);
@@ -41231,7 +41401,7 @@ define('mockup-patterns-thememapper',[
       });
       self.fileManager.$tree.bind('tree.click', function(e){
       });
-      self.buildLessButton.$el.hide();
+      self.buildLessButton.disable();
 
       if( !self.editable ) {
         if( self.fileManager.toolbar ) {
@@ -41246,14 +41416,28 @@ define('mockup-patterns-thememapper',[
       // initially, let's hide the panels
       self.hideInspectors();
     },
+    setSavePath: function() {
+        var self = this;
+        var filename = self.lessbuilderView.$filename.val()
+
+        if( filename == "" ) {
+            filename = self.lessbuilderView.$filename.attr('placeholder');
+        }
+
+        var s = self.lessPaths['save'];
+        var folder = s.substr(0, s.lastIndexOf('/'));
+
+        var savePath = folder + '/' + filename;
+        self.lessPaths['save'] = savePath;
+    },
     setLessPaths: function(node) {
       var self = this;
 
       if( node.fileType == "less" ){
-        self.buildLessButton.$el.show();
+        self.buildLessButton.enable();
       }
       else{
-        self.buildLessButton.$el.hide();
+        self.buildLessButton.disable();
       }
 
       if( node.path != "" ) {
@@ -41289,10 +41473,13 @@ define('mockup-patterns-thememapper',[
         return false;
       }
 
+      self.setSavePath();
+
       self.fileManager.doAction('saveFile', {
         type: 'POST',
         data: {
           path: self.lessPaths['save'],
+          relativeUrls: true,
           data: styles,
           _authenticator: utils.getAuthenticator()
         },
@@ -41388,6 +41575,23 @@ define('mockup-patterns-thememapper',[
         tooltip: _t('Compile LESS file'),
         context: 'default'
       });
+      self.refreshButton = new ButtonView({
+        id: 'refreshButton ',
+        title: _t('Refresh'),
+        icon: 'refresh',
+        tooltip: _t('Reload the current file'),
+        context: 'default'
+      });
+      self.refreshButton.on("button:click", function() {
+        self.fileManager.refreshFile();
+      });
+      self.cacheButton = new ButtonView({
+        id: 'cachebutton',
+        title: _t('Clear cache'),
+        icon: 'floppy-remove',
+        tooltip: _t('Clear site\'s theme cache'),
+        context: 'default'
+      });
       self.helpButton = new ButtonView({
         id: 'helpbutton',
         title: _t('Help'),
@@ -41402,6 +41606,10 @@ define('mockup-patterns-thememapper',[
         triggerView: self.buildRuleButton,
         app: self
       });
+      self.cacheView = new CacheView({
+        triggerView: self.cacheButton,
+        app: self
+      })
       self.lessbuilderView = new LessBuilderView({
         triggerView: self.buildLessButton,
         app: self
@@ -41413,12 +41621,15 @@ define('mockup-patterns-thememapper',[
           self.previewThemeButton,
           self.fullscreenButton,
           self.buildLessButton,
+          self.refreshButton,
+          self.cacheButton,
           self.helpButton
         ],
         id: 'mapper'
       });
       $('#toolbar .navbar', self.$el).append(self.buttonGroup.render().el);
       $('#toolbar .navbar', self.$el).append(self.rulebuilderView.render().el);
+      $('#toolbar .navbar', self.$el).append(self.cacheView.render().el);
       $('#toolbar .navbar', self.$el).append(self.lessbuilderView.render().el);
     }
   });
@@ -41457,5 +41668,5 @@ require([
   'use strict';
 });
 
-define("/home/ebr/dev/osprojects/rapido/buildout.coredev/src/plone.app.theming/src/plone/app/theming/browser/resources/thememapper.js", function(){});
+define("/Users/nathan/code/coredev5/src/plone.app.theming/src/plone/app/theming/browser/resources/thememapper.js", function(){});
 
