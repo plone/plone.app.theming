@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.9 (unreleased)
+1.2.9 (2015-08-22)
 ------------------
 
 - Build thememapper resources.
