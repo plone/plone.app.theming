@@ -4,7 +4,11 @@ Changelog
 1.2.9 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Build thememapper resources.
+  [vangheem]
+
+- Added cache invalidation option.
+  [swartz]
 
 
 1.2.8 (2015-08-20)
