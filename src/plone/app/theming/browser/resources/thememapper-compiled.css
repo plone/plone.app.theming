@@ -5334,9 +5334,10 @@ body.plone-toolbar-left-default {
 .pat-thememapper #inspectors .frame-shelf-container {
   margin-right: 5px;
 }
-.pat-thememapper .pat-filemanager .navbar a.btn,
-.pat-thememapper .pat-filemanager .navbar a.pat-filemanager .btn,
-.pat-thememapper .pat-filemanager .pat-filemanager .navbar a.btn {
+.pat-thememapper .pat-filemanager .navbar .btn-group > a.btn,
+.pat-thememapper .pat-filemanager .navbar .btn-group > a.pat-filemanager .btn,
+.pat-thememapper .pat-filemanager .navbar .pat-filemanager .btn-group > a.btn,
+.pat-thememapper .pat-filemanager .pat-filemanager .navbar .btn-group > a.btn {
   line-height: 10px;
   padding: 5px;
   font-size: small;
@@ -5353,13 +5354,10 @@ body.plone-toolbar-left-default {
 .pat-thememapper #lessBuilder .buttonBox label {
   display: block;
 }
-.pat-thememapper #lessBuilder .buttonBox a {
-  margin-bottom: 5px;
-  margin-left: 5px;
-  padding: 5px;
-}
 .pat-thememapper #lessFileName {
   margin-bottom: 15px;
+  display: block;
+  width: 100%;
 }
 .pat-thememapper .errorMessage {
   word-wrap: break-word;

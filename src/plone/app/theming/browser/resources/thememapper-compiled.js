@@ -6600,7 +6600,7 @@ define('mockup-i18n',[
     if (!self.baseUrl) {
       self.baseUrl = '/plonejsi18n';
     }
-    self.currentLanguage = $('html').attr('lang') || 'en';
+    self.currentLanguage = $('html').attr('lang') || 'en-us';
     self.storage = null;
     self.catalogs = {};
     self.ttl = 24 * 3600 * 1000;
@@ -9097,7 +9097,16 @@ define('mockup-utils',[
     // provide default loader
     loading: new Loading(),
     getAuthenticator: function() {
-      return $('input[name="_authenticator"]').val();
+      var $el = $('input[name="_authenticator"]');
+      if($el.length === 0){
+        $el = $('a[href*="_authenticator"]');
+        if($el.length > 0){
+          return $el.attr('href').split('_authenticator=')[1];
+        }
+        return '';
+      }else{
+        return $el.val();
+      }
     },
     featureSupport: {
       /*
@@ -30705,7 +30714,7 @@ define('mockup-patterns-texteditor',[
       // set id on current element
       var id = utils.setId(self.$el);
       self.$wrapper = $('<div class="editorWrapper" />').css({
-        height: self.options.height + 25, // weird sizing issue here...
+        height: parseInt(self.options.height) + 25, // weird sizing issue here...
         width: self.options.width,
         position: 'relative'
       });
@@ -31982,10 +31991,11 @@ define('mockup-patterns-filemanager-url/js/delete',[
                 self.app.$tree.tree('openNode', node);
             }
 
+            self.app.closeActiveTab();
+
             delete self.app.fileData[self.data.path];
             delete self.data;
           });
-          self.app.closeTab(data.path);
           self.app.resizeEditor();
         }
       });
@@ -39001,7 +39011,7 @@ define('mockup-patterns-upload',[
         var items = oe.clipboardData.items;
         if (items) {
           for (var i = 0; i < items.length; i++) {
-            if (items[i].type.indexOf("image") !== -1) {
+            if (items[i].type.indexOf('image') !== -1) {
               var blob = items[i].getAsFile();
               self.dropzone.addFile(blob);
             }
@@ -39051,7 +39061,7 @@ define('mockup-patterns-upload',[
       $('button.browse', self.$el).click(function(e) {
         e.preventDefault();
         e.stopPropagation();
-        if(self.dropzone.files.length < self.options.maxFiles){
+        if(!self.options.maxFiles || self.dropzone.files.length < self.options.maxFiles){
           self.dropzone.hiddenFileInput.click();
         }
       });
@@ -39089,8 +39099,14 @@ define('mockup-patterns-upload',[
         // Trigger event 'uploadAllCompleted' and pass the server's reponse and
         // the path uid. This event can be listened to by patterns using the
         // upload pattern, e.g. the TinyMCE pattern's link plugin.
+        var data;
+        try{
+          data = $.parseJSON(response);
+        }catch(ex){
+          data = response;
+        }
         self.$el.trigger('uploadAllCompleted', {
-          'data': $.parseJSON(response),
+          'data': data,
           'path_uid': (self.$pathInput) ? self.$pathInput.val() : null
         });
       });
@@ -39114,7 +39130,7 @@ define('mockup-patterns-upload',[
       self.dropzone.on('error', function(file, response, xmlhr) {
         if (typeof(xmlhr) !== 'undefined' && xmlhr.status !== 403){
           // If error other than 403, just print a generic message
-          $('.dz-error-message span', file.previewElement).html(_('The file transfer failed'));
+          $('.dz-error-message span', file.previewElement).html(_t('The file transfer failed'));
         }
       });
 
@@ -39277,14 +39293,11 @@ define('mockup-patterns-upload',[
           processing = false;
         }
 
-        if (processing){
-          var file = self.dropzone.files[0];
-
-          if (file.status === Dropzone.ERROR){
-            // Put the file back as "queued" for retrying
-            file.status = Dropzone.QUEUED;
-            processing = false;
-          }
+        var file = self.dropzone.files[0];
+        if (processing && file.status === Dropzone.ERROR){
+          // Put the file back as "queued" for retrying
+          file.status = Dropzone.QUEUED;
+          processing = false;
         }
 
         if (!processing){
@@ -39667,20 +39680,23 @@ define('mockup-patterns-filemanager',[
 
       self._save = function() {
 
-        var path = self.getNodePath();
-        if( path === undefined ) {
+        var path = $('.active', self.$tabs).data('path');
+        if( path === undefined || path === false ) {
           alert("No file selected.");
           return;
         }
         self.doAction('saveFile', {
           type: 'POST',
           data: {
-            path: self.getNodePath(),
+            path: path,
             data: self.ace.editor.getValue(),
             _authenticator: utils.getAuthenticator()
           },
           success: function(data) {
-            $('[data-path="' + self.getNodePath() + '"]').removeClass("modified");
+            if( data['error'] !== undefined ) {
+              alert("There was a problem saving the file.");
+            }
+            $('[data-path="' + path + '"]').removeClass("modified");
           }
         });
       };
@@ -39716,6 +39732,25 @@ define('mockup-patterns-filemanager',[
       self.$tabs = $('ul.nav', self.$nav);
       self.tree = new Tree(self.$tree, self.options.treeConfig);
       self.$editor = self.$('.editor');
+
+      /* close popovers when clicking away */
+      $(document).click(function(e){
+          var $el = $(e.target);
+          if(!$el.is(':visible')){
+              // ignore this, fake event trigger to element that is not visible
+              return;
+          }
+          if($el.is('a') || $el.parent().is('a')){
+              return;
+          }
+          var $popover = $('.popover:visible');
+          if($popover.length > 0 && !$.contains($popover[0], $el[0])){
+              var popover = $popover.data('component');
+              if(popover){
+                  popover.hide();
+              }
+          }
+      });
 
       self.$tree.bind('tree.select', function(e) {
         if( e.node === null ) {
@@ -39778,6 +39813,7 @@ define('mockup-patterns-filemanager',[
     },
     handleClick: function(event) {
       var self = this;
+      self.closeActivePopovers();
       self.openFile(event);
     },
     closeActiveTab: function() {
@@ -39814,6 +39850,13 @@ define('mockup-patterns-filemanager',[
         }
       });
     },
+    closeActivePopovers: function() {
+      var self = this;
+      var active = $('.navbar a.active');
+      $(active).each(function() {
+        $(this).click();
+      });
+    },
     createTab: function(path) {
       var self = this;
       var $item = $(self.tabItemTemplate({path: path}));
@@ -39822,6 +39865,7 @@ define('mockup-patterns-filemanager',[
       $('.remove', $item).click(function(e){
         e.preventDefault();
         e.stopPropagation();
+        self.closeActivePopovers();
         if ($(this).parent().hasClass('active'))
         {
           self.closeActiveTab();
@@ -39834,6 +39878,7 @@ define('mockup-patterns-filemanager',[
         e.preventDefault();
         $('li', self.$tabs).removeClass('active');
         var $li = $(this).parent();
+        self.closeActivePopovers();
         $li.addClass('active');
       });
     },
@@ -40028,7 +40073,9 @@ define('mockup-patterns-filemanager',[
       if (path !== '/'){
         path += '/';
       }
-      return path + node.name;
+
+      var name = (node.name !== undefined) ? node.name : '';
+      return path + name;
     },
     getFolderPath: function(node){
       var self = this;
@@ -40695,7 +40742,7 @@ define('mockup-patterns-thememapper-url/js/rulebuilder',[
 });
 
 
-define('text!mockup-patterns-thememapper-url/templates/rulebuilder.xml',[],function () { return '<div class="new-rule">\n    <h1 class="documentFirstHeading">Build rule</h1>\n\n    <div id="new-rule-step-1" class="rule-wizard-step" style="display: block;">\n        <div class="documentDescription">\n            This wizard will help you build a Diazo rule by selecting relevant elements using\n            the <strong>HTML mockup</strong> and <strong>Unthemed content</strong> inspectors.\n        </div>\n\n        <form>\n            <div id="new-rule-type-panel" class="inputs">\n                <div>\n                    <input type="radio" name="new-rule-type" value="replace" id="new-rule-replace" checked="checked" />\n                    <label for="new-rule-replace">\n                        <strong>Replace</strong> an element of the theme with an element from the content\n                    </label>\n                </div>\n                <div>\n                    <input type="radio" name="new-rule-type" value="before" id="new-rule-before" />\n                    <label for="new-rule-before">\n                        Insert an element from the content <strong>before</strong> an element in the theme\n                    </label>\n                </div>\n                <div>\n                    <input type="radio" name="new-rule-type" value="after" id="new-rule-after" />\n                    <label for="new-rule-after">\n                        Insert an element from the content <strong>after</strong> an element in the theme\n                    </label>\n                </div>\n                <div>\n                    <input type="radio" name="new-rule-type" value="drop:content" id="new-rule-drop-content" />\n                    <label for="new-rule-drop-content">\n                        <strong>Drop</strong> an element in the <strong>content</strong>\n                    </label>\n                </div>\n                <div>\n                    <input type="radio" name="new-rule-type" value="drop:theme" id="new-rule-drop-theme" />\n                    <label for="new-rule-drop-theme">\n                        <strong>Drop</strong> an element in the <strong>theme</strong>\n                    </label>\n                </div>\n            </div>\n            <div class="field inputs" id="new-rule-reuse-panel" style="display: none;">\n                <input type="checkbox" name="new-rule-reuse-selectors" value="yes" id="new-rule-reuse-selectors" checked="checked" />\n                <label for="new-rule-reuse-selectors">\n                    Use selected elements\n                </label>\n                <div class="formHelp">\n                    If selected, the rule builder will use the elements you have currently selected\n                    in the <strong>HTML mockup</strong> and/or <strong>Unthemed content</strong>\n                    inspectors instead of prompting you to select new ones.\n                </div>\n            </div>\n        </form>\n\n        <div class="formControls new-rule-actions">\n            <input type="submit" class="allowMultiSubmit context next submitting" value="Next" />\n            <input type="submit" class="allowMultiSubmit standalone close" value="Cancel" />\n        </div>\n\n    </div>\n    <div id="new-rule-select-theme" class="rule-wizard-step" style="display: none;">\n        <div class="documentDescription">\n            Please select an element using the <strong>HTML mockup</strong> inspector.\n        </div>\n        <div class="formControls new-rule-actions">\n            <input type="submit" class="allowMultiSubmit context next" value="Ok" />\n            <input type="submit" class="allowMultiSubmit standalone wizard-cancel" value="Cancel" />\n        </div>\n    </div>\n    <div id="new-rule-select-content" class="rule-wizard-step" style="display: none;">\n        <div class="documentDescription">\n            Please select an element using the <strong>Unthemed content</strong> inspector.\n        </div>\n        <div class="formControls new-rule-actions">\n            <input type="submit" class="allowMultiSubmit context next submitting" value="Ok" />\n            <input type="submit" class="allowMultiSubmit standalone wizard-cancel" value="Cancel" />\n        </div>\n    </div>\n    <div id="new-rule-step-2" class="rule-wizard-step" style="display: none;">\n        <div class="documentDescription">\n            The rule can be found below. Use the checkboxes\n            to further refine it.\n        </div>\n        <form>\n            <div id="new-rule-output-panel">\n                <textarea name="new-rule-output" id="new-rule-output"></textarea>\n            </div>\n            <div id="new-rule-selector-panel">\n                <div>\n                    <input type="checkbox" class="rule-modifier" name="new-rule-theme-children" value="replace" id="new-rule-theme-children" />\n                    <label for="new-rule-theme-children">Apply rule to children of the matched theme node(s)</label>\n                </div>\n                <div>\n                    <input type="checkbox" class="rule-modifier" name="new-rule-content-children" value="replace" id="new-rule-content-children" />\n                    <label for="new-rule-content-children">Apply rule to children of the matched content node(s)</label>\n                </div>\n            </div>\n\n        </form>\n        <div class="formControls new-rule-actions">\n            <input type="submit" class="allowMultiSubmit context insert submitting" title="Insert rule into the rules.xml file" value="Insert" />\n            <input type="submit" class="allowMultiSubmit context copy" value="Copy to clipboard" style="display: none;" />\n            <input type="submit" class="allowMultiSubmit standalone close" value="Close" />\n        </div>\n    </div>\n</div>\n';});
+define('text!mockup-patterns-thememapper-url/templates/rulebuilder.xml',[],function () { return '<div class="new-rule">\n    <h1 class="documentFirstHeading">Build rule</h1>\n\n    <div id="new-rule-step-1" class="rule-wizard-step" style="display: block;">\n        <div class="documentDescription">\n            This wizard will help you build a Diazo rule by selecting relevant elements using\n            the <strong>HTML mockup</strong> and <strong>Unthemed content</strong> inspectors.\n        </div>\n\n        <form>\n            <div id="new-rule-type-panel" class="inputs">\n                <div>\n                    <input type="radio" name="new-rule-type" value="replace" id="new-rule-replace" checked="checked" />\n                    <label for="new-rule-replace">\n                        <strong>Replace</strong> an element of the theme with an element from the content\n                    </label>\n                </div>\n                <div>\n                    <input type="radio" name="new-rule-type" value="before" id="new-rule-before" />\n                    <label for="new-rule-before">\n                        Insert an element from the content <strong>before</strong> an element in the theme\n                    </label>\n                </div>\n                <div>\n                    <input type="radio" name="new-rule-type" value="after" id="new-rule-after" />\n                    <label for="new-rule-after">\n                        Insert an element from the content <strong>after</strong> an element in the theme\n                    </label>\n                </div>\n                <div>\n                    <input type="radio" name="new-rule-type" value="drop:content" id="new-rule-drop-content" />\n                    <label for="new-rule-drop-content">\n                        <strong>Drop</strong> an element in the <strong>content</strong>\n                    </label>\n                </div>\n                <div>\n                    <input type="radio" name="new-rule-type" value="drop:theme" id="new-rule-drop-theme" />\n                    <label for="new-rule-drop-theme">\n                        <strong>Drop</strong> an element in the <strong>theme</strong>\n                    </label>\n                </div>\n            </div>\n            <div class="field inputs" id="new-rule-reuse-panel" style="display: none;">\n                <input type="checkbox" name="new-rule-reuse-selectors" value="yes" id="new-rule-reuse-selectors" checked="checked" />\n                <label for="new-rule-reuse-selectors">\n                    Use selected elements\n                </label>\n                <div class="formHelp">\n                    If selected, the rule builder will use the elements you have currently selected\n                    in the <strong>HTML mockup</strong> and/or <strong>Unthemed content</strong>\n                    inspectors instead of prompting you to select new ones.\n                </div>\n            </div>\n        </form>\n\n        <div class="formControls new-rule-actions">\n            <input type="submit" class="btn btn-primary next submitting" value="Next" />\n            <input type="submit" class="btn btn-default standalone close" value="Cancel" />\n        </div>\n\n    </div>\n    <div id="new-rule-select-theme" class="rule-wizard-step" style="display: none;">\n        <div class="documentDescription">\n            Please select an element using the <strong>HTML mockup</strong> inspector.\n        </div>\n        <div class="formControls new-rule-actions">\n            <input type="submit" class="btn btn-primary next" value="Ok" />\n            <input type="submit" class="btn btn-default standalone wizard-cancel" value="Cancel" />\n        </div>\n    </div>\n    <div id="new-rule-select-content" class="rule-wizard-step" style="display: none;">\n        <div class="documentDescription">\n            Please select an element using the <strong>Unthemed content</strong> inspector.\n        </div>\n        <div class="formControls new-rule-actions">\n            <input type="submit" class="btn btn-primary next submitting" value="Ok" />\n            <input type="submit" class="btn btn-default standalone wizard-cancel" value="Cancel" />\n        </div>\n    </div>\n    <div id="new-rule-step-2" class="rule-wizard-step" style="display: none;">\n        <div class="documentDescription">\n            The rule can be found below. Use the checkboxes\n            to further refine it.\n        </div>\n        <form>\n            <div id="new-rule-output-panel">\n                <textarea name="new-rule-output" id="new-rule-output"></textarea>\n            </div>\n            <div id="new-rule-selector-panel">\n                <div>\n                    <input type="checkbox" class="rule-modifier" name="new-rule-theme-children" value="replace" id="new-rule-theme-children" />\n                    <label for="new-rule-theme-children">Apply rule to children of the matched theme node(s)</label>\n                </div>\n                <div>\n                    <input type="checkbox" class="rule-modifier" name="new-rule-content-children" value="replace" id="new-rule-content-children" />\n                    <label for="new-rule-content-children">Apply rule to children of the matched content node(s)</label>\n                </div>\n            </div>\n\n        </form>\n        <div class="formControls new-rule-actions">\n            <input type="submit" class="btn btn-primary insert submitting" title="Insert rule into the rules.xml file" value="Insert" />\n            <input type="submit" class="btn btn-primary copy" value="Copy to clipboard" style="display: none;" />\n            <input type="submit" class="btn btn-default close" value="Close" />\n        </div>\n    </div>\n</div>\n';});
 
 define('mockup-patterns-thememapper-url/js/rulebuilderview',[
   'jquery',
@@ -40857,8 +40904,8 @@ define('mockup-patterns-thememapper-url/js/lessbuilderview',[
       '<div class="buttonBox">' +
         '<label for="lessFileName">Save as:</label>' +
         '<input id="lessFileName" type="text" placeholder="filename" />' +
-        '<a id="compileBtn" class="context" href="#">Compile</a>' +
-        '<a id="errorBtn" class="btn btn-default" href="#">Clear</a>' +
+        '<button id="compileBtn" class="btn btn-primary">Compile</button>' +
+        '<button id="errorBtn" class="btn btn-default">Clear</button>' +
       '</div>' +
     '</div>'
   );
@@ -40896,10 +40943,22 @@ define('mockup-patterns-thememapper-url/js/lessbuilderview',[
     },
     setFilename: function() {
         var self = this;
+
         if( self.app.lessPaths['save'] === undefined ) {
             return;
         }
-        var f = self.app.lessPaths['save'];
+
+        var filePath = self.app.lessPaths['less'];
+        var devPath = self.app.devPath[0];
+        var prodPath = self.app.prodPath[0];
+
+        if( filePath == devPath ) {
+            var f = prodPath;
+        }
+        else {
+            var f = self.app.lessPaths['save'];
+        }
+
         f = f.substr(f.lastIndexOf('/') + 1, f.length);
         self.$filename.attr('placeholder', f);
     },
@@ -41011,7 +41070,7 @@ define('mockup-patterns-thememapper-url/js/cacheview',[
     '<div>' +
       '<span id="clearMessage">Click to clear the site\'s theme cache, forcing a reload from the source.</span>' +
       '<span style="display: none;" id="clearSuccess">Cache cleared successfully.</span>' +
-      '<a href="#" id="clearBtn" class="context">Clear</a>' +
+      '<a href="#" id="clearBtn" class="btn btn-block btn-primary">Clear</a>' +
     '</div>'
   );
 
@@ -41349,6 +41408,8 @@ define('mockup-patterns-thememapper',[
     unthemedInspector: null,
     ruleBuilder: null,
     rulebuilderView: null,
+    devPath: null,
+    prodPath: null,
     lessUrl: null,
     lessPaths: {},
     lessVariableUrl: null,
@@ -41373,6 +41434,9 @@ define('mockup-patterns-thememapper',[
       self.editable = (self.options.editable == "True") ? true : false;
       self.lessUrl = (self.options.lessUrl !== undefined ) ? self.options.lessUrl : false;
       self.lessVariableUrl = (self.options.lessVariables !== undefined ) ? self.options.lessVariables : false;
+
+      self.devPath = [];
+      self.prodPath = [];
 
       self.options.filemanagerConfig.uploadUrl = self.options.themeUrl;
       self.options.filemanagerConfig.theme = true;
@@ -41415,6 +41479,18 @@ define('mockup-patterns-thememapper',[
 
       // initially, let's hide the panels
       self.hideInspectors();
+      self.getManifest();
+    },
+    getManifest: function() {
+      var self = this;
+
+      self.fileManager.doAction('getFile', {
+        datatype: 'json',
+        data: {
+          path: 'manifest.cfg'
+        },
+        success: function(data) { this.setDefaultPaths(data); }.bind(self)
+      })
     },
     setSavePath: function() {
         var self = this;
@@ -41464,6 +41540,18 @@ define('mockup-patterns-thememapper',[
         self.lessPaths = {};
         return false;
       }
+    },
+    setDefaultPaths: function(manifest) {
+      var self = this;
+      var dev = new RegExp("development-css\\s*=\\s*\\/\\+\\+theme\\+\\+.*?\\/(.*)");
+      var prod = new RegExp("production-css\\s*=\\s*\\/\\+\\+theme\\+\\+.*?\\/(.*)");
+
+      var devUrl = dev.exec(manifest.contents)[1];
+      var prodUrl = prod.exec(manifest.contents)[1];
+
+      //The array lets us get around scoping issues.
+      self.devPath[0] = devUrl;
+      self.prodPath[0] = prodUrl;
     },
     saveThemeCSS: function(styles) {
       var self = this.env;

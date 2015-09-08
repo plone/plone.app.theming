@@ -4,7 +4,8 @@ Changelog
 1.2.10 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- theme mapper fixes for odd behavior in save files at times
+  [swartz]
 
 
 1.2.9 (2015-08-22)
