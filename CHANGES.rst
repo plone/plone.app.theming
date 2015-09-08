@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.10 (unreleased)
+1.2.10 (2015-09-08)
 -------------------
 
 - theme mapper fixes for odd behavior in save files at times
