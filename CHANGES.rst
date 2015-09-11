@@ -4,7 +4,8 @@ Changelog
 1.2.11 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- rewrite manifest from copied theme with relative paths also
+  [vangheem]
 
 
 1.2.10 (2015-09-08)
