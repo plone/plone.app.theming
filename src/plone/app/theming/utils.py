@@ -536,10 +536,10 @@ def createThemeFromTemplate(title, description, baseOn='template'):
         val = manifest.get('theme', var_path)
         if not val:
             continue
-        template_prefix = '/++%s++%s/' % (THEME_RESOURCE_NAME, baseOn)
-        if val.startswith(template_prefix):
+        template_prefix = '++%s++%s/' % (THEME_RESOURCE_NAME, baseOn)
+        if template_prefix in val:
             # okay, fix
-            val = val.replace(template_prefix, '/++%s++%s/' % (THEME_RESOURCE_NAME, themeName))
+            val = val.replace(template_prefix, '++%s++%s/' % (THEME_RESOURCE_NAME, themeName))
             manifest.set('theme', var_path, val)
 
     manifestContents = StringIO()

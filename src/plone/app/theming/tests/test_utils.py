@@ -233,6 +233,49 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(theme.development_js, expected_dev_js)
         self.assertEqual(theme.production_js, expected_prod_js)
 
+    def test_createThemeFromTemplate_rel_path(self):
+        from plone.app.theming.utils import createThemeFromTemplate
+        from plone.app.theming.utils import getAvailableThemes
+        from plone.app.theming.utils import getTheme
+        from plone.app.theming.interfaces import THEME_RESOURCE_NAME
+        from plone.app.theming.interfaces import RULE_FILENAME
+        title = "copy of test theme with custom prefix"
+        description = "test theme creation"
+        themeName = createThemeFromTemplate(title, description,
+                                            baseOn="another-theme")
+        titles = [theme.title for theme in getAvailableThemes()]
+        self.assertTrue(title in titles)
+
+        theme = getTheme(themeName)
+        expected_prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME,
+                                          title.replace(" ", "-"))
+        self.assertEqual(theme.absolutePrefix, expected_prefix)
+
+        expected_rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME,
+                                           title.replace(" ", "-"),
+                                           RULE_FILENAME)
+        self.assertEqual(theme.rules, expected_rules)
+
+        self.assertEqual(theme.enabled_bundles, ['plone'])
+        self.assertEqual(theme.disabled_bundles, ['foobar'])
+
+        expected_dev_css = u"++%s++%s/less/barceloneta.plone.less" % (
+            THEME_RESOURCE_NAME, title.replace(" ", "-"))
+        expected_prod_css = u"++%s++%s/less/barceloneta-compiled.css" % (
+            THEME_RESOURCE_NAME, title.replace(" ", "-"))
+        expected_tinymce = u"++%s++%s/less/barceloneta-compiled.css" % (
+            THEME_RESOURCE_NAME, title.replace(" ", "-"))
+        self.assertEqual(theme.development_css, expected_dev_css)
+        self.assertEqual(theme.production_css, expected_prod_css)
+        self.assertEqual(theme.tinymce_content_css, expected_tinymce)
+
+        expected_dev_js = u"++%s++%s/script.js" % (
+            THEME_RESOURCE_NAME, title.replace(" ", "-"))
+        expected_prod_js = u"++%s++%s/script.min.js" % (
+            THEME_RESOURCE_NAME, title.replace(" ", "-"))
+        self.assertEqual(theme.development_js, expected_dev_js)
+        self.assertEqual(theme.production_js, expected_prod_js)
+
 
 class TestUnit(unittest.TestCase):
 
