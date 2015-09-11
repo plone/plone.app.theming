@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.11 (unreleased)
+1.2.11 (2015-09-11)
 -------------------
 
 - rewrite manifest from copied theme with relative paths also
