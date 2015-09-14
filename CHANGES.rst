@@ -4,7 +4,11 @@ Changelog
 1.2.12 (unreleased)
 -------------------
 
-- Remove duplicate type attribute for theming control panel delete modal. 
+- Remove bundled twitter bootstrap theme 'example'.
+  Fixes https://github.com/plone/Products.CMFPlone/issues/877
+  [pbauer]
+
+- Remove duplicate type attribute for theming control panel delete modal.
   [esteele]
 
 
