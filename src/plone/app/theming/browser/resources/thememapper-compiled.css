@@ -899,10 +899,11 @@ mark {
 .documentByLine {
   color: #777777;
   font-weight: 300;
+  margin-bottom: 10px;
 }
 .documentFirstHeading {
   padding-bottom: 9px;
-  margin: 0 0 20px;
+  margin: 0 0 10px;
   border-bottom: 1px solid #cccccc;
 }
 .tileHeadline {
