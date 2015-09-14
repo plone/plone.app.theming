@@ -309,7 +309,6 @@
                                         <input
                                             type="submit"
                                             class="plone-btn plone-btn-default cancel"
-                                            type="submit"
                                             name="form.button.Cancel"
                                             value="Cancel"
                                             i18n:attributes="value"

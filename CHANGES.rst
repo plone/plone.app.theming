@@ -4,7 +4,8 @@ Changelog
 1.2.12 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Remove duplicate type attribute for theming control panel delete modal. 
+  [esteele]
 
 
 1.2.11 (2015-09-11)
