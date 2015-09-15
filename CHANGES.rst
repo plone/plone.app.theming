@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.12 (unreleased)
+1.2.12 (2015-09-15)
 -------------------
 
 - Remove bundled twitter bootstrap theme 'example'.
