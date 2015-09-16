@@ -42,24 +42,22 @@ class ThemingControlpanel(BrowserView):
 
     def __call__(self):
         self.pskin = getToolByName(self.context, 'portal_skins')
-        registry = getUtility(IRegistry)
-        self.settings = registry.forInterface(
-            ILinkSchema, prefix="plone", check=False)
 
         if self.update():
             return self.index()
         return ''
 
     def _setup(self):
-        self.settings = getUtility(IRegistry).forInterface(
-            IThemeSettings,
-            False
-        )
+        registry = getUtility(IRegistry)
+        self.theme_settings = registry.forInterface(IThemeSettings, False)
+        self.link_settings = registry.forInterface(ILinkSchema,
+                                                   prefix="plone",
+                                                   check=False)
         self.zodbThemes = getZODBThemes()
         self.availableThemes = getAvailableThemes()
         self.selectedTheme = self.getSelectedTheme(
             self.availableThemes,
-            self.settings.rules
+            self.theme_settings.rules
         )
         self.overlay = ''
 
@@ -77,19 +75,19 @@ class ThemingControlpanel(BrowserView):
         self.request.response.redirect(url)
 
     def get_mark_special_links(self):
-        return self.settings.mark_special_links
+        return self.link_settings.mark_special_links
 
     def set_mark_special_links(self, value):
-        self.settings.mark_special_links = value
+        self.link_settings.mark_special_links = value
 
     mark_special_links = property(get_mark_special_links,
                                   set_mark_special_links)
 
     def get_ext_links_open_new_window(self):
-        return self.settings.external_links_open_new_window
+        return self.link_settings.external_links_open_new_window
 
     def set_ext_links_open_new_window(self, value):
-        self.settings.external_links_open_new_window = value
+        self.link_settings.external_links_open_new_window = value
 
     ext_links_open_new_window = property(get_ext_links_open_new_window,
                                          set_ext_links_open_new_window)
@@ -120,7 +118,7 @@ class ThemingControlpanel(BrowserView):
                     themeSelection
                 )
                 applyTheme(themeData)
-                self.settings.enabled = True
+                self.theme_settings.enabled = True
 
             IStatusMessage(
                 self.request
@@ -143,7 +141,7 @@ class ThemingControlpanel(BrowserView):
             self.authorize()
 
             applyTheme(None)
-            self.settings.enabled = False
+            self.theme_settings.enabled = False
 
             IStatusMessage(self.request).add(_(u"Theme disabled."))
             self._setup()
@@ -152,7 +150,7 @@ class ThemingControlpanel(BrowserView):
         if 'form.button.AdvancedSave' in form:
             self.authorize()
 
-            self.settings.readNetwork = form.get('readNetwork', False)
+            self.theme_settings.readNetwork = form.get('readNetwork', False)
 
             themeEnabled = form.get('themeEnabled', False)
             rules = form.get('rules', None)
@@ -185,15 +183,15 @@ class ThemingControlpanel(BrowserView):
             if not self.errors:
                 # Trigger onDisabled() on plugins if theme was active
                 # previously and rules were changed
-                if self.settings.rules != rules:
+                if self.theme_settings.rules != rules:
                     applyTheme(None)
 
-                self.settings.enabled = themeEnabled
-                self.settings.rules = rules
-                self.settings.absolutePrefix = prefix
-                self.settings.parameterExpressions = parameterExpressions
-                self.settings.hostnameBlacklist = hostnameBlacklist
-                self.settings.doctype = doctype
+                self.theme_settings.enabled = themeEnabled
+                self.theme_settings.rules = rules
+                self.theme_settings.absolutePrefix = prefix
+                self.theme_settings.parameterExpressions = parameterExpressions
+                self.theme_settings.hostnameBlacklist = hostnameBlacklist
+                self.theme_settings.doctype = doctype
 
                 # Theme base settings
                 if themeBase is not None:
@@ -308,7 +306,7 @@ class ThemingControlpanel(BrowserView):
 
                 if enableNewTheme:
                     applyTheme(themeData)
-                    self.settings.enabled = True
+                    self.theme_settings.enabled = True
 
             if not self.errors:
                 portalUrl = getToolByName(self.context, 'portal_url')()
@@ -365,7 +363,7 @@ class ThemingControlpanel(BrowserView):
                 if enableImmediately:
                     themeData = self.getThemeData(self.availableThemes, name)
                     applyTheme(themeData)
-                    self.settings.enabled = True
+                    self.theme_settings.enabled = True
 
                 portalUrl = getToolByName(self.context, 'portal_url')()
                 self.redirect(

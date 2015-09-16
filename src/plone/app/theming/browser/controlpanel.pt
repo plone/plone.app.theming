@@ -352,7 +352,7 @@
 
                     <div
                         class="field"
-                        tal:define="selected python:request.get('themeEnabled', view.settings.enabled)">
+                        tal:define="selected python:request.get('themeEnabled', view.theme_settings.enabled)">
 
                         <input type="hidden" value="" name="themeEnabled:boolean:default" />
                         <input type="checkbox" value="1" name="themeEnabled:boolean" id="themeEnabled"
@@ -368,7 +368,7 @@
 
                     <div
                         tal:define="error errors/rules | nothing;
-                                    rules python:request.get('rules', view.settings.rules)"
+                                    rules python:request.get('rules', view.theme_settings.rules)"
                         tal:attributes="class python:'field error' if error else 'field'">
 
                         <label for="rules" i18n:translate="label_rules">Rules file</label>
@@ -390,7 +390,7 @@
 
                     <div
                         tal:define="error errors/absolutePrefix | nothing;
-                                    absolutePrefix python:request.get('absolutePrefix', view.settings.absolutePrefix)"
+                                    absolutePrefix python:request.get('absolutePrefix', view.theme_settings.absolutePrefix)"
                         tal:attributes="class python:'field error' if error else 'field'">
 
                         <label for="absolutePrefix" i18n:translate="label_absolute_prefix">Absolute path prefix</label>
@@ -415,7 +415,7 @@
 
                     <div
                         tal:define="error errors/doctype | nothing;
-                                    doctype python:request.get('doctype', view.settings.doctype)"
+                                    doctype python:request.get('doctype', view.theme_settings.doctype)"
                         tal:attributes="class python:'field error' if error else 'field'">
 
                         <label for="doctype" i18n:translate="label_doctype">Doctype</label>
@@ -440,7 +440,7 @@
 
                     <div
                         class="field"
-                        tal:define="selected python:request.get('readNetwork', view.settings.readNetwork)">
+                        tal:define="selected python:request.get('readNetwork', view.theme_settings.readNetwork)">
 
                         <input type="hidden" value="" name="readNetwork:boolean:default" />
                         <input type="checkbox" value="1" name="readNetwork:boolean" id="readNetwork"
@@ -455,7 +455,7 @@
 
                     <div
                         tal:define="error errors/hostnameBlacklist | nothing;
-                                    hostnameBlacklist view/settings/hostnameBlacklist | python:[];
+                                    hostnameBlacklist view/theme_settings/hostnameBlacklist | python:[];
                                     hostnameBlacklist python:request.get('hostnameBlacklist', hostnameBlacklist)"
                         tal:attributes="class python:'field error' if error else 'field'">
 
@@ -484,7 +484,7 @@
 
                     <div
                         tal:define="error errors/parameterExpressions | nothing;
-                                    parameterExpressions python:view.settings.parameterExpressions or {};
+                                    parameterExpressions python:view.theme_settings.parameterExpressions or {};
                                     parameterExpressions python:['%s = %s' % (k,v) for k,v in parameterExpressions.items()];
                                     parameterExpressions python:request.get('parameterExpressions', parameterExpressions)"
                         tal:attributes="class python:'field error' if error else 'field'">
