@@ -3,6 +3,7 @@ from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.decode import processInputs
 from Products.statusmessages.interfaces import IStatusMessage
+from Products.CMFPlone.interfaces import ILinkSchema
 from plone.app.theming.interfaces import DEFAULT_THEME_FILENAME
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.interfaces import RULE_FILENAME
@@ -43,6 +44,9 @@ class ThemingControlpanel(BrowserView):
         ptool = getToolByName(self.context, 'portal_properties')
         self.props = ptool.site_properties
         self.pskin = getToolByName(self.context, 'portal_skins')
+        registry = getUtility(IRegistry)
+        self.settings = registry.forInterface(
+            ILinkSchema, prefix="plone", check=False)
 
         if self.update():
             return self.index()
@@ -95,16 +99,10 @@ class ThemingControlpanel(BrowserView):
                                   set_mark_special_links)
 
     def get_ext_links_open_new_window(self):
-        elonw = self.props.external_links_open_new_window
-        if elonw == 'true':
-            return True
-        return False
+        return self.settings.external_links_open_new_window
 
     def set_ext_links_open_new_window(self, value):
-        if value:
-            self.props.manage_changeProperties(external_links_open_new_window='true')
-        else:
-            self.props.manage_changeProperties(external_links_open_new_window='false')
+        self.settings.external_links_open_new_window = value
 
     ext_links_open_new_window = property(get_ext_links_open_new_window,
                                          set_ext_links_open_new_window)
