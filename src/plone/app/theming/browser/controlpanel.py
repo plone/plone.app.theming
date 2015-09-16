@@ -41,8 +41,6 @@ def authorize(context, request):
 class ThemingControlpanel(BrowserView):
 
     def __call__(self):
-        ptool = getToolByName(self.context, 'portal_properties')
-        self.props = ptool.site_properties
         self.pskin = getToolByName(self.context, 'portal_skins')
         registry = getUtility(IRegistry)
         self.settings = registry.forInterface(
@@ -79,21 +77,10 @@ class ThemingControlpanel(BrowserView):
         self.request.response.redirect(url)
 
     def get_mark_special_links(self):
-        msl = getattr(self.props, 'mark_special_links', False)
-        if msl == 'true':
-            return True
-        return False
+        return self.settings.mark_special_links
 
     def set_mark_special_links(self, value):
-        if value:
-            mark_special_links = 'true'
-        else:
-            mark_special_links = 'false'
-        if self.props.hasProperty('mark_special_links'):
-            self.props.manage_changeProperties(mark_special_links=mark_special_links)
-        else:
-            self.props.manage_addProperty(
-                'mark_special_links', mark_special_links, 'string')
+        self.settings.mark_special_links = value
 
     mark_special_links = property(get_mark_special_links,
                                   set_mark_special_links)

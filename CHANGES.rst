@@ -4,12 +4,17 @@ Changelog
 1.2.13 (unreleased)
 -------------------
 
+- Pull mark_special_links, external_links_open_new_window values
+  from configuration registry.
+  [esteele]
+
 - Fix visual glitch on Safari
   [davilima6]
 
 - Show active theme at the top of the theme list.
   Fixes https://github.com/plone/plone.app.theming/issues/70
   [tmassman]
+
 
 1.2.12 (2015-09-15)
 -------------------
