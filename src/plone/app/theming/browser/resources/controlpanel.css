@@ -46,6 +46,7 @@ a.plone-btn {
     text-align: center;
     border: solid #eee 1px;
     background-color: white;
+    vertical-align: top;
 }
 
 .activeThemeEntry {
