@@ -4,8 +4,8 @@ Changelog
 1.2.13 (unreleased)
 -------------------
 
-- Nothing changed yet.
-
+- Fix visual glitch on Safari
+  [davilima6]
 
 1.2.12 (2015-09-15)
 -------------------
