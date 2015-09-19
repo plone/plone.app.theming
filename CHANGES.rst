@@ -7,6 +7,10 @@ Changelog
 - Fix visual glitch on Safari
   [davilima6]
 
+- Show active theme at the top of the theme list.
+  Fixes https://github.com/plone/plone.app.theming/issues/70
+  [tmassman]
+
 1.2.12 (2015-09-15)
 -------------------
 
