@@ -1,5 +1,5 @@
 plone.app.theming manual
-==========================
+========================
 
 This guide provides an overview of Diazo theming in Plone versions 4.3 and higher.
 
@@ -7,7 +7,7 @@ This guide provides an overview of Diazo theming in Plone versions 4.3 and highe
     :local:
 
 Introduction
----------------
+------------
 
 In `Plone <http://plone.org>`_ versions 4.3 and higher you
 can edit your website theme through web browser in Plone's site setup control panel.
@@ -332,99 +332,107 @@ There are several ways to get the theme into Plone:
 
 1. On the filesystem
 
-If you used an installer or a standard "buildout" to set up your Plone site,
-you should have a directory called ``resources`` in the root of your Plone
-installation (this is created using the ``resources`` option to the buildout
-recipe ``plone.recipe.zope2instance``. See
-http://pypi.python.org/pypi/plone.recipe.zope2instance for more details.)
+   If you used an installer or a standard "buildout" to set up your
+   Plone site, you should have a directory called ``resources`` in the
+   root of your Plone installation (this is created using the
+   ``resources`` option to the buildout recipe
+   ``plone.recipe.zope2instance``. See
+   http://pypi.python.org/pypi/plone.recipe.zope2instance for more
+   details.)
 
-You can find (or create) a ``theme`` directory inside this directory, which is
-used to contain themes. Each theme needs its own directory with a unique name.
-Create one (e.g. ``resources/theme/mytheme``) and put your HTML files and any
-references resources inside this directory. You can use subdirectories if you
-wish, but you are recommended to keep the basic theme HTML files at the top
-of the theme directory.
+   You can find (or create) a ``theme`` directory inside this
+   directory, which is used to contain themes. Each theme needs its
+   own directory with a unique name.  Create one
+   (e.g. ``resources/theme/mytheme``) and put your HTML files and any
+   references resources inside this directory. You can use
+   subdirectories if you wish, but you are recommended to keep the
+   basic theme HTML files at the top of the theme directory.
 
-You will also need a rules file called ``rules.xml`` inside this directory. If
-you haven't got one yet, start with an empty one::
+   You will also need a rules file called ``rules.xml`` inside this
+   directory. If you haven't got one yet, start with an empty one::
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <rules
-        xmlns="http://namespaces.plone.org/diazo"
-        xmlns:css="http://namespaces.plone.org/diazo/css"
-        xmlns:xsl="http://www.w3.org/1999/XSL/Transform">`
+       <?xml version="1.0" encoding="UTF-8"?>
+       <rules
+           xmlns="http://namespaces.plone.org/diazo"
+           xmlns:css="http://namespaces.plone.org/diazo/css"
+           xmlns:xsl="http://www.w3.org/1999/XSL/Transform">`
 
-        <theme href="theme.html" />
-        <replace css:content-children="#content" css:theme-children="#main" />
+           <theme href="theme.html" />
+           <replace css:content-children="#content" css:theme-children="#main" />
 
-    </rules>
+       </rules>
 
-Provided you are running Zope in debug mode (e.g. you start it up with
-``bin/instance fg``), changes to the theme and rules should take effect
-immediately. You can preview or enable the theme through the *Themes* control
-panel, and then iteratively modify the ``rules.xml`` file or the theme mockup
-as you wish.
+   Provided you are running Zope in debug mode (e.g. you start it up
+   with ``bin/instance fg``), changes to the theme and rules should
+   take effect immediately. You can preview or enable the theme
+   through the *Themes* control panel, and then iteratively modify the
+   ``rules.xml`` file or the theme mockup as you wish.
 
 2. Through the web
 
-If you prefer (or do not have filesystem access), you can create themes entirely
-through the Plone control panel, either by duplicating an existing theme, or
-starting from scratch with a near-empty theme.
+   If you prefer (or do not have filesystem access), you can create
+   themes entirely through the Plone control panel, either by
+   duplicating an existing theme, or starting from scratch with a
+   near-empty theme.
 
-See the instructions on using the control panel above for more details.
+   See the instructions on using the control panel above for more
+   details.
 
-Once a theme has been created, you can modify it through the *Theming*
-control panel. See above for more details.
+   Once a theme has been created, you can modify it through the
+   *Theming* control panel. See above for more details.
 
 3. As a zip file
 
-Themes can be downloaded from Plone as Zip files, which can then be uploaded
-into other sites.
+   Themes can be downloaded from Plone as Zip files, which can then be
+   uploaded into other sites.
 
-See the instructions on using the control panel above for more details.
+   See the instructions on using the control panel above for more
+   details.
 
-In fact, you can create valid theme zip archives by compressing a theme
-directory on the filesystem using a standard compression tool such as *7-Zip* or
-*Winzip* (for Windows) or the built-in *Compress* action in the Mac OS X Finder.
-Just make sure you compress exactly one folder that contains all the theme files
-and the ``rules.xml`` file. (Do not compress the contents of the folder
-directly: when unpacked, the zip file should produce exactly one folder which
-in turn contains all the relevant files).
+   In fact, you can create valid theme zip archives by compressing a
+   theme directory on the filesystem using a standard compression tool
+   such as *7-Zip* or *Winzip* (for Windows) or the built-in
+   *Compress* action in the Mac OS X Finder.  Just make sure you
+   compress exactly one folder that contains all the theme files and
+   the ``rules.xml`` file. (Do not compress the contents of the folder
+   directly: when unpacked, the zip file should produce exactly one
+   folder which in turn contains all the relevant files).
 
 4. In a Python package (programmers only)
 
-If you are creating a Python package containing Plone customisations that you
-intend to install into your site, you can let it register a theme for
-installation into the site.
+   If you are creating a Python package containing Plone
+   customisations that you intend to install into your site, you can
+   let it register a theme for installation into the site.
 
-To do this, place a directory called e.g. ``theme`` at the top of the package,
-next to the Zope ``configure.zcml`` file, and add a ``<plone:static />``
-declaration to the ``configure.zcml`` file::
+   To do this, place a directory called e.g. ``theme`` at the top of
+   the package, next to the Zope ``configure.zcml`` file, and add a
+   ``<plone:static />`` declaration to the ``configure.zcml`` file::
 
-    <configure
-        xmlns:plone="http://namespaces.plone.org/plone"
-        xmlns="http://namespaces.zope.org/zope">
+       <configure
+           xmlns:plone="http://namespaces.plone.org/plone"
+           xmlns="http://namespaces.zope.org/zope">
 
-        ...
+           ...
 
-        <plone:static name="mytheme" directory="theme" type="theme" />
+           <plone:static name="mytheme" directory="theme" type="theme" />
 
-        ...
+           ...
 
-    </configure>
+       </configure>
 
-Notice the declaration of the ``plone`` namespace at the root ``<configure />``
-element. Place the theme files and the ``rules.xml`` file into the ``theme``
-directory.
+   Notice the declaration of the ``plone`` namespace at the root
+   ``<configure />`` element. Place the theme files and the
+   ``rules.xml`` file into the ``theme`` directory.
 
-If your package has a GenericSetup profile, you can automatically enable the
-theme upon installation of this profile by adding a ``theme.xml`` file in the
-``profiles/default`` directory, containing e.g.::
+   If your package has a GenericSetup profile, you can automatically
+   enable the theme upon installation of this profile by adding a
+   ``theme.xml`` file in the ``profiles/default`` directory,
+   containing e.g.::
 
-    <theme>
-        <name>mytheme</name>
-        <enabled>true</enabled>
-    </theme>
+       <theme>
+           <name>mytheme</name>
+           <enabled>true</enabled>
+       </theme>
 
 The manifest file
 ~~~~~~~~~~~~~~~~~
@@ -438,34 +446,75 @@ This file may look like this::
     [theme]
     title = My theme
     description = A test theme
+    rules = http://example.org/myrules.xml
+    prefix = /some/prefix
+    doctype = <!DOCTYPE html>
+    preview = preview.png
+    enabled-bundles = mybundle
+    disabled-bundles = plone
+    development-css = /++theme++barceloneta/less/barceloneta.plone.less
+    production-css = /++theme++barceloneta/less/barceloneta-compiled.css
+    development-js = /++theme++barceloneta/barceloneta.js
+    production-js = /++theme++barceloneta/barceloneta.min.js
+    tinymce-content-css = /++theme++barceloneta/tinymce-styles.css
+
 
 As shown here, the manifest file can be used to provide a more user friendly
 title and a longer description for the theme, for use in the control panel.
 Only the ``[theme]`` header is required - all other keys are optional.
 
-You can also set::
 
-    rules = http://example.org/myrules.xml
+Manifest settings:
 
-to use a different rule file name than ``rules.xml`` (you should provide a URL
-or relative path).
+rules
+    to use a different rule file name than ``rules.xml`` (you should provide a URL
+    or relative path).
 
-To change the absolute path prefix (see *Advanced settings*), use::
+prefix
+    To change the absolute path prefix (see *Advanced settings*),
+    use::
 
-    prefix = /some/prefix
+      prefix = /some/prefix
 
-To employ a ``DOCTYPE`` in the themed content other than ``XHTML 1.0
-Transitional``, add e.g.::
+doctype
+    To employ a ``DOCTYPE`` in the themed content other than ``XHTML 1.0
+    Transitional``, add e.g.::
 
-    doctype = <!DOCTYPE html>
+      doctype = <!DOCTYPE html>
 
-To provide a user-friendly preview of your theme in the *Theming* control panel,
-add::
+preview
+    To provide a user-friendly preview of your theme in the *Theming* control panel.
+    Here, ``preview.png`` is an image file relative to the location of the
+    ``manifest.cfg`` file::
 
-    preview = preview.png
+      preview = preview.png
 
-Here, ``preview.png`` is an image file relative to the location of the
-``manifest.cfg`` file.
+enabled-bundles
+    Bundles that will automatically be enabled when a theme is activated
+
+disabled-bundles
+    Bundles that will automatically be disabled when a theme is activated
+
+development-css
+    CSS to automatically include when in development mode and theme is active
+
+development-js
+    JavaScript file to automatically include when in development mode when
+    theme is active
+
+production-css
+    CSS to automatically include when theme is active and in production mode
+
+production-js
+    JavaScript to automatically include when theme is active and in production mode
+
+tinymce-content-css
+    CSS file tinymce should load to apply styles to content inside the editor
+
+tinymce-styles-css
+    CSS file tinymce should load to provide additionally automatically detected
+    drop-down styles in the editor
+
 
 Extensions to the Diazo theming engine can add support for additional blocks of
 configurable parameters.
