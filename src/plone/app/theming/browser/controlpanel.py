@@ -427,6 +427,7 @@ class ThemingControlpanel(BrowserView):
         portalUrl = getToolByName(self.context, 'portal_url')()
 
         complete = [];
+        active_theme = None
 
         for theme in self.availableThemes:
             if theme.__name__ == TEMPLATE_THEME:
@@ -451,7 +452,7 @@ class ThemingControlpanel(BrowserView):
                     theme.preview,
                 )
 
-            themes.append({
+            theme_data = {
                 'name': theme.__name__,
                 'title': theme.title,
                 'description': theme.description,
@@ -459,11 +460,17 @@ class ThemingControlpanel(BrowserView):
                 'editable': theme.__name__ in zodbNames,
                 'preview': "{0}/{1}".format(portalUrl, previewUrl),
                 'selected': theme.__name__ == self.selectedTheme,
-            })
+            }
+            if theme.__name__ == self.selectedTheme:
+                active_theme = theme_data
+            else:
+                themes.append(theme_data)
 
             complete.append(theme.__name__)
 
         themes.sort(key=lambda x: x['title'])
+        if active_theme:
+            themes.insert(0, active_theme)
 
         return themes
 
