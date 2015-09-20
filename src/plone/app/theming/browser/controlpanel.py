@@ -3,6 +3,7 @@ from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.decode import processInputs
 from Products.statusmessages.interfaces import IStatusMessage
+from Products.CMFPlone.interfaces import ILinkSchema
 from plone.app.theming.interfaces import DEFAULT_THEME_FILENAME
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.interfaces import RULE_FILENAME
@@ -40,8 +41,6 @@ def authorize(context, request):
 class ThemingControlpanel(BrowserView):
 
     def __call__(self):
-        ptool = getToolByName(self.context, 'portal_properties')
-        self.props = ptool.site_properties
         self.pskin = getToolByName(self.context, 'portal_skins')
 
         if self.update():
@@ -49,15 +48,16 @@ class ThemingControlpanel(BrowserView):
         return ''
 
     def _setup(self):
-        self.settings = getUtility(IRegistry).forInterface(
-            IThemeSettings,
-            False
-        )
+        registry = getUtility(IRegistry)
+        self.theme_settings = registry.forInterface(IThemeSettings, False)
+        self.link_settings = registry.forInterface(ILinkSchema,
+                                                   prefix="plone",
+                                                   check=False)
         self.zodbThemes = getZODBThemes()
         self.availableThemes = getAvailableThemes()
         self.selectedTheme = self.getSelectedTheme(
             self.availableThemes,
-            self.settings.rules
+            self.theme_settings.rules
         )
         self.overlay = ''
 
@@ -75,36 +75,19 @@ class ThemingControlpanel(BrowserView):
         self.request.response.redirect(url)
 
     def get_mark_special_links(self):
-        msl = getattr(self.props, 'mark_special_links', False)
-        if msl == 'true':
-            return True
-        return False
+        return self.link_settings.mark_special_links
 
     def set_mark_special_links(self, value):
-        if value:
-            mark_special_links = 'true'
-        else:
-            mark_special_links = 'false'
-        if self.props.hasProperty('mark_special_links'):
-            self.props.manage_changeProperties(mark_special_links=mark_special_links)
-        else:
-            self.props.manage_addProperty(
-                'mark_special_links', mark_special_links, 'string')
+        self.link_settings.mark_special_links = value
 
     mark_special_links = property(get_mark_special_links,
                                   set_mark_special_links)
 
     def get_ext_links_open_new_window(self):
-        elonw = self.props.external_links_open_new_window
-        if elonw == 'true':
-            return True
-        return False
+        return self.link_settings.external_links_open_new_window
 
     def set_ext_links_open_new_window(self, value):
-        if value:
-            self.props.manage_changeProperties(external_links_open_new_window='true')
-        else:
-            self.props.manage_changeProperties(external_links_open_new_window='false')
+        self.link_settings.external_links_open_new_window = value
 
     ext_links_open_new_window = property(get_ext_links_open_new_window,
                                          set_ext_links_open_new_window)
@@ -135,7 +118,7 @@ class ThemingControlpanel(BrowserView):
                     themeSelection
                 )
                 applyTheme(themeData)
-                self.settings.enabled = True
+                self.theme_settings.enabled = True
 
             IStatusMessage(
                 self.request
@@ -158,7 +141,7 @@ class ThemingControlpanel(BrowserView):
             self.authorize()
 
             applyTheme(None)
-            self.settings.enabled = False
+            self.theme_settings.enabled = False
 
             IStatusMessage(self.request).add(_(u"Theme disabled."))
             self._setup()
@@ -167,7 +150,7 @@ class ThemingControlpanel(BrowserView):
         if 'form.button.AdvancedSave' in form:
             self.authorize()
 
-            self.settings.readNetwork = form.get('readNetwork', False)
+            self.theme_settings.readNetwork = form.get('readNetwork', False)
 
             themeEnabled = form.get('themeEnabled', False)
             rules = form.get('rules', None)
@@ -200,15 +183,15 @@ class ThemingControlpanel(BrowserView):
             if not self.errors:
                 # Trigger onDisabled() on plugins if theme was active
                 # previously and rules were changed
-                if self.settings.rules != rules:
+                if self.theme_settings.rules != rules:
                     applyTheme(None)
 
-                self.settings.enabled = themeEnabled
-                self.settings.rules = rules
-                self.settings.absolutePrefix = prefix
-                self.settings.parameterExpressions = parameterExpressions
-                self.settings.hostnameBlacklist = hostnameBlacklist
-                self.settings.doctype = doctype
+                self.theme_settings.enabled = themeEnabled
+                self.theme_settings.rules = rules
+                self.theme_settings.absolutePrefix = prefix
+                self.theme_settings.parameterExpressions = parameterExpressions
+                self.theme_settings.hostnameBlacklist = hostnameBlacklist
+                self.theme_settings.doctype = doctype
 
                 # Theme base settings
                 if themeBase is not None:
@@ -323,7 +306,7 @@ class ThemingControlpanel(BrowserView):
 
                 if enableNewTheme:
                     applyTheme(themeData)
-                    self.settings.enabled = True
+                    self.theme_settings.enabled = True
 
             if not self.errors:
                 portalUrl = getToolByName(self.context, 'portal_url')()
@@ -380,7 +363,7 @@ class ThemingControlpanel(BrowserView):
                 if enableImmediately:
                     themeData = self.getThemeData(self.availableThemes, name)
                     applyTheme(themeData)
-                    self.settings.enabled = True
+                    self.theme_settings.enabled = True
 
                 portalUrl = getToolByName(self.context, 'portal_url')()
                 self.redirect(
