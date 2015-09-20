@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.13 (unreleased)
+1.2.13 (2015-09-20)
 -------------------
 
 - Pull mark_special_links, external_links_open_new_window values
