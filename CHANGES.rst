@@ -4,7 +4,8 @@ Changelog
 1.2.14 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Fix i18n in mapper.pt
+  [vincentfretin]
 
 
 1.2.13 (2015-09-20)
