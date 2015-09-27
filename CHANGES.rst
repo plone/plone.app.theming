@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.14 (unreleased)
+1.2.14 (2015-09-27)
 -------------------
 
 - Fix i18n in mapper.pt
