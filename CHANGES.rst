@@ -4,7 +4,10 @@ Changelog
 1.2.15 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Do not fail in ``isThemeEnabled`` when we have no settings, for
+  example when migrating from Plone 3 to Plone 5, but maybe also in
+  other cases.
+  [maurits]
 
 
 1.2.14 (2015-09-27)

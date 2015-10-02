@@ -87,7 +87,7 @@ class ThemingPolicy(object):
 
         if not settings:
             settings = self.getSettings()
-        if not settings.enabled or not settings.rules:
+        if settings is None or not settings.enabled or not settings.rules:
             return False
 
         server_url = self.request.get('SERVER_URL')
