@@ -276,6 +276,26 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(theme.development_js, expected_dev_js)
         self.assertEqual(theme.production_js, expected_prod_js)
 
+    def test_createThemeFromTemplate_ja_str_title(self):
+        from plone.app.theming.utils import createThemeFromTemplate
+        title = "copy of test theme by 日本語"
+        description = "test theme by 日本語"
+        try:
+            createThemeFromTemplate(title, description,
+                                            baseOn="another-theme")
+        except UnicodeEncodeError:
+            self.fail(msg=u"Unicode Encode Error")
+
+    def test_createThemeFromTemplate_ja_unicode_title(self):
+        from plone.app.theming.utils import createThemeFromTemplate
+        title = u"copy of test theme by 日本語"
+        description = u"test theme by 日本語"
+        try:
+            createThemeFromTemplate(title, description,
+                                            baseOn="another-theme")
+        except UnicodeEncodeError:
+            self.fail(msg=u"Unicode Encode Error")
+
 
 class TestUnit(unittest.TestCase):
 

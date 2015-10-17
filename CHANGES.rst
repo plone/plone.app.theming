@@ -9,6 +9,8 @@ Changelog
   other cases.
   [maurits]
 
+- Fix Unicode Encode Error when to copy intu multi-byte title / description
+  [terapyon]
 
 1.2.14 (2015-09-27)
 -------------------

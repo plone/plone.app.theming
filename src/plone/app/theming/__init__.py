@@ -11,3 +11,4 @@ except ImportError:
     from plone.app.theming import _roman
     import sys
     sys.modules['roman'] = _roman
+

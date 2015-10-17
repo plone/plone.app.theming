@@ -514,6 +514,10 @@ def createThemeFromTemplate(title, description, baseOn='template'):
     if not manifest.has_section('theme'):
         manifest.add_section('theme')
 
+    if not isinstance(title, str):
+        title = title.encode('utf-8')
+    if not isinstance(description, str):
+        description = description.encode('utf-8')
     manifest.set('theme', 'title', title)
     manifest.set('theme', 'description', description)
 
