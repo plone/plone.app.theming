@@ -4,13 +4,16 @@ Changelog
 1.2.15 (unreleased)
 -------------------
 
+Fixes:
+
 - Do not fail in ``isThemeEnabled`` when we have no settings, for
   example when migrating from Plone 3 to Plone 5, but maybe also in
   other cases.
   [maurits]
 
-- Fix Unicode Encode Error when to copy into multi-byte title / description
+- Fixed Unicode Encode Error when to copy into multi-byte title / description
   [terapyon]
+
 
 1.2.14 (2015-09-27)
 -------------------
