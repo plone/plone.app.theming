@@ -6,6 +6,10 @@ Changelog
 
 New:
 
+- Document how to disable diazo transform
+  by setting the ``X-Theme-Disabled`` header
+  [ale-rt]
+
 - *add item here*
 
 Fixes:
