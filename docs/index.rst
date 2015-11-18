@@ -810,3 +810,22 @@ Use::
     not: request/HTTP_X_THEME_ENABLED | nothing
 
 to 'hide' a style sheet from the themed site.
+
+
+Advanced: Disable diazo transformation by setting the ``X-Theme-Disabled`` header
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The diazo transformation is not applied
+if a response header ``X-Theme-Disabled`` is set.
+
+In a browser view, the header can be set by using this instruction::
+
+    self.request.response.setHeader('X-Theme-Disabled', '1')
+
+This is a complete example::
+
+    class NoDiazoView(BrowserView):
+
+        def __call__(self):
+            self.request.response.setHeader('X-Theme-Disabled', '1')
+            return super(NoDiazoView).__call__()
