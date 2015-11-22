@@ -71,9 +71,8 @@
             <h1 class="documentFirstHeading"
                 i18n:translate="heading_theme_settings">Theme settings</h1>
 
-            <a href=""
-                class="link-parent"
-                tal:attributes="href string:${context/portal_url}/plone_control_panel"
+            <a id="setup-link" class="link-parent"
+                tal:attributes="href string:${context/portal_url}/@@overview-controlpanel"
                 i18n:translate="label_up_to_plone_setup">
                     Up to Site Setup
             </a>
@@ -113,8 +112,6 @@
                     loadLinksWithinModal: true;
                     content: .content"
                 i18n:translate="">Help</a>
-
-
         </div>
 
         <div id="themesList">

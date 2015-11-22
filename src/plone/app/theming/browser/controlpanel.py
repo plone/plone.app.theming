@@ -103,7 +103,7 @@ class ThemingControlpanel(BrowserView):
             IStatusMessage(self.request).add(_(u"Changes cancelled"))
 
             portalUrl = getToolByName(self.context, 'portal_url')()
-            self.redirect("{0:s}/plone_control_panel".format(portalUrl))
+            self.redirect("{0:s}/@@overview-controlpanel".format(portalUrl))
 
             return False
 
@@ -173,7 +173,7 @@ class ThemingControlpanel(BrowserView):
                         'error_invalid_parameter_expressions',
                         default=u"Please ensure you enter one expression per "
                                 u"line, in the format <name> = <expression>."
-                        )
+                    )
                     self.errors['parameterExpressions'] = message
 
             themeBase = form.get('themeBase', None)
@@ -416,15 +416,15 @@ class ThemingControlpanel(BrowserView):
             if theme.__name__ == TEMPLATE_THEME:
                 continue
 
-            #We've overwritten this theme, skip it
+            # We've overwritten this theme, skip it
             if complete.__contains__(theme.__name__):
                 continue
 
             override = False
 
-            #Is there more than one theme with the same name?
-            if len( filter(lambda x: x.__name__ == theme.__name__, self.availableThemes) ) > 1:
-                #Then we make sure we're using the TTW version, not the filesystem version.
+            # Is there more than one theme with the same name?
+            if len(filter(lambda x: x.__name__ == theme.__name__, self.availableThemes)) > 1:
+                # Then we make sure we're using the TTW version, not the filesystem version.
                 theme = filter(lambda x: x.__name__ == theme.__name__, self.zodbThemes)[0]
                 override = True
 
