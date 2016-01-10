@@ -254,7 +254,10 @@ class ThemeTransform(object):
             context = findContext(self.request)
             expressionContext = createExpressionContext(context, self.request)
             for name, expression in expressions.items():
-                params[name] = quote_param(expression(expressionContext))
+                try:
+                    params[name] = quote_param(expression(expressionContext))
+                except AttributeError:
+                    pass
 
         transformed = transform(result.tree, **params)
         if transformed is None:

@@ -4,7 +4,8 @@ Changelog
 1.0.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix AttributeErrors on parameter evaluation if current context is not
+  located within a plonesite [fRiSi]
 
 
 1.0.4 (2012-12-14)

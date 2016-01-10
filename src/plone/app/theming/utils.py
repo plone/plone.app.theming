@@ -90,7 +90,10 @@ class InternalResolver(etree.Resolver):
         if portalState is None:
             root = None
         else:
-            root = portalState.navigation_root()
+            try:
+                root = portalState.navigation_root()
+            except AttributeError:
+                root = None
 
         if not system_url.startswith('/'):  # only for relative urls
             root_path = root.getPhysicalPath()
@@ -140,7 +143,10 @@ def getPortal():
         (context, request), name=u"plone_portal_state")
     if portalState is None:
         return None
-    return portalState.portal()
+    try:
+        return portalState.portal()
+    except AttributeError:
+        return None
 
 
 def findContext(request):
@@ -189,10 +195,15 @@ def createExpressionContext(context, request):
     portalState = queryMultiAdapter(
         (context, request), name=u"plone_portal_state")
 
+    try:
+        portal = portalState.portal()
+    except AttributeError:
+        portal = None
+
     data = {
         'context': context,
         'request': request,
-        'portal': portalState.portal(),
+        'portal': portal,
         'context_state': contextState,
         'portal_state': portalState,
         'nothing': None,
