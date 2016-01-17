@@ -10,7 +10,9 @@ New:
 
 Fixes:
 
-- *add item here*
+- rebuild resources so they work with latest mockup/patternslib
+  integration changes.
+  [vangheem]
 
 
 1.2.16 (2015-11-26)
