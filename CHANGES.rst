@@ -10,6 +10,10 @@ New:
 
 Fixes:
 
+- Add missing font-face mixin import.
+  Fixes https://github.com/plone/plonetheme.barceloneta/issues/75
+  [allcaps]
+
 - rebuild resources so they work with latest mockup/patternslib
   integration changes.
   [vangheem]
