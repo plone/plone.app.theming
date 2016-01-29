@@ -14,6 +14,8 @@ Fixes:
   integration changes.
   [vangheem]
 
+- Remove github dependancies in thememapper.
+  [Gagaro]
 
 1.2.16 (2015-11-26)
 -------------------
