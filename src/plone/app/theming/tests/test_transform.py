@@ -684,6 +684,7 @@ class TestCase(unittest.TestCase):
     def test_navroot_params_on_404_widget_in_path(self):
         app = self.layer['app']
         portal = self.layer['portal']
+        setRoles(portal, TEST_USER_ID, ['Contributor'])
         portal.invokeFactory('Folder', 'subfolder')
 
         self.settings.enabled = True
