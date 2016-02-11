@@ -6,20 +6,16 @@ Changelog
 
 New:
 
-- Document how to disable diazo transform
-  by setting the ``X-Theme-Disabled`` header
-  [ale-rt]
-
-- *add item here*
+- Documented how to disable diazo transform by setting the
+  ``X-Theme-Disabled`` header.  [ale-rt]
 
 Fixes:
 
-- rebuild resources so they work with latest mockup/patternslib
-  integration changes.
-  [vangheem]
+- Rebuild resources so they work with latest mockup/patternslib
+  integration changes.  [vangheem]
 
-- Remove github dependancies in thememapper.
-  [Gagaro]
+- Removed github dependancies in thememapper.  [Gagaro]
+
 
 1.2.16 (2015-11-26)
 -------------------
