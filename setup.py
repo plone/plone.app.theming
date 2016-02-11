@@ -18,6 +18,7 @@ longdescription += open(
         "userguide.rst"
     )
 ).read()
+longdescription += "\n\n"
 longdescription += open("CHANGES.rst").read()
 
 setup(
