@@ -73,7 +73,8 @@ After installation of the *Diazo theme support* package in a Plone site, the *Th
 
 The main tab of this control panel, *Themes*, will show all available themes, with buttons to activate/deactivate, modify, copy or delete each, as well as buttons to create new themes or bring up this help text.
 
-Click on a theme preview image to open a preview of that theme in a new tab or window. The preview is navigable, but form submissions and some advanced features will not work.
+Click on a theme preview image to open a preview of that theme in a new tab or window.
+The preview is navigable, but form submissions and some advanced features will not work.
 
 Selecting a theme
 ~~~~~~~~~~~~~~~~~
@@ -229,6 +230,12 @@ These are:
 
 The second, *Theme base*, controls the presentation of the unthemed content, and apply even if no Diazo theme is being applied. These are the settings that used to be found in the *Themes* control panel in previous versions of Plone.
 
+.. note::
+
+    The "Advanced settings" tab always configures the current active theme.
+    If you change the theme, previously changed settings from another theme are lost.
+
+
 Reference
 ---------
 
@@ -313,8 +320,9 @@ You can preview or enable the theme through the *Themes* control panel, and then
 
    Notice the declaration of the ``plone`` namespace at the root ``<configure />`` element.
    Place the theme files and the ``rules.xml`` file into the ``theme`` directory.
+   Your theme is immediately available due to the existance of this ``theme`` type ``plone.resource`` directory, if it contains a ``manifest.cfg`` (see below) and a ``rules.xml`` file.
 
-   If your package has a GenericSetup profile, you can automatically enable the theme upon installation of this profile by adding a ``theme.xml`` file in the ``profiles/default`` directory, containing e.g.::
+   If you want your theme automatically enabled upon installation of your Python package, you can add a ``theme.xml`` file with the following content into a GenericSetup profile::
 
        <theme>
            <name>mytheme</name>
