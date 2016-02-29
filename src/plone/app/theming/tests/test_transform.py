@@ -621,6 +621,7 @@ class TestCase(unittest.TestCase):
         transaction.commit()
 
         browser = Browser(app)
+        browser.addHeader('Accept', 'text/html')
         error = None
         try:
             browser.open('{0:s}/404_page'.format(portal.absolute_url()))
@@ -648,6 +649,7 @@ class TestCase(unittest.TestCase):
         transaction.commit()
 
         browser = Browser(app)
+        browser.addHeader('Accept', 'text/html')
         error = None
         try:
             browser.open('{0:s}/404_page'.format(portal.absolute_url()))
@@ -696,6 +698,7 @@ class TestCase(unittest.TestCase):
         transaction.commit()
 
         browser = Browser(app)
+        browser.addHeader('Accept', 'text/html')
         error = None
         try:
             browser.open(
