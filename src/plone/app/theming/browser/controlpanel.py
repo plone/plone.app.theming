@@ -57,6 +57,7 @@ class ThemingControlpanel(BrowserView):
         self.availableThemes = getAvailableThemes()
         self.selectedTheme = self.getSelectedTheme(
             self.availableThemes,
+            self.theme_settings.currentTheme,
             self.theme_settings.rules
         )
         self.overlay = ''
@@ -390,7 +391,13 @@ class ThemingControlpanel(BrowserView):
 
         return True
 
-    def getSelectedTheme(self, themes, rules):
+    def getSelectedTheme(self, themes, themeName, rules):
+        for item in themes:
+            if item.__name__ == themeName:
+                return item.__name__
+
+        # BBB: If currentTheme isn't set, look for a theme with a rules file
+        # matching that of the current theme. Same as what policy does
         for item in themes:
             if item.rules == rules:
                 return item.__name__

@@ -10,7 +10,9 @@ New:
 
 Fixes:
 
-- *add item here*
+- Handle potential scenarios where wrong theme would show selected in the theming
+  control panel
+  [vangheem]
 
 
 1.2.17 (2016-02-11)
