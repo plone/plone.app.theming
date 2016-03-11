@@ -12,7 +12,8 @@
           view nocall:view | nocall: plone_view;
           portal_url portal_state/portal_url;
           ajax_load python:False;
-          dummy python: request.set('disable_toolbar', True);"
+          dummy python: request.set('disable_toolbar', True);
+          site_url view/site_url"
       tal:attributes="lang lang;">
 
     <metal:cache tal:replace="structure provider:plone.httpheaders" />
@@ -72,9 +73,9 @@
                 i18n:translate="heading_theme_settings">Theme settings</h1>
 
             <a id="setup-link" class="link-parent"
-                tal:attributes="href string:${context/portal_url}/@@overview-controlpanel"
-                i18n:translate="label_up_to_plone_setup">
-                    Up to Site Setup
+                tal:attributes="href string:$site_url/@@overview-controlpanel"
+                i18n:translate="">
+              Site Setup
             </a>
           </header>
 
@@ -100,12 +101,12 @@
                 data-pat-plone-modal="width: 80%"
                 i18n:translate="">Upload Zip file</a>
 
-            <a tal:attributes="href string:${context/portal_url}/test_rendering#top"
+            <a tal:attributes="href string:$site_url/test_rendering#top"
                 class="plone-btn plone-btn-large plone-btn-primary"
                 target="_blank"
                 i18n:translate="">Test Styles</a>
 
-            <a tal:attributes="href string:${context/portal_url}/@@theming-controlpanel-help"
+            <a tal:attributes="href string:$site_url/@@theming-controlpanel-help"
                 class="plone-btn plone-btn-large plone-btn-primary pat-plone-modal"
                 data-pat-plone-modal="
                     width: 85%;
