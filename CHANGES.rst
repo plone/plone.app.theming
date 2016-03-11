@@ -10,7 +10,7 @@ Incompatibilities:
 
 New:
 
-- Change base URLs from portal URL to what getSite returns, but don't change the theming controlpanel context binding.
+- For the theming controlpanel, change base URLs from portal URL to what getSite returns, but don't change the controlpanels context binding.
   This allows for more flexibility when configuring it to be allowed on a sub site with a local registry.
   [thet]
 
