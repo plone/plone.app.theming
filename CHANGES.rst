@@ -22,6 +22,9 @@ Fixes:
 
 Fixes:
 
+- Fixed html validation: element nav does not need a role attribute.
+  [maurits]
+
 - Handle potential scenarios where wrong theme would show selected in the theming
   control panel
   [vangheem]

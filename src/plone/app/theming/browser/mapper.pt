@@ -56,11 +56,12 @@
             <img alt="Plone Toolbar" tal:attributes="src string:${portal_url}/++plone++static/plone-toolbarlogo.svg" />
           </a>
           <a class="plone-toolbar-switcher"><span>Left-Top switcher</span></a>
-          <nav role="navigation">
+          <nav>
             <ul>
               <div tal:replace="structure provider:plone.toolbar">
               </div>
             </ul>
+          </nav>
         </div>
       </div>
     </section>
