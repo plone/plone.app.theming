@@ -24,6 +24,7 @@ from plone.registry.interfaces import IRegistry
 from plone.resource.utils import queryResourceDirectory
 from zope.component import getMultiAdapter
 from zope.component import getUtility
+from zope.component.hooks import getSite
 from zope.publisher.browser import BrowserView
 from zope.schema.interfaces import IVocabularyFactory
 import logging
@@ -39,6 +40,13 @@ def authorize(context, request):
 
 
 class ThemingControlpanel(BrowserView):
+
+    @property
+    def site_url(self):
+        """Return the absolute URL to the current site, which is likely not
+        necessarily the portal root.
+        """
+        return getSite().absolute_url()
 
     def __call__(self):
         self.pskin = getToolByName(self.context, 'portal_skins')
@@ -102,10 +110,7 @@ class ThemingControlpanel(BrowserView):
 
         if 'form.button.Cancel' in form:
             IStatusMessage(self.request).add(_(u"Changes cancelled"))
-
-            portalUrl = getToolByName(self.context, 'portal_url')()
-            self.redirect("{0:s}/@@overview-controlpanel".format(portalUrl))
-
+            self.redirect("{0}/@@overview-controlpanel".format(self.site_url))
             return False
 
         if 'form.button.Enable' in form:
@@ -310,10 +315,9 @@ class ThemingControlpanel(BrowserView):
                     self.theme_settings.enabled = True
 
             if not self.errors:
-                portalUrl = getToolByName(self.context, 'portal_url')()
                 self.redirect(
                     "{0}/++theme++{1}/@@theming-controlpanel-mapper".format(
-                        portalUrl,
+                        self.site_url,
                         themeData.__name__
                     )
                 )
@@ -366,10 +370,9 @@ class ThemingControlpanel(BrowserView):
                     applyTheme(themeData)
                     self.theme_settings.enabled = True
 
-                portalUrl = getToolByName(self.context, 'portal_url')()
                 self.redirect(
                     "{0}/++theme++{1}/@@theming-controlpanel-mapper".format(
-                        portalUrl,
+                        self.site_url,
                         name
                     )
                 )
@@ -414,9 +417,7 @@ class ThemingControlpanel(BrowserView):
         themes = []
         zodbNames = [t.__name__ for t in self.zodbThemes]
 
-        portalUrl = getToolByName(self.context, 'portal_url')()
-
-        complete = [];
+        complete = []
         active_theme = None
 
         for theme in self.availableThemes:
@@ -448,7 +449,7 @@ class ThemingControlpanel(BrowserView):
                 'description': theme.description,
                 'override': override,
                 'editable': theme.__name__ in zodbNames,
-                'preview': "{0}/{1}".format(portalUrl, previewUrl),
+                'preview': "{0}/{1}".format(self.site_url, previewUrl),
                 'selected': theme.__name__ == self.selectedTheme,
             }
             if theme.__name__ == self.selectedTheme:
@@ -465,10 +466,9 @@ class ThemingControlpanel(BrowserView):
         return themes
 
     def redirectToFieldset(self, fieldset):
-        portalUrl = getToolByName(self.context, 'portal_url')()
         self.redirect(
             "{0}/{1}#fieldsetlegend-{2}".format(
-                portalUrl,
+                self.site_url,
                 self.__name__,
                 fieldset
             )
