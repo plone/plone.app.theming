@@ -1,22 +1,14 @@
 Changelog
 =========
 
-1.2.19 (unreleased)
+1.2.19 (2016-03-31)
 -------------------
-
-Incompatibilities:
-
-- *add item here*
 
 New:
 
 - For the theming controlpanel, change base URLs from portal URL to what getSite returns, but don't change the controlpanels context binding.
   This allows for more flexibility when configuring it to be allowed on a sub site with a local registry.
   [thet]
-
-Fixes:
-
-- *add item here*
 
 
 1.2.18 (2016-03-03)
