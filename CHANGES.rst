@@ -10,7 +10,9 @@ Incompatibilities:
 
 New:
 
-- *add item here*
+- Control theme compilation in development mode
+  through the environment variable ``DIAZO_ALWAYS_CACHE_RULES``
+  [ale-rt]
 
 Fixes:
 

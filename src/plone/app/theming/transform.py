@@ -8,6 +8,7 @@ from plone.app.theming.utils import prepareThemeParameters
 from plone.app.theming.utils import theming_policy
 from plone.app.theming.zmi import patch_zmi
 from plone.transformchain.interfaces import ITransform
+from os import environ
 from repoze.xmliter.utils import getHTMLSerializer
 from zope.component import adapter
 from zope.interface import Interface
@@ -34,8 +35,19 @@ class ThemeTransform(object):
         self.published = published
         self.request = request
 
+    def develop_theme(self):
+        ''' Check if the theme should be recompiled every time the
+        transform is applied
+        '''
+        if Globals.DevelopmentMode:
+            if environ.get('DIAZO_ALWAYS_CACHE_RULES'):
+                return False
+            else:
+                return True
+        return False
+
     def setupTransform(self, runtrace=False):
-        DevelopmentMode = Globals.DevelopmentMode
+        DevelopmentMode = self.develop_theme()
         policy = theming_policy(self.request)
 
         # Obtain settings. Do nothing if not found
