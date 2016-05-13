@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.20 (unreleased)
+1.3.0 (unreleased)
 -------------------
 
 Incompatibilities:
