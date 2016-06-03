@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.2.20 (unreleased)
+1.3.0 (unreleased)
 -------------------
 
 Incompatibilities:
@@ -10,7 +10,9 @@ Incompatibilities:
 
 New:
 
-- *add item here*
+- Control theme compilation in development mode
+  through the environment variable ``DIAZO_ALWAYS_CACHE_RULES``
+  [ale-rt]
 
 Fixes:
 

@@ -28,7 +28,7 @@ Diazo themes may be a little different to themes you have created in other syste
 A Diazo theme is really about transforming some content - in this case the output from "vanilla" Plone - into a different set of HTML markup by applying a set of rules to combine a static HTML mock-up of the end result you
 want with the dynamic content coming from Plone.
 
-In comparison, the previous way to theme a Plone site (like the way many other content management systems are themed) relies on selectively overriding the templates and scripts that Plone uses to build a page with custom versions that produce different HTML markup. 
+In comparison, the previous way to theme a Plone site (like the way many other content management systems are themed) relies on selectively overriding the templates and scripts that Plone uses to build a page with custom versions that produce different HTML markup.
 The latter approach can be more powerful, in some cases, but also requires much deeper knowledge of Plone's internals and command of server-side technologies such as Zope Page Templates and even Python.
 Diazo themes, by contrast, are easy to understand for web designers and non-developers alike.
 
@@ -44,8 +44,8 @@ A Diazo theme consists of three elements:
 
 The rules file uses XML syntax (similar to HTML).
 Here is a very simple example:
-   
-.. code-block:: xml   
+
+.. code-block:: xml
 
      <?xml version="1.0" encoding="UTF-8"?>
      <rules
@@ -111,13 +111,13 @@ top-level directory contained within the Zip file).
 
 You can also upload a Zip file of a static HTML mockup that does not contain a rules file, such as a design provided by a Plone-agnostic web designer.
 
-In this case, a basic ``rules.xml`` file will be added for you to start building up a theme from using the *Modify theme* screen (see below). 
+In this case, a basic ``rules.xml`` file will be added for you to start building up a theme from using the *Modify theme* screen (see below).
 The generated rules file will assume the main HTML mockup file is called ``index.html``, but you can change this in ``rules.xml``.
 
 Once you have successfully uploaded a theme Zip file, you will be taken to the *Modify theme* screen (see below), where you can edit or create theme files.
 
 *Hint:* If you get an error message like "The uploaded file does not contain a valid theme archive", this usually means that you have uploaded a Zip file that contains multiple files and folders, rather than a single top level
-folder with all the theme resources in it. 
+folder with all the theme resources in it.
 This could happen if you compressed a theme or HTML mockup by adding its files and folders directly a Zip archive,
 rather than compressing the directory in which they were found.
 To fix this, simply unzip the archive on your computer into a new directory, move up a level, and compress this directory on its own into a new Zip file, which you can then upload.
@@ -125,17 +125,17 @@ To fix this, simply unzip the archive on your computer into a new directory, mov
 Modifying the theme
 ~~~~~~~~~~~~~~~~~~~
 
-You can modify a theme by clicking *Modify theme* underneath a theme in the *Themes* tab of the *Theming* control panel. 
+You can modify a theme by clicking *Modify theme* underneath a theme in the *Themes* tab of the *Theming* control panel.
 This screen is also launched automatically when you create or upload a new theme.
 
 *Note:* Only themes created or uploaded through the *Theming* control panel can be modified through Plone.
 Themes installed by third-party add-ons or distributed on the filesystem cannot, although changes made on the filesystem will be reflected immediately if Zope is running in debug mode.
 To modify a filesystem theme, you can copy it to a new in-Plone theme by clicking the *Copy* button underneath the theme in the *Theming* control panel.
 
-The *Modify theme* screen initially shows a file manager, with a file tree on the left and an editor on the right. Click on a file in the file tree to open an editor or preview: HTML, CSS, JavaScript and other text files can be edited directly through the editor. 
+The *Modify theme* screen initially shows a file manager, with a file tree on the left and an editor on the right. Click on a file in the file tree to open an editor or preview: HTML, CSS, JavaScript and other text files can be edited directly through the editor.
 Other files (e.g. images) will be rendered as a preview.
 
-.. note:: 
+.. note::
 
     The advanced editor with syntax highlighting is not available in Microsoft Internet Explorer.
 
@@ -165,7 +165,7 @@ The theme inspector consists of two panels:
 
 * The *HTML mockup*.
   If there are several HTML files in the theme, you can switch between them using the drop-down list underneath the *HTML mockup* panel.
-* The *Unthemed content*. 
+* The *Unthemed content*.
   This shows Plone without any theme applied.
 
 Either panel can be maximised by clicking the arrows icon at the top right of either.
@@ -191,15 +191,15 @@ The rule builder
 ~~~~~~~~~~~~~~~~
 
 Click the *Build rule* button near the top of the *Modify theme* or *Inspect theme* screen to launch an interactive rule building wizard.
-You will be asked which type of rule to build, and then prompted to select the relevant elements in the *HTML mockup* and/or *Unthemed content* panels as required. 
+You will be asked which type of rule to build, and then prompted to select the relevant elements in the *HTML mockup* and/or *Unthemed content* panels as required.
 By default, this will use any saved selections, unless you untick the *Use selected elements* box on the first page if the wizard.
 
 Once the wizard completes, you will be shown the generated rule.
-You can edit this if you wish. 
+You can edit this if you wish.
 If you click *Insert*, the newly generated rule will be inserted into the ``rules.xml`` editor at or near your current cursor position.
 You can move it around or edit it further as you wish.
 
-Click *Preview theme* to preview the theme in a new tab or window. 
+Click *Preview theme* to preview the theme in a new tab or window.
 Don't forget to save the ``rules.xml`` file if you have made changes.
 
 *Note*: In readonly mode, you can build rules and inspect the HTML mockup and theme, but not change the ``rules.xml`` file.
@@ -215,8 +215,8 @@ Advanced settings
 The *Theming* control panel also contains a tab named *Advanced settings*.
 Here be dragons.
 
-The *Advanced setings* tab is divided into two areas. 
-The first, *Theme details*, contains the underlying settings that are modified when a theme is applied from the *Themes* control panel. 
+The *Advanced setings* tab is divided into two areas.
+The first, *Theme details*, contains the underlying settings that are modified when a theme is applied from the *Themes* control panel.
 These are:
 
 * Whether or not Diazo themes are enabled at all.
@@ -246,7 +246,7 @@ Deploying and testing themes
 
 To build and test a theme, you must first create a static HTML mockup of the look and feel you want, and then build a rules file to describe how Plone's content maps to the placeholders in this mockup.
 
-The mockup can be created anywhere using whatever tool you feel most comfortable building web pages in. 
+The mockup can be created anywhere using whatever tool you feel most comfortable building web pages in.
 To simplify integration with Plone, you are recommended to make sure it uses relative links for resources like CSS, JavaScript and image files, so that it will render properly when opened in a web browser from a local file.
 Plone will convert these relative links to the appropriate absolute paths automatically, ensuring the theme works no matter which URL the user is viewing when the theme is applied to a Plone site.
 
@@ -254,16 +254,16 @@ There are several ways to get the theme into Plone:
 
 1. On the filesystem
 
-   If you used an installer or a standard "buildout" to set up your Plone site, you should have a directory called ``resources`` in the root of your Plone installation (this is created using the ``resources`` option to the buildout recipe ``plone.recipe.zope2instance``. 
+   If you used an installer or a standard "buildout" to set up your Plone site, you should have a directory called ``resources`` in the root of your Plone installation (this is created using the ``resources`` option to the buildout recipe ``plone.recipe.zope2instance``.
    See http://pypi.python.org/pypi/plone.recipe.zope2instance for more details.)
 
    You can find (or create) a ``theme`` directory inside this directory, which is used to contain themes.
-   Each theme needs its own directory with a unique name.  
-   Create one (e.g. ``resources/theme/mytheme``) and put your HTML files and any references resources inside this directory. 
+   Each theme needs its own directory with a unique name.
+   Create one (e.g. ``resources/theme/mytheme``) and put your HTML files and any references resources inside this directory.
    You can use subdirectories if you wish, but it is recommended to keep the basic theme HTML files at the top of the theme directory.
 
    You will also need a rules file called ``rules.xml`` inside this directory. If you haven't got one yet, start with an empty one:
-   
+
 .. code-block:: xml
 
        <?xml version="1.0" encoding="UTF-8"?>
@@ -277,7 +277,7 @@ There are several ways to get the theme into Plone:
 
        </rules>
 
-Provided you are running Zope in debug mode (e.g. you start it up with ``bin/instance fg``), changes to the theme and rules should take effect immediately. 
+Provided you are running Zope in debug mode (e.g. you start it up with ``bin/instance fg``), changes to the theme and rules should take effect immediately.
 You can preview or enable the theme through the *Themes* control panel, and then iteratively modify the ``rules.xml`` file or the theme mockup as you wish.
 
 2. Through the web
@@ -286,7 +286,7 @@ You can preview or enable the theme through the *Themes* control panel, and then
 
    See the instructions on using the control panel above for more details.
 
-   Once a theme has been created, you can modify it through the *Theming* control panel. 
+   Once a theme has been created, you can modify it through the *Theming* control panel.
    See above for more details.
 
 3. As a zip file
@@ -295,7 +295,7 @@ You can preview or enable the theme through the *Themes* control panel, and then
 
    See the instructions on using the control panel above for more details.
 
-   In fact, you can create valid theme zip archives by compressing a theme directory on the filesystem using a standard compression tool such as *7-Zip* or *Winzip* (for Windows) or the built-in *Compress* action in the Mac OS X Finder.  
+   In fact, you can create valid theme zip archives by compressing a theme directory on the filesystem using a standard compression tool such as *7-Zip* or *Winzip* (for Windows) or the built-in *Compress* action in the Mac OS X Finder.
    Just make sure you compress exactly one folder that contains all the theme files and the ``rules.xml`` file.
    (Do not compress the contents of the folder directly: when unpacked, the zip file should produce exactly one   folder which in turn contains all the relevant files).
 
@@ -304,7 +304,7 @@ You can preview or enable the theme through the *Themes* control panel, and then
    If you are creating a Python package containing Plone customisations that you intend to install into your site, you can let it register a theme for installation into the site.
 
    To do this, place a directory called e.g. ``theme`` at the top of the package, next to the Zope ``configure.zcml`` file, and add a ``<plone:static />`` declaration to the ``configure.zcml`` file::
-   
+
 
        <configure
            xmlns:plone="http://namespaces.plone.org/plone"
@@ -409,7 +409,7 @@ Extensions to the Diazo theming engine can add support for additional blocks of 
 Rules syntax
 ~~~~~~~~~~~~
 
-The following is a short summary of the Diazo rules syntax. 
+The following is a short summary of the Diazo rules syntax.
 See http://diazo.org for more details and further examples.
 
 Selectors
@@ -418,14 +418,14 @@ Selectors
 Each rule is represented by an XML tag that operates on one or more HTML elements in the content and/or theme.
 The elements to operate on are indicated using attributes of the rules known as *selectors*.
 
-The easiest way to select elements is to use a CSS expression selector, such as ``css:content="#content"`` or ``css:theme="#main .content"``. 
+The easiest way to select elements is to use a CSS expression selector, such as ``css:content="#content"`` or ``css:theme="#main .content"``.
 Any valid CSS 3 expression (including pseudo-selectors like ``:first-child`` may be used.
 
 The standard selectors, ``css:theme`` and ``css:content``, operate on the element(s) that are matched.
 If you want to operate on the children of the matched element instead, use ``css:theme-children="..."`` or ``css:content-children="..."`` instead.
 
 If you cannot construct a suitable CSS 3 expression, you can use XPath expressions such as ``content="/head/link"`` or ``theme="//div[@id='main']"`` (note the lack of a ``css:`` prefix when using XPath expressions).
-The two approaches are equivalent, and you can mix and match freely, but you cannot have e.g. both a ``css:theme`` and a ``theme`` attribute on a single rule. 
+The two approaches are equivalent, and you can mix and match freely, but you cannot have e.g. both a ``css:theme`` and a ``theme`` attribute on a single rule.
 To operate on children of a node selected with an XPath expression, use ``theme-children="..."`` or ``content-children="..."``.
 
 You can learn more about XPath at http://www.w3schools.com/xpath/default.asp.
@@ -437,8 +437,8 @@ By default, every rule is executed, though rules that do not match any elements 
 expression instead, drop the ``css:`` prefix).
 If no elements match the expression, the rule is ignored.
 
-**Tip:** if a ``<replace />`` rule matches an element in the theme but not in the content, the theme node will be dropped (replaced with nothing). 
-If you do not want this behavior and you are unsure if the content will contain the relevant element(s), you can use ``css:if-content`` conditional rule. 
+**Tip:** if a ``<replace />`` rule matches an element in the theme but not in the content, the theme node will be dropped (replaced with nothing).
+If you do not want this behavior and you are unsure if the content will contain the relevant element(s), you can use ``css:if-content`` conditional rule.
 Since this is a common scenario, there is a shortcut: ``css:if-content=""`` means "use the expression from the ``css:content`` attribute".
 
 Similarly, you can construct a condition based on the path of the current request by using an attribute like ``if-path="/news"`` (note that there is no ``css:if-path`` ).
@@ -446,9 +446,9 @@ If the path starts with a slash, it will match from the root of the Plone site.
 If it ends with a slash, it will match to the end of the URL.
 You can set an absolute path by using a leading and a trailing slash.
 
-Finally, you can use arbitrary XPath expressions against any defined variable using an attribute like ``if="$host = 'localhost'"`` . 
+Finally, you can use arbitrary XPath expressions against any defined variable using an attribute like ``if="$host = 'localhost'"`` .
 By default, the variables ``url`` , ``scheme`` , ``host`` and ``base`` are available, representing the
-current URL. 
+current URL.
 Themes may define additional variables in their manifests.
 
 Available rules
@@ -465,8 +465,8 @@ The various rule types are summarized below.
         ...
     </rules>
 
-Wraps a set of rules. 
-Must be used as the root element of the rules file. 
+Wraps a set of rules.
+Must be used as the root element of the rules file.
 Nested ``<rules />`` can be used with a *condition* to apply a single condition to a set of rules.
 
 When used as the root element of the rules file, the various XML namespaces must be declared::
@@ -488,8 +488,8 @@ When used as the root element of the rules file, the various XML namespaces must
     <notheme if="$host = 'admin.example.org'" />
 
 Choose the theme file to be used.
-The ``href`` is a path relative to the rules file. 
-If multiple ``<theme />`` elements are present, at most one may be given without a condition. 
+The ``href`` is a path relative to the rules file.
+If multiple ``<theme />`` elements are present, at most one may be given without a condition.
 The first theme with a condition that is true will be used, with the unconditional theme, if any, used as a fallback.
 
 ``<notheme />`` can be used to specify a condition under which no theme should be used. ``<notheme />`` takes precedence over ``<theme />``.
@@ -537,10 +537,10 @@ Inserts the matched element(s) from the content before or after the matched elem
     <strip css:content="#parent-fieldname-text" />
 
 Remove element(s) from the theme or content.
-Note that unlike most other rules, a ``<drop />`` or ``<strip />`` rule can operate on the ``theme`` or ``content`` , but not both. 
+Note that unlike most other rules, a ``<drop />`` or ``<strip />`` rule can operate on the ``theme`` or ``content`` , but not both.
 ``<drop />`` removes the matched element(s) and any children, whereas ``<strip />`` removes the matched element(s), but leaves any children in place.
 
-``<drop />`` may be given a whitespace-separated list of ``attributes`` to drop. In this case, the matched element(s) themselves will not be removed. 
+``<drop />`` may be given a whitespace-separated list of ``attributes`` to drop. In this case, the matched element(s) themselves will not be removed.
 Use ``attributes="*"`` to drop all attributes.
 
 ``merge`` and ``copy``
@@ -560,7 +560,7 @@ Use ``attributes="*"`` to drop all attributes.
         css:theme="#main"
         />
 
-These rules operate on attributes. ``<merge />`` will add the contents of the named attribute(s) in the theme to the value(s) of any existing attributes with the same name(s) in the content, separated by whitespace. 
+These rules operate on attributes. ``<merge />`` will add the contents of the named attribute(s) in the theme to the value(s) of any existing attributes with the same name(s) in the content, separated by whitespace.
 It is mainly used to merge CSS classes.
 
 ``<copy />`` will copy attributes from the matched element(s) in the content to the matched element(s) in the theme, fully replacing any attributes with the same name that may already be in the theme.
@@ -666,8 +666,8 @@ The following variables are available when constructing these TALES expressions:
 
 See ``plone.app.layout`` for details about the ``@@plone_context_state`` and ``@@plone_portal_state`` views.
 
-Theme parameters are usually integral to a theme, and will therefore be set based on a theme's manifest when a theme is imported or enabled. 
-This is done using the ``[theme:parameters]`` section in the ``manifest.cfg`` file. 
+Theme parameters are usually integral to a theme, and will therefore be set based on a theme's manifest when a theme is imported or enabled.
+This is done using the ``[theme:parameters]`` section in the ``manifest.cfg`` file.
 For example::
 
     [theme]
@@ -681,16 +681,31 @@ For example::
 Theme debugging
 ~~~~~~~~~~~~~~~
 
-When Zope is in development mode (e.g. running in the foreground in a console with ``bin/instance fg``), the theme will be re-compiled on each request.
-In non-development mode, it is compiled once when first accessed, and then only re-compiled the control panel values are changed.
+When Zope is in development mode
+(e.g. running in the foreground in a console with ``bin/instance fg``),
+the theme will be re-compiled on each request
+(unless the environment variable ``DIAZO_ALWAYS_CACHE_RULES`` is set).
 
-Also, in development mode, it is possible to temporarily disable the theme by appending a query string parameter ``diazo.off=1``. 
+To set the environment variable ``DIAZO_ALWAYS_CACHE_RULES``,
+you can use buildout::
+
+
+
+In non-development mode or
+when the environment variable ``DIAZO_ALWAYS_CACHE_RULES`` is set,
+the theme it is compiled once when first accessed,
+and then only re-compiled the control panel values are changed.
+
+Also, in development mode
+(even when the environment variable ``DIAZO_ALWAYS_CACHE_RULES`` is set),
+it is possible to temporarily disable the theme
+by appending a query string parameter ``diazo.off=1``.
 For example::
 
     http://localhost:8080/Plone/some-page?diazo.off=1
 
-Finally, you can get an overlay containing your rules, annotated with how many times the conditions matched both the theme and the document. 
-Green means the condition matched, red means it didn't. 
+Finally, you can get an overlay containing your rules, annotated with how many times the conditions matched both the theme and the document.
+Green means the condition matched, red means it didn't.
 The entire rule tag will be green (i.e. it had an effect) so long as all conditions within are green.
 
 To enable this, append ``diazo.debug=1``. For example::
@@ -790,7 +805,7 @@ There is one important caveat, however. Your stylesheet may include relative URL
 If your stylesheet lives in a resource directory (e.g. it is registered in ``portal_css`` with the id ``++theme++my.theme/css/styles.css``), this will work fine so long as the registry (and Zope) is in debug mode.
 The relative URL will be resolved by the browser to ``++theme++my.theme/images/bg.jpg``.
 
-However, you may find that the relative URL breaks when the registry is put into production mode. 
+However, you may find that the relative URL breaks when the registry is put into production mode.
 This is because resource merging also changes the URL of the stylesheet to be something like::
 
     /plone-site/portal_css/Suburst+Theme/merged-cachekey-1234.css

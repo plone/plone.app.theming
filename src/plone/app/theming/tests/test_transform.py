@@ -4,10 +4,12 @@ from Products.CMFCore.Expression import getExprContext
 from Products.CMFCore.utils import getToolByName
 from diazo.compiler import compile_theme
 from lxml import etree
+from os import environ
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import setRoles
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
+from plone.app.theming.transform import ThemeTransform
 from plone.app.theming.utils import InternalResolver
 from plone.app.theming.utils import PythonResolver
 from plone.app.theming.utils import applyTheme
@@ -88,6 +90,30 @@ class TestCase(unittest.TestCase):
 
         # The theme
         self.assertTrue("This is the theme" in browser.contents)
+
+    def test_develop_theme(self):
+        ''' Check if the rules are developed
+        '''
+        # First we check the status of our environment variables
+        var_name = 'DIAZO_ALWAYS_CACHE_RULES'
+        env_had_var = var_name in environ
+        # and clean it up
+        env_var_backup = environ.pop(var_name, None)
+
+        transform = ThemeTransform(None, None)
+        # This evaluates to True because we set
+        # Globals.DevelopmentMode to True in the test setup
+        self.assertTrue(transform.develop_theme())
+
+        # But we can anyway force the cache
+        environ[var_name] = 'true'
+        self.assertFalse(transform.develop_theme())
+
+        # Then we reset our env variables before leaving
+        if env_had_var:
+            environ[var_name] = env_var_backup
+        else:
+            del environ[var_name]
 
     def test_theme_enabled_resource_directory(self):
 
