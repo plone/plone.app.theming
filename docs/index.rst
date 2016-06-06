@@ -689,11 +689,15 @@ the theme will be re-compiled on each request
 To set the environment variable ``DIAZO_ALWAYS_CACHE_RULES``,
 you can use buildout::
 
-
+    [instance]
+    ...
+    environment-vars +=
+        ...
+        DIAZO_ALWAYS_CACHE_RULES true
 
 In non-development mode or
 when the environment variable ``DIAZO_ALWAYS_CACHE_RULES`` is set,
-the theme it is compiled once when first accessed,
+the theme is compiled once when first accessed,
 and then only re-compiled the control panel values are changed.
 
 Also, in development mode
