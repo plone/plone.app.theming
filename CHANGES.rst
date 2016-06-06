@@ -16,8 +16,8 @@ New:
 
 Fixes:
 
-- *add item here*
-
+- Small fixes to documentaion
+  [ale-rt]
 
 1.2.19 (2016-03-31)
 -------------------
