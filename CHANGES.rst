@@ -4,10 +4,6 @@ Changelog
 1.3.0 (unreleased)
 -------------------
 
-Incompatibilities:
-
-- *add item here*
-
 New:
 
 - Control theme compilation in development mode
