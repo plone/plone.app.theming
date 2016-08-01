@@ -85,7 +85,7 @@ If you deactivate the currently active theme, no Diazo theme will be applied, i.
 
 .. note::
 
-    The *Theming* control panel is never theemd, ensuring that you can always deactivate an errant theme that could render the control panel unusable.
+    The *Theming* control panel is never themed, ensuring that you can always deactivate an errant theme that could render the control panel unusable.
     Thus, you may not see any difference immediately after enabling a theme.
     Simply navigate to another page in the Plone site, though, and you should see the theme applied.
 

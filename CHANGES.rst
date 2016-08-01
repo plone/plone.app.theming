@@ -12,10 +12,10 @@ New features:
 
 - *add item here*
 
-Bug fixes:
+Fixes:
 
-- *add item here*
-
+- Small fix in documentation
+  [staeff]
 
 1.3.0 (2016-06-07)
 ------------------
