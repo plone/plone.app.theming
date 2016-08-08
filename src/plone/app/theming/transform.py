@@ -1,5 +1,6 @@
 import logging
 import Globals
+from os import environ
 
 from lxml import etree
 
@@ -21,6 +22,7 @@ from plone.app.theming.utils import isThemeEnabled
 from plone.app.theming.utils import findContext
 from plone.app.theming.utils import getParser
 from plone.app.theming.zmi import patch_zmi
+
 
 # Disable theming of ZMI
 patch_zmi()
@@ -78,9 +80,20 @@ class ThemeTransform(object):
         self.published = published
         self.request = request
 
+    def develop_theme(self):
+        ''' Check if the theme should be recompiled every time the
+        transform is applied
+        '''
+        if Globals.DevelopmentMode:
+            if environ.get('DIAZO_ALWAYS_CACHE_RULES'):
+                return False
+            else:
+                return True
+        return False
+
     def setupTransform(self, runtrace=False):
         request = self.request
-        DevelopmentMode = Globals.DevelopmentMode
+        DevelopmentMode = self.develop_theme()
 
         # Obtain settings. Do nothing if not found
         settings = self.getSettings()
