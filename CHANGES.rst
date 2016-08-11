@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.8 (unreleased)
+1.1.8 (2016-08-11)
 ------------------
 
 New features:

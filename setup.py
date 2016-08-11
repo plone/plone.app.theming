@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.1.8.dev0'
+version = '1.1.8'
 
 setup(name='plone.app.theming',
       version=version,
