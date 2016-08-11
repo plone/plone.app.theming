@@ -4,6 +4,8 @@ Changelog
 1.1.8 (unreleased)
 ------------------
 
+New features:
+
 - Control theme compilation in development mode
   through the environment variable ``DIAZO_ALWAYS_CACHE_RULES``
   [ale-rt]
