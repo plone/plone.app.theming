@@ -14,6 +14,9 @@ New features:
 
 Fixes:
 
+- Enable unload protection by using pattern class ``pat-formunloadalert`` instead ``enableUnloadProtection``.
+  [thet]
+
 - Small fix in documentation
   [staeff]
 
