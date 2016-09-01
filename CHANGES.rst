@@ -10,7 +10,9 @@ Breaking changes:
 
 New features:
 
-- *add item here*
+- Add Update -button for theming control panel making it possible to
+  reload modified theme manifest without deactivating theme at first.
+  [datakurre]
 
 Fixes:
 
