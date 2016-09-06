@@ -4,14 +4,6 @@ Changelog
 1.3.1 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Fixes:
 
 - Enable unload protection by using pattern class ``pat-formunloadalert`` instead ``enableUnloadProtection``.
