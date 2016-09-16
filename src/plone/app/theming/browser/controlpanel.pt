@@ -166,6 +166,12 @@
                                     i18n:translate=""
                                     class="plone-btn plone-btn-default"
                                     type="submit"
+                                    name="form.button.Enable">Update</button>
+                                <button
+                                    tal:condition="theme/selected"
+                                    i18n:translate=""
+                                    class="plone-btn plone-btn-default"
+                                    type="submit"
                                     name="form.button.Disable">Deactivate</button>
                                 <button
                                     tal:condition="theme/selected"
