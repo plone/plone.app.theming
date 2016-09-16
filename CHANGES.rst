@@ -28,6 +28,10 @@ Fixes:
 - Small fix in documentation
   [staeff]
 
+- Fix issue where theming control panel errored when a packaged
+  theme was overidden with a global resource directory theme
+  [datakurre]
+
 1.3.0 (2016-06-07)
 ------------------
 
