@@ -4,19 +4,11 @@ Changelog
 1.3.2 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
 New features:
 
 - Add Update -button for theming control panel making it possible to
   reload modified theme manifest without deactivating theme at first.
   [datakurre]
-
-Bug fixes:
-
-- *add item here*
 
 
 1.3.1 (2016-09-07)
