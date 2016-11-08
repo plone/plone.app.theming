@@ -14,8 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
-
+- Remove roman monkey patch.
+  [gforcada]
 
 1.3.2 (2016-09-23)
 ------------------
