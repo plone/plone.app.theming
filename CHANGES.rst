@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Make diazo.debug work again when DIAZO_ALWAYS_CACHE_RULES is set.
+  [ale-rt]
 
 
 1.3.3 (2016-12-02)
