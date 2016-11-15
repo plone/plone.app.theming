@@ -14,9 +14,6 @@ New features:
 
 Bug fixes:
 
-- Make diazo.debug work again when DIAZO_ALWAYS_CACHE_RULES is set.
-  [ale-rt]
-
 - Remove roman monkey patch.
   [gforcada]
 

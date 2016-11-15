@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from lxml import etree
-from os import environ
 from plone.app.theming.interfaces import IThemingLayer
 from plone.app.theming.utils import compileThemeTransform
 from plone.app.theming.utils import findContext
@@ -9,14 +8,13 @@ from plone.app.theming.utils import prepareThemeParameters
 from plone.app.theming.utils import theming_policy
 from plone.app.theming.zmi import patch_zmi
 from plone.transformchain.interfaces import ITransform
+from os import environ
 from repoze.xmliter.utils import getHTMLSerializer
 from zope.component import adapter
-from zope.interface import implementer
 from zope.interface import Interface
-
+from zope.interface import implementer
 import Globals
 import logging
-
 
 # Disable theming of ZMI
 patch_zmi()
@@ -37,27 +35,16 @@ class ThemeTransform(object):
         self.published = published
         self.request = request
 
-    def debug_theme(self):
-        ''' Check if the theme should be debugged
-        We will debug the theme
-        when we have a truish diazo.debug parameter in the request
-        '''
-        if not Globals.DevelopmentMode:
-            return False
-        diazo_debug = self.request.get('diazo.debug', '').lower()
-        return diazo_debug in ('1', 'y', 'yes', 't', 'true')
-
     def develop_theme(self):
-        ''' Check if the theme should be recompiled
-        every time the transform is applied
+        ''' Check if the theme should be recompiled every time the
+        transform is applied
         '''
-        if not Globals.DevelopmentMode:
-            return False
-        if self.debug_theme():
-            return True
-        if environ.get('DIAZO_ALWAYS_CACHE_RULES'):
-            return False
-        return True
+        if Globals.DevelopmentMode:
+            if environ.get('DIAZO_ALWAYS_CACHE_RULES'):
+                return False
+            else:
+                return True
+        return False
 
     def setupTransform(self, runtrace=False):
         DevelopmentMode = self.develop_theme()
@@ -140,7 +127,11 @@ class ThemeTransform(object):
             return None
 
         DevelopmentMode = Globals.DevelopmentMode
-        runtrace = self.debug_theme()
+        diazo_debug = self.request.get('diazo.debug', '').lower()
+        runtrace = (
+            DevelopmentMode
+            and diazo_debug in ('1', 'y', 'yes', 't', 'true')
+        )
 
         try:
             etree.clear_error_log()
