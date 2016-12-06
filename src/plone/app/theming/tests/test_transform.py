@@ -1,24 +1,25 @@
 # -*- coding: utf-8 -*-
-from Products.CMFCore.Expression import Expression
-from Products.CMFCore.Expression import getExprContext
-from Products.CMFCore.utils import getToolByName
 from diazo.compiler import compile_theme
 from lxml import etree
 from os import environ
-from plone.app.testing import TEST_USER_ID
 from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
 from plone.app.theming.transform import ThemeTransform
-from plone.app.theming.utils import InternalResolver
-from plone.app.theming.utils import PythonResolver
 from plone.app.theming.utils import applyTheme
 from plone.app.theming.utils import getTheme
+from plone.app.theming.utils import InternalResolver
+from plone.app.theming.utils import PythonResolver
 from plone.app.theming.utils import resolvePythonURL
 from plone.registry.interfaces import IRegistry
 from plone.testing.z2 import Browser
+from Products.CMFCore.Expression import Expression
+from Products.CMFCore.Expression import getExprContext
+from Products.CMFCore.utils import getToolByName
 from urllib2 import HTTPError
 from zope.component import getUtility
+
 import Globals
 import os.path
 import re
@@ -100,7 +101,7 @@ class TestCase(unittest.TestCase):
         # and clean it up
         env_var_backup = environ.pop(var_name, None)
 
-        transform = ThemeTransform(None, None)
+        transform = ThemeTransform(None, {})
         # This evaluates to True because we set
         # Globals.DevelopmentMode to True in the test setup
         self.assertTrue(transform.develop_theme())
@@ -108,6 +109,10 @@ class TestCase(unittest.TestCase):
         # But we can anyway force the cache
         environ[var_name] = 'true'
         self.assertFalse(transform.develop_theme())
+
+        # If we require to debug.diazo the variable will be ignored
+        transform = ThemeTransform(None, {'diazo.debug': '1'})
+        self.assertTrue(transform.develop_theme())
 
         # Then we reset our env variables before leaving
         if env_had_var:
