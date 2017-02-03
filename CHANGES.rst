@@ -17,6 +17,9 @@ Bug fixes:
 - Fix imports from Globals that was removed in Zope4
   [pbauer]
 
+- No longer patch Control Panel internals, as it was removed in Zope4
+  [MatthewWilkes]
+
 
 1.3.4 (2016-12-30)
 ------------------
