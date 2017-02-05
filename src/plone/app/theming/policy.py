@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import Globals
+from App.config import getConfiguration
 from logging import getLogger
 import threading
 import time
@@ -71,9 +71,9 @@ class ThemingPolicy(object):
     def isThemeEnabled(self, settings=None):
         """Whether theming is enabled."""
 
-        # Resolve DevelopmentMode late (i.e. not on import time) since it may
+        # Resolve debug_mode late (i.e. not on import time) since it may
         # be set during import or test setup time
-        DevelopmentMode = Globals.DevelopmentMode
+        debug_mode = getConfiguration().debug_mode
 
         # Disable theming if the response sets a header
         if self.request.response.getHeader('X-Theme-Disabled'):
@@ -81,7 +81,7 @@ class ThemingPolicy(object):
 
         # Check for diazo.off request parameter
         true_vals = ('1', 'y', 'yes', 't', 'true')
-        if (DevelopmentMode and self.request.get(
+        if (debug_mode and self.request.get(
                 'diazo.off', '').lower() in true_vals):
             return False
 

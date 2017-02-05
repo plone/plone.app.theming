@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from App.config import getConfiguration
 from diazo.compiler import compile_theme
 from lxml import etree
 from os import environ
@@ -20,7 +21,6 @@ from Products.CMFCore.utils import getToolByName
 from urllib2 import HTTPError
 from zope.component import getUtility
 
-import Globals
 import os.path
 import re
 import unittest2 as unittest
@@ -32,7 +32,7 @@ class TestCase(unittest.TestCase):
 
     def setUp(self):
         # Enable debug mode always to ensure cache is disabled by default
-        Globals.DevelopmentMode = True
+        getConfiguration().debug_mode = True
 
         self.settings = getUtility(IRegistry).forInterface(IThemeSettings)
 
@@ -49,7 +49,7 @@ class TestCase(unittest.TestCase):
         transaction.commit()
 
     def tearDown(self):
-        Globals.DevelopmentMode = False
+        getConfiguration().debug_mode = False
 
     def evaluate(self, context, expression):
         ec = getExprContext(context, context)
@@ -103,7 +103,7 @@ class TestCase(unittest.TestCase):
 
         transform = ThemeTransform(None, {})
         # This evaluates to True because we set
-        # Globals.DevelopmentMode to True in the test setup
+        # getConfiguration().debug_mode to True in the test setup
         self.assertTrue(transform.develop_theme())
 
         # But we can anyway force the cache
@@ -182,7 +182,7 @@ class TestCase(unittest.TestCase):
         app = self.layer['app']
         portal = self.layer['portal']
 
-        Globals.DevelopmentMode = False
+        getConfiguration().debug_mode = False
 
         self.settings.enabled = True
         import transaction
@@ -441,7 +441,7 @@ class TestCase(unittest.TestCase):
     #     app = self.layer['app']
     #     portal = self.layer['portal']
     #
-    #     Globals.DevelopmentMode = False
+    #     getConfiguration().debug_mode = False
     #     self.settings.enabled = True
     #
     #     # Sneakily seed the cache with dodgy data

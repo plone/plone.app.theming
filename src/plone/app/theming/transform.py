@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from App.config import getConfiguration
 from lxml import etree
 from os import environ
 from plone.app.theming.interfaces import IThemingLayer
@@ -14,7 +15,6 @@ from zope.component import adapter
 from zope.interface import implementer
 from zope.interface import Interface
 
-import Globals
 import logging
 
 
@@ -42,7 +42,7 @@ class ThemeTransform(object):
         We will debug the theme
         when we have a truish diazo.debug parameter in the request
         '''
-        if not Globals.DevelopmentMode:
+        if not getConfiguration().debug_mode:
             return False
         diazo_debug = self.request.get('diazo.debug', '').lower()
         return diazo_debug in ('1', 'y', 'yes', 't', 'true')
@@ -51,7 +51,7 @@ class ThemeTransform(object):
         ''' Check if the theme should be recompiled
         every time the transform is applied
         '''
-        if not Globals.DevelopmentMode:
+        if not getConfiguration().debug_mode:
             return False
         if self.debug_theme():
             return True
@@ -60,7 +60,7 @@ class ThemeTransform(object):
         return True
 
     def setupTransform(self, runtrace=False):
-        DevelopmentMode = self.develop_theme()
+        debug_mode = self.develop_theme()
         policy = theming_policy(self.request)
 
         # Obtain settings. Do nothing if not found
@@ -77,7 +77,7 @@ class ThemeTransform(object):
         # Apply theme
         transform = None
 
-        if not DevelopmentMode:
+        if not debug_mode:
             transform = cache.transform
 
         if transform is None:
@@ -96,7 +96,7 @@ class ThemeTransform(object):
             if transform is None:
                 return None
 
-            if not DevelopmentMode:
+            if not debug_mode:
                 cache.updateTransform(transform)
 
         return transform
@@ -139,7 +139,7 @@ class ThemeTransform(object):
         if result is None:
             return None
 
-        DevelopmentMode = Globals.DevelopmentMode
+        debug_mode = getConfiguration().debug_mode
         runtrace = self.debug_theme()
 
         try:
@@ -155,7 +155,7 @@ class ThemeTransform(object):
                 return None
 
             cache = None
-            if not DevelopmentMode:
+            if not debug_mode:
                 cache = policy.getCache()
 
             parameterExpressions = settings.parameterExpressions or {}
@@ -172,7 +172,7 @@ class ThemeTransform(object):
                 # Transformed worked, swap content with result
                 result.tree = transformed
         except etree.LxmlError as e:
-            if not(DevelopmentMode):
+            if not(debug_mode):
                 raise
             error_log = e.error_log
             runtrace = True

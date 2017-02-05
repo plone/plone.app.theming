@@ -39,9 +39,4 @@ def patch_zmi():
         if dtml:
             dtml.__class__ = NoThemeDTMLFile
 
-    from App.ApplicationManager import ApplicationManager
-    if getattr(ApplicationManager, 'manage_shutdown', False):
-        ApplicationManager.manage_shutdown = disable_theming(
-            ApplicationManager.manage_shutdown)
-
     LOGGER.debug('Patched Zope Management Interface to disable theming.')
