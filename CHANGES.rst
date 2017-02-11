@@ -20,6 +20,8 @@ Bug fixes:
 - No longer patch Control Panel internals, as it was removed in Zope4
   [MatthewWilkes]
 
+- reST syntax, styleguide, wording and line length of the docs
+  [svx]
 
 1.3.4 (2016-12-30)
 ------------------
