@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
-from plone.app.theming.plugins.utils import getPluginSettings
 from plone.app.theming.plugins.utils import getPlugins
+from plone.app.theming.plugins.utils import getPluginSettings
 from plone.app.theming.utils import theming_policy
 from plone.resource.utils import iterDirectoriesOfType
 from plone.resource.utils import queryResourceDirectory

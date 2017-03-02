@@ -4,6 +4,7 @@ from plone.app.theming.utils import theming_policy
 from plone.resource.traversal import ResourceTraverser
 from plone.resource.utils import queryResourceDirectory
 from zExceptions import NotFound
+
 import urllib
 
 

@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 from App.config import getConfiguration
 from logging import getLogger
-import threading
-import time
-
+from plone.app.theming import utils
+from plone.app.theming.interfaces import IThemeSettings
+from plone.app.theming.interfaces import IThemingPolicy
 from plone.registry.interfaces import IRegistry
 from zope.component import queryUtility
 from zope.component.hooks import getSite
 from zope.interface import implementer
 from zope.publisher.interfaces import IRequest
 
-from plone.app.theming.interfaces import IThemingPolicy
-from plone.app.theming.interfaces import IThemeSettings
-from plone.app.theming import utils
+import threading
+import time
+
 
 logger = getLogger(__name__)
 _local_cache = threading.local()

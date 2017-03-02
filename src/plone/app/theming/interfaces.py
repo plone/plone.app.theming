@@ -5,6 +5,7 @@ from zope.i18nmessageid import MessageFactory
 from zope.interface import Attribute
 from zope.interface import Interface
 
+
 _ = MessageFactory(u"plone")
 
 THEME_RESOURCE_NAME = 'theme'

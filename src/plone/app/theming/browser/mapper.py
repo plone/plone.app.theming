@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
-from Products.CMFCore.utils import _getAuthenticatedUser
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.resources import add_bundle_on_request
-from Products.Five.browser.decode import processInputs
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.statusmessages.interfaces import IStatusMessage
 from diazo.utils import quote_param
 from plone.app.theming.interfaces import RULE_FILENAME
 from plone.app.theming.interfaces import THEME_EXTENSIONS
@@ -20,12 +14,19 @@ from plone.memoize import view
 from plone.registry.interfaces import IRegistry
 from plone.resource.interfaces import IWritableResourceDirectory
 from plone.subrequest import subrequest
+from Products.CMFCore.utils import _getAuthenticatedUser
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.resources import add_bundle_on_request
+from Products.Five.browser.decode import processInputs
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.statusmessages.interfaces import IStatusMessage
 from repoze.xmliter.utils import getHTMLSerializer
 from zExceptions import NotFound
 from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.component.hooks import getSite
 from zope.publisher.browser import BrowserView
+
 import lxml.etree
 import lxml.html
 import lxml.html.builder
