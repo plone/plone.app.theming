@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import TEST_USER_PASSWORD
-from plone.app.testing import setRoles
 from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
 from plone.testing.z2 import Browser
+
 import unittest2 as unittest
 
 

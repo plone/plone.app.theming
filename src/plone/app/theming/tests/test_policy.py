@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-import time
-import threading
-import transaction
-import unittest2 as unittest
-
+from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
+from plone.app.theming.utils import theming_policy
 from plone.registry.interfaces import IRegistry
 from zope.component import queryUtility
 
-from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
-from plone.app.theming.utils import theming_policy
+import threading
+import time
+import transaction
+import unittest2 as unittest
 
 
 class TestFunctional(unittest.TestCase):

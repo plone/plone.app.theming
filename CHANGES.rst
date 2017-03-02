@@ -14,7 +14,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Reduce log level of ThemingPolicy cache to 'debug'.
+  [jensens]
 
 
 1.3.5 (2017-02-12)

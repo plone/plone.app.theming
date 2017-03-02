@@ -1,34 +1,36 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.decode import processInputs
-from Products.statusmessages.interfaces import IStatusMessage
-from Products.CMFPlone.interfaces import ILinkSchema
+from plone.app.theming.interfaces import _
 from plone.app.theming.interfaces import DEFAULT_THEME_FILENAME
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.interfaces import RULE_FILENAME
 from plone.app.theming.interfaces import TEMPLATE_THEME
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
-from plone.app.theming.interfaces import _
-from plone.app.theming.plugins.utils import getPluginSettings
 from plone.app.theming.plugins.utils import getPlugins
-from plone.app.theming.utils import theming_policy
+from plone.app.theming.plugins.utils import getPluginSettings
 from plone.app.theming.utils import applyTheme
 from plone.app.theming.utils import createThemeFromTemplate
 from plone.app.theming.utils import extractThemeInfo
 from plone.app.theming.utils import getAvailableThemes
 from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
 from plone.app.theming.utils import getZODBThemes
+from plone.app.theming.utils import theming_policy
 from plone.memoize.instance import memoize
 from plone.registry.interfaces import IRegistry
 from plone.resource.utils import queryResourceDirectory
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.interfaces import ILinkSchema
+from Products.Five.browser.decode import processInputs
+from Products.statusmessages.interfaces import IStatusMessage
 from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.component.hooks import getSite
 from zope.publisher.browser import BrowserView
 from zope.schema.interfaces import IVocabularyFactory
+
 import logging
 import zipfile
+
 
 logger = logging.getLogger('plone.app.theming')
 

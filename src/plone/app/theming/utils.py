@@ -1,39 +1,41 @@
 # -*- coding: utf-8 -*-
 from ConfigParser import SafeConfigParser
+from diazo.compiler import compile_theme
+from diazo.compiler import quote_param
+from lxml import etree
+from plone.app.theming.interfaces import INoRequest
+from plone.app.theming.interfaces import IThemingPolicy
+from plone.app.theming.interfaces import MANIFEST_FORMAT
+from plone.app.theming.interfaces import RULE_FILENAME
+from plone.app.theming.interfaces import THEME_RESOURCE_NAME
+from plone.app.theming.plugins.utils import getPlugins
+from plone.app.theming.plugins.utils import getPluginSettings
+from plone.app.theming.theme import Theme
+from plone.i18n.normalizer.interfaces import IURLNormalizer
+from plone.resource.interfaces import IResourceDirectory
+from plone.resource.manifest import extractManifestFromZipFile
+from plone.resource.manifest import getAllResources
+from plone.resource.manifest import getManifest
+from plone.resource.manifest import getZODBResources
+from plone.resource.manifest import MANIFEST_FILENAME
+from plone.resource.utils import cloneResourceDirectory
+from plone.resource.utils import iterDirectoriesOfType
+from plone.resource.utils import queryResourceDirectory
+from plone.subrequest import subrequest
 from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFPlone.utils import safe_unicode
 from Products.PageTemplates.Expressions import getEngine
 from StringIO import StringIO
-from diazo.compiler import compile_theme
-from diazo.compiler import quote_param
-from lxml import etree
-from plone.app.theming.interfaces import IThemingPolicy
-from plone.app.theming.interfaces import INoRequest
-from plone.app.theming.interfaces import MANIFEST_FORMAT
-from plone.app.theming.interfaces import RULE_FILENAME
-from plone.app.theming.interfaces import THEME_RESOURCE_NAME
-from plone.app.theming.plugins.utils import getPluginSettings
-from plone.app.theming.plugins.utils import getPlugins
-from plone.app.theming.theme import Theme
-from plone.i18n.normalizer.interfaces import IURLNormalizer
-from plone.resource.interfaces import IResourceDirectory
-from plone.resource.manifest import MANIFEST_FILENAME
-from plone.resource.manifest import extractManifestFromZipFile
-from plone.resource.manifest import getManifest
-from plone.resource.manifest import getZODBResources
-from plone.resource.manifest import getAllResources
-from plone.resource.utils import cloneResourceDirectory
-from plone.resource.utils import iterDirectoriesOfType
-from plone.resource.utils import queryResourceDirectory
-from plone.subrequest import subrequest
 from urlparse import urlsplit
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.globalrequest import getRequest
 from zope.interface import implementer
+
 import logging
 import pkg_resources
+
 
 LOGGER = logging.getLogger('plone.app.theming')
 

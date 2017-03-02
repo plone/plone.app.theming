@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-from Products.Five.browser import BrowserView
 from plone.resource.directory import PersistentResourceDirectory
+from Products.Five.browser import BrowserView
+
 import json
+
 
 class FileUploadView(BrowserView):
     """
