@@ -22,6 +22,10 @@ Bug fixes:
 
 Bug fixes:
 
+- Let the pattern configuration of the thememapper be in JSON format.
+  Fixes problems of thememapper working together with latest patternslib (2.1.0).
+  [thet]
+
 - Reduce log level of ThemingPolicy cache to 'debug'.
   [jensens]
 

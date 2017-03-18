@@ -27,6 +27,7 @@ from zope.component import getUtility
 from zope.component.hooks import getSite
 from zope.publisher.browser import BrowserView
 
+import json
 import lxml.etree
 import lxml.html
 import lxml.html.builder
@@ -116,6 +117,34 @@ class ThemeMapper(BrowserView):
                 break
 
         return True
+
+    def get_thememapper_config(self):
+        config = {
+            'themeUrl': self.resourceUrl,
+            'editable': self.editable,
+            'lessUrl': self.lessUrl,
+            'lessVariables': self.lessVariables,
+            'filemanagerConfig': {
+                'actionUrl': '{0}/@@plone.resourceeditor.filemanager-actions'.format(  # noqa
+                    self.themeBaseUrl
+                ),
+            },
+            'mockupUrl': '{0}/@@theming-controlpanel-mapper-getframe?path=/{1}/{2}&theme=off'.format(  # noqa
+                self.themeBaseUrl,
+                self.themeBasePathEncoded,
+                self.defaultThemeFile
+            ),
+            'unthemedUrl': '{0}/@@theming-controlpanel-mapper-getframe?path=/&diazo.off=1'.format(  # noqa
+                self.themeBaseUrl
+            ),
+            'previewUrl': '{0}/++theme++{1}/@@theming-controlpanel-mapper-getframe?path=/&theme=apply&forms=disable&links=replace&title=Preview:+{2}'.format(  # noqa
+                self.portalUrl,
+                self.name,
+                self.title
+            ),
+            'helpUrl': 'http://docs.diazo.org/en/latest'
+        }
+        return json.dumps(config)
 
     def authorize(self):
         authenticator = getMultiAdapter((self.context, self.request),
