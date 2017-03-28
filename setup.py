@@ -5,7 +5,7 @@ from setuptools import setup
 import os
 
 
-version = '1.3.6.dev0'
+version = '1.3.6'
 
 longdescription = open("README.rst").read()
 longdescription += "\n\n"
