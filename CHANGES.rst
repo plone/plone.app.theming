@@ -4,14 +4,6 @@ Changelog
 1.3.6 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Reduce log level of ThemingPolicy cache to 'debug'.
