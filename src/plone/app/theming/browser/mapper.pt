@@ -104,15 +104,7 @@
 
           <section id="content-core">
             <input tal:replace="structure context/@@authenticator/authenticator" />
-            <div class="pat-thememapper" data-pat-thememapper='themeUrl: ${view/resourceUrl};
-                      editable: ${view/editable};
-                      lessUrl: ${view/lessUrl};
-                      lessVariables: ${view/lessVariables};
-                      filemanagerConfig:{"actionUrl":"${view/themeBaseUrl}/@@plone.resourceeditor.filemanager-actions"};
-                      mockupUrl:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/${view/themeBasePathEncoded}/${view/defaultThemeFile}&amp;theme=off;
-                      unthemedUrl:${view/themeBaseUrl}/@@theming-controlpanel-mapper-getframe?path=/&amp;diazo.off=1;
-                      previewUrl:${view/portalUrl}/++theme++${view/name}/@@theming-controlpanel-mapper-getframe?path=/&amp;theme=apply&amp;forms=disable&amp;links=replace&amp;title=Preview:+${view/title};
-                      helpUrl:http://docs.diazo.org/en/latest'></div>
+            <div class="pat-thememapper" data-pat-thememapper='${view/get_thememapper_config}'></div>
           </section>
         </article>
       </div>

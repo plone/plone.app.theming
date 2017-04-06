@@ -1,12 +1,14 @@
 Changelog
 =========
 
-1.3.7 (unreleased)
-------------------
+1.4 (unreleased)
+----------------
 
 Breaking changes:
 
-- *add item here*
+- Let the pattern configuration of the thememapper be in JSON format.
+  Fixes problems of thememapper working together with latest patternslib (2.1.0).
+  [thet]
 
 New features:
 
@@ -14,7 +16,8 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Fix thememapper pattern handling of buttons (via mockup update).
+  [thet]
 
 
 1.3.6 (2017-03-28)
