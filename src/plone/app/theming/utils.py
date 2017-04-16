@@ -216,6 +216,9 @@ def createExpressionContext(context, request):
     expressions.
     """
 
+    if not context:
+        context = getPortal()
+
     contextState = queryMultiAdapter(
         (context, request), name=u"plone_context_state")
     portalState = queryMultiAdapter(
