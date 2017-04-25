@@ -17,6 +17,7 @@ New features:
 Bug fixes:
 
 - Fix thememapper pattern handling of buttons (via mockup update).
+  Update thememapper bundle.
   [thet]
 
 
