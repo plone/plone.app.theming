@@ -5,6 +5,8 @@
 *.graffle
 .installed.cfg
 .mr.developer.cfg
+.idea/
+.plone/
 bin/
 develop-eggs/
 extras/

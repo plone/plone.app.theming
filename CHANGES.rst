@@ -10,7 +10,8 @@ Breaking changes:
 
 New features:
 
-- *add item here*
+- Add webpack-based development environment for thememapper patter
+  [datakurre]
 
 Bug fixes:
 
