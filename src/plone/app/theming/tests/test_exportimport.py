@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from plone.app.theming.testing import THEMING_INTEGRATION_TESTING
 
-import unittest2 as unittest
+import unittest
 
 
 class TestExportImport(unittest.TestCase):
