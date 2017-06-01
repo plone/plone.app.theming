@@ -23,7 +23,7 @@ from zope.component import getUtility
 
 import os.path
 import re
-import unittest2 as unittest
+import unittest
 
 
 class TestCase(unittest.TestCase):

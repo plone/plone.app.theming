@@ -7,7 +7,7 @@ from zope.component import queryUtility
 import threading
 import time
 import transaction
-import unittest2 as unittest
+import unittest
 
 
 class TestFunctional(unittest.TestCase):
