@@ -4,14 +4,6 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Remove unittest2 dependency
