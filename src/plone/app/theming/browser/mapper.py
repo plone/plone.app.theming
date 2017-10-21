@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
 from diazo.utils import quote_param
+from plone.app.theming._compat import parse_qs
+from plone.app.theming._compat import urljoin
+from plone.app.theming._compat import urlparse
 from plone.app.theming.interfaces import RULE_FILENAME
 from plone.app.theming.interfaces import THEME_EXTENSIONS
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
@@ -33,7 +36,6 @@ import lxml.html
 import lxml.html.builder
 import os.path
 import urllib
-import urlparse
 
 
 class ThemeMapper(BrowserView):
@@ -300,13 +302,13 @@ class ThemeMapper(BrowserView):
             tree = lxml.html.fromstring(result)
 
             def encodeUrl(orig):
-                origUrl = urlparse.urlparse(orig)
+                origUrl = urlparse(orig)
                 newPath = origUrl.path
-                newQuery = urlparse.parse_qs(origUrl.query)
+                newQuery = parse_qs(origUrl.query)
 
                 # relative?
                 if not origUrl.netloc:
-                    newPath = urlparse.urljoin(
+                    newPath = urljoin(
                         path.rstrip("/") + "/", newPath.lstrip("/"))
                 elif not orig.lower().startswith(portal_url.lower()):
                     # Not an internal URL - ignore
