@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-from ConfigParser import SafeConfigParser
 from diazo.compiler import compile_theme
 from diazo.compiler import quote_param
 from lxml import etree
+from plone.app.theming._compat import SafeConfigParser
+from plone.app.theming._compat import StringIO
+from plone.app.theming._compat import urlsplit
 from plone.app.theming.interfaces import INoRequest
 from plone.app.theming.interfaces import IThemingPolicy
 from plone.app.theming.interfaces import MANIFEST_FORMAT
@@ -26,8 +28,6 @@ from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFPlone.utils import safe_unicode
 from Products.PageTemplates.Expressions import getEngine
-from StringIO import StringIO
-from urlparse import urlsplit
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.globalrequest import getRequest

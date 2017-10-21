@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ConfigParser import SafeConfigParser
+from plone.app.theming._compat import SafeConfigParser
 from plone.app.theming.interfaces import IThemePlugin
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.memoize.ram import cache
