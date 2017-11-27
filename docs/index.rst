@@ -75,10 +75,7 @@ with the contents (children) of the element with the HTML id ``content`` in the 
 
 When this theme is applied, the result will look very much like the static HTML file ``theme.html`` (and its associated CSS, JavaScript and image files), except the placeholder identified by the node in the theme with id ``main`` will be filled by Plone's main content area.
 
-Plone ships with an example theme called, appropriately, *Example theme*,
-which uses the venerable `Twitter Bootstrap <http://twitter.github.com/bootstrap/>`_ to build a simple yet functional theme exposing most of Plone's core functionality.
-
-Look at this example - in particular the ``rules.xml`` file - to learn more about how Diazo themes work.
+Plone ships with a theme called *Barceloneta Theme*. Look at this example - in particular the ``rules.xml`` file - to learn more about how Diazo themes work.
 
 Using the control panel
 =======================
