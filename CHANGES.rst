@@ -14,6 +14,7 @@ New features:
 
 Bug fixes:
 
+- remove mention of non-existent Example theme [tkimnguyen]
 - *add item here*
 
 
