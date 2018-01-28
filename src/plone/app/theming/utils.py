@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from ConfigParser import SafeConfigParser
 from diazo.compiler import compile_theme
 from diazo.compiler import quote_param
 from lxml import etree
@@ -26,8 +25,9 @@ from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFPlone.utils import safe_unicode
 from Products.PageTemplates.Expressions import getEngine
-from StringIO import StringIO
-from urlparse import urlsplit
+from six import StringIO
+from six.moves.configparser import SafeConfigParser
+from six.moves.urllib.parse import urlsplit
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.globalrequest import getRequest
@@ -35,7 +35,7 @@ from zope.interface import implementer
 
 import logging
 import pkg_resources
-
+import six
 
 LOGGER = logging.getLogger('plone.app.theming')
 
@@ -494,7 +494,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
         raise KeyError("Theme {0:s} not found".format(baseOn))
 
     themeName = getUtility(IURLNormalizer).normalize(title)
-    if isinstance(themeName, unicode):
+    if isinstance(themeName, six.text_type):
         themeName = themeName.encode('utf-8')
 
     resources = getOrCreatePersistentResourceDirectory()

@@ -3,9 +3,8 @@ from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.utils import theming_policy
 from plone.resource.traversal import ResourceTraverser
 from plone.resource.utils import queryResourceDirectory
+from six.moves import urllib
 from zExceptions import NotFound
-
-import urllib
 
 
 class ThemeTraverser(ResourceTraverser):
@@ -28,7 +27,7 @@ class ThemeTraverser(ResourceTraverser):
             name = self.current_theme()
 
         # Note: also fixes possible unicode problems
-        name = urllib.quote(name)
+        name = urllib.parse.quote(name)
 
         res = queryResourceDirectory(self.name, name)
         if res is not None:

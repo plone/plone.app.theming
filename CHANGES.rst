@@ -14,8 +14,11 @@ New features:
 
 Bug fixes:
 
-- remove mention of non-existent Example theme [tkimnguyen]
-- *add item here*
+- remove mention of non-existent Example theme
+  [tkimnguyen]
+
+- Prepare for Python 2 / 3 compatibility
+  [pbauer, ale-rt]
 
 
 2.0.1 (2017-07-03)
