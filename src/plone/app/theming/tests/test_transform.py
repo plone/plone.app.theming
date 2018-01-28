@@ -18,7 +18,7 @@ from plone.testing.z2 import Browser
 from Products.CMFCore.Expression import Expression
 from Products.CMFCore.Expression import getExprContext
 from Products.CMFCore.utils import getToolByName
-from urllib2 import HTTPError
+from six.moves.urllib.error import HTTPError
 from zope.component import getUtility
 
 import os.path
@@ -656,7 +656,7 @@ class TestCase(unittest.TestCase):
         error = None
         try:
             browser.open('{0:s}/404_page'.format(portal.absolute_url()))
-        except HTTPError, e:
+        except HTTPError as e:
             error = e
         self.assertEqual(error.code, 404)
 
@@ -684,7 +684,7 @@ class TestCase(unittest.TestCase):
         error = None
         try:
             browser.open('{0:s}/404_page'.format(portal.absolute_url()))
-        except HTTPError, e:
+        except HTTPError as e:
             error = e
         self.assertEqual(error.code, 404)
 
@@ -737,7 +737,7 @@ class TestCase(unittest.TestCase):
                     portal['subfolder'].absolute_url()
                 )
             )
-        except HTTPError, e:
+        except HTTPError as e:
             error = e
         self.assertEqual(error.code, 404)
 
@@ -784,7 +784,7 @@ class TestCase(unittest.TestCase):
 
     #     try:
     #         browser.open('{0:s}/404_page'.format(portal.absolute_url()))
-    #     except HTTPError, e:
+    #     except HTTPError as e:
     #         error = e
     #     self.assertEqual(error.code, 404)
 

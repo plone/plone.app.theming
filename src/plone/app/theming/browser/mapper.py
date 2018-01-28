@@ -32,8 +32,9 @@ import lxml.etree
 import lxml.html
 import lxml.html.builder
 import os.path
-import urllib
-import urlparse
+from six.moves import urllib
+
+import six
 
 
 class ThemeMapper(BrowserView):
@@ -73,7 +74,7 @@ class ThemeMapper(BrowserView):
             THEME_RESOURCE_NAME,
             self.name
         )
-        self.themeBasePathEncoded = urllib.quote_plus(self.themeBasePath)
+        self.themeBasePathEncoded = urllib.parse.quote_plus(self.themeBasePath)
         self.themeBaseUrl = '/'.join([self.portalUrl, self.themeBasePath])
 
         try:
@@ -276,7 +277,7 @@ class ThemeMapper(BrowserView):
                 transform = compileThemeTransform(
                     themeInfo.rules, themeInfo.absolutePrefix,
                     settings.readNetwork, themeInfo.parameterExpressions or {})
-            except lxml.etree.XMLSyntaxError, e:
+            except lxml.etree.XMLSyntaxError as e:
                 return self.theme_error_template(error=e.msg)
 
             params = prepareThemeParameters(
@@ -300,13 +301,13 @@ class ThemeMapper(BrowserView):
             tree = lxml.html.fromstring(result)
 
             def encodeUrl(orig):
-                origUrl = urlparse.urlparse(orig)
+                origUrl = urllib.parse.urlparse(orig)
                 newPath = origUrl.path
-                newQuery = urlparse.parse_qs(origUrl.query)
+                newQuery = urllib.parse.parse_qs(origUrl.query)
 
                 # relative?
                 if not origUrl.netloc:
-                    newPath = urlparse.urljoin(
+                    newPath = urllib.parse.urljoin(
                         path.rstrip("/") + "/", newPath.lstrip("/"))
                 elif not orig.lower().startswith(portal_url.lower()):
                     # Not an internal URL - ignore
@@ -319,12 +320,12 @@ class ThemeMapper(BrowserView):
                 if forms:
                     newQuery['forms'] = forms
                 if title:
-                    if isinstance(title, unicode):
+                    if isinstance(title, six.text_type):
                         newQuery['title'] = title.encode('utf-8', 'replace')
                     else:
                         newQuery['title'] = title
 
-                return self.request.getURL() + '?' + urllib.urlencode(newQuery)
+                return self.request.getURL() + '?' + urllib.parse.urlencode(newQuery)
 
             if title:
                 titleElement = tree.cssselect("html head title")

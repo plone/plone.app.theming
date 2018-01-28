@@ -231,7 +231,7 @@ class ThemingControlpanel(BrowserView):
 
             try:
                 themeZip = zipfile.ZipFile(themeArchive)
-            except (zipfile.BadZipfile, zipfile.LargeZipFile,):
+            except (zipfile.BadZipfile, zipfile.LargeZipFile):
                 logger.exception("Could not read zip file")
                 self.errors['themeArchive'] = _(
                     'error_invalid_zip',
@@ -242,7 +242,7 @@ class ThemingControlpanel(BrowserView):
 
                 try:
                     themeData = extractThemeInfo(themeZip, checkRules=False)
-                except (ValueError, KeyError,), e:
+                except (ValueError, KeyError) as e:
                     logger.warn(str(e))
                     self.errors['themeArchive'] = _(
                         'error_no_rules_file',

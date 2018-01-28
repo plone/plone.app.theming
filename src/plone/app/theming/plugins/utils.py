@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from ConfigParser import SafeConfigParser
 from plone.app.theming.interfaces import IThemePlugin
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.memoize.ram import cache
 from plone.resource.manifest import MANIFEST_FILENAME
+from six.moves.configparser import SafeConfigParser
 from zope.component import getUtilitiesFor
 
 
