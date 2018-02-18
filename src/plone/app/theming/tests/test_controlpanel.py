@@ -51,3 +51,38 @@ class TestControlPanel(unittest.TestCase):
 
     #     self.assertTrue('foobar' in [t.__name__ for t in getZODBThemes()])
     #     self.assertTrue(getTheme('foobar') is not None)
+
+
+    def test_upload_theme_file_nodata(self):
+        self.browser.addHeader('Accept', 'application/json')
+        self.browser.post(
+            self.portal.absolute_url() + '/portal_resources/themeFileUpload',
+            '',
+        )
+        self.assertIn('Status: 200 Ok', str(self.browser.headers))
+        self.assertIn(
+            '{"failure": "error"}',
+            str(self.browser.contents)
+        )
+
+    def test_upload_theme_file_withdata(self):
+        self.browser.addHeader('Accept', 'application/json')
+        self.browser.post(
+            self.portal.absolute_url() + '/portal_resources/themeFileUpload',
+            """
+---blah---
+Content-Disposition: form-data; name="file"; filename="Screen Shot 2018-02-16 at 3.08.15 pm.png"
+Content-Type: image/png
+
+
+---blah---           
+            """,
+# Bug in testbrowser prevents this working
+#            content_type='multipart/form-data; boundary=---blah---'
+
+        )
+        self.assertIn('Status: 200 Ok', str(self.browser.headers))
+        self.assertIn(
+            '{"failure": "error"}', # TODO: Should be {'success':'create'}
+            str(self.browser.contents)
+        )
