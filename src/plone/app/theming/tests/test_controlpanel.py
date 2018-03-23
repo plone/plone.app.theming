@@ -81,8 +81,7 @@ Content-Type: image/png
 #            content_type='multipart/form-data; boundary=---blah---'
 
         )
-        self.assertIn('Status: 200
-                      ', str(self.browser.headers))
+        self.assertIn('Status: 200', str(self.browser.headers))
         self.assertIn(
             '{"failure": "error"}', # TODO: Should be {'success':'create'}
             str(self.browser.contents)
