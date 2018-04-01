@@ -70,7 +70,7 @@ class TestFunctional(unittest.TestCase):
     def test_getCacheStorage(self):
         request = self.layer['request']
         policy = theming_policy(request)
-        self.assertEqual(policy.getCacheStorage().keys(), ['mtime'])
+        self.assertEqual(list(policy.getCacheStorage().keys()), ['mtime'])
         cache = policy.getCache()
         storage = policy.getCacheStorage()
         self.assertEqual(
@@ -91,7 +91,7 @@ class TestFunctional(unittest.TestCase):
         policy.set_theme(u'barceloneta', 'faketheme')
         self.assertEqual(policy.get_theme(), 'faketheme')
         policy.invalidateCache()
-        self.assertEqual(policy.getCacheStorage().keys(), ['mtime'])
+        self.assertEqual(list(policy.getCacheStorage().keys()), ['mtime'])
         theme2 = policy.get_theme()
         # different objects but both are barceloneta
         self.assertEqual(theme.title, theme2.title)

@@ -119,6 +119,16 @@ class ThemeTransform(object):
         except (AttributeError, TypeError, etree.ParseError):
             return None
 
+    def transformBytes(self, result, encoding):
+        try:
+            result = result.decode(encoding)
+        except UnicodeDecodeError:
+            # This is probably a file or an image
+            # FIXME probably we do not event want to apply
+            # this transform for files and images
+            pass
+        return self.transformIterable([result], encoding)
+
     def transformString(self, result, encoding):
         return self.transformIterable([result], encoding)
 
