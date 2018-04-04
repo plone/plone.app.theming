@@ -4,14 +4,6 @@ Changelog
 2.0.3 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - Added a failing (5.1) test for fileuploads in the theme editor that breaks when plone.rest is installed. Fix is in https://github.com/plone/plone.rest/issues/59
