@@ -433,7 +433,7 @@ class ThemingControlpanel(BrowserView):
             override = False
 
             # Is there more than one theme with the same name?
-            if len(filter(lambda x: x.__name__ == theme.__name__, self.availableThemes)) > 1:
+            if len([x for x in self.availableThemes if x.__name__ == theme.__name__]) > 1:
                 # Then we make sure we're using the TTW version, not the filesystem version.
                 try:
                     theme = filter(lambda x: x.__name__ == theme.__name__, self.zodbThemes)[0]

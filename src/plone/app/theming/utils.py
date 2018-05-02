@@ -37,6 +37,7 @@ import logging
 import pkg_resources
 import six
 
+
 LOGGER = logging.getLogger('plone.app.theming')
 
 
@@ -316,9 +317,9 @@ def getTheme(name, manifest=None, resources=None):
     production_js = manifest.get('production-js', None) or ''
     tinymce_content_css = manifest.get('tinymce-content-css', None) or ''
     tinymce_styles_css = manifest.get('tinymce-styles-css', None) or ''
-    if isinstance(rules, str):
+    if isinstance(rules, six.binary_type):
         rules = rules.decode('utf-8')
-    if isinstance(prefix, str):
+    if isinstance(prefix, six.binary_type):
         prefix = prefix.decode('utf-8')
     return Theme(
         name,
@@ -450,13 +451,13 @@ def applyTheme(theme):
 
     else:
 
-        if isinstance(theme.rules, str):
+        if not isinstance(theme.rules, six.text_type):
             theme.rules = theme.rules.decode('utf-8')
 
-        if isinstance(theme.absolutePrefix, str):
+        if not isinstance(theme.absolutePrefix, six.text_type):
             theme.absolutePrefix = theme.absolutePrefix.decode('utf-8')
 
-        if isinstance(theme.__name__, str):
+        if not isinstance(theme.__name__, six.text_type):
             theme.__name__ = theme.__name__.decode('utf-8')
 
         settings.currentTheme = theme.__name__
