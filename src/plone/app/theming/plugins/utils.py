@@ -6,6 +6,8 @@ from plone.resource.manifest import MANIFEST_FILENAME
 from six.moves.configparser import SafeConfigParser
 from zope.component import getUtilitiesFor
 
+import six
+
 
 def pluginsCacheKey(fun):
     return len(list(getUtilitiesFor(IThemePlugin)))
@@ -75,7 +77,10 @@ def getPluginSettings(themeDirectory, plugins=None):
         parser = SafeConfigParser()
         fp = themeDirectory.openFile(MANIFEST_FILENAME)
         try:
-            parser.readfp(fp)
+            if six.PY2:
+                parser.readfp(fp)
+            else:
+                parser.read_string(fp.read().decode())
             for section in parser.sections():
                 manifestContents[section] = {}
                 for name, value in parser.items(section):
