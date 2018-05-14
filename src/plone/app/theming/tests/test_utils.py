@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from plone.app.theming.testing import THEMING_INTEGRATION_TESTING
+from plone.app.theming.utils import extractThemeInfo
 
+import os.path
 import unittest
+import zipfile
 
 
 class TestIntegration(unittest.TestCase):
@@ -300,18 +303,14 @@ class TestIntegration(unittest.TestCase):
 
 class TestUnit(unittest.TestCase):
 
-    def test_extractThemeInfo_default_rules(self):
-        import zipfile
-        import os.path
-        from plone.app.theming.utils import extractThemeInfo
+    def _open_zipfile(self, filename):
+        ''' Helper that opens a zip file in our test directory
+        '''
+        path = os.path.join(os.path.dirname(__file__), 'zipfiles', filename)
+        return open(path, 'rb')
 
-        with open(
-            os.path.join(
-                os.path.dirname(__file__),
-                'zipfiles',
-                'default_rules.zip'
-            )
-        ) as fp:
+    def test_extractThemeInfo_default_rules(self):
+        with self._open_zipfile('default_rules.zip') as fp:
             zf = zipfile.ZipFile(fp)
 
             theme = extractThemeInfo(zf)
@@ -321,16 +320,7 @@ class TestUnit(unittest.TestCase):
             self.assertEqual(theme.absolutePrefix, '/++theme++default_rules')
 
     def test_extractThemeInfo_manifest_rules(self):
-        import zipfile
-        import os.path
-        from plone.app.theming.utils import extractThemeInfo
-
-        with open(
-            os.path.join(
-                os.path.dirname(__file__),
-                'zipfiles',
-                'manifest_rules.zip')
-        ) as fp:
+        with self._open_zipfile('manifest_rules.zip') as fp:
             zf = zipfile.ZipFile(fp)
 
             theme = extractThemeInfo(zf)
@@ -341,16 +331,7 @@ class TestUnit(unittest.TestCase):
             self.assertEqual(theme.title, 'Test theme')
 
     def test_extractThemeInfo_manifest_prefix(self):
-        import zipfile
-        import os.path
-        from plone.app.theming.utils import extractThemeInfo
-
-        with open(
-            os.path.join(
-                os.path.dirname(__file__),
-                'zipfiles',
-                'manifest_prefix.zip')
-        ) as fp:
+        with self._open_zipfile('manifest_prefix.zip') as fp:
             zf = zipfile.ZipFile(fp)
 
             theme = extractThemeInfo(zf)
@@ -364,16 +345,7 @@ class TestUnit(unittest.TestCase):
             self.assertEqual(theme.title,  'Test theme')
 
     def test_extractThemeInfo_manifest_default_rules(self):
-        import zipfile
-        import os.path
-        from plone.app.theming.utils import extractThemeInfo
-
-        with open(
-            os.path.join(
-                os.path.dirname(__file__),
-                'zipfiles',
-                'manifest_default_rules.zip')
-        ) as fp:
+        with self._open_zipfile('manifest_default_rules.zip') as fp:
             zf = zipfile.ZipFile(fp)
 
             theme = extractThemeInfo(zf)
@@ -390,16 +362,7 @@ class TestUnit(unittest.TestCase):
             self.assertEqual(theme.title,  'Test theme')
 
     def test_extractThemeInfo_manifest_preview(self):
-        import zipfile
-        import os.path
-        from plone.app.theming.utils import extractThemeInfo
-
-        with open(
-            os.path.join(
-                os.path.dirname(__file__),
-                'zipfiles',
-                'manifest_preview.zip')
-        ) as fp:
+        with self._open_zipfile('manifest_preview.zip') as fp:
             zf = zipfile.ZipFile(fp)
 
             theme = extractThemeInfo(zf)
@@ -417,16 +380,7 @@ class TestUnit(unittest.TestCase):
             self.assertEqual(theme.preview,  'preview.png')
 
     def test_extractThemeInfo_manifest_default_rules_override(self):
-        import zipfile
-        import os.path
-        from plone.app.theming.utils import extractThemeInfo
-
-        with open(
-            os.path.join(
-                os.path.dirname(__file__),
-                'zipfiles',
-                'manifest_default_rules_override.zip')
-        ) as fp:
+        with self._open_zipfile('manifest_default_rules_override.zip') as fp:
             zf = zipfile.ZipFile(fp)
 
             theme = extractThemeInfo(zf)
@@ -440,44 +394,17 @@ class TestUnit(unittest.TestCase):
             self.assertEqual(theme.title,  'Test theme')
 
     def test_extractThemeInfo_nodir(self):
-        import zipfile
-        import os.path
-        from plone.app.theming.utils import extractThemeInfo
-
-        with open(
-            os.path.join(
-                os.path.dirname(__file__),
-                'zipfiles',
-                'nodir.zip')
-        ) as fp:
+        with self._open_zipfile('nodir.zip') as fp:
             zf = zipfile.ZipFile(fp)
             self.assertRaises(ValueError, extractThemeInfo, zf)
 
     def test_extractThemeInfo_multiple_dir(self):
-        import zipfile
-        import os.path
-        from plone.app.theming.utils import extractThemeInfo
-
-        with open(
-            os.path.join(
-                os.path.dirname(__file__),
-                'zipfiles',
-                'multiple_dir.zip')
-        ) as fp:
+        with self._open_zipfile('multiple_dir.zip') as fp:
             zf = zipfile.ZipFile(fp)
             self.assertRaises(ValueError, extractThemeInfo, zf)
 
     def test_extractThemeInfo_ignores_dotfiles_resource_forks(self):
-        import zipfile
-        import os.path
-        from plone.app.theming.utils import extractThemeInfo
-
-        with open(
-            os.path.join(
-                os.path.dirname(__file__),
-                'zipfiles',
-                'ignores_dotfiles_resource_forks.zip')
-        ) as fp:
+        with self._open_zipfile('ignores_dotfiles_resource_forks.zip') as fp:
             zf = zipfile.ZipFile(fp)
 
             theme = extractThemeInfo(zf)
@@ -487,16 +414,7 @@ class TestUnit(unittest.TestCase):
             self.assertEqual(theme.absolutePrefix, '/++theme++default_rules')
 
     def test_extractThemeInfo_with_subdirectories(self):
-        import zipfile
-        import os.path
-        from plone.app.theming.utils import extractThemeInfo
-
-        with open(
-            os.path.join(
-                os.path.dirname(__file__),
-                'zipfiles',
-                'subdirectories.zip')
-        ) as fp:
+        with self._open_zipfile('subdirectories.zip') as fp:
             zf = zipfile.ZipFile(fp)
 
             theme = extractThemeInfo(zf)
