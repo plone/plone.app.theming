@@ -25,7 +25,6 @@ from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFPlone.utils import safe_unicode
 from Products.PageTemplates.Expressions import getEngine
-from six import StringIO
 from six.moves.configparser import SafeConfigParser
 from six.moves.urllib.parse import urlsplit
 from zope.component import getUtility
@@ -495,7 +494,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
         raise KeyError("Theme {0:s} not found".format(baseOn))
 
     themeName = getUtility(IURLNormalizer).normalize(title)
-    if isinstance(themeName, six.text_type):
+    if six.PY2 and isinstance(themeName, six.text_type):
         themeName = themeName.encode('utf-8')
 
     resources = getOrCreatePersistentResourceDirectory()
@@ -508,18 +507,29 @@ def createThemeFromTemplate(title, description, baseOn='template'):
     manifest = SafeConfigParser()
 
     if MANIFEST_FILENAME in target:
-        fp = target.openFile(MANIFEST_FILENAME)
-        try:
-            manifest.readfp(fp)
-        finally:
-            fp.close()
+        if six.PY2:
+            fp = target.openFile(MANIFEST_FILENAME)
+            try:
+                manifest.readfp(fp)
+            finally:
+                fp.close()
+
+        else:
+            # configparser can only read/write text
+            # but in py3 plone.resource objects are BytesIO objects.
+            fp = target.openFile(MANIFEST_FILENAME)
+            try:
+                data = fp.read()
+            finally:
+                fp.close()
+            manifest.read_string(safe_unicode(data))
 
     if not manifest.has_section('theme'):
         manifest.add_section('theme')
 
-    if not isinstance(title, str):
+    if six.PY2 and isinstance(title, six.text_type):
         title = title.encode('utf-8')
-    if not isinstance(description, str):
+    if six.PY2 and isinstance(description, six.text_type):
         description = description.encode('utf-8')
     manifest.set('theme', 'title', title)
     manifest.set('theme', 'description', description)
@@ -549,10 +559,22 @@ def createThemeFromTemplate(title, description, baseOn='template'):
             val = val.replace(template_prefix, '++%s++%s/' % (THEME_RESOURCE_NAME, themeName))
             manifest.set('theme', var_path, val)
 
-    manifestContents = StringIO()
-    manifest.write(manifestContents)
-    target.writeFile(MANIFEST_FILENAME, manifestContents)
+    if six.PY2:
+        manifestContents = six.StringIO()
+        manifest.write(manifestContents)
 
+    else:
+        # in py3 plone.resource is BytesIO objects
+        # but configparser can only deal with text (StringIO).
+        # So we need to do this stupid dance to write manifest.cfg
+        tempfile = six.StringIO()
+        manifest.write(tempfile)
+        tempfile.seek(0)
+        data = tempfile.read()
+        tempfile.close()
+        manifestContents = six.BytesIO(data.encode('utf8'))
+
+    target.writeFile(MANIFEST_FILENAME, manifestContents)
     return themeName
 
 

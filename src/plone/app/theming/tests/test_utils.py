@@ -59,14 +59,9 @@ class TestIntegration(unittest.TestCase):
         import os.path
         from plone.app.theming.utils import getOrCreatePersistentResourceDirectory  # noqa
         from plone.app.theming.utils import getZODBThemes
-
-        with open(
-            os.path.join(
-                os.path.dirname(__file__),
-                'zipfiles',
-                'default_rules.zip'
-            )
-        ) as fp:
+        path = os.path.join(
+            os.path.dirname(__file__), 'zipfiles', 'default_rules.zip')
+        with open(path, 'rb') as fp:
             zf = zipfile.ZipFile(fp)
 
             themeContainer = getOrCreatePersistentResourceDirectory()

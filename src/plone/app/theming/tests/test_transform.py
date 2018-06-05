@@ -433,7 +433,7 @@ class TestCase(unittest.TestCase):
         browser = Browser(app)
         browser.open(portal.absolute_url() + '/document_icon.png')
         # The theme
-        self.assertFalse("This is the theme" in browser.contents)
+        self.assertFalse(b"This is the theme" in browser.contents)
 
     # XXX: This relies on a _v_ attribute; the test is too brittle
     #
