@@ -30,7 +30,7 @@ class TestControlPanel(unittest.TestCase):
             self.browser.getControl(
                 name='__ac_password'
             ).value = TEST_USER_PASSWORD
-            self.browser.getControl(name='submit').click()
+            self.browser.getControl('Log in').click()
         finally:
             self.browser.handleErrors = handleErrors
 
