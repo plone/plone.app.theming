@@ -21,6 +21,7 @@ from Products.Five.browser.decode import processInputs
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from repoze.xmliter.utils import getHTMLSerializer
+from six.moves import urllib
 from zExceptions import NotFound
 from zope.component import getMultiAdapter
 from zope.component import getUtility
@@ -32,8 +33,6 @@ import lxml.etree
 import lxml.html
 import lxml.html.builder
 import os.path
-from six.moves import urllib
-
 import six
 
 
