@@ -4,14 +4,6 @@ Changelog
 2.0.4 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
-New features:
-
-- *add item here*
-
 Bug fixes:
 
 - More Python 3 fixes [ale-rt, pbauer]
