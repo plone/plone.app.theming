@@ -14,6 +14,9 @@ New features:
 
 Bug fixes:
 
+- Explizit load permissions for controlpanel.
+  [jensens]
+
 - Fix tests for merged plone.login. 
   [jensens]
 
