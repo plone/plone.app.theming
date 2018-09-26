@@ -1,6 +1,24 @@
 Changelog
 =========
 
+
+3.0.0 (unreleased)
+------------------
+
+Breaking changes:
+
+- *add item here*
+
+New features:
+
+- Recompiled resource bundles with latest mockup
+  [sunew]
+
+Bug fixes:
+
+- *add item here*
+
+
 2.0.4 (unreleased)
 ------------------
 
@@ -17,7 +35,7 @@ Bug fixes:
 - Explizit load permissions for controlpanel.
   [jensens]
 
-- Fix tests for merged plone.login. 
+- Fix tests for merged plone.login.
   [jensens]
 
 - More Python 3 fixes [ale-rt, pbauer]
