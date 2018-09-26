@@ -16,7 +16,11 @@ New features:
 
 Bug fixes:
 
-- *add item here*
+- Explizit load permissions for controlpanel.
+  [jensens]
+
+- Fix tests for merged plone.login.
+  [jensens]
 
 
 2.0.4 (unreleased)
@@ -31,12 +35,6 @@ New features:
 - *add item here*
 
 Bug fixes:
-
-- Explizit load permissions for controlpanel.
-  [jensens]
-
-- Fix tests for merged plone.login.
-  [jensens]
 
 - More Python 3 fixes [ale-rt, pbauer]
 
