@@ -40,6 +40,6 @@
        <value key="enabled">False</value>
        <value key="jscompilation">++resource++plone.app.theming/thememapper-compiled.min.js</value>
        <value key="csscompilation">++resource++plone.app.theming/thememapper-compiled.css</value>
-       <value key="last_compilation">2015-02-13 00:00:00</value>
+       <value key="last_compilation">2018-09-26 16:00:00</value>
     </records>
 </registry>
