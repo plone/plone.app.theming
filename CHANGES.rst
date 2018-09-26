@@ -10,7 +10,8 @@ Breaking changes:
 
 New features:
 
-- *add item here*
+- Recompiled resource bundles with latest mockup
+  [sunew]
 
 Bug fixes:
 
