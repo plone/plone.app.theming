@@ -4,18 +4,10 @@ Changelog
 2.0.5 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
 New features:
 
 - Recompiled resource bundles with latest mockup
   [sunew]
-
-Bug fixes:
-
-- *add item here*
 
 
 2.0.4 (2018-06-19)
