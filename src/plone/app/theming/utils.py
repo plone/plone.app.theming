@@ -138,7 +138,9 @@ class InternalResolver(etree.Resolver):
         else:
             # e.g. charset=utf-8
             encoding = encoding.split('=', 1)[1].strip()
-        result = result.decode(encoding).encode('ascii', 'xmlcharrefreplace')
+        result = result.decode(encoding)
+        if six.PY2:
+            result = result.encode('ascii', 'xmlcharrefreplace')
 
         if content_type in ('text/javascript', 'application/x-javascript'):
             result = ''.join([
