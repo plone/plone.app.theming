@@ -30,11 +30,12 @@ setup(
     long_description=longdescription,
     classifiers=[
         "Framework :: Plone",
-        "Framework :: Plone :: 5.1",
         "Framework :: Plone :: 5.2",
         "License :: OSI Approved :: GNU General Public License (GPL)",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     keywords='plone diazo xdv deliverance theme transform xslt',
