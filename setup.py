@@ -41,7 +41,7 @@ setup(
     keywords='plone diazo xdv deliverance theme transform xslt',
     author='Martin Aspeli and Laurence Rowe',
     author_email='optilude@gmail.com',
-    url='https://pypi.python.org/pypi/plone.app.theming',
+    url='https://pypi.org/project/plone.app.theming',
     license='GPL',
     packages=find_packages('src'),
     package_dir={'': 'src'},
