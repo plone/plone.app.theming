@@ -2,6 +2,5 @@
     <version>1001</version>
     <dependencies>
         <dependency>profile-plone.app.registry:default</dependency>
-        <dependency>profile-plone.resource:default</dependency>
     </dependencies>
 </metadata>
