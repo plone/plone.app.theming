@@ -55,6 +55,7 @@ setup(
         'lxml>=2.2.4',
         'plone.app.registry>=1.0a2',
         'plone.resourceeditor>=2.0.0.dev',
+        'plone.staticresources',
         'plone.subrequest',
         'plone.transformchain',
         'repoze.xmliter>=0.3',
