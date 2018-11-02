@@ -5,10 +5,6 @@ Changelog
 3.0.0 (unreleased)
 ------------------
 
-Breaking changes:
-
-- *add item here*
-
 New features:
 
 - Recompiled resource bundles with latest mockup
