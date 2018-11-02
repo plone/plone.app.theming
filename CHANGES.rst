@@ -2,7 +2,7 @@ Changelog
 =========
 
 
-3.0.0 (unreleased)
+3.0.0 (2018-11-02)
 ------------------
 
 New features:
