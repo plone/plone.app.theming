@@ -14,7 +14,6 @@
 
     <include package="plone.resource" />
     <include package="plone.resourceeditor" />
-    <include package="five.globalrequest" />
     <include package="plone.transformchain" />
     <include package="plone.app.registry" />
     <include package="diazo" file="diazo-debug.zcml" />
