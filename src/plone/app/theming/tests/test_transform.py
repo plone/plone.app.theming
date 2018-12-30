@@ -236,14 +236,11 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         # We'll upload the theme files to the Plone site root
-        rules_contents = open(
-            os.path.join(os.path.split(__file__)[0], 'localrules.xml')
-        )
-        theme_contents = open(
-            os.path.join(os.path.split(__file__)[0], 'theme.html')
-        )
-        portal.manage_addDTMLMethod('theme.html', file=theme_contents)
-        portal.manage_addDTMLMethod('rules.xml', file=rules_contents)
+        here = os.path.split(__file__)[0]
+        with open(os.path.join(here, 'localrules.xml')) as rules_contents:
+            portal.manage_addDTMLMethod('rules.xml', file=rules_contents)
+        with open(os.path.join(here, 'theme.html')) as theme_contents:
+            portal.manage_addDTMLMethod('theme.html', file=theme_contents)
 
         # These paths should be relative to the Plone site root
         self.settings.rules = u'/rules.xml'
@@ -268,14 +265,11 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         # We'll upload the theme files to the Plone site root
-        rules_contents = open(
-            os.path.join(os.path.dirname(__file__), 'localrules.xml')
-        )
-        theme_contents = open(
-            os.path.join(os.path.dirname(__file__), 'theme.html')
-        )
-        portal.manage_addDTMLMethod('theme.html', file=theme_contents)
-        portal.manage_addDTMLMethod('rules.xml', file=rules_contents)
+        here = os.path.split(__file__)[0]
+        with open(os.path.join(here, 'localrules.xml')) as rules_contents:
+            portal.manage_addDTMLMethod('rules.xml', file=rules_contents)
+        with open(os.path.join(here, 'theme.html')) as theme_contents:
+            portal.manage_addDTMLMethod('theme.html', file=theme_contents)
 
         # These paths should be relative to the Plone site root
         self.settings.rules = u'/rules.xml'
@@ -781,22 +775,21 @@ class TestCase(unittest.TestCase):
 
         setRoles(portal, TEST_USER_ID, ('Manager',))
 
-        one = open(os.path.join(os.path.split(__file__)[0], 'one.html'))
-        two = open(os.path.join(os.path.split(__file__)[0], 'two.html'))
-
         # Create some test content in the portal root
-        portal.manage_addDTMLMethod('alpha', file=one)
-        portal.manage_addDTMLMethod('beta', file=two)
-
-        one.seek(0)
-        two.seek(0)
+        here = os.path.split(__file__)[0]
+        with open(os.path.join(here, 'one.html')) as one:
+            portal.manage_addDTMLMethod('alpha', file=one)
+        with open(os.path.join(here, 'two.html')) as two:
+            portal.manage_addDTMLMethod('beta', file=two)
 
         # Create some different content in a subfolder
         portal.invokeFactory('Folder', 'subfolder')
         portal.portal_workflow.doActionFor(portal.subfolder, 'publish')
 
-        portal['subfolder'].manage_addDTMLMethod('alpha', file=two)
-        portal['subfolder'].manage_addDTMLMethod('beta', file=one)
+        with open(os.path.join(here, 'one.html')) as one:
+            portal['subfolder'].manage_addDTMLMethod('beta', file=one)
+        with open(os.path.join(here, 'two.html')) as two:
+            portal['subfolder'].manage_addDTMLMethod('alpha', file=two)
 
         # Set up transformation
         self.settings.rules = u'python://plone.app.theming/tests/includes.xml'

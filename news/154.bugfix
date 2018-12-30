@@ -1,0 +1,2 @@
+Fixed ResourceWarnings for unclosed files in tests.
+[maurits]
