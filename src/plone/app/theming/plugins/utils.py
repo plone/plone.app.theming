@@ -3,10 +3,19 @@ from plone.app.theming.interfaces import IThemePlugin
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.memoize.ram import cache
 from plone.resource.manifest import MANIFEST_FILENAME
-from six.moves.configparser import SafeConfigParser
 from zope.component import getUtilitiesFor
 
 import six
+
+try:
+    # Python 3.  Watch out for DeprecationWarning:
+    # The SafeConfigParser class has been renamed to ConfigParser in
+    # Python 3.2. This alias will be removed in future versions.
+    # Use ConfigParser directly instead.
+    from configparser import ConfigParser as SafeConfigParser
+except ImportError:
+    # Python 2
+    from ConfigParser import SafeConfigParser
 
 
 def pluginsCacheKey(fun):

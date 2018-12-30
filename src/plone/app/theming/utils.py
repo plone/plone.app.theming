@@ -25,7 +25,6 @@ from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFPlone.utils import safe_unicode
 from Products.PageTemplates.Expressions import getEngine
-from six.moves.configparser import SafeConfigParser
 from six.moves.urllib.parse import urlsplit
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
@@ -35,6 +34,16 @@ from zope.interface import implementer
 import logging
 import pkg_resources
 import six
+
+try:
+    # Python 3.  Watch out for DeprecationWarning:
+    # The SafeConfigParser class has been renamed to ConfigParser in
+    # Python 3.2. This alias will be removed in future versions.
+    # Use ConfigParser directly instead.
+    from configparser import ConfigParser as SafeConfigParser
+except ImportError:
+    # Python 2
+    from ConfigParser import SafeConfigParser
 
 
 LOGGER = logging.getLogger('plone.app.theming')

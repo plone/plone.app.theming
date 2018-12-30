@@ -1,0 +1,2 @@
+Fixed DeprecationWarning about SafeConfigParser class on Python 3.
+[maurits]
