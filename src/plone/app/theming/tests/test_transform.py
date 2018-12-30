@@ -23,6 +23,7 @@ from zope.component import getUtility
 
 import os.path
 import re
+import transaction
 import unittest
 
 
@@ -45,7 +46,6 @@ class TestCase(unittest.TestCase):
             'requestParam': 'request/useother | string:off',
         }
 
-        import transaction
         transaction.commit()
 
     def tearDown(self):
@@ -77,7 +77,6 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -140,7 +139,6 @@ class TestCase(unittest.TestCase):
             self.settings.doctype,
             u"<!DOCTYPE html>"
         )
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -163,7 +161,6 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -185,7 +182,6 @@ class TestCase(unittest.TestCase):
         getConfiguration().debug_mode = False
 
         self.settings.enabled = True
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -205,7 +201,6 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -254,7 +249,6 @@ class TestCase(unittest.TestCase):
         self.settings.rules = u'/rules.xml'
         self.settings.enabled = True
 
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -290,7 +284,6 @@ class TestCase(unittest.TestCase):
         from Products.SiteAccess import VirtualHostMonster
         VirtualHostMonster.manage_addVirtualHostMonster(app, 'virtual_hosting')
 
-        import transaction
         transaction.commit()
 
         portalURL = portal.absolute_url()
@@ -321,7 +314,6 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = True
         self.settings.absolutePrefix = None
 
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -336,7 +328,6 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = True
         self.settings.absolutePrefix = u'http://example.com'
 
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -354,7 +345,6 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = True
         self.settings.absolutePrefix = u'/foo'
 
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -372,7 +362,6 @@ class TestCase(unittest.TestCase):
         from Products.SiteAccess import VirtualHostMonster
         VirtualHostMonster.manage_addVirtualHostMonster(app, 'virtual_hosting')
 
-        import transaction
         transaction.commit()
 
         self.settings.enabled = True
@@ -387,7 +376,6 @@ class TestCase(unittest.TestCase):
             "/_vh_fizz/_vh_buzz/_vh_fizzbuzz/".format(prefix, suffix)
         )
 
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -406,7 +394,6 @@ class TestCase(unittest.TestCase):
         self.settings.enabled = True
         self.settings.rules = u"invalid"
 
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -427,7 +414,6 @@ class TestCase(unittest.TestCase):
 
         self.settings.enabled = True
 
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -456,7 +442,7 @@ class TestCase(unittest.TestCase):
     #         self.settings, portal.absolute_url()
     #     ).updateTransform(transform)
     #
-    #     import transaction; transaction.commit()
+    #     transaction.commit()
     #
     #     browser = Browser(app)
     #     browser.open(portal.absolute_url())
@@ -475,7 +461,7 @@ class TestCase(unittest.TestCase):
     #     self.settings.enabled = False
     #     self.settings.enabled = True
     #
-    #     import transaction; transaction.commit()
+    #     transaction.commit()
     #
     #     browser.open(portal.absolute_url())
     #
@@ -524,7 +510,7 @@ class TestCase(unittest.TestCase):
     #     # First try without the theme
     #     self.settings.enabled = False
 
-    #     import transaction; transaction.commit()
+    #     transaction.commit()
 
     #     browser = Browser(app)
     #     browser.open(portal.absolute_url())
@@ -540,7 +526,7 @@ class TestCase(unittest.TestCase):
     #     # Now enable the theme and try again
     #     self.settings.enabled = True
 
-    #     import transaction; transaction.commit()
+    #     transaction.commit()
 
     #     browser = Browser(app)
     #     browser.open(portal.absolute_url())
@@ -565,7 +551,6 @@ class TestCase(unittest.TestCase):
 
         self.settings.enabled = True
 
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -604,7 +589,6 @@ class TestCase(unittest.TestCase):
             'requestParam': 'request/someParam | string:off',
         }
 
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -648,7 +632,6 @@ class TestCase(unittest.TestCase):
 
         self.settings.enabled = True
 
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -676,7 +659,6 @@ class TestCase(unittest.TestCase):
             'requestParam': 'request/someParam | string:off',
         }
 
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -725,7 +707,6 @@ class TestCase(unittest.TestCase):
             'navigation_root_id': 'python:portal_state.navigation_root().getId()'  # noqa
         }
 
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -778,7 +759,7 @@ class TestCase(unittest.TestCase):
 
     #     self.settings.enabled = True
 
-    #     import transaction; transaction.commit()
+    #     transaction.commit()
 
     #     browser = Browser(app)
 
@@ -821,7 +802,6 @@ class TestCase(unittest.TestCase):
         self.settings.rules = u'python://plone.app.theming/tests/includes.xml'
         self.settings.enabled = True
 
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -847,7 +827,6 @@ class TestCase(unittest.TestCase):
 
         self.settings.enabled = True
         self.settings.rules = u'/++theme++plone.app.theming.tests/css-js.xml'
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -870,7 +849,6 @@ class TestCase(unittest.TestCase):
 
         self.settings.enabled = True
         self.settings.rules = u'/++theme++plone.app.theming.tests/nonascii.xml'
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
@@ -885,7 +863,6 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        import transaction
         transaction.commit()
 
         browser = Browser(app)
