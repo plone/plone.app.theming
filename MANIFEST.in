@@ -5,3 +5,6 @@ recursive-include resources *
 recursive-include src *
 
 global-exclude *pyc
+include pyproject.toml
+recursive-exclude news *
+exclude news
