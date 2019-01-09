@@ -51,7 +51,7 @@
     <div tal:replace="structure provider:plone.toolbar" />
 
     <aside id="global_statusmessage">
-      <div class="portalMessage info">
+      <div class="portalMessage info" role="status">
         <strong i18n:translate="">Note</strong>
         <span tal:omit-tag="" i18n:translate="description_notheme_controlpanel">
           Please note that this control panel page will never be themed.

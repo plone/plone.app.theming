@@ -69,7 +69,8 @@
     <aside id="global_statusmessage">
       <tal:message tal:content="structure provider:plone.globalstatusmessage"/>
       <div class="portalMessage warning"
-        tal:condition="python:view.active and view.editable">
+           role="status"
+           tal:condition="python:view.active and view.editable">
         <strong i18n:translate="">Warning</strong>
         <span tal:omit-tag="" i18n:translate="theming_mapper_warning_live">
             This theme is currently active. Any changes made will be immediately
@@ -77,7 +78,8 @@
         </span>
       </div>
       <div class="portalMessage warning"
-        tal:condition="not: view/editable">
+           role="status"
+           tal:condition="not: view/editable">
         <strong i18n:translate="">Warning</strong>
         <span tal:omit-tag="" i18n:translate="theming_mapper_warning_cannot_edit">
             This is a built-in theme, and cannot be edited.
