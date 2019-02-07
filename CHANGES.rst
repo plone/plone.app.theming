@@ -9,7 +9,6 @@ Changelog
 
 .. towncrier release notes start
 
-
 3.0.1 (2018-12-11)
 ------------------
 
@@ -25,7 +24,7 @@ Breaking changes:
 
 New features:
 
-- Recompiled resource bundles with latest mockup
+- Recompiled resource bundles with latest mockup.
   [sunew]
 
 Bug fixes:

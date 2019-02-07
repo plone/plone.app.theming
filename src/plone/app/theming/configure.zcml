@@ -6,13 +6,7 @@
     xmlns:plone="http://namespaces.plone.org/plone"
     i18n_domain="plone">
 
-<!--
-    <i18n:registerTranslations directory="locales"/>
--->
-
-    <include package="plone.resource" file="meta.zcml" />
-
-    <include package="plone.resource" />
+    <include package="plone.staticresources" />
     <include package="plone.resourceeditor" />
     <include package="plone.transformchain" />
     <include package="plone.app.registry" />

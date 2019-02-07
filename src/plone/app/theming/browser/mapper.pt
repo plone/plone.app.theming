@@ -25,10 +25,10 @@
           tal:attributes="href string:${portal_url}/++plone++static/plone-compiled.css" />
     <link rel="stylesheet/less" type="text/css"
           tal:condition="view/development"
-          tal:attributes="href string:${portal_url}/++resource++plone.app.theming/thememapper.less" />
+          tal:attributes="href string:${portal_url}/++plone++static/thememapper.less" />
     <link rel="stylesheet"
           tal:condition="not: view/development"
-          tal:attributes="href string:${portal_url}/++resource++plone.app.theming/thememapper-compiled.css" />
+          tal:attributes="href string:${portal_url}/++plone++static/thememapper-compiled.css" />
 
     <tal:comment replace="nothing">
         Various slots where you can insert elements in the header from a template.
