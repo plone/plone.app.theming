@@ -42,7 +42,7 @@ def sortDependencies(plugins):
         n, p = queue.pop()
         yield (n, p)
 
-        for (nw, pw), deps in waiting.items():
+        for (nw, pw), deps in [x for x in waiting.items()]:
             if n in deps:
                 deps.remove(n)
 
