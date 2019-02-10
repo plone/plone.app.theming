@@ -638,7 +638,10 @@ class TestCase(unittest.TestCase):
         self.assertEqual(error.code, 404)
 
         # The theme
-        self.assertTrue("This is the theme" in browser.contents)
+        self.assertTrue(
+            "This is the theme" in browser.contents,
+            msg=browser.contents,
+        )
 
     def test_theme_params_on_404(self):
         app = self.layer['app']
