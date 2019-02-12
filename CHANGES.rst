@@ -9,6 +9,27 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.0 (2019-02-13)
+------------------
+
+Breaking changes:
+
+
+- - Factor out all static resources into plone.staticresources as part of PLIP
+  1653. [thet, sunew] (#149)
+
+
+Bug fixes:
+
+
+- a11y: Added role attribute for portalMessage [nzambello] (#151)
+- Fixed DeprecationWarning about SafeConfigParser class on Python 3. [maurits]
+  (#152)
+- Fixed ResourceWarnings for unclosed files in tests. [maurits] (#154)
+- Fixed "RuntimeError: dictionary changed size during iteration" [jensens]
+  (#156)
+
+
 3.0.1 (2018-12-11)
 ------------------
 

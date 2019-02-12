@@ -1,2 +1,0 @@
-- Factor out all static resources into plone.staticresources as part of PLIP 1653.
-  [thet, sunew]
