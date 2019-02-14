@@ -29,6 +29,7 @@ from zope.publisher.browser import BrowserView
 from zope.schema.interfaces import IVocabularyFactory
 
 import logging
+import six
 import zipfile
 
 
@@ -203,7 +204,9 @@ class ThemingControlpanel(BrowserView):
 
                 # Theme base settings
                 if themeBase is not None:
-                    self.pskin.default_skin = themeBase.encode('utf-8')
+                    if six.PY2:
+                        themeBase = themeBase.encode('utf-8')
+                    self.pskin.default_skin = themeBase
                 if markSpecialLinks is not None:
                     self.mark_special_links = markSpecialLinks
                 if extLinksOpenInNewWindow is not None:
