@@ -9,6 +9,16 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.1 (2019-02-14)
+------------------
+
+Bug fixes:
+
+
+- Fix skinname-encoding in py3 (fixes
+  https://github.com/plone/Products.CMFPlone/issues/2748) [pbauer] (#2748)
+
+
 4.0.0 (2019-02-13)
 ------------------
 
