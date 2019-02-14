@@ -1,0 +1,1 @@
+Fix skinname-encoding in py3 (fixes https://github.com/plone/Products.CMFPlone/issues/2748) [pbauer]
