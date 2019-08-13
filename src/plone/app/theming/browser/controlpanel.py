@@ -439,11 +439,11 @@ class ThemingControlpanel(BrowserView):
             if len([x for x in self.availableThemes if x.__name__ == theme.__name__]) > 1:
                 # Then we make sure we're using the TTW version, not the filesystem version.
                 try:
-                    theme = filter(lambda x: x.__name__ == theme.__name__, self.zodbThemes)[0]
+                    theme = list(filter(lambda x: x.__name__ == theme.__name__, self.zodbThemes))[0]
                     override = True
                 # Or when TTW is not available, the first available filesystem version.
                 except IndexError:
-                    theme = filter(lambda x: x.__name__ == theme.__name__, self.availableThemes)[0]
+                    theme = list(filter(lambda x: x.__name__ == theme.__name__, self.availableThemes))[0]
 
             previewUrl = "++resource++plone.app.theming/defaultPreview.png"
             if theme.preview:
