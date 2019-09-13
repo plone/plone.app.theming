@@ -25,7 +25,7 @@ Bug fixes:
 Breaking changes:
 
 
-- - Factor out all static resources into plone.staticresources as part of PLIP
+- Factor out all static resources into plone.staticresources as part of PLIP
   1653. [thet, sunew] (#149)
 
 
