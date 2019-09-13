@@ -9,6 +9,17 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.2 (2019-09-13)
+------------------
+
+Bug fixes:
+
+
+- Fixed Python3 TypeError: 'filter' object is not subscriptable.
+  This happened when overriding a filesystem theme with a TTW version
+  [fredvd] (#160)
+
+
 4.0.1 (2019-02-14)
 ------------------
 

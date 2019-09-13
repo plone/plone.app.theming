@@ -1,3 +1,0 @@
-Fixed Python3 TypeError: 'filter' object is not subscriptable.
-This happened when overriding a filesystem theme with a TTW version
-[fredvd]
