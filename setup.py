@@ -29,6 +29,7 @@ setup(
     description="Integrates the Diazo theming engine with Plone",
     long_description=longdescription,
     classifiers=[
+        "Development Status :: 5 - Production/Stable",
         "Framework :: Plone",
         "Framework :: Plone :: 5.2",
         "License :: OSI Approved :: GNU General Public License (GPL)",
