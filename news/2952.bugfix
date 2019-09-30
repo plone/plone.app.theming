@@ -1,0 +1,2 @@
+Load zcml of ``plone.resource`` for our use of the ``plone:static`` directive.
+[maurits]
