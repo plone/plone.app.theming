@@ -9,6 +9,16 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.3 (2019-10-12)
+------------------
+
+Bug fixes:
+
+
+- Load zcml of ``plone.resource`` for our use of the ``plone:static`` directive.
+  [maurits] (#2952)
+
+
 4.0.2 (2019-09-13)
 ------------------
 
