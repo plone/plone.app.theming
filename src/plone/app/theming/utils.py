@@ -23,6 +23,7 @@ from plone.resource.utils import queryResourceDirectory
 from plone.subrequest import subrequest
 from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.interfaces import ISiteRoot
+from Products.CMFPlone.utils import safe_encode
 from Products.CMFPlone.utils import safe_unicode
 from Products.PageTemplates.Expressions import getEngine
 from six.moves.urllib.parse import urlsplit
@@ -570,20 +571,15 @@ def createThemeFromTemplate(title, description, baseOn='template'):
             val = val.replace(template_prefix, '++%s++%s/' % (THEME_RESOURCE_NAME, themeName))
             manifest.set('theme', var_path, val)
 
-    if six.PY2:
-        manifestContents = six.StringIO()
-        manifest.write(manifestContents)
-
-    else:
-        # in py3 plone.resource is BytesIO objects
-        # but configparser can only deal with text (StringIO).
-        # So we need to do this stupid dance to write manifest.cfg
-        tempfile = six.StringIO()
-        manifest.write(tempfile)
-        tempfile.seek(0)
-        data = tempfile.read()
-        tempfile.close()
-        manifestContents = six.BytesIO(data.encode('utf8'))
+    # plone.resource uses OFS.File which is a BytesIO objects
+    # but configparser can only deal with text (StringIO).
+    # So we need to do this stupid dance to write manifest.cfg
+    tempfile = six.StringIO()
+    manifest.write(tempfile)
+    tempfile.seek(0)
+    data = tempfile.read()
+    tempfile.close()
+    manifestContents = six.BytesIO(safe_encode(data))
 
     target.writeFile(MANIFEST_FILENAME, manifestContents)
     return themeName
