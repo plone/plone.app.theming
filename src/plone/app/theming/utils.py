@@ -23,6 +23,7 @@ from plone.resource.utils import queryResourceDirectory
 from plone.subrequest import subrequest
 from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.interfaces import ISiteRoot
+from Products.CMFPlone.utils import safe_encode
 from Products.CMFPlone.utils import safe_unicode
 from Products.PageTemplates.Expressions import getEngine
 from six.moves.urllib.parse import urlsplit
@@ -578,7 +579,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
     tempfile.seek(0)
     data = tempfile.read()
     tempfile.close()
-    manifestContents = six.BytesIO(data.encode('utf8'))
+    manifestContents = six.BytesIO(safe_encode(data))
 
     target.writeFile(MANIFEST_FILENAME, manifestContents)
     return themeName
