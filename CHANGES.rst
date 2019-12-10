@@ -9,6 +9,16 @@ Changelog
 
 .. towncrier release notes start
 
+4.0.4 (2019-12-11)
+------------------
+
+Bug fixes:
+
+
+- Fix creating a new theme ttw in py2 with Zope 4.1.3.
+  [pbauer] (#166)
+
+
 4.0.3 (2019-10-12)
 ------------------
 
