@@ -20,7 +20,6 @@ from plone.registry.interfaces import IRegistry
 from plone.resource.utils import queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.interfaces import ILinkSchema
-from Products.Five.browser.decode import processInputs
 from Products.statusmessages.interfaces import IStatusMessage
 from zope.component import getMultiAdapter
 from zope.component import getUtility
@@ -106,7 +105,6 @@ class ThemingControlpanel(BrowserView):
 
     def update(self):
         # XXX: complexity too high: refactoring needed
-        processInputs(self.request)
         self._setup()
         self.errors = {}
         form = self.request.form
