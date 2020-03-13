@@ -1,3 +1,0 @@
-Do not call ``processInputs``.
-It is not needed since Zope 4, and not existing in Zope 5.
-[maurits]
