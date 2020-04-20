@@ -139,7 +139,7 @@ class IThemeSettings(Interface):
         ),
         value_type=schema.TextLine(),
         required=False,
-        default=[u"127.0.0.1"],
+        default=["127.0.0.1"],
     )
 
     parameterExpressions = schema.Dict(
@@ -169,6 +169,24 @@ class IThemeSettings(Interface):
         ),
         required=False,
         default="",
+    )
+
+    custom_css = schema.SourceText(
+        title=_(
+            u'Custom CSS',
+        ),
+        description=_(
+            'help_custom_css',
+            u'Define your own custom CSS in the field below. This is a good '
+            u'place for quick customizations of things like colors and the '
+            u'toolbar. Definitions here will override previously defined CSS '
+            u'of Plone. Please use this only for small customizations, as it '
+            u'is hard keep track of changes here. For bigger changes you most '
+            u'likely want to customize a full theme and make your changes '
+            u'there.',
+        ),
+        default=u"",
+        required=False,
     )
 
 

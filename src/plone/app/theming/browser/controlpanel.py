@@ -19,6 +19,7 @@ from plone.memoize.instance import memoize
 from plone.registry.interfaces import IRegistry
 from plone.resource.utils import queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from Products.CMFPlone.interfaces import ILinkSchema
 from Products.statusmessages.interfaces import IStatusMessage
 from zope.component import getMultiAdapter
@@ -187,6 +188,8 @@ class ThemingControlpanel(BrowserView):
             markSpecialLinks = form.get('markSpecialLinks', None)
             extLinksOpenInNewWindow = form.get('extLinksOpenInNewWindow', None)
 
+            custom_css = form.get('custom_css', '')
+
             if not self.errors:
                 # Trigger onDisabled() on plugins if theme was active
                 # previously and rules were changed
@@ -197,7 +200,9 @@ class ThemingControlpanel(BrowserView):
                 self.theme_settings.rules = rules
                 self.theme_settings.absolutePrefix = prefix
                 self.theme_settings.parameterExpressions = parameterExpressions
-                self.theme_settings.hostnameBlacklist = hostnameBlacklist
+                self.theme_settings.hostnameBlacklist = [
+                    str(bl) for bl in hostnameBlacklist]
+                self.theme_settings.custom_css = str(custom_css)
                 self.theme_settings.doctype = doctype
 
                 # Theme base settings
