@@ -51,6 +51,11 @@ class ThemingControlpanel(BrowserView):
         """
         return getSite().absolute_url()
 
+    @property
+    def hostname_blacklist(self):
+        hostname_blacklist = self.request.get('hostnameBlacklist', [])
+        return [host.decode() for host in hostname_blacklist]
+
     def __call__(self):
         self.pskin = getToolByName(self.context, 'portal_skins')
 
@@ -165,8 +170,6 @@ class ThemingControlpanel(BrowserView):
             prefix = form.get('absolutePrefix', None)
             doctype = str(form.get('doctype', ""))
 
-            hostnameBlacklist = form.get('hostnameBlacklist', [])
-
             parameterExpressions = {}
             parameterExpressionsList = form.get('parameterExpressions', [])
 
@@ -200,8 +203,7 @@ class ThemingControlpanel(BrowserView):
                 self.theme_settings.rules = rules
                 self.theme_settings.absolutePrefix = prefix
                 self.theme_settings.parameterExpressions = parameterExpressions
-                self.theme_settings.hostnameBlacklist = [
-                    str(bl) for bl in hostnameBlacklist]
+                self.theme_settings.hostnameBlacklist = self.hostname_blacklist
                 self.theme_settings.custom_css = str(custom_css)
                 self.theme_settings.doctype = doctype
 
