@@ -58,7 +58,6 @@ class ThemingControlpanel(BrowserView):
 
     def __call__(self):
         self.pskin = getToolByName(self.context, 'portal_skins')
-
         if self.update():
             return self.index()
         return ''
@@ -191,7 +190,7 @@ class ThemingControlpanel(BrowserView):
             markSpecialLinks = form.get('markSpecialLinks', None)
             extLinksOpenInNewWindow = form.get('extLinksOpenInNewWindow', None)
 
-            custom_css = form.get('custom_css', '')
+            custom_css = form.get('custom_css', b'')
 
             if not self.errors:
                 # Trigger onDisabled() on plugins if theme was active
