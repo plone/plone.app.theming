@@ -189,6 +189,17 @@ class IThemeSettings(Interface):
         required=False,
     )
 
+    custom_css_timestamp = schema.Datetime(
+        title=_(
+            u'Custom CSS Timestamp',
+        ),
+        description=_(
+            u'Time stamp when the custom CSS was changed. '
+            u'Used to generate custom.css with timestamp in URL.',
+        ),
+        required=False,
+    )
+
 
 class IThemingLayer(Interface):
     """Browser layer used to indicate that plone.app.theming is installed

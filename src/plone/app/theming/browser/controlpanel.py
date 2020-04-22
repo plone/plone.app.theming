@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
+from datetime import datetime
 from plone.app.theming.interfaces import _
 from plone.app.theming.interfaces import DEFAULT_THEME_FILENAME
 from plone.app.theming.interfaces import IThemeSettings
@@ -203,6 +204,8 @@ class ThemingControlpanel(BrowserView):
                 self.theme_settings.absolutePrefix = prefix
                 self.theme_settings.parameterExpressions = parameterExpressions
                 self.theme_settings.hostnameBlacklist = self.hostname_blacklist
+                if custom_css != self.theme_settings.custom_css:
+                    self.theme_settings.custom_css_timestamp = datetime.now()
                 self.theme_settings.custom_css = str(custom_css)
                 self.theme_settings.doctype = doctype
 
