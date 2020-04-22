@@ -69,6 +69,9 @@ class ThemeTransform(object):
         if settings is None:
             return None
 
+        if not settings.rules:
+            return None
+
         if not policy.isThemeEnabled():
             return None
 
