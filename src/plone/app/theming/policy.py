@@ -55,8 +55,6 @@ class ThemingPolicy(object):
     def getCurrentTheme(self):
         """The name of the current theme."""
         settings = self.getSettings()
-        if not settings.rules:
-            return None
         if settings.currentTheme:
             return settings.currentTheme
 
@@ -87,7 +85,7 @@ class ThemingPolicy(object):
 
         if not settings:
             settings = self.getSettings()
-        if settings is None or not settings.enabled or not settings.rules:
+        if settings is None or not settings.enabled:
             return False
 
         server_url = self.request.get('SERVER_URL')
