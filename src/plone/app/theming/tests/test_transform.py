@@ -886,9 +886,12 @@ class TestCase(unittest.TestCase):
         browser = Browser(app)
         browser.open(portal.absolute_url())
 
-        self.assertTrue(
-            '''<div>N\xc3\xbamero uno</div>'''
-            in browser.contents)
+        # browser.contents is always string.  On Py 2 this means bytes, on Py 3 text.
+        if six.PY2:
+            self.assertIn(b'<div>N\xc3\xbamero uno</div>', browser.contents)
+        else:
+            self.assertIn(u'<div>N\xfamero uno</div>', browser.contents)
+
 
     def test_theme_enabled_query_string_debug_switch(self):
         app = self.layer['app']
