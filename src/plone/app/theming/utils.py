@@ -149,10 +149,11 @@ class InternalResolver(etree.Resolver):
             # e.g. charset=utf-8
             encoding = encoding.split('=', 1)[1].strip()
         result = result.decode(encoding)
-        # Note: at first the xmlcharrefreplace was only done on Python 2,
-        # but Python 3 needs it as well.
-        # See https://github.com/plone/Products.CMFPlone/issues/3068
-        result = result.encode('ascii', 'xmlcharrefreplace')
+        if six.PY2 or content_type == 'text/html':
+            # Note: at first the xmlcharrefreplace was only done on Python 2,
+            # but Python 3 needs it as well, but only for html.
+            # See https://github.com/plone/Products.CMFPlone/issues/3068
+            result = result.encode('ascii', 'xmlcharrefreplace')
 
         if content_type in ('text/javascript', 'application/x-javascript'):
             result = ''.join([
