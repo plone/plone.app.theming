@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
 from plone.resource.manifest import ManifestFormat
 from zope import schema
 from zope.i18nmessageid import MessageFactory
@@ -24,6 +25,9 @@ MANIFEST_FORMAT = ManifestFormat(
 )
 
 THEME_EXTENSIONS = frozenset(['html', 'htm'])
+
+def get_default_custom_css_timestamp():
+    return datetime.now()
 
 
 class ITheme(Interface):
@@ -197,6 +201,7 @@ class IThemeSettings(Interface):
             u'Time stamp when the custom CSS was changed. '
             u'Used to generate custom.css with timestamp in URL.',
         ),
+        defaultFactory=get_default_custom_css_timestamp,
         required=False,
     )
 
