@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
 from plone.resource.manifest import ManifestFormat
 from zope import schema
 from zope.i18nmessageid import MessageFactory
@@ -24,6 +25,9 @@ MANIFEST_FORMAT = ManifestFormat(
 )
 
 THEME_EXTENSIONS = frozenset(['html', 'htm'])
+
+def get_default_custom_css_timestamp():
+    return datetime.now()
 
 
 class ITheme(Interface):
@@ -139,7 +143,7 @@ class IThemeSettings(Interface):
         ),
         value_type=schema.TextLine(),
         required=False,
-        default=[u"127.0.0.1"],
+        default=["127.0.0.1"],
     )
 
     parameterExpressions = schema.Dict(
@@ -169,6 +173,36 @@ class IThemeSettings(Interface):
         ),
         required=False,
         default="",
+    )
+
+    custom_css = schema.SourceText(
+        title=_(
+            u'Custom CSS',
+        ),
+        description=_(
+            'help_custom_css',
+            u'Define your own custom CSS in the field below. This is a good '
+            u'place for quick customizations of things like colors and the '
+            u'toolbar. Definitions here will override previously defined CSS '
+            u'of Plone. Please use this only for small customizations, as it '
+            u'is hard keep track of changes here. For bigger changes you most '
+            u'likely want to customize a full theme and make your changes '
+            u'there.',
+        ),
+        default=u"",
+        required=False,
+    )
+
+    custom_css_timestamp = schema.Datetime(
+        title=_(
+            u'Custom CSS Timestamp',
+        ),
+        description=_(
+            u'Time stamp when the custom CSS was changed. '
+            u'Used to generate custom.css with timestamp in URL.',
+        ),
+        defaultFactory=get_default_custom_css_timestamp,
+        required=False,
     )
 
 

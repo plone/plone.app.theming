@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
+from datetime import datetime
 from plone.app.theming.interfaces import _
 from plone.app.theming.interfaces import DEFAULT_THEME_FILENAME
 from plone.app.theming.interfaces import IThemeSettings
@@ -19,6 +20,7 @@ from plone.memoize.instance import memoize
 from plone.registry.interfaces import IRegistry
 from plone.resource.utils import queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from Products.CMFPlone.interfaces import ILinkSchema
 from Products.statusmessages.interfaces import IStatusMessage
 from zope.component import getMultiAdapter
@@ -50,9 +52,13 @@ class ThemingControlpanel(BrowserView):
         """
         return getSite().absolute_url()
 
+    @property
+    def hostname_blacklist(self):
+        hostname_blacklist = self.request.get('hostnameBlacklist', [])
+        return [host.decode() for host in hostname_blacklist]
+
     def __call__(self):
         self.pskin = getToolByName(self.context, 'portal_skins')
-
         if self.update():
             return self.index()
         return ''
@@ -164,8 +170,6 @@ class ThemingControlpanel(BrowserView):
             prefix = form.get('absolutePrefix', None)
             doctype = str(form.get('doctype', ""))
 
-            hostnameBlacklist = form.get('hostnameBlacklist', [])
-
             parameterExpressions = {}
             parameterExpressionsList = form.get('parameterExpressions', [])
 
@@ -187,6 +191,8 @@ class ThemingControlpanel(BrowserView):
             markSpecialLinks = form.get('markSpecialLinks', None)
             extLinksOpenInNewWindow = form.get('extLinksOpenInNewWindow', None)
 
+            custom_css = form.get('custom_css', b'')
+
             if not self.errors:
                 # Trigger onDisabled() on plugins if theme was active
                 # previously and rules were changed
@@ -197,7 +203,10 @@ class ThemingControlpanel(BrowserView):
                 self.theme_settings.rules = rules
                 self.theme_settings.absolutePrefix = prefix
                 self.theme_settings.parameterExpressions = parameterExpressions
-                self.theme_settings.hostnameBlacklist = hostnameBlacklist
+                self.theme_settings.hostnameBlacklist = self.hostname_blacklist
+                if custom_css != self.theme_settings.custom_css:
+                    self.theme_settings.custom_css_timestamp = datetime.now()
+                self.theme_settings.custom_css = str(custom_css)
                 self.theme_settings.doctype = doctype
 
                 # Theme base settings

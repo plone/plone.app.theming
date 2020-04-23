@@ -54,4 +54,11 @@
         permission="plone.app.controlpanel.Themes"
         />
 
+    <browser:page
+        name="custom.css"
+        for="*"
+        class=".custom_css.CustomCSSView"
+        permission="zope.Public"
+        />
+
 </configure>
