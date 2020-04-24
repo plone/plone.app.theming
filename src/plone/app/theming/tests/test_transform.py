@@ -830,7 +830,7 @@ class TestCase(unittest.TestCase):
 
         # Create some test content in the portal root
         here = os.path.split(__file__)[0]
-        with open(os.path.join(here, 'french.html')) as french:
+        with open(os.path.join(here, 'french.html'), "rb") as french:
             portal.manage_addDTMLMethod('french', file=french)
 
         # Set up transformation
