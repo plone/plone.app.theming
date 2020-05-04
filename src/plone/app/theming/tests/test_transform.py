@@ -23,6 +23,7 @@ from zope.component import getUtility
 
 import os.path
 import re
+import six
 import transaction
 import unittest
 
@@ -813,6 +814,44 @@ class TestCase(unittest.TestCase):
         self.assertTrue('<div id="alpha">Number one</div>' in browser.contents)
         self.assertTrue('<div id="beta">Number one</div>' in browser.contents)
 
+    def test_include_non_ascii(self):
+        # A Diazo theme with non-ascii subrequest can show characters wrong with Python 3.
+        # See https://github.com/plone/Products.CMFPlone/issues/3068
+        # These are the same French characters:
+        # 'Actualités'
+        # b'Actualit\xc3\xa9s'
+        # u'Actualit\xe9s'
+        # 'Actualit&#195;&#169;s'
+
+        app = self.layer['app']
+        portal = self.layer['portal']
+
+        setRoles(portal, TEST_USER_ID, ('Manager',))
+
+        # Create some test content in the portal root
+        here = os.path.split(__file__)[0]
+        with open(os.path.join(here, 'french.html'), "rb") as french:
+            portal.manage_addDTMLMethod('french', file=french)
+
+        # Set up transformation
+        self.settings.rules = u'python://plone.app.theming/tests/nonascii.xml'
+        self.settings.enabled = True
+
+        transaction.commit()
+
+        browser = Browser(app)
+
+        # At the root if the site, we should pick up 'one' for alpha (absolute
+        # path, relative to site root) and 'two' for beta (relative path,
+        # relative to current directory)
+
+        browser.open(portal.absolute_url())
+        # browser.contents is always string.  On Py 2 this means bytes, on Py 3 text.
+        if six.PY2:
+            self.assertIn(b'<div id="content">Actualit\xc3\xa9s</div>', browser.contents)
+        else:
+            self.assertIn(u'<div id="content">Actualit\xe9s</div>', browser.contents)
+
     def test_css_js_includes(self):
 
         app = self.layer['app']
@@ -847,9 +886,12 @@ class TestCase(unittest.TestCase):
         browser = Browser(app)
         browser.open(portal.absolute_url())
 
-        self.assertTrue(
-            '''<div>N\xc3\xbamero uno</div>'''
-            in browser.contents)
+        # browser.contents is always string.  On Py 2 this means bytes, on Py 3 text.
+        if six.PY2:
+            self.assertIn(b'<div>N\xc3\xbamero uno</div>', browser.contents)
+        else:
+            self.assertIn(u'<div>N\xfamero uno</div>', browser.contents)
+
 
     def test_theme_enabled_query_string_debug_switch(self):
         app = self.layer['app']
