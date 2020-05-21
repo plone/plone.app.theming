@@ -216,14 +216,11 @@ class ThemeMapper(BrowserView):
         - a query string parameter ``title`` can be set to give a new page
           title
         """
-        path = self.request.form.get('path', None)
+        path = self.request.form.get('path', '/')
         theme = self.request.form.get('theme', 'off')
         links = self.request.form.get('links', None)
         forms = self.request.form.get('forms', None)
         title = self.request.form.get('title', None)
-
-        if not path:
-            return "<html><head></head><body></body></html>"
 
         portal = getPortal()
         portal_url = portal.absolute_url()
