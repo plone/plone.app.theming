@@ -200,6 +200,27 @@ def findContext(request):
     return request.PARENTS[0]
 
 
+def findPathContext(path):
+    """Find context given by physical path
+    """
+    portal = getPortal()
+
+    if path in (None, '', '/'):
+        return portal
+
+    seq = path.strip('/').split('/')
+    while seq:
+        try:
+            obj = portal.restrictedTraverse('/'.join(seq))
+        except:
+            seq.pop()
+        else:
+            if IContentish.providedBy(obj):
+                return obj
+            else:
+                seq.pop()
+
+
 def expandAbsolutePrefix(prefix):
     """Prepend the Plone site URL to the prefix if it starts with /
     """
