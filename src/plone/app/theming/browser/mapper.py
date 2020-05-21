@@ -5,7 +5,7 @@ from plone.app.theming.interfaces import RULE_FILENAME
 from plone.app.theming.interfaces import THEME_EXTENSIONS
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.utils import compileThemeTransform
-from plone.app.theming.utils import findContext
+from plone.app.theming.utils import findPathContext
 from plone.app.theming.utils import getPortal
 from plone.app.theming.utils import getThemeFromResourceDirectory
 from plone.app.theming.utils import prepareThemeParameters
@@ -259,11 +259,7 @@ class ThemeMapper(BrowserView):
             policy = theming_policy(self.request)
             settings = policy.getSettings()
 
-            context = self.context
-            try:
-                context = findContext(portal.restrictedTraverse(path))
-            except (KeyError, NotFound,):
-                pass
+            context = findPathContext(path) or portal
 
             serializer = getHTMLSerializer([result], pretty_print=False)
 
