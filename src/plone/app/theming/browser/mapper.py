@@ -285,7 +285,7 @@ class ThemeMapper(BrowserView):
                     serializer.doctype += '\n'
 
             serializer.tree = transform(serializer.tree, **params)
-            result = ''.join(serializer)
+            result = b''.join(serializer)
 
         if title or links or forms:
             tree = lxml.html.fromstring(result)
