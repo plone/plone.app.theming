@@ -216,7 +216,7 @@ class ThemingControlpanel(BrowserView):
                 self.theme_settings.hostnameBlacklist = self.hostname_blacklist
                 if custom_css != self.theme_settings.custom_css:
                     self.theme_settings.custom_css_timestamp = datetime.now()
-                self.theme_settings.custom_css = str(custom_css)
+                self.theme_settings.custom_css = custom_css
                 self.theme_settings.doctype = doctype
 
                 # Theme base settings
