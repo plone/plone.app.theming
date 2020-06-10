@@ -22,7 +22,6 @@ from plone.resource.utils import queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.CMFPlone.interfaces import ILinkSchema
-from Products.Five.browser.decode import processInputs
 from Products.statusmessages.interfaces import IStatusMessage
 from zope.component import getMultiAdapter
 from zope.component import getUtility
@@ -33,6 +32,14 @@ from zope.schema.interfaces import IVocabularyFactory
 import logging
 import six
 import zipfile
+
+
+try:
+    # Zope 4
+    from Products.Five.browser.decode import processInputs
+except ImportError:
+    # Zope 5
+    processInputs = None
 
 
 logger = logging.getLogger('plone.app.theming')
@@ -112,7 +119,8 @@ class ThemingControlpanel(BrowserView):
 
     def update(self):
         # XXX: complexity too high: refactoring needed
-        processInputs(self.request)
+        if processInputs is not None:
+            processInputs(self.request)
         self._setup()
         self.errors = {}
         form = self.request.form

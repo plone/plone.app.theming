@@ -17,7 +17,6 @@ from plone.subrequest import subrequest
 from Products.CMFCore.utils import _getAuthenticatedUser
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.resources import add_bundle_on_request
-from Products.Five.browser.decode import processInputs
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from repoze.xmliter.utils import getHTMLSerializer
@@ -34,6 +33,14 @@ import lxml.html
 import lxml.html.builder
 import os.path
 import six
+
+
+try:
+    # Zope 4
+    from Products.Five.browser.decode import processInputs
+except ImportError:
+    # Zope 5
+    processInputs = None
 
 
 class ThemeMapper(BrowserView):
@@ -61,7 +68,8 @@ class ThemeMapper(BrowserView):
 
     def setup(self):
         self.request.response.setHeader('X-Theme-Disabled', '1')
-        processInputs(self.request)
+        if processInputs is not None:
+            processInputs(self.request)
 
         self.resourceDirectory = self.context
         self.theme = getThemeFromResourceDirectory(self.context)
@@ -218,8 +226,8 @@ class ThemeMapper(BrowserView):
         - a query string parameter ``title`` can be set to give a new page
           title
         """
-
-        processInputs(self.request)
+        if processInputs is not None:
+            processInputs(self.request)
 
         path = self.request.form.get('path', '/')
         theme = self.request.form.get('theme', 'off')
