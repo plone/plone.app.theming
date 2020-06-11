@@ -39,6 +39,15 @@ class TestControlPanel(unittest.TestCase):
             self.portal.absolute_url() + '/@@theming-controlpanel'
         )
 
+    def test_save_advanced(self):
+        # Simply saving the advanced panel without changes could already give a WrongType error.
+        # See for example https://github.com/plone/plone.app.theming/issues/179
+        # but there are more.
+        self.browser.handleErrors = False
+        self.goto_controlpanel()
+        button = self.browser.getControl(name="form.button.AdvancedSave")
+        button.click()
+
     def test_create_theme(self):
         pass
     #     self.goto_controlpanel()
@@ -75,7 +84,7 @@ Content-Disposition: form-data; name="file"; filename="Screen Shot 2018-02-16 at
 Content-Type: image/png
 
 
----blah---           
+---blah---
             """,
 # Bug in testbrowser prevents this working
 #            content_type='multipart/form-data; boundary=---blah---'

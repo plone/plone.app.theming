@@ -35,6 +35,14 @@ import os.path
 import six
 
 
+try:
+    # Zope 4
+    from Products.Five.browser.decode import processInputs
+except ImportError:
+    # Zope 5
+    processInputs = None
+
+
 class ThemeMapper(BrowserView):
 
     theme_error_template = ViewPageTemplateFile("theme-error.pt")
@@ -60,6 +68,8 @@ class ThemeMapper(BrowserView):
 
     def setup(self):
         self.request.response.setHeader('X-Theme-Disabled', '1')
+        if processInputs is not None:
+            processInputs(self.request)
 
         self.resourceDirectory = self.context
         self.theme = getThemeFromResourceDirectory(self.context)
@@ -216,6 +226,9 @@ class ThemeMapper(BrowserView):
         - a query string parameter ``title`` can be set to give a new page
           title
         """
+        if processInputs is not None:
+            processInputs(self.request)
+
         path = self.request.form.get('path', '/')
         theme = self.request.form.get('theme', 'off')
         links = self.request.form.get('links', None)

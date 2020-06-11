@@ -34,6 +34,14 @@ import six
 import zipfile
 
 
+try:
+    # Zope 4
+    from Products.Five.browser.decode import processInputs
+except ImportError:
+    # Zope 5
+    processInputs = None
+
+
 logger = logging.getLogger('plone.app.theming')
 
 
@@ -51,11 +59,6 @@ class ThemingControlpanel(BrowserView):
         necessarily the portal root.
         """
         return getSite().absolute_url()
-
-    @property
-    def hostname_blacklist(self):
-        hostname_blacklist = self.request.get('hostnameBlacklist', [])
-        return [host.decode() for host in hostname_blacklist]
 
     def __call__(self):
         self.pskin = getToolByName(self.context, 'portal_skins')
@@ -111,6 +114,8 @@ class ThemingControlpanel(BrowserView):
 
     def update(self):
         # XXX: complexity too high: refactoring needed
+        if processInputs is not None:
+            processInputs(self.request)
         self._setup()
         self.errors = {}
         form = self.request.form
@@ -170,6 +175,8 @@ class ThemingControlpanel(BrowserView):
             prefix = form.get('absolutePrefix', None)
             doctype = str(form.get('doctype', ""))
 
+            hostnameBlacklist = form.get('hostnameBlacklist', [])
+
             parameterExpressions = {}
             parameterExpressionsList = form.get('parameterExpressions', [])
 
@@ -203,10 +210,10 @@ class ThemingControlpanel(BrowserView):
                 self.theme_settings.rules = rules
                 self.theme_settings.absolutePrefix = prefix
                 self.theme_settings.parameterExpressions = parameterExpressions
-                self.theme_settings.hostnameBlacklist = self.hostname_blacklist
+                self.theme_settings.hostnameBlacklist = hostnameBlacklist
                 if custom_css != self.theme_settings.custom_css:
                     self.theme_settings.custom_css_timestamp = datetime.now()
-                self.theme_settings.custom_css = str(custom_css)
+                self.theme_settings.custom_css = custom_css
                 self.theme_settings.doctype = doctype
 
                 # Theme base settings
