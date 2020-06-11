@@ -27,20 +27,19 @@
         />
 
     <gs:upgradeStep
-        title="Update registry"
-        source="*"
-        destination="1000"
-        handler=".upgrade.update_registry"
-        sortkey="1"
-        profile="plone.app.theming:default"
-        />
-
-    <gs:upgradeStep
         title="Combine Theming control panels"
         source="1000"
         destination="1001"
         handler=".upgrade.update_controlpanel"
         sortkey="2"
+        profile="plone.app.theming:default"
+        />
+
+    <gs:upgradeStep
+        title="Update registry"
+        source="1001"
+        destination="1002"
+        handler=".upgrade.update_registry"
         profile="plone.app.theming:default"
         />
 
