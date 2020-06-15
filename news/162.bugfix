@@ -1,4 +1,0 @@
-Fix error on Python 3 with nonascii subrequest.
-The subrequest would succeed, but the non-ascii would be ugly.
-Fixes `issue 3069 <https://github.com/plone/Products.CMFPlone/issues/3068>`_ and `issue 162 <https://github.com/plone/plone.app.theming/issues/162>`_.
-[maurits]

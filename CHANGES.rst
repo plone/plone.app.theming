@@ -9,6 +9,35 @@ Changelog
 
 .. towncrier release notes start
 
+4.1.0 (2020-06-16)
+------------------
+
+New features:
+
+
+- Insert diazo bundle without rules.
+  [santonelli] (#176)
+- Add custom CSS settings and view to theming control panel.
+  Ddepends on https://github.com/plone/Products.CMFPlone/pull/3089
+  [MrTango] (#178)
+
+
+Bug fixes:
+
+
+- Fix error on Python 3 with nonascii subrequest.
+  The subrequest would succeed, but the non-ascii would be ugly.
+  Fixes `issue 3069 <https://github.com/plone/Products.CMFPlone/issues/3068>`_ and `issue 162 <https://github.com/plone/plone.app.theming/issues/162>`_.
+  [maurits] (#162)
+- Make it possible to preview themes TTW again.
+  [petri] (#173)
+- Fix hostnameBlacklist (Theming ControlPanel) in Py3.  [MrTango] (#179)
+- Fix various ``WrongType`` exceptions when saving the control panel.
+  This was introduced by the ``processInputs`` change in version 4.0.5.
+  See `issue 183 <https://github.com/plone/plone.app.theming/issues/183>`_.
+  [maurits] (#183)
+
+
 4.0.6 (2020-04-20)
 ------------------
 

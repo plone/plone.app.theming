@@ -1,4 +1,0 @@
-Fix various ``WrongType`` exceptions when saving the control panel.
-This was introduced by the ``processInputs`` change in version 4.0.5.
-See `issue 183 <https://github.com/plone/plone.app.theming/issues/183>`_.
-[maurits]
