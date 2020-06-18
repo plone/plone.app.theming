@@ -185,7 +185,7 @@ class IThemeSettings(Interface):
             u'place for quick customizations of things like colors and the '
             u'toolbar. Definitions here will override previously defined CSS '
             u'of Plone. Please use this only for small customizations, as it '
-            u'is hard keep track of changes here. For bigger changes you most '
+            u'is hard to keep track of changes here. For bigger changes you most '
             u'likely want to customize a full theme and make your changes '
             u'there.',
         ),
