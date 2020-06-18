@@ -586,8 +586,6 @@
                 </fieldset>
                 <fieldset>
                     <legend i18n:translate="">Custom Styles</legend>
-                    <p i18n:translate="description_custom_css_styles">
-                    </p>
 
                     <div
                         tal:define="error errors/custom_css | nothing;
