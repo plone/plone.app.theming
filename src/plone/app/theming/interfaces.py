@@ -177,6 +177,7 @@ class IThemeSettings(Interface):
 
     custom_css = schema.SourceText(
         title=_(
+            'label_custom_css',
             u'Custom CSS',
         ),
         description=_(
