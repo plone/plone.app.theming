@@ -9,6 +9,16 @@ Changelog
 
 .. towncrier release notes start
 
+4.1.1 (2020-06-24)
+------------------
+
+Bug fixes:
+
+
+- Fix i18n of new messages related to new Custom CSS feature.
+  [vincentfretin] (#185)
+
+
 4.1.0 (2020-06-16)
 ------------------
 
