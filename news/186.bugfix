@@ -1,0 +1,3 @@
+Internationalize the Custom CSS placeholder.
+This fixes https://github.com/plone/Products.CMFPlone/issues/3139
+[vincentfretin]
