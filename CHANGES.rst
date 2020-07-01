@@ -9,6 +9,17 @@ Changelog
 
 .. towncrier release notes start
 
+4.1.2 (2020-07-01)
+------------------
+
+Bug fixes:
+
+
+- Internationalize the Custom CSS placeholder.
+  This fixes https://github.com/plone/Products.CMFPlone/issues/3139
+  [vincentfretin] (#186)
+
+
 4.1.1 (2020-06-24)
 ------------------
 
