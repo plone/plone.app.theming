@@ -609,6 +609,7 @@
                             rows="40"
                             cols="160"
                             placeholder="Put your plain css..."
+                            i18n:attributes="placeholder"
                             tal:content="custom_css"
                             ></textarea>
 
