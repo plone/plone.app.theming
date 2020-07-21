@@ -53,7 +53,6 @@ setup(
     zip_safe=False,
     install_requires=[
         'Products.CMFPlone',
-        'dateutil',
         'diazo>=1.0.3',
         'docutils',
         'lxml>=2.2.4',
@@ -62,6 +61,7 @@ setup(
         'plone.staticresources',
         'plone.subrequest',
         'plone.transformchain',
+        'python-dateutil',
         'repoze.xmliter>=0.3',
         'roman',
         'setuptools',
