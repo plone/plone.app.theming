@@ -53,6 +53,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'Products.CMFPlone',
+        'dateutil',
         'diazo>=1.0.3',
         'docutils',
         'lxml>=2.2.4',
