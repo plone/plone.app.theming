@@ -1,0 +1,4 @@
+Cleanup: Remove meanwhile unused test fixture code refering to ``plone.app.caching``.
+Removed class and fixtures: ``ThemingWithCaching``, ``THEMINGWITHCACHING_FIXTURE``, ``THEMINGWITHCACHING_TESTING``.
+Those were nowhere used active in Plone nor outside in Github.
+[jensens]
