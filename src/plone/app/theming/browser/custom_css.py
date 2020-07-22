@@ -7,19 +7,6 @@ from zope.component import getUtility
 import dateutil
 import wsgiref
 
-
-def formatDateTime(dt):
-    """Format a Python datetime object as an RFC1123 date.
-
-    """
-
-    # We have to pass local time to format_date_time()
-
-    if dt.tzinfo is not None:
-        dt = dt.astimezone(dateutil.tz.tzlocal())
-
-    return wsgiref.handlers.format_date_time(time.mktime(dt.timetuple()))
-
 class CustomCSSView(BrowserView):
     """
     Renders custom CSS stored in registry
