@@ -9,6 +9,20 @@ Changelog
 
 .. towncrier release notes start
 
+4.1.3 (2020-07-30)
+------------------
+
+Bug fixes:
+
+
+- Fixes #187: Invalid dependency on plone.app.caching
+  [jensens] (#187)
+- Cleanup: Remove meanwhile unused test fixture code refering to ``plone.app.caching``.
+  Removed class and fixtures: ``ThemingWithCaching``, ``THEMINGWITHCACHING_FIXTURE``, ``THEMINGWITHCACHING_TESTING``.
+  Those were nowhere used active in Plone nor outside in Github.
+  [jensens] (#188)
+
+
 4.1.2 (2020-07-01)
 ------------------
 
