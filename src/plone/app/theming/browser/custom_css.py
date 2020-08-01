@@ -5,6 +5,7 @@ from Products.Five.browser import BrowserView
 from zope.component import getUtility
 
 import dateutil
+import time
 import wsgiref
 
 class CustomCSSView(BrowserView):
