@@ -9,6 +9,15 @@ Changelog
 
 .. towncrier release notes start
 
+4.1.4 (2020-08-14)
+------------------
+
+Bug fixes:
+
+
+- Fix a missing import [ale-rt] (#188)
+
+
 4.1.3 (2020-07-30)
 ------------------
 
