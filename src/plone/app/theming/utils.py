@@ -546,7 +546,11 @@ def createThemeFromTemplate(title, description, baseOn='template'):
         if six.PY2:
             fp = target.openFile(MANIFEST_FILENAME)
             try:
-                manifest.readfp(fp)
+                if hasattr(manifest, "read_file"):
+                    # backports.configparser
+                    manifest.read_file(fp)
+                else:
+                    manifest.readfp(fp)
             finally:
                 fp.close()
 

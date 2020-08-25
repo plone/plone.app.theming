@@ -87,7 +87,11 @@ def getPluginSettings(themeDirectory, plugins=None):
         fp = themeDirectory.openFile(MANIFEST_FILENAME)
         try:
             if six.PY2:
-                parser.readfp(fp)
+                if hasattr(parser, "read_file"):
+                    # backports.configparser
+                    parser.read_file(fp)
+                else:
+                    parser.readfp(fp)
             else:
                 parser.read_string(fp.read().decode())
             for section in parser.sections():
