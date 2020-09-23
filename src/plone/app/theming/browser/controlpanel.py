@@ -64,6 +64,8 @@ class ThemingControlpanel(BrowserView):
     @property
     def hostname_blacklist(self):
         hostname_blacklist = self.request.get('hostnameBlacklist', [])
+        if six.PY2:
+            return hostname_blacklist
         return [safe_nativestring(host) for host in hostname_blacklist]
 
     def __call__(self):
