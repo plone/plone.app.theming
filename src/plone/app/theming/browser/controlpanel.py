@@ -60,6 +60,13 @@ class ThemingControlpanel(BrowserView):
         """
         return getSite().absolute_url()
 
+    @property
+    def hostname_blacklist(self):
+        hostname_blacklist = self.request.get('hostnameBlacklist', [])
+        if six.PY2:
+            return hostname_blacklist
+        return [host.decode() for host in hostname_blacklist]
+
     def __call__(self):
         self.pskin = getToolByName(self.context, 'portal_skins')
         if self.update():
@@ -175,8 +182,6 @@ class ThemingControlpanel(BrowserView):
             prefix = form.get('absolutePrefix', None)
             doctype = str(form.get('doctype', ""))
 
-            hostnameBlacklist = form.get('hostnameBlacklist', [])
-
             parameterExpressions = {}
             parameterExpressionsList = form.get('parameterExpressions', [])
 
@@ -210,7 +215,7 @@ class ThemingControlpanel(BrowserView):
                 self.theme_settings.rules = rules
                 self.theme_settings.absolutePrefix = prefix
                 self.theme_settings.parameterExpressions = parameterExpressions
-                self.theme_settings.hostnameBlacklist = hostnameBlacklist
+                self.theme_settings.hostnameBlacklist = self.hostname_blacklist
                 if custom_css != self.theme_settings.custom_css:
                     self.theme_settings.custom_css_timestamp = datetime.now()
                 self.theme_settings.custom_css = custom_css
