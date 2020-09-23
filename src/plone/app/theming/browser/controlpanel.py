@@ -21,6 +21,7 @@ from plone.registry.interfaces import IRegistry
 from plone.resource.utils import queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from Products.CMFPlone.utils import safe_nativestring
 from Products.CMFPlone.interfaces import ILinkSchema
 from Products.statusmessages.interfaces import IStatusMessage
 from zope.component import getMultiAdapter
@@ -63,9 +64,7 @@ class ThemingControlpanel(BrowserView):
     @property
     def hostname_blacklist(self):
         hostname_blacklist = self.request.get('hostnameBlacklist', [])
-        if six.PY2:
-            return hostname_blacklist
-        return [host.decode() for host in hostname_blacklist]
+        return [safe_nativestring(host) for host in hostname_blacklist]
 
     def __call__(self):
         self.pskin = getToolByName(self.context, 'portal_skins')
