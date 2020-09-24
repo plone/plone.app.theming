@@ -460,7 +460,7 @@
                     <div
                         tal:define="error errors/hostnameBlacklist | nothing;
                                     hostnameBlacklist view/theme_settings/hostnameBlacklist | python:[];
-                                    hostnameBlacklist python:request.get('hostnameBlacklist', hostnameBlacklist)"
+                                    hostnameBlacklist python: view.hostname_blacklist or hostnameBlacklist"
                         tal:attributes="class python:'field error' if error else 'field'">
 
                         <label for="hostnameBlacklist" i18n:translate="label_hostname_blacklist">Unthemed host names</label>
@@ -481,7 +481,7 @@
                             id="hostnameBlacklist"
                             rows="5"
                             cols="50"
-                            tal:content="python:'\n'.join(hostnameBlacklist)"
+                            tal:content="python: '\n'.join(hostnameBlacklist)"
                             ></textarea>
 
                     </div>
