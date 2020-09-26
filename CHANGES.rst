@@ -9,6 +9,19 @@ Changelog
 
 .. towncrier release notes start
 
+4.1.5 (2020-09-26)
+------------------
+
+Bug fixes:
+
+
+- Fixed WrongContainedType for hostnameBlackList on Zope 5.
+  See also `issue 183 <https://github.com/plone/plone.app.theming/issues/183>`_.
+  [maurits] (#183)
+- Fixed deprecation warning for ConfigParser.readfp.
+  [maurits] (#3130)
+
+
 4.1.4 (2020-08-14)
 ------------------
 

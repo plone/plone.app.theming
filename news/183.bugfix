@@ -1,3 +1,0 @@
-Fixed WrongContainedType for hostnameBlackList on Zope 5.
-See also `issue 183 <https://github.com/plone/plone.app.theming/issues/183>`_.
-[maurits]
