@@ -66,6 +66,16 @@ def theming_policy(request=None):
     return IThemingPolicy(request)
 
 
+class FailingFileProtocolResolver(etree.Resolver):
+    """Resolver that fails for security when file:/// urls are tried.
+    """
+    def resolve(self, system_url, public_id, context):
+        if system_url.startswith('file://') and system_url != 'file:///__diazo__':
+            # The error will be caught by lxml and we only see this in the traceback:
+            # XIncludeError: could not load <system_url>, and no fallback was found
+            raise ValueError("File protocol access not allowed: '%s'" % system_url)
+
+
 class NetworkResolver(etree.Resolver):
     """Resolver for network urls
     """
@@ -618,15 +628,16 @@ def getParser(type, readNetwork):
     """
 
     if type == 'rules':
-        parser = etree.XMLParser(recover=False)
+        parser = etree.XMLParser(recover=False, resolve_entities=False, remove_pis=True)
     elif type == 'theme':
         parser = etree.HTMLParser()
     elif type == 'compiler':
-        parser = etree.XMLParser()
+        parser = etree.XMLParser(resolve_entities=False, remove_pis=True)
     parser.resolvers.add(InternalResolver())
     parser.resolvers.add(PythonResolver())
     if readNetwork:
         parser.resolvers.add(NetworkResolver())
+    parser.resolvers.add(FailingFileProtocolResolver())
     return parser
 
 
