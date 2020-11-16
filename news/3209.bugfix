@@ -1,0 +1,3 @@
+For increased security, fail when trying file protocol access in diazo rules.
+Also do not resolve entities, and remove processing instructions.
+[maurits]
