@@ -9,6 +9,17 @@ Changelog
 
 .. towncrier release notes start
 
+4.1.6 (2020-11-17)
+------------------
+
+Bug fixes:
+
+
+- For increased security, fail when trying file protocol access in diazo rules.
+  Also do not resolve entities, and remove processing instructions.
+  [maurits] (#3209)
+
+
 4.1.5 (2020-09-26)
 ------------------
 
