@@ -11,6 +11,7 @@
     <include package="plone.resourceeditor" />
     <include package="plone.transformchain" />
     <include package="plone.app.registry" />
+    <include package="plone.restapi" />
     <include package="diazo" file="diazo-debug.zcml" />
 
     <include package=".browser" />

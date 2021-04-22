@@ -68,6 +68,7 @@ class TestControlPanel(unittest.TestCase):
             self.portal.absolute_url() + '/portal_resources/themeFileUpload',
             '',
         )
+        # There is a bug in restapi that causes 404 instead - https://github.com/plone/plone.rest/issues/59
         self.assertIn('Status: 200', str(self.browser.headers))
         self.assertIn(
             '{"failure": "error"}',
