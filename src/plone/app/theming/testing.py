@@ -5,6 +5,7 @@ from plone.app.testing import PloneSandboxLayer
 from plone.app.testing.layers import FunctionalTesting
 from plone.app.testing.layers import IntegrationTesting
 from zope.configuration import xmlconfig
+from plone.testing import z2
 
 
 class Theming(PloneSandboxLayer):
@@ -18,6 +19,7 @@ class Theming(PloneSandboxLayer):
             plone.app.theming.tests,
             context=configurationContext
         )
+        z2.installProduct(app, "plone.restapi")
 
         # Run the startup hook
         from plone.app.theming.plugins.hooks import onStartup
@@ -26,6 +28,8 @@ class Theming(PloneSandboxLayer):
     def setUpPloneSite(self, portal):
         # install into the Plone site
         applyProfile(portal, 'plone.app.theming:default')
+        #if portal.portal_setup.profileExists('plone.restapi:default'):
+        applyProfile(portal, 'plone.restapi:default')
 
 
 THEMING_FIXTURE = Theming()
