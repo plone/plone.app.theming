@@ -9,13 +9,6 @@ Changelog
 
 .. towncrier release notes start
 
-4.1.7 (unreleased)
-------------------
-
-Bug fixes:
-
-- Fix test for restapi compatibility
-  [djay] (#59)
 
 4.1.6 (2020-11-17)
 ------------------
