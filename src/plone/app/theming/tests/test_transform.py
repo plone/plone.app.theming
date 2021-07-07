@@ -212,25 +212,15 @@ class TestCase(unittest.TestCase):
         # The theme
         self.assertFalse("This is the theme" in browser.contents)
 
-    def test_internal_resolver(self):
-        compiler_parser = etree.XMLParser()
-        compiler_parser.resolvers.add(InternalResolver())
-        # We can use a sub-package or a directory since tests is a python
-        # package
-        theme = resolvePythonURL(
-            u'python://plone.app.theming.tests/theme.html'
-        )
-        rules = resolvePythonURL(u'python://plone.app.theming/tests/rules.xml')
-        compile_theme(rules, theme, compiler_parser=compiler_parser)
-
     def test_python_resolver(self):
-        compiler_parser = etree.XMLParser()
-        compiler_parser.resolvers.add(PythonResolver())
+        # The rules contain a python:// link, so we need a python resolver.
+        parser = etree.HTMLParser()
+        parser.resolvers.add(PythonResolver())
         theme = resolvePythonURL(
             u'python://plone.app.theming.tests/theme.html'
         )
         rules = resolvePythonURL(u'python://plone.app.theming/tests/rules.xml')
-        compile_theme(rules, theme, compiler_parser=compiler_parser)
+        compile_theme(rules, theme, parser=parser)
 
     def test_theme_stored_in_plone_site(self):
         app = self.layer['app']
