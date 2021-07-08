@@ -4,8 +4,8 @@
     xmlns:css="http://namespaces.plone.org/diazo/css"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
-    <theme href="theme.html" />
-    <theme href="othertheme.html" if-path="news"/>
+    <theme href="python://plone.app.theming/tests/theme.html" />
+    <theme href="python://plone.app.theming/tests/othertheme.html" if-path="news"/>
 
     <replace content='/html/head/title' theme='/html/head/title' />
     <replace content='//h1[class=documentFirstHeading]' theme='/html/body/h1' />

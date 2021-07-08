@@ -6,8 +6,8 @@
 
     <rules css:if-content="#visual-portal-wrapper">
 
-        <theme href="othertheme.html" if-path="news"/>
-        <theme href="theme.html" />
+        <theme href="python://plone.app.theming/tests/othertheme.html" if-path="news"/>
+        <theme href="python://plone.app.theming/tests/theme.html" />
 
         <replace content='/html/head/title' theme='/html/head/title' />
         <replace content='//h1[class=documentFirstHeading]' theme='/html/body/h1' />
