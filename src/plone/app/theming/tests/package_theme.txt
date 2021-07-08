@@ -1,0 +1,1 @@
+This can be loaded with the python package resolver.
