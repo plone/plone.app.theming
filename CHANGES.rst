@@ -9,6 +9,24 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.0a1 (2021-07-26)
+--------------------
+
+Breaking changes:
+
+
+- Add bootstrap icon from resolver from Plone 6.
+  [petschki, agitator] (#194)
+
+
+Bug fixes:
+
+
+- Avoid Server Side Request Forgery via lxml parser.
+  Taken over from `PloneHotfix20210518 <https://plone.org/security/hotfix/20210518/server-side-request-forgery-via-lxml-parser>`_.
+  [maurits] (#3274)
+
+
 4.1.6 (2020-11-17)
 ------------------
 
