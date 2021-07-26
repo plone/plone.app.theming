@@ -9,6 +9,17 @@ Changelog
 
 .. towncrier release notes start
 
+4.1.7 (2021-07-26)
+------------------
+
+Bug fixes:
+
+
+- Avoid Server Side Request Forgery via lxml parser.
+  Taken over from `PloneHotfix20210518 <https://plone.org/security/hotfix/20210518/server-side-request-forgery-via-lxml-parser>`_.
+  [maurits] (#3274)
+
+
 4.1.6 (2020-11-17)
 ------------------
 
