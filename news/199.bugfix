@@ -1,0 +1,2 @@
+Fix unclosed file when reading manifest.cfg
+[petschki]

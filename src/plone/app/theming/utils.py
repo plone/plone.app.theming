@@ -471,9 +471,8 @@ def getThemeFromResourceDirectory(resourceDirectory):
     """
     name = resourceDirectory.__name__
     if resourceDirectory.isFile(MANIFEST_FILENAME):
-        manifest = getManifest(
-            resourceDirectory.openFile(MANIFEST_FILENAME), MANIFEST_FORMAT
-        )
+        with resourceDirectory.openFile(MANIFEST_FILENAME) as manifest_fp:
+            manifest = getManifest(manifest_fp, MANIFEST_FORMAT)
     else:
         manifest = {}
 
