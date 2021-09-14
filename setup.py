@@ -51,7 +51,6 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'Products.CMFPlone',
         'diazo>=1.0.3',
         'docutils',
         'lxml>=2.2.4',
