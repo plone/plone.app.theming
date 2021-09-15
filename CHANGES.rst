@@ -9,6 +9,18 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.0a2 (2021-09-15)
+--------------------
+
+Bug fixes:
+
+
+- Fix unclosed file when reading manifest.cfg
+  [petschki] (#199)
+- Remove cyclic dependency with Products.CMFPlone
+  [sneridagh] (#201)
+
+
 5.0.0a1 (2021-07-26)
 --------------------
 
