@@ -9,6 +9,16 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.0a3 (2021-10-13)
+--------------------
+
+Bug fixes:
+
+
+- Use HTML5 meta charset.
+  [thet] (#203)
+
+
 5.0.0a2 (2021-09-15)
 --------------------
 
