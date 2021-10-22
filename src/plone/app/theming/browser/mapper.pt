@@ -53,9 +53,9 @@
       <div id="edit-zone" role="toolbar" tal:attributes="class toolbar_class">
         <div class="plone-toolbar-container">
           <a class="plone-toolbar-logo">
-            <img alt="Plone Toolbar" tal:attributes="src string:${portal_url}/++plone++static/plone-toolbarlogo.svg" />
+            <img alt="Plone Toolbar" i18n:attributes="alt label_plone_toolbar_logo" tal:attributes="src string:${portal_url}/++plone++static/plone-toolbarlogo.svg" />
           </a>
-          <a class="plone-toolbar-switcher"><span>Left-Top switcher</span></a>
+          <a class="plone-toolbar-switcher"><span i18n:translate="label_toolbar_switcher">Left-Top switcher</span></a>
           <nav>
             <ul>
               <div tal:replace="structure provider:plone.toolbar">

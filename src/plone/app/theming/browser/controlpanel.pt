@@ -128,7 +128,7 @@
 
                     <span class="themeEntryTitle">
                         <span tal:replace="theme/title">Title</span>
-                        <span class="warning" tal:condition="theme/override">(this theme overrides a filesystem theme)</span>
+                        <span class="warning" tal:condition="theme/override" i18n:translate="">(this theme overrides a filesystem theme)</span>
                         <span
                             tal:condition="theme/selected"
                             class="themeActive"
