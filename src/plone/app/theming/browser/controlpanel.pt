@@ -26,6 +26,11 @@
     <link
         rel="stylesheet"
         type="text/css"
+        tal:attributes="href string:${context/portal_url}/++theme++barceloneta/css/barceloneta.min.css"
+        />
+    <link
+        rel="stylesheet"
+        type="text/css"
         tal:attributes="href string:${context/portal_url}/++resource++plone.app.theming/controlpanel.css"
         />
 
