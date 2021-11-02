@@ -617,6 +617,8 @@
                             placeholder="Put your plain css..."
                             i18n:attributes="placeholder"
                             tal:content="custom_css"
+                            class="pat-code-editor"
+                            data-pat-code-editor="language: css; theme: tomorrow"
                             ></textarea>
 
                     </div>

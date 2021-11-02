@@ -1,0 +1,3 @@
+- Use pat-code-editor for custom-css field [MrTango]
+- Deactivate copy button and modal in theming control panel [MrTango]
+- Load barceloneta css in theming control panel to have it styled [MrTango]
