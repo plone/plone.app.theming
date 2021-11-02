@@ -186,11 +186,12 @@
                                     name="form.button.InvalidateCache">Clear Cache</button>
                             </form>
 
-                            <a href="#" class="plone-btn plone-btn-default pat-plone-modal"
+                            <!-- <a class="plone-btn plone-btn-default pat-plone-modal"
+                                data-pat-plone-modal="{'buttons': ['.plone-btn']}"
                                 tal:attributes="href python:'#modal-copy-{0}'.format(theme['name'].replace('.', '-'))"
-                                i18n:translate="">Copy</a>
+                                i18n:translate="">Copy</a> -->
                             <!-- Copy theme overlay -->
-                            <div class="plone-modal"
+                            <!-- <div class="modal"
                                 tal:attributes="id python:'modal-copy-{0}'.format(theme['name'].replace('.', '-'))">
                                 <h1 id="overlayTitleCopyTheme" class="documentFirstHeading" i18n:translate="theming_controlpanel_copy_theme">Create copy of <span i18n:name="theme_name"
                                     tal:content="string:${theme/name}"></span></h1>
@@ -267,7 +268,7 @@
                                     <input tal:replace="structure context/@@authenticator/authenticator" />
 
                                 </form>
-                            </div>
+                            </div> -->
 
                             <form method="get" target="_blank" tal:attributes="action string:${context/absolute_url}/++theme++${theme/name}/@@download-zip">
                                 <button i18n:translate=""
