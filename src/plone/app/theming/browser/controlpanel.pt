@@ -97,22 +97,22 @@
             or select an existing theme from a the list below.
         </p>
 
-        <div class="plone-btn-group">
-            <a href="#overlay-new-theme" class="plone-btn plone-btn-large plone-btn-primary pat-plone-modal"
+        <div class="btn-group">
+            <!-- <a href="#overlay-new-theme" class="btn btn-large btn-primary pat-plone-modal"
                 data-pat-plone-modal="width: 80%"
-                i18n:translate="">New theme</a>
+                i18n:translate="">New theme</a> -->
 
-            <a href="#overlay-upload" class="plone-btn plone-btn-large plone-btn-primary pat-plone-modal"
+            <a href="#overlay-upload" class="btn btn-large btn-primary pat-plone-modal"
                 data-pat-plone-modal="width: 80%"
                 i18n:translate="">Upload Zip file</a>
 
             <a tal:attributes="href string:$site_url/test_rendering#top"
-                class="plone-btn plone-btn-large plone-btn-primary"
+                class="btn btn-large btn-primary"
                 target="_blank"
                 i18n:translate="">Test Styles</a>
 
             <a tal:attributes="href string:$site_url/@@theming-controlpanel-help"
-                class="plone-btn plone-btn-large plone-btn-primary pat-plone-modal"
+                class="btn btn-large btn-primary pat-plone-modal"
                 data-pat-plone-modal="
                     width: 85%;
                     loadLinksWithinModal: true;
@@ -163,31 +163,31 @@
                                 <button
                                     tal:condition="not:theme/selected"
                                     i18n:translate=""
-                                    class="plone-btn plone-btn-default"
+                                    class="btn btn-default"
                                     type="submit"
                                     name="form.button.Enable">Activate</button>
                                 <button
                                     tal:condition="theme/selected"
                                     i18n:translate=""
-                                    class="plone-btn plone-btn-default"
+                                    class="btn btn-default"
                                     type="submit"
                                     name="form.button.Enable">Update</button>
                                 <button
                                     tal:condition="theme/selected"
                                     i18n:translate=""
-                                    class="plone-btn plone-btn-default"
+                                    class="btn btn-default"
                                     type="submit"
                                     name="form.button.Disable">Deactivate</button>
                                 <button
                                     tal:condition="theme/selected"
                                     i18n:translate=""
-                                    class="plone-btn plone-btn-default"
+                                    class="btn btn-default"
                                     type="submit"
                                     name="form.button.InvalidateCache">Clear Cache</button>
                             </form>
 
-                            <!-- <a class="plone-btn plone-btn-default pat-plone-modal"
-                                data-pat-plone-modal="{'buttons': ['.plone-btn']}"
+                            <!-- <a class="btn btn-default pat-plone-modal"
+                                data-pat-plone-modal="{'buttons': ['.btn']}"
                                 tal:attributes="href python:'#modal-copy-{0}'.format(theme['name'].replace('.', '-'))"
                                 i18n:translate="">Copy</a> -->
                             <!-- Copy theme overlay -->
@@ -248,18 +248,18 @@
                                         </div>
                                     </div>
 
-                                    <div class="plone-btn-group">
+                                    <div class="btn-group">
                                         <input
                                             type="submit"
                                             name="form.button.CreateTheme"
-                                            class="plone-btn plone-btn-success save"
+                                            class="btn btn-success save"
                                             value="Create"
                                             i18n:attributes="value"
                                             />
                                         <input
                                             type="submit"
                                             name="form.button.Cancel"
-                                            class="plone-btn plone-btn-default cancel"
+                                            class="btn btn-default cancel"
                                             value="Cancel"
                                             i18n:attributes="value"
                                             />
@@ -272,19 +272,19 @@
 
                             <form method="get" target="_blank" tal:attributes="action string:${context/absolute_url}/++theme++${theme/name}/@@download-zip">
                                 <button i18n:translate=""
-                                    class="plone-btn plone-btn-default">Download</button>
+                                    class="btn btn-default">Download</button>
                             </form>
 
                             <form method="get" tal:attributes="action string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-mapper">
                                 <button tal:condition="theme/editable"
-                                    class="plone-btn plone-btn-default"
+                                    class="btn btn-default"
                                     i18n:translate="">Modify theme</button>
                                 <button tal:condition="not:theme/editable"
-                                    class="plone-btn plone-btn-default"
+                                    class="btn btn-default"
                                     i18n:translate="">Inspect theme</button>
                             </form>
 
-                            <a href="#" class="plone-btn plone-btn-danger pat-plone-modal"
+                            <a href="#" class="btn btn-danger pat-plone-modal"
                                 tal:condition="theme/editable"
                                 tal:attributes="href string:#modal-delete-${theme/name}"
                                 i18n:translate="">Delete</a>
@@ -308,17 +308,17 @@
                                     <input type="hidden" name="themes:list"
                                         id="deleteConfirmTheme"
                                         tal:attributes="value string:${theme/name}" />
-                                    <div class="plone-btn-group">
+                                    <div class="btn-group">
                                         <input
                                             type="submit"
                                             name="form.button.DeleteSelected"
-                                            class="plone-btn plone-btn-danger save"
+                                            class="btn btn-danger save"
                                             value="Delete"
                                             i18n:attributes="value"
                                             />
                                         <input
                                             type="submit"
-                                            class="plone-btn plone-btn-default cancel"
+                                            class="btn btn-default cancel"
                                             name="form.button.Cancel"
                                             value="Cancel"
                                             i18n:attributes="value"
@@ -626,18 +626,18 @@
             </div>
 
 
-            <div class="plone-btn-group">
+            <div class="btn-group">
                 <input
                     type="submit"
                     name="form.button.AdvancedSave"
-                    class="plone-btn plone-btn-success save"
+                    class="btn btn-success save"
                     value="Save"
                     i18n:attributes="value" />
 
                 <input
                     type="submit"
                     name="form.button.Cancel"
-                    class="plone-btn plone-btn-default cancel"
+                    class="btn btn-default cancel"
                     value="Cancel"
                     i18n:attributes="value" />
             </div>
@@ -653,7 +653,7 @@
 </div>
 
 <!-- New theme overlay -->
-<div id="overlay-new-theme" class="plone-modal">
+<!-- <div id="overlay-new-theme" class="plone-modal">
     <h1 id="overlayTitleNewTheme"  class="documentFirstHeading" i18n:translate="theming_controlpanel_new_theme">New theme</h1>
 
     <p class="documentDescription" i18n:translate="theming_controlpanel_new_theme_description">
@@ -708,18 +708,18 @@
             </div>
         </div>
 
-        <div class="plone-btn-group">
+        <div class="btn-group">
             <input
                 type="submit"
                 name="form.button.CreateTheme"
-                class="plone-btn plone-btn-success save"
+                class="btn btn-success save"
                 value="Create"
                 i18n:attributes="value"
                 />
             <input
                 type="submit"
                 name="form.button.Cancel"
-                class="plone-btn plone-btn-default cancel"
+                class="btn btn-default cancel"
                 value="Cancel"
                 i18n:attributes="value"
                 />
@@ -728,10 +728,10 @@
         <input tal:replace="structure context/@@authenticator/authenticator" />
 
     </form>
-</div>
+</div> -->
 
 <!-- Upload overlay -->
-<div id="overlay-upload" class="plone-modal">
+<div id="overlay-upload" class="modal">
     <div>
         <h1 class="documentFirstHeading" i18n:translate="theming_controlpanel_upload">Upload theme</h1>
 
@@ -798,18 +798,18 @@
                 </div>
             </div>
 
-            <div class="plone-btn-group">
+            <div class="btn-group">
                 <input
                     type="submit"
                     name="form.button.Import"
-                    class="plone-btn plone-btn-success save"
+                    class="btn btn-success save"
                     value="Import"
                     i18n:attributes="value" />
 
                 <input
                     type="submit"
                     name="form.button.Cancel"
-                    class="plone-btn plone-btn-default cancel"
+                    class="btn btn-default cancel"
                     value="Cancel"
                     i18n:attributes="value" />
             </div>
