@@ -163,30 +163,30 @@
                                 <button
                                     tal:condition="not:theme/selected"
                                     i18n:translate=""
-                                    class="btn btn-default"
+                                    class="btn btn-primary"
                                     type="submit"
                                     name="form.button.Enable">Activate</button>
                                 <button
                                     tal:condition="theme/selected"
                                     i18n:translate=""
-                                    class="btn btn-default"
+                                    class="btn btn-primary"
                                     type="submit"
                                     name="form.button.Enable">Update</button>
                                 <button
                                     tal:condition="theme/selected"
                                     i18n:translate=""
-                                    class="btn btn-default"
+                                    class="btn btn-secondary"
                                     type="submit"
                                     name="form.button.Disable">Deactivate</button>
                                 <button
                                     tal:condition="theme/selected"
                                     i18n:translate=""
-                                    class="btn btn-default"
+                                    class="btn btn-primary"
                                     type="submit"
                                     name="form.button.InvalidateCache">Clear Cache</button>
                             </form>
 
-                            <!-- <a class="btn btn-default pat-plone-modal"
+                            <!-- <a class="btn btn-primary pat-plone-modal"
                                 data-pat-plone-modal="{'buttons': ['.btn']}"
                                 tal:attributes="href python:'#modal-copy-{0}'.format(theme['name'].replace('.', '-'))"
                                 i18n:translate="">Copy</a> -->
@@ -259,7 +259,7 @@
                                         <input
                                             type="submit"
                                             name="form.button.Cancel"
-                                            class="btn btn-default cancel"
+                                            class="btn btn-primary cancel"
                                             value="Cancel"
                                             i18n:attributes="value"
                                             />
@@ -272,15 +272,15 @@
 
                             <form method="get" target="_blank" tal:attributes="action string:${context/absolute_url}/++theme++${theme/name}/@@download-zip">
                                 <button i18n:translate=""
-                                    class="btn btn-default">Download</button>
+                                    class="btn btn-primary">Download</button>
                             </form>
 
                             <form method="get" tal:attributes="action string:${context/portal_url}/++theme++${theme/name}/@@theming-controlpanel-mapper">
                                 <button tal:condition="theme/editable"
-                                    class="btn btn-default"
+                                    class="btn btn-primary"
                                     i18n:translate="">Modify theme</button>
                                 <button tal:condition="not:theme/editable"
-                                    class="btn btn-default"
+                                    class="btn btn-primary"
                                     i18n:translate="">Inspect theme</button>
                             </form>
 
@@ -318,7 +318,7 @@
                                             />
                                         <input
                                             type="submit"
-                                            class="btn btn-default cancel"
+                                            class="btn btn-primary cancel"
                                             name="form.button.Cancel"
                                             value="Cancel"
                                             i18n:attributes="value"
@@ -637,7 +637,7 @@
                 <input
                     type="submit"
                     name="form.button.Cancel"
-                    class="btn btn-default cancel"
+                    class="btn btn-primary cancel"
                     value="Cancel"
                     i18n:attributes="value" />
             </div>
@@ -719,7 +719,7 @@
             <input
                 type="submit"
                 name="form.button.Cancel"
-                class="btn btn-default cancel"
+                class="btn btn-primary cancel"
                 value="Cancel"
                 i18n:attributes="value"
                 />
@@ -809,7 +809,7 @@
                 <input
                     type="submit"
                     name="form.button.Cancel"
-                    class="btn btn-default cancel"
+                    class="btn btn-primary cancel"
                     value="Cancel"
                     i18n:attributes="value" />
             </div>
