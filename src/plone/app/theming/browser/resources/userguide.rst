@@ -881,7 +881,7 @@ To copy the ``<base />`` tag (necessary for Plone's links to work)::
 
     <replace css:theme="base" css:content="base" />
 
-If there is no ``<base />`` tag in the theme, you can do:
+If there is no ``<base />`` tag in the theme, you can do::
 
     <before css:theme-children="head" css:content="base" />
 
@@ -966,7 +966,7 @@ directory::
     </object>
 
 There is one important caveat, however. Your stylesheet may include relative
-URL references of the following form:
+URL references of the following form::
 
     background-image: url(../images/bg.jpg);
 
