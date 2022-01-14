@@ -31,22 +31,6 @@
         permission="zope2.View"
         />
 
-    <browser:page
-        name="theming-controlpanel-mapper"
-        for="plone.resource.interfaces.IResourceDirectory"
-        class=".mapper.ThemeMapper"
-        template="mapper.pt"
-        permission="plone.app.controlpanel.Themes"
-        />
-
-    <browser:page
-        name="theming-controlpanel-mapper-getframe"
-        for="plone.resource.interfaces.IResourceDirectory"
-        class=".mapper.ThemeMapper"
-        attribute="getFrame"
-        permission="plone.app.controlpanel.Themes"
-        />
-
 	<browser:page
         name="themeFileUpload"
         for="*"
