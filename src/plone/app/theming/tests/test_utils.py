@@ -576,17 +576,6 @@ class TestAttackVector(unittest.TestCase):
             # Can you view the portal anonymously?
             browser = self.get_anon_browser()
             browser.open(self.portal.absolute_url())
-            # Can you see the preview as admin?
-            # This can give errors that are otherwise swallowed by the
-            # diazo/theming transform, effectively disabling the theme.
-            if theme.__name__ in ("another-theme", "secondary-theme"):
-                # Some of the test themes give problems.
-                # We are only interested in the Sunburst and other official themes.
-                continue
+            # Can you view the portal as admin anonymously?
             browser = self.get_admin_browser()
-            browser.open(
-                self.portal.absolute_url()
-                + theme.absolutePrefix
-                + "/@@theming-controlpanel-mapper-getframe?path=/&theme=apply"
-                + "&forms=disable&links=replace&title=Preview"
-            )
+            browser.open(self.portal.absolute_url())
