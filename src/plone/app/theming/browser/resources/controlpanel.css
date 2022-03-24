@@ -2,10 +2,14 @@ body {
     font-family: Roboto, sans-serif;
 }
 
+
 body a {
     color: #888
 }
 
+body aside, body article{
+    padding: 1rem;
+}
 fieldset {
     color: #333;
 }
@@ -32,7 +36,7 @@ fieldset label {
     margin-bottom: 10px;
 }
 
-a.plone-btn {
+a.btn {
     text-decoration: none;
 }
 
@@ -110,6 +114,6 @@ a.plone-btn {
     font-size: smaller;
 }
 
-.plone-btn-group {
+.btn-group {
     margin: 10px;
 }

@@ -10,7 +10,6 @@ from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.plugins.utils import getPlugins
 from plone.app.theming.plugins.utils import getPluginSettings
 from plone.app.theming.utils import applyTheme
-from plone.app.theming.utils import createThemeFromTemplate
 from plone.app.theming.utils import extractThemeInfo
 from plone.app.theming.utils import getAvailableThemes
 from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
@@ -20,7 +19,6 @@ from plone.memoize.instance import memoize
 from plone.registry.interfaces import IRegistry
 from plone.resource.utils import queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 from Products.CMFPlone.utils import safe_nativestring
 from Products.CMFPlone.interfaces import ILinkSchema
 from Products.statusmessages.interfaces import IStatusMessage
@@ -341,9 +339,8 @@ class ThemingControlpanel(BrowserView):
 
             if not self.errors:
                 self.redirect(
-                    "{0}/++theme++{1}/@@theming-controlpanel-mapper".format(
+                    "{0}/@@theming-controlpanel".format(
                         self.site_url,
-                        themeData.__name__
                     )
                 )
                 return False
@@ -355,53 +352,6 @@ class ThemingControlpanel(BrowserView):
 
                 self.renderOverlay('upload')
                 return True
-
-        if 'form.button.CreateTheme' in form:
-            self.authorize()
-
-            title = form.get('title')
-            description = form.get('description') or ''
-            baseOn = form.get('baseOn', TEMPLATE_THEME)
-            enableImmediately = form.get('enableImmediately', True)
-
-            if not title:
-                self.errors['title'] = _(u"Title is required")
-
-                IStatusMessage(self.request).add(
-                    _(u"There were errors"),
-                    'error'
-                )
-
-                self.renderOverlay('new-theme')
-                return True
-
-            else:
-
-                if any(x.__name__ == title for x in getZODBThemes()):
-                    self.errors['title'] = _(u"Duplicate title")
-
-                    IStatusMessage(self.request).add(
-                        _(u"This title is already in use"),
-                        'error'
-                    )
-
-                    return True
-
-                name = createThemeFromTemplate(title, description, baseOn)
-                self._setup()
-
-                if enableImmediately:
-                    themeData = self.getThemeData(self.availableThemes, name)
-                    applyTheme(themeData)
-                    self.theme_settings.enabled = True
-
-                self.redirect(
-                    "{0}/++theme++{1}/@@theming-controlpanel-mapper".format(
-                        self.site_url,
-                        name
-                    )
-                )
-                return False
 
         if 'form.button.DeleteSelected' in form:
             self.authorize()
