@@ -9,6 +9,19 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.0a5 (2022-04-04)
+--------------------
+
+New features:
+
+
+- Deactivate copy button and modal in theming control panel. [MrTango] (#205)
+- Load barceloneta css in theming control panel to have it styled. [MrTango] (#205)
+- Remove all thememapper functionality from theming control panel,
+  including Inspect/Modify theme and the Preview. [maurits] (#205)
+- Use pat-code-editor for custom-css field. [MrTango] (#205)
+
+
 5.0.0a4 (2021-11-23)
 --------------------
 
