@@ -14,7 +14,6 @@ from repoze.xmliter.utils import getHTMLSerializer
 from zope.component import adapter
 from zope.interface import implementer
 from zope.interface import Interface
-from zope.location.interfaces import ILocation
 
 import logging
 
@@ -26,7 +25,7 @@ LOGGER = logging.getLogger('plone.app.theming')
 
 
 @implementer(ITransform)
-@adapter(ILocation, IThemingLayer)
+@adapter(Interface, IThemingLayer)
 class ThemeTransform(object):
     """Late stage in the 8000's transform chain. When plone.app.blocks is
     used, we can benefit from lxml parsing having taken place already.
