@@ -488,9 +488,7 @@
 
                     <div
                         tal:define="error errors/parameterExpressions | nothing;
-                                    parameterExpressions python:view.theme_settings.parameterExpressions or {};
-                                    parameterExpressions python:['%s = %s' % (k,v) for k,v in parameterExpressions.items()];
-                                    parameterExpressions python:request.get('parameterExpressions', parameterExpressions)"
+                                    parameterExpressions view/parameterExpressions"
                         tal:attributes="class python:'field error' if error else 'field'">
 
                         <label for="parameterExpressions" i18n:translate="label_parameter_expressions">Parameter expressions</label>

@@ -68,6 +68,18 @@ class ThemingControlpanel(BrowserView):
             return hostname_blacklist
         return [safe_nativestring(host) for host in hostname_blacklist]
 
+    @property
+    def parameterExpressions(self):
+        parameterExpressions = self.theme_settings.parameterExpressions or {}
+        parameterExpressions = ['%s = %s' % (k,v) for k,v in parameterExpressions.items()]
+        parameterExpressions = self.request.get('parameterExpressions', parameterExpressions)
+        results = list()
+        for elem in parameterExpressions:
+            if isinstance(elem, six.binary_type):
+                elem = elem.decode('utf-8')
+            results.append(elem)
+        return results
+
     def __call__(self):
         self.pskin = getToolByName(self.context, 'portal_skins')
         if self.update():
@@ -188,6 +200,8 @@ class ThemingControlpanel(BrowserView):
 
             for line in parameterExpressionsList:
                 try:
+                    if isinstance(line, six.binary_type):
+                        line = line.decode('utf-8')
                     name, expression = line.split('=', 1)
                     name = str(name.strip())
                     expression = str(expression.strip())
