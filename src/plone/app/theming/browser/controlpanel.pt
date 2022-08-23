@@ -181,7 +181,7 @@
 
                             <form method="get" target="_blank" tal:attributes="action string:${context/absolute_url}/++theme++${theme/name}/@@download-zip">
                                 <button i18n:translate=""
-                                    class="btn btn-primary">Download</button>
+                                    class="btn btn-primary mt-1 px-3">Download</button>
                             </form>
 
                             <a href="#" class="btn btn-danger pat-plone-modal"
