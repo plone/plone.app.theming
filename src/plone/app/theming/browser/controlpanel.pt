@@ -156,32 +156,32 @@
                                 <button
                                     tal:condition="not:theme/selected"
                                     i18n:translate=""
-                                    class="btn btn-primary"
+                                    class="btn btn-outline-primary btn-light btn-sm"
                                     type="submit"
                                     name="form.button.Enable">Activate</button>
                                 <button
                                     tal:condition="theme/selected"
                                     i18n:translate=""
-                                    class="btn btn-primary"
+                                    class="btn btn-outline-primary btn-light btn-sm"
                                     type="submit"
                                     name="form.button.Enable">Update</button>
                                 <button
                                     tal:condition="theme/selected"
                                     i18n:translate=""
-                                    class="btn btn-secondary"
+                                    class="btn btn-outline-primary btn-light btn-sm"
                                     type="submit"
                                     name="form.button.Disable">Deactivate</button>
                                 <button
                                     tal:condition="theme/selected"
                                     i18n:translate=""
-                                    class="btn btn-primary"
+                                    class="btn btn-outline-primary btn-light btn-sm"
                                     type="submit"
                                     name="form.button.InvalidateCache">Clear Cache</button>
                             </form>
 
                             <form method="get" target="_blank" tal:attributes="action string:${context/absolute_url}/++theme++${theme/name}/@@download-zip">
                                 <button i18n:translate=""
-                                    class="btn btn-primary mt-1 px-3">Download</button>
+                                    class="btn btn-outline-primary btn-light btn-sm">Download</button>
                             </form>
 
                             <a href="#" class="btn btn-danger pat-plone-modal"
