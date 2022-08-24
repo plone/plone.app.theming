@@ -97,7 +97,7 @@
             or select an existing theme from a the list below.
         </p>
 
-        <div class="btn-group">
+        <div class="m-1">
             <!-- <a href="#overlay-new-theme" class="btn btn-large btn-primary pat-plone-modal"
                 data-pat-plone-modal="width: 80%"
                 i18n:translate="">New theme</a> -->
