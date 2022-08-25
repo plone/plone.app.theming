@@ -200,7 +200,7 @@ class ThemingControlpanel(BrowserView):
 
             for line in parameterExpressionsList:
                 try:
-                    if isinstance(line, six.binary_type):
+                    if six.PY3 and isinstance(line, six.binary_type):
                         line = line.decode('utf-8')
                     name, expression = line.split('=', 1)
                     name = str(name.strip())
