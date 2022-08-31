@@ -9,6 +9,16 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.0b1 (2022-08-31)
+--------------------
+
+Bug fixes:
+
+
+- The action buttons in the theming control panel have been improved
+  [rohnsha0] (#212)
+
+
 5.0.0a5 (2022-04-04)
 --------------------
 
