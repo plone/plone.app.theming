@@ -452,11 +452,12 @@ This file may look like this::
     preview = preview.png
     enabled-bundles = mybundle
     disabled-bundles = plone
-    development-css = /++theme++barceloneta/less/barceloneta.plone.less
-    production-css = /++theme++barceloneta/less/barceloneta-compiled.css
+    development-css = /++theme++barceloneta/css/barceloneta.css
+    production-css = /++theme++barceloneta/css/barceloneta.min.css
     development-js = /++theme++barceloneta/barceloneta.js
     production-js = /++theme++barceloneta/barceloneta.min.js
-    tinymce-content-css = /++theme++barceloneta/tinymce-styles.css
+    tinymce-content-css = /++theme++barceloneta/barceloneta.min.css
+    tinymce-styles-css = /++theme++barceloneta/custom-styles.css
 
 
 As shown here, the manifest file can be used to provide a more user friendly
