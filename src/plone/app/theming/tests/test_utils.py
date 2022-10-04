@@ -242,15 +242,20 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(theme.enabled_bundles, ['plone'])
         self.assertEqual(theme.disabled_bundles, ['foobar'])
 
-        expected_dev_css = u"/++%s++%s/less/barceloneta.plone.less" % (
+        expected_dev_css = u"/++%s++%s/css/barceloneta.css" % (
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
-        expected_prod_css = u"/++%s++%s/less/barceloneta-compiled.css" % (
+        expected_prod_css = u"/++%s++%s/css/barceloneta.min.css" % (
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
-        expected_tinymce = u"/++%s++%s/less/barceloneta-compiled.css" % (
+        expected_tinymce_content_css = u"/++%s++%s/css/barceloneta.min.css" % (
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
+        expected_tinymce_styles_css = (
+            u"/++%s++%s/css/custom-format-styles.css" % (
+                THEME_RESOURCE_NAME, title.replace(" ", "-"))
+        )
         self.assertEqual(theme.development_css, expected_dev_css)
         self.assertEqual(theme.production_css, expected_prod_css)
-        self.assertEqual(theme.tinymce_content_css, expected_tinymce)
+        self.assertEqual(theme.tinymce_content_css, expected_tinymce_content_css)
+        self.assertEqual(theme.tinymce_styles_css, expected_tinymce_styles_css)
 
         expected_dev_js = u"/++%s++%s/script.js" % (
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
@@ -285,15 +290,20 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(theme.enabled_bundles, ['plone'])
         self.assertEqual(theme.disabled_bundles, ['foobar'])
 
-        expected_dev_css = u"++%s++%s/less/barceloneta.plone.less" % (
+        expected_dev_css = u"++%s++%s/css/barceloneta.css" % (
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
-        expected_prod_css = u"++%s++%s/less/barceloneta-compiled.css" % (
+        expected_prod_css = u"++%s++%s/css/barceloneta.min.css" % (
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
-        expected_tinymce = u"++%s++%s/less/barceloneta-compiled.css" % (
+        expected_tinymce_content_css = u"++%s++%s/css/barceloneta.min.css" % (
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
+        expected_tinymce_styles_css = (
+            u"++%s++%s/css/custom-format-styles.css" % (
+                THEME_RESOURCE_NAME, title.replace(" ", "-"))
+        )
         self.assertEqual(theme.development_css, expected_dev_css)
         self.assertEqual(theme.production_css, expected_prod_css)
-        self.assertEqual(theme.tinymce_content_css, expected_tinymce)
+        self.assertEqual(theme.tinymce_content_css, expected_tinymce_content_css)
+        self.assertEqual(theme.tinymce_styles_css, expected_tinymce_styles_css)
 
         expected_dev_js = u"++%s++%s/script.js" % (
             THEME_RESOURCE_NAME, title.replace(" ", "-"))

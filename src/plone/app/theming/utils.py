@@ -638,7 +638,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
         manifest.set('theme', 'rules', rules)
 
     paths_to_fix = ['development-css', 'production-css', 'tinymce-content-css',
-                    'development-js', 'production-js']
+                    'tinymce-styles-css', 'development-js', 'production-js']
     for var_path in paths_to_fix:
         if not manifest.has_option('theme', var_path):
             continue
