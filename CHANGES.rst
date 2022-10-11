@@ -9,6 +9,16 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.0b2 (2022-10-11)
+--------------------
+
+Bug fixes:
+
+
+- Fix for `tinymce-styles-css` when copying theme.
+  [petschki] (#214)
+
+
 5.0.0b1 (2022-08-31)
 --------------------
 
