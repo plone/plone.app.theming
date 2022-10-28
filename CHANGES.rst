@@ -9,6 +9,16 @@ Changelog
 
 .. towncrier release notes start
 
+4.1.8 (2022-10-28)
+------------------
+
+Bug fixes:
+
+
+- Make sure Parameters Expressions are string when saving custom styles
+  [frapell] (#209)
+
+
 4.1.7 (2021-07-26)
 ------------------
 
