@@ -31,14 +31,6 @@ import logging
 import zipfile
 
 
-try:
-    # Zope 4
-    from Products.Five.browser.decode import processInputs
-except ImportError:
-    # Zope 5
-    processInputs = None
-
-
 logger = logging.getLogger('plone.app.theming')
 
 
@@ -116,8 +108,6 @@ class ThemingControlpanel(BrowserView):
 
     def update(self):
         # XXX: complexity too high: refactoring needed
-        if processInputs is not None:
-            processInputs(self.request)
         self._setup()
         self.errors = {}
         form = self.request.form
