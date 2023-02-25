@@ -1,21 +1,9 @@
-# -*- coding: utf-8 -*-
+from configparser import ConfigParser
 from plone.app.theming.interfaces import IThemePlugin
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.memoize.ram import cache
 from plone.resource.manifest import MANIFEST_FILENAME
 from zope.component import getUtilitiesFor
-
-import six
-
-try:
-    # Python 3.  Watch out for DeprecationWarning:
-    # The SafeConfigParser class has been renamed to ConfigParser in
-    # Python 3.2. This alias will be removed in future versions.
-    # Use ConfigParser directly instead.
-    from configparser import ConfigParser as SafeConfigParser
-except ImportError:
-    # Python 2
-    from ConfigParser import SafeConfigParser
 
 
 def pluginsCacheKey(fun):
@@ -52,7 +40,7 @@ def sortDependencies(plugins):
 
     if waiting:
         raise ValueError(
-            "Could not resolve dependencies for: {0:s}".format(waiting)
+            f"Could not resolve dependencies for: {waiting:s}"
         )
 
 
@@ -83,17 +71,10 @@ def getPluginSettings(themeDirectory, plugins=None):
     manifestContents = {}
 
     if themeDirectory.isFile(MANIFEST_FILENAME):
-        parser = SafeConfigParser()
+        parser = ConfigParser()
         fp = themeDirectory.openFile(MANIFEST_FILENAME)
         try:
-            if six.PY2:
-                if hasattr(parser, "read_file"):
-                    # backports.configparser
-                    parser.read_file(fp)
-                else:
-                    parser.readfp(fp)
-            else:
-                parser.read_string(fp.read().decode())
+            parser.read_string(fp.read().decode())
             for section in parser.sections():
                 manifestContents[section] = {}
                 for name, value in parser.items(section):
@@ -107,7 +88,7 @@ def getPluginSettings(themeDirectory, plugins=None):
     pluginSettings = {}
     for name, plugin in plugins:
         pluginSettings[name] = manifestContents.get(
-            "{0:s}:{1:s}".format(THEME_RESOURCE_NAME, name),
+            f"{THEME_RESOURCE_NAME:s}:{name:s}",
             {}
         )
     return pluginSettings

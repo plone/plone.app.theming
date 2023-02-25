@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from App.config import getConfiguration
 from lxml import etree
 from os import environ
@@ -26,7 +25,7 @@ LOGGER = logging.getLogger('plone.app.theming')
 
 @implementer(ITransform)
 @adapter(Interface, IThemingLayer)
-class ThemeTransform(object):
+class ThemeTransform:
     """Late stage in the 8000's transform chain. When plone.app.blocks is
     used, we can benefit from lxml parsing having taken place already.
     """

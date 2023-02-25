@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from setuptools import find_packages
 from setuptools import setup
 
@@ -65,7 +64,6 @@ setup(
         'repoze.xmliter>=0.3',
         'roman',
         'setuptools',
-        'six',
         'zope.traversing',
     ],
     extras_require={

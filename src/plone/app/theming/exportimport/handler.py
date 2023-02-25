@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from lxml import etree
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.utils import applyTheme
@@ -33,10 +32,10 @@ def importTheme(context):
                 break
 
         if themeInfo is None:
-            raise ValueError("Theme {0:s} is not available".format(themeName))
+            raise ValueError(f"Theme {themeName:s} is not available")
 
         applyTheme(themeInfo)
-        logger.info('Theme {0:s} applied'.format(themeName))
+        logger.info(f'Theme {themeName:s} applied')
 
     # enable/disable theme
     themeEnabled = tree.find("enabled")
@@ -54,5 +53,5 @@ def importTheme(context):
         logger.info('Theme disabled')
     else:
         raise ValueError(
-            "{0:s} is not a valid value for <enabled />".format(themeEnabled)
+            f"{themeEnabled:s} is not a valid value for <enabled />"
         )

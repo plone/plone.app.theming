@@ -1,0 +1,3 @@
+Import more from plone.base.
+Removed compatibility code for Python 2 and Zope 4.
+[maurits]

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
 from plone.app.theming.testing import THEMING_INTEGRATION_TESTING
 from plone.app.theming.utils import applyTheme
@@ -27,7 +26,7 @@ RULES = """<?xml version="1.0" encoding="UTF-8"?>
 </rules>
 """
 # The theme will contain a message:
-MESSAGE = u"Hello from a temporary directory."
+MESSAGE = "Hello from a temporary directory."
 # We have a sample theme file here:
 HERE = os.path.dirname(__file__)
 PACKAGE_THEME_FILENAME = "package_theme.txt"
@@ -145,8 +144,8 @@ class TestIntegration(unittest.TestCase):
 
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
 
-        settings.rules = u"/++theme++foo/rules.xml"
-        settings.absolutePrefix = u"/++theme++foo"
+        settings.rules = "/++theme++foo/rules.xml"
+        settings.absolutePrefix = "/++theme++foo"
         settings.parameterExpressions = {}
 
         applyTheme(None)
@@ -165,7 +164,7 @@ class TestIntegration(unittest.TestCase):
 
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
         settings.enabled = True
-        settings.rules = u"/++theme++foo/rules.xml"
+        settings.rules = "/++theme++foo/rules.xml"
 
         request = self.layer['request']
 
@@ -181,7 +180,7 @@ class TestIntegration(unittest.TestCase):
 
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
         settings.enabled = True
-        settings.rules = u"/++theme++foo/rules.xml"
+        settings.rules = "/++theme++foo/rules.xml"
 
         request = self.layer['request']
         request.set('BASE1', 'http://nohost/path/to/site')
@@ -207,11 +206,11 @@ class TestIntegration(unittest.TestCase):
         self.assertTrue(title in titles)
 
         theme = getTheme(themeName)
-        expected_prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME,
+        expected_prefix = "/++{}++{}".format(THEME_RESOURCE_NAME,
                                           title.replace(" ", "-"))
         self.assertEqual(theme.absolutePrefix, expected_prefix)
 
-        expected_rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME,
+        expected_rules = "/++{}++{}/{}".format(THEME_RESOURCE_NAME,
                                             title.replace(" ", "-"),
                                             RULE_FILENAME)
         self.assertEqual(theme.rules, expected_rules)
@@ -230,11 +229,11 @@ class TestIntegration(unittest.TestCase):
         self.assertTrue(title in titles)
 
         theme = getTheme(themeName)
-        expected_prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME,
+        expected_prefix = "/++{}++{}".format(THEME_RESOURCE_NAME,
                                           title.replace(" ", "-"))
         self.assertEqual(theme.absolutePrefix, expected_prefix)
 
-        expected_rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME,
+        expected_rules = "/++{}++{}/{}".format(THEME_RESOURCE_NAME,
                                             title.replace(" ", "-"),
                                             RULE_FILENAME)
         self.assertEqual(theme.rules, expected_rules)
@@ -242,14 +241,14 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(theme.enabled_bundles, ['plone'])
         self.assertEqual(theme.disabled_bundles, ['foobar'])
 
-        expected_dev_css = u"/++%s++%s/css/barceloneta.css" % (
+        expected_dev_css = "/++{}++{}/css/barceloneta.css".format(
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
-        expected_prod_css = u"/++%s++%s/css/barceloneta.min.css" % (
+        expected_prod_css = "/++{}++{}/css/barceloneta.min.css".format(
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
-        expected_tinymce_content_css = u"/++%s++%s/css/barceloneta.min.css" % (
+        expected_tinymce_content_css = "/++{}++{}/css/barceloneta.min.css".format(
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
         expected_tinymce_styles_css = (
-            u"/++%s++%s/css/custom-format-styles.css" % (
+            "/++{}++{}/css/custom-format-styles.css".format(
                 THEME_RESOURCE_NAME, title.replace(" ", "-"))
         )
         self.assertEqual(theme.development_css, expected_dev_css)
@@ -257,9 +256,9 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(theme.tinymce_content_css, expected_tinymce_content_css)
         self.assertEqual(theme.tinymce_styles_css, expected_tinymce_styles_css)
 
-        expected_dev_js = u"/++%s++%s/script.js" % (
+        expected_dev_js = "/++{}++{}/script.js".format(
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
-        expected_prod_js = u"/++%s++%s/script.min.js" % (
+        expected_prod_js = "/++{}++{}/script.min.js".format(
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
         self.assertEqual(theme.development_js, expected_dev_js)
         self.assertEqual(theme.production_js, expected_prod_js)
@@ -278,11 +277,11 @@ class TestIntegration(unittest.TestCase):
         self.assertTrue(title in titles)
 
         theme = getTheme(themeName)
-        expected_prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME,
+        expected_prefix = "/++{}++{}".format(THEME_RESOURCE_NAME,
                                           title.replace(" ", "-"))
         self.assertEqual(theme.absolutePrefix, expected_prefix)
 
-        expected_rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME,
+        expected_rules = "/++{}++{}/{}".format(THEME_RESOURCE_NAME,
                                            title.replace(" ", "-"),
                                            RULE_FILENAME)
         self.assertEqual(theme.rules, expected_rules)
@@ -290,14 +289,14 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(theme.enabled_bundles, ['plone'])
         self.assertEqual(theme.disabled_bundles, ['foobar'])
 
-        expected_dev_css = u"++%s++%s/css/barceloneta.css" % (
+        expected_dev_css = "++{}++{}/css/barceloneta.css".format(
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
-        expected_prod_css = u"++%s++%s/css/barceloneta.min.css" % (
+        expected_prod_css = "++{}++{}/css/barceloneta.min.css".format(
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
-        expected_tinymce_content_css = u"++%s++%s/css/barceloneta.min.css" % (
+        expected_tinymce_content_css = "++{}++{}/css/barceloneta.min.css".format(
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
         expected_tinymce_styles_css = (
-            u"++%s++%s/css/custom-format-styles.css" % (
+            "++{}++{}/css/custom-format-styles.css".format(
                 THEME_RESOURCE_NAME, title.replace(" ", "-"))
         )
         self.assertEqual(theme.development_css, expected_dev_css)
@@ -305,9 +304,9 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(theme.tinymce_content_css, expected_tinymce_content_css)
         self.assertEqual(theme.tinymce_styles_css, expected_tinymce_styles_css)
 
-        expected_dev_js = u"++%s++%s/script.js" % (
+        expected_dev_js = "++{}++{}/script.js".format(
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
-        expected_prod_js = u"++%s++%s/script.min.js" % (
+        expected_prod_js = "++{}++{}/script.min.js".format(
             THEME_RESOURCE_NAME, title.replace(" ", "-"))
         self.assertEqual(theme.development_js, expected_dev_js)
         self.assertEqual(theme.production_js, expected_prod_js)
@@ -320,17 +319,17 @@ class TestIntegration(unittest.TestCase):
             createThemeFromTemplate(title, description,
                                             baseOn="another-theme")
         except UnicodeEncodeError:
-            self.fail(msg=u"Unicode Encode Error")
+            self.fail(msg="Unicode Encode Error")
 
     def test_createThemeFromTemplate_ja_unicode_title(self):
         from plone.app.theming.utils import createThemeFromTemplate
-        title = u"copy of test theme by 日本語"
-        description = u"test theme by 日本語"
+        title = "copy of test theme by 日本語"
+        description = "test theme by 日本語"
         try:
             createThemeFromTemplate(title, description,
                                             baseOn="another-theme")
         except UnicodeEncodeError:
-            self.fail(msg=u"Unicode Encode Error")
+            self.fail(msg="Unicode Encode Error")
 
 
 class TestUnit(unittest.TestCase):
@@ -348,7 +347,7 @@ class TestUnit(unittest.TestCase):
             theme = extractThemeInfo(zf)
 
             self.assertEqual(theme.__name__, 'default_rules')
-            self.assertEqual(theme.rules, u'/++theme++default_rules/rules.xml')
+            self.assertEqual(theme.rules, '/++theme++default_rules/rules.xml')
             self.assertEqual(theme.absolutePrefix, '/++theme++default_rules')
 
     def test_extractThemeInfo_manifest_rules(self):
@@ -371,7 +370,7 @@ class TestUnit(unittest.TestCase):
             self.assertEqual(theme.__name__, 'manifest_prefix')
             self.assertEqual(
                 theme.rules,
-                u'/++theme++manifest_prefix/rules.xml'
+                '/++theme++manifest_prefix/rules.xml'
             )
             self.assertEqual(theme.absolutePrefix, '/foo')
             self.assertEqual(theme.title,  'Test theme')
@@ -385,7 +384,7 @@ class TestUnit(unittest.TestCase):
             self.assertEqual(theme.__name__, 'manifest_default_rules')
             self.assertEqual(
                 theme.rules,
-                u'/++theme++manifest_default_rules/rules.xml'
+                '/++theme++manifest_default_rules/rules.xml'
             )
             self.assertEqual(
                 theme.absolutePrefix,
@@ -402,7 +401,7 @@ class TestUnit(unittest.TestCase):
             self.assertEqual(theme.__name__, 'manifest_preview')
             self.assertEqual(
                 theme.rules,
-                u'/++theme++manifest_preview/rules.xml'
+                '/++theme++manifest_preview/rules.xml'
             )
             self.assertEqual(
                 theme.absolutePrefix,
@@ -442,7 +441,7 @@ class TestUnit(unittest.TestCase):
             theme = extractThemeInfo(zf)
 
             self.assertEqual(theme.__name__, 'default_rules')
-            self.assertEqual(theme.rules, u'/++theme++default_rules/rules.xml')
+            self.assertEqual(theme.rules, '/++theme++default_rules/rules.xml')
             self.assertEqual(theme.absolutePrefix, '/++theme++default_rules')
 
     def test_extractThemeInfo_with_subdirectories(self):
@@ -454,7 +453,7 @@ class TestUnit(unittest.TestCase):
             self.assertEqual(theme.__name__, 'subdirectories')
             self.assertEqual(
                 theme.rules,
-                u'/++theme++subdirectories/rules.xml'
+                '/++theme++subdirectories/rules.xml'
             )
             self.assertEqual(theme.absolutePrefix, '/++theme++subdirectories')
 
@@ -478,7 +477,7 @@ class TestAttackVector(unittest.TestCase):
         browser.handleErrors = False
         browser.addHeader(
             "Authorization",
-            "Basic {0}:{1}".format(SITE_OWNER_NAME, SITE_OWNER_PASSWORD),
+            f"Basic {SITE_OWNER_NAME}:{SITE_OWNER_PASSWORD}",
         )
         return browser
 

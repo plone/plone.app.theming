@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.resource.directory import PersistentResourceDirectory
 from Products.Five.browser import BrowserView
 
