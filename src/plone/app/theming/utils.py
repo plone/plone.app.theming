@@ -23,8 +23,8 @@ from plone.resource.utils import queryResourceDirectory
 from plone.subrequest import subrequest
 from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.interfaces import ISiteRoot
-from Products.CMFPlone.utils import safe_encode
-from Products.CMFPlone.utils import safe_unicode
+from plone.base.utils import safe_bytes
+from plone.base.utils import safe_text
 from Products.PageTemplates.Expressions import getEngine
 from six.moves.urllib.parse import urlsplit
 from zope.component import getUtility
@@ -437,7 +437,7 @@ def getAvailableThemes():
     for theme in resources:
         themes.append(getTheme(theme['name'], theme))
 
-    themes.sort(key=lambda x: safe_unicode(x.title))
+    themes.sort(key=lambda x: safe_text(x.title))
     return themes
 
 def getThemeResources(format, defaults=None, filter=None, manifestFilename=MANIFEST_FILENAME):
@@ -614,7 +614,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
                 data = fp.read()
             finally:
                 fp.close()
-            manifest.read_string(safe_unicode(data))
+            manifest.read_string(safe_text(data))
 
     if not manifest.has_section('theme'):
         manifest.add_section('theme')
@@ -659,7 +659,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
     tempfile.seek(0)
     data = tempfile.read()
     tempfile.close()
-    manifestContents = six.BytesIO(safe_encode(data))
+    manifestContents = six.BytesIO(safe_bytes(data))
 
     target.writeFile(MANIFEST_FILENAME, manifestContents)
     return themeName
