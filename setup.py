@@ -64,7 +64,6 @@ setup(
         'repoze.xmliter>=0.3',
         'roman',
         'setuptools',
-        'six',
         'zope.traversing',
     ],
     extras_require={

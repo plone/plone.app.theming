@@ -22,7 +22,6 @@ from zope.component import getUtility
 
 import os.path
 import re
-import six
 import transaction
 import unittest
 

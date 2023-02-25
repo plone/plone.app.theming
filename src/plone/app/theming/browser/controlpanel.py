@@ -28,7 +28,6 @@ from zope.publisher.browser import BrowserView
 from zope.schema.interfaces import IVocabularyFactory
 
 import logging
-import six
 import zipfile
 
 
@@ -61,8 +60,6 @@ class ThemingControlpanel(BrowserView):
     @property
     def hostname_blacklist(self):
         hostname_blacklist = self.request.get('hostnameBlacklist', [])
-        if six.PY2:
-            return hostname_blacklist
         return [safe_text(host) for host in hostname_blacklist]
 
     def __call__(self):
@@ -221,8 +218,6 @@ class ThemingControlpanel(BrowserView):
 
                 # Theme base settings
                 if themeBase is not None:
-                    if six.PY2:
-                        themeBase = themeBase.encode('utf-8')
                     self.pskin.default_skin = themeBase
                 if markSpecialLinks is not None:
                     self.mark_special_links = markSpecialLinks

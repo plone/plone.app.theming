@@ -1,5 +1,8 @@
+from configparser import ConfigParser
 from diazo.compiler import compile_theme
 from diazo.compiler import quote_param
+from io import BytesIO
+from io import StringIO
 from lxml import etree
 from plone.app.theming.interfaces import INoRequest
 from plone.app.theming.interfaces import IThemingPolicy
@@ -34,17 +37,7 @@ from zope.interface import implementer
 import logging
 import os
 import pkg_resources
-import six
 
-try:
-    # Python 3.  Watch out for DeprecationWarning:
-    # The SafeConfigParser class has been renamed to ConfigParser in
-    # Python 3.2. This alias will be removed in future versions.
-    # Use ConfigParser directly instead.
-    from configparser import ConfigParser as SafeConfigParser
-except ImportError:
-    # Python 2
-    from ConfigParser import SafeConfigParser
 
 
 LOGGER = logging.getLogger('plone.app.theming')
@@ -201,7 +194,7 @@ class InternalResolver(etree.Resolver):
             # e.g. charset=utf-8
             encoding = encoding.split('=', 1)[1].strip()
         result = result.decode(encoding)
-        if six.PY2 or content_type == 'text/html':
+        if content_type == 'text/html':
             # Note: at first the xmlcharrefreplace was only done on Python 2,
             # but Python 3 needs it as well, but only for html.
             # See https://github.com/plone/Products.CMFPlone/issues/3068
@@ -581,9 +574,6 @@ def createThemeFromTemplate(title, description, baseOn='template'):
         raise KeyError(f"Theme {baseOn:s} not found")
 
     themeName = getUtility(IURLNormalizer).normalize(title)
-    if six.PY2 and isinstance(themeName, str):
-        themeName = themeName.encode('utf-8')
-
     resources = getOrCreatePersistentResourceDirectory()
 
     resources.makeDirectory(themeName)
@@ -591,7 +581,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
 
     cloneResourceDirectory(source, target)
 
-    manifest = SafeConfigParser()
+    manifest = ConfigParser()
 
     if MANIFEST_FILENAME in target:
         # configparser can only read/write text
@@ -606,10 +596,6 @@ def createThemeFromTemplate(title, description, baseOn='template'):
     if not manifest.has_section('theme'):
         manifest.add_section('theme')
 
-    if six.PY2 and isinstance(title, str):
-        title = title.encode('utf-8')
-    if six.PY2 and isinstance(description, str):
-        description = description.encode('utf-8')
     manifest.set('theme', 'title', title)
     manifest.set('theme', 'description', description)
 
@@ -641,12 +627,12 @@ def createThemeFromTemplate(title, description, baseOn='template'):
     # plone.resource uses OFS.File which is a BytesIO objects
     # but configparser can only deal with text (StringIO).
     # So we need to do this stupid dance to write manifest.cfg
-    tempfile = six.StringIO()
+    tempfile = StringIO()
     manifest.write(tempfile)
     tempfile.seek(0)
     data = tempfile.read()
     tempfile.close()
-    manifestContents = six.BytesIO(safe_bytes(data))
+    manifestContents = BytesIO(safe_bytes(data))
 
     target.writeFile(MANIFEST_FILENAME, manifestContents)
     return themeName
