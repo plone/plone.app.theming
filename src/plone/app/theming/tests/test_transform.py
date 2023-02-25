@@ -13,7 +13,7 @@ from plone.app.theming.utils import InternalResolver
 from plone.app.theming.utils import PythonResolver
 from plone.app.theming.utils import resolvePythonURL
 from plone.registry.interfaces import IRegistry
-from plone.testing.z2 import Browser
+from plone.testing.zope import Browser
 from Products.CMFCore.Expression import Expression
 from Products.CMFCore.Expression import getExprContext
 from Products.CMFCore.utils import getToolByName
