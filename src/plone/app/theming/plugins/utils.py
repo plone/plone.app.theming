@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.app.theming.interfaces import IThemePlugin
 from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.memoize.ram import cache
@@ -52,7 +51,7 @@ def sortDependencies(plugins):
 
     if waiting:
         raise ValueError(
-            "Could not resolve dependencies for: {0:s}".format(waiting)
+            "Could not resolve dependencies for: {:s}".format(waiting)
         )
 
 
@@ -86,14 +85,7 @@ def getPluginSettings(themeDirectory, plugins=None):
         parser = SafeConfigParser()
         fp = themeDirectory.openFile(MANIFEST_FILENAME)
         try:
-            if six.PY2:
-                if hasattr(parser, "read_file"):
-                    # backports.configparser
-                    parser.read_file(fp)
-                else:
-                    parser.readfp(fp)
-            else:
-                parser.read_string(fp.read().decode())
+            parser.read_string(fp.read().decode())
             for section in parser.sections():
                 manifestContents[section] = {}
                 for name, value in parser.items(section):
@@ -107,7 +99,7 @@ def getPluginSettings(themeDirectory, plugins=None):
     pluginSettings = {}
     for name, plugin in plugins:
         pluginSettings[name] = manifestContents.get(
-            "{0:s}:{1:s}".format(THEME_RESOURCE_NAME, name),
+            "{:s}:{:s}".format(THEME_RESOURCE_NAME, name),
             {}
         )
     return pluginSettings

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from datetime import datetime
 from plone.resource.manifest import ManifestFormat
 from zope import schema
@@ -7,7 +6,7 @@ from zope.interface import Attribute
 from zope.interface import Interface
 
 
-_ = MessageFactory(u"plone")
+_ = MessageFactory("plone")
 
 THEME_RESOURCE_NAME = 'theme'
 RULE_FILENAME = 'rules.xml'
@@ -35,43 +34,43 @@ class ITheme(Interface):
     """
 
     __name__ = schema.TextLine(
-        title=_(u"Name"),
+        title=_("Name"),
     )
 
     rules = schema.TextLine(
-        title=_(u"Path to rules"),
+        title=_("Path to rules"),
     )
 
     title = schema.TextLine(
-        title=_(u"Title"),
+        title=_("Title"),
         required=False,
     )
 
     description = schema.TextLine(
-        title=_(u"Description"),
+        title=_("Description"),
         required=False,
     )
 
     absolutePrefix = schema.TextLine(
-        title=_(u"Absolute prefix"),
+        title=_("Absolute prefix"),
         required=False,
     )
 
     parameterExpressions = schema.Dict(
-        title=_(u"Parameter expressions"),
+        title=_("Parameter expressions"),
         key_type=schema.TextLine(),
         value_type=schema.TextLine(),
         required=False,
     )
 
     doctype = schema.ASCIILine(
-        title=_(u"Doctype"),
+        title=_("Doctype"),
         required=False,
         default="",
     )
 
     preview = schema.ASCIILine(
-        title=_(u"Preview image"),
+        title=_("Preview image"),
         required=False,
     )
 
@@ -81,65 +80,65 @@ class IThemeSettings(Interface):
     """
 
     enabled = schema.Bool(
-        title=_('enabled', u"Enabled"),
+        title=_('enabled', "Enabled"),
         description=_(
             'enable_theme_globally',
-            u"Use this option to enable or disable the theme globally. "
-            u"Note that the options will also affect whether the theme "
-            u"is used when this option is enabled."
+            "Use this option to enable or disable the theme globally. "
+            "Note that the options will also affect whether the theme "
+            "is used when this option is enabled."
         ),
         required=True,
         default=False,
     )
 
     currentTheme = schema.TextLine(
-        title=_('current_theme', u"Current theme"),
+        title=_('current_theme', "Current theme"),
         description=_(
             'current_theme_description',
-            u"The name of the current theme, i.e. the one applied most "
-            u"recently."),
+            "The name of the current theme, i.e. the one applied most "
+            "recently."),
         required=True,
     )
 
     rules = schema.TextLine(
-        title=_('rules_file', u"Rules file"),
+        title=_('rules_file', "Rules file"),
         description=_(
             'rules_file_path',
-            u"File path to the rules file"
+            "File path to the rules file"
         ),
         required=False,
     )
 
     absolutePrefix = schema.TextLine(
-        title=_('absolute_url_prefix', u"Absolute URL prefix"),
+        title=_('absolute_url_prefix', "Absolute URL prefix"),
         description=_(
             'convert_relative_url',
-            u"Convert relative URLs in the theme file to absolute paths "
-            u"using this prefix."
+            "Convert relative URLs in the theme file to absolute paths "
+            "using this prefix."
         ),
         required=False,
     )
 
     readNetwork = schema.Bool(
-        title=_('readNetwork', u"Read network"),
+        title=_('readNetwork', "Read network"),
         description=_(
             'network_urls_allowed',
-            u"If enabled, network (http, https) urls are allowed in "
-            u"the rules file and this config."
+            "If enabled, network (http, https) urls are allowed in "
+            "the rules file and this config."
         ),
         required=True,
         default=False,
     )
 
     hostnameBlacklist = schema.List(
-        title=_('hostname_blacklist', u"Unthemed host names"),
+        title=_('hostname_blacklist', "Unthemed host names"),
         description=_(
             'hostname_blacklist_description',
-            u"If there are hostnames that you do not want to be themed, you "
-            u"can list them here. This is useful during theme development, "
-            u"so that you can compare the themed and unthemed sites. In some "
-            u"cases, you may also want to provided an unthemed host alias for "
-            u"content administrators to be able to use 'plain' Plone."
+            "If there are hostnames that you do not want to be themed, you "
+            "can list them here. This is useful during theme development, "
+            "so that you can compare the themed and unthemed sites. In some "
+            "cases, you may also want to provided an unthemed host alias for "
+            "content administrators to be able to use 'plain' Plone."
         ),
         value_type=schema.TextLine(),
         required=False,
@@ -147,15 +146,15 @@ class IThemeSettings(Interface):
     )
 
     parameterExpressions = schema.Dict(
-        title=_('parameter_expressions', u"Parameter expressions"),
+        title=_('parameter_expressions', "Parameter expressions"),
         description=_(
             'parameter_expressions_description',
-            u"You can define parameters here, which will be passed to the "
-            u"compiled theme. In your rules file, you can refer to a "
-            u"parameter by $name. Parameters are defined using TALES "
-            u"expressions, which should evaluate to a string, a number, a "
-            u"boolean or None. Available variables are `context`, `request`, "
-            u"`portal`, `portal_state`,  and `context_state`."
+            "You can define parameters here, which will be passed to the "
+            "compiled theme. In your rules file, you can refer to a "
+            "parameter by $name. Parameters are defined using TALES "
+            "expressions, which should evaluate to a string, a number, a "
+            "boolean or None. Available variables are `context`, `request`, "
+            "`portal`, `portal_state`,  and `context_state`."
         ),
         key_type=schema.ASCIILine(),
         value_type=schema.ASCIILine(),
@@ -164,12 +163,12 @@ class IThemeSettings(Interface):
     )
 
     doctype = schema.ASCIILine(
-        title=_('doctype', u"Doctype"),
+        title=_('doctype', "Doctype"),
         description=_(
             'doctype_description',
-            u'You can specify a Doctype string which will be set on the '
-            u'for example "<!DOCTYPE html>". If left blank the default XHTML '
-            u'1.0 transitional Doctype or that set in the Diazo theme is used.'
+            'You can specify a Doctype string which will be set on the '
+            'for example "<!DOCTYPE html>". If left blank the default XHTML '
+            '1.0 transitional Doctype or that set in the Diazo theme is used.'
         ),
         required=False,
         default="",
@@ -178,29 +177,29 @@ class IThemeSettings(Interface):
     custom_css = schema.SourceText(
         title=_(
             'label_custom_css',
-            u'Custom CSS',
+            'Custom CSS',
         ),
         description=_(
             'help_custom_css',
-            u'Define your own custom CSS in the field below. This is a good '
-            u'place for quick customizations of things like colors and the '
-            u'toolbar. Definitions here will override previously defined CSS '
-            u'of Plone. Please use this only for small customizations, as it '
-            u'is hard to keep track of changes here. For bigger changes you most '
-            u'likely want to customize a full theme and make your changes '
-            u'there.',
+            'Define your own custom CSS in the field below. This is a good '
+            'place for quick customizations of things like colors and the '
+            'toolbar. Definitions here will override previously defined CSS '
+            'of Plone. Please use this only for small customizations, as it '
+            'is hard to keep track of changes here. For bigger changes you most '
+            'likely want to customize a full theme and make your changes '
+            'there.',
         ),
-        default=u"",
+        default="",
         required=False,
     )
 
     custom_css_timestamp = schema.Datetime(
         title=_(
-            u'Custom CSS Timestamp',
+            'Custom CSS Timestamp',
         ),
         description=_(
-            u'Time stamp when the custom CSS was changed. '
-            u'Used to generate custom.css with timestamp in URL.',
+            'Time stamp when the custom CSS was changed. '
+            'Used to generate custom.css with timestamp in URL.',
         ),
         defaultFactory=get_default_custom_css_timestamp,
         required=False,
@@ -233,8 +232,8 @@ class IThemePlugin(Interface):
     """
 
     dependencies = schema.Tuple(
-        title=_(u"Dependencies"),
-        description=_(u"Plugins on which this plugin depends"),
+        title=_("Dependencies"),
+        description=_("Plugins on which this plugin depends"),
         value_type=schema.ASCIILine(),
     )
 

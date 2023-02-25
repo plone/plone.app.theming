@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.app.theming.testing import THEMING_INTEGRATION_TESTING
 
 import unittest
@@ -16,7 +15,7 @@ class TestExportImport(unittest.TestCase):
         from plone.app.theming.interfaces import IThemeSettings
         from plone.app.theming.exportimport.handler import importTheme
 
-        class FauxContext(object):
+        class FauxContext:
 
             def getLogger(self, name):
                 import logging
@@ -51,7 +50,7 @@ class TestExportImport(unittest.TestCase):
         from plone.app.theming.interfaces import IThemeSettings
         from plone.app.theming.exportimport.handler import importTheme
 
-        class FauxContext(object):
+        class FauxContext:
 
             def getLogger(self, name):
                 import logging
@@ -76,7 +75,7 @@ class TestExportImport(unittest.TestCase):
     def test_import_not_found(self):
         from plone.app.theming.exportimport.handler import importTheme
 
-        class FauxContext(object):
+        class FauxContext:
 
             def getLogger(self, name):
                 import logging
@@ -96,7 +95,7 @@ class TestExportImport(unittest.TestCase):
         from plone.app.theming.interfaces import IThemeSettings
         from plone.app.theming.exportimport.handler import importTheme
 
-        class FauxContext(object):
+        class FauxContext:
 
             def getLogger(self, name):
                 import logging
@@ -121,7 +120,7 @@ class TestExportImport(unittest.TestCase):
         from plone.app.theming.interfaces import IThemeSettings
         from plone.app.theming.exportimport.handler import importTheme
 
-        class FauxContext(object):
+        class FauxContext:
 
             def getLogger(self, name):
                 import logging

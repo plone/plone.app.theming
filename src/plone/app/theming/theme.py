@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 from plone.app.theming.interfaces import ITheme
 from zope.interface import implementer
 
 
 @implementer(ITheme)
-class Theme(object):
+class Theme:
     """A theme, loaded from a resource directory
     """
 
@@ -46,4 +45,4 @@ class Theme(object):
         self.tinymce_styles_css = tinymce_styles_css
 
     def __repr__(self):
-        return '<Theme "{0:s}">'.format(self.__name__)
+        return '<Theme "{:s}">'.format(self.__name__)

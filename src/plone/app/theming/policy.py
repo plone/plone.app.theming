@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from App.config import getConfiguration
 from logging import getLogger
 from plone.app.theming import utils
@@ -24,7 +23,7 @@ def invalidateCache(settings, event):
 
 
 @implementer(IThemingPolicy)
-class ThemingPolicy(object):
+class ThemingPolicy:
 
     def __init__(self, request):
         """Adapt IRequest.
@@ -115,7 +114,7 @@ class ThemingPolicy(object):
     def getCacheKey(self, theme=None):
         if not theme:
             theme = self.getCurrentTheme()
-        key = "%s::%s" % (getSite().absolute_url(), theme)
+        key = "{}::{}".format(getSite().absolute_url(), theme)
         return key
 
     def getCacheStorage(self):
@@ -176,7 +175,7 @@ class ThemingPolicy(object):
         cache.updateTheme(themeObj)
 
 
-class ThemeCache(object):
+class ThemeCache:
     """Simple cache for the transform and theme
     """
 

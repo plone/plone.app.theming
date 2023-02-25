@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.app.theming.interfaces import IThemeSettings
 from plone.registry.interfaces import IRegistry
 from Products.Five.browser import BrowserView

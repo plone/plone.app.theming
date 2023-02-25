@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from zope.publisher.browser import BrowserView
 
 import docutils.core
@@ -17,4 +16,4 @@ class Help(BrowserView):
             writer_name='html'
         )
         html = parts['body_pre_docinfo'] + parts['fragment']
-        return """<div class="content">{0:s}</div>""".format(html)
+        return """<div class="content">{:s}</div>""".format(html)

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from diazo.compiler import compile_theme
 from diazo.compiler import quote_param
 from lxml import etree
@@ -26,7 +25,7 @@ from Products.CMFCore.interfaces import ISiteRoot
 from plone.base.utils import safe_bytes
 from plone.base.utils import safe_text
 from Products.PageTemplates.Expressions import getEngine
-from six.moves.urllib.parse import urlsplit
+from urllib.parse import urlsplit
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
 from zope.globalrequest import getRequest
@@ -52,7 +51,7 @@ LOGGER = logging.getLogger('plone.app.theming')
 
 
 @implementer(INoRequest)
-class NoRequest(object):
+class NoRequest:
     """Fallback to enable querying for the policy adapter
     even in the absence of a proper IRequest."""
 
@@ -169,7 +168,7 @@ class InternalResolver(etree.Resolver):
 
         context = findContext(request)
         portalState = queryMultiAdapter(
-            (context, request), name=u"plone_portal_state")
+            (context, request), name="plone_portal_state")
 
         if portalState is None:
             root = None
@@ -182,14 +181,14 @@ class InternalResolver(etree.Resolver):
             if len(context_path) == 0:
                 system_url = '/' + system_url
             else:
-                system_url = '/{0:s}/{1:s}'.format(
+                system_url = '/{:s}/{:s}'.format(
                     '/'.join(context_path),
                     system_url
                 )
 
         response = subrequest(system_url, root=root)
         if response.status != 200:
-            LOGGER.error("Couldn't resolve {0:s}".format(system_url))
+            LOGGER.error("Couldn't resolve {:s}".format(system_url))
             return None
         result = response.getBody()
         content_type = response.headers.get('content-type')
@@ -231,7 +230,7 @@ def getPortal():
     context = findContext(request)
     portalState = queryMultiAdapter(
         (context, request),
-        name=u"plone_portal_state"
+        name="plone_portal_state"
     )
     if portalState is None:
         return None
@@ -306,9 +305,9 @@ def createExpressionContext(context, request):
     """
 
     contextState = queryMultiAdapter(
-        (context, request), name=u"plone_context_state")
+        (context, request), name="plone_context_state")
     portalState = queryMultiAdapter(
-        (context, request), name=u"plone_portal_state")
+        (context, request), name="plone_portal_state")
 
     data = {
         'context': context,
@@ -355,11 +354,11 @@ def extractThemeInfo(zipfile, checkRules=True):
         if checkRules:
             try:
                 zipfile.getinfo(
-                    "{0:s}/{1:s}".format(name, RULE_FILENAME)
+                    "{:s}/{:s}".format(name, RULE_FILENAME)
                 )
             except KeyError:
                 raise ValueError("Could not find theme name and rules file")
-        rules = u"/++{0:s}++{1:s}/{0:s}".format(
+        rules = "/++{0:s}++{1:s}/{0:s}".format(
             THEME_RESOURCE_NAME,
             name,
             RULE_FILENAME
@@ -384,14 +383,14 @@ def getTheme(name, manifest=None, resources=None):
     description = manifest.get('description', None)
     rules = manifest.get('rules', None)
     if rules is None:
-        rules = u"/++{0:s}++{1:s}/{2:s}".format(
+        rules = "/++{:s}++{:s}/{:s}".format(
             THEME_RESOURCE_NAME,
             name,
             RULE_FILENAME,
         )
     prefix = manifest.get('prefix', None)
     if prefix is None:
-        prefix = u"/++{0:s}++{1:s}".format(THEME_RESOURCE_NAME, name)
+        prefix = "/++{:s}++{:s}".format(THEME_RESOURCE_NAME, name)
     params = manifest.get('parameters', None) or {}
     doctype = manifest.get('doctype', None) or ""
     preview = manifest.get('preview', None)
@@ -405,9 +404,9 @@ def getTheme(name, manifest=None, resources=None):
     production_js = manifest.get('production-js', None) or ''
     tinymce_content_css = manifest.get('tinymce-content-css', None) or ''
     tinymce_styles_css = manifest.get('tinymce-styles-css', None) or ''
-    if isinstance(rules, six.binary_type):
+    if isinstance(rules, bytes):
         rules = rules.decode('utf-8')
-    if isinstance(prefix, six.binary_type):
+    if isinstance(prefix, bytes):
         prefix = prefix.decode('utf-8')
     return Theme(
         name,
@@ -538,13 +537,13 @@ def applyTheme(theme):
 
     else:
 
-        if not isinstance(theme.rules, six.text_type):
+        if not isinstance(theme.rules, str):
             theme.rules = theme.rules.decode('utf-8')
 
-        if not isinstance(theme.absolutePrefix, six.text_type):
+        if not isinstance(theme.absolutePrefix, str):
             theme.absolutePrefix = theme.absolutePrefix.decode('utf-8')
 
-        if not isinstance(theme.__name__, six.text_type):
+        if not isinstance(theme.__name__, str):
             theme.__name__ = theme.__name__.decode('utf-8')
 
         settings.currentTheme = theme.__name__
@@ -579,10 +578,10 @@ def createThemeFromTemplate(title, description, baseOn='template'):
 
     source = queryResourceDirectory(THEME_RESOURCE_NAME, baseOn)
     if source is None:
-        raise KeyError("Theme {0:s} not found".format(baseOn))
+        raise KeyError("Theme {:s} not found".format(baseOn))
 
     themeName = getUtility(IURLNormalizer).normalize(title)
-    if six.PY2 and isinstance(themeName, six.text_type):
+    if six.PY2 and isinstance(themeName, str):
         themeName = themeName.encode('utf-8')
 
     resources = getOrCreatePersistentResourceDirectory()
@@ -595,45 +594,33 @@ def createThemeFromTemplate(title, description, baseOn='template'):
     manifest = SafeConfigParser()
 
     if MANIFEST_FILENAME in target:
-        if six.PY2:
-            fp = target.openFile(MANIFEST_FILENAME)
-            try:
-                if hasattr(manifest, "read_file"):
-                    # backports.configparser
-                    manifest.read_file(fp)
-                else:
-                    manifest.readfp(fp)
-            finally:
-                fp.close()
-
-        else:
-            # configparser can only read/write text
-            # but in py3 plone.resource objects are BytesIO objects.
-            fp = target.openFile(MANIFEST_FILENAME)
-            try:
-                data = fp.read()
-            finally:
-                fp.close()
-            manifest.read_string(safe_text(data))
+        # configparser can only read/write text
+        # but in py3 plone.resource objects are BytesIO objects.
+        fp = target.openFile(MANIFEST_FILENAME)
+        try:
+            data = fp.read()
+        finally:
+            fp.close()
+        manifest.read_string(safe_text(data))
 
     if not manifest.has_section('theme'):
         manifest.add_section('theme')
 
-    if six.PY2 and isinstance(title, six.text_type):
+    if six.PY2 and isinstance(title, str):
         title = title.encode('utf-8')
-    if six.PY2 and isinstance(description, six.text_type):
+    if six.PY2 and isinstance(description, str):
         description = description.encode('utf-8')
     manifest.set('theme', 'title', title)
     manifest.set('theme', 'description', description)
 
     if manifest.has_option('theme', 'prefix'):
-        prefix = u"/++%s++%s" % (THEME_RESOURCE_NAME, themeName)
+        prefix = "/++{}++{}".format(THEME_RESOURCE_NAME, themeName)
         manifest.set('theme', 'prefix', prefix)
 
     if manifest.has_option('theme', 'rules'):
         rule = manifest.get('theme', 'rules')
         rule_file_name = rule.split('/')[-1]  # extract real rules file name
-        rules = u"/++%s++%s/%s" % (THEME_RESOURCE_NAME, themeName,
+        rules = "/++{}++{}/{}".format(THEME_RESOURCE_NAME, themeName,
                                    rule_file_name)
         manifest.set('theme', 'rules', rules)
 
@@ -645,10 +632,10 @@ def createThemeFromTemplate(title, description, baseOn='template'):
         val = manifest.get('theme', var_path)
         if not val:
             continue
-        template_prefix = '++%s++%s/' % (THEME_RESOURCE_NAME, baseOn)
+        template_prefix = '++{}++{}/'.format(THEME_RESOURCE_NAME, baseOn)
         if template_prefix in val:
             # okay, fix
-            val = val.replace(template_prefix, '++%s++%s/' % (THEME_RESOURCE_NAME, themeName))
+            val = val.replace(template_prefix, '++{}++{}/'.format(THEME_RESOURCE_NAME, themeName))
             manifest.set('theme', var_path, val)
 
     # plone.resource uses OFS.File which is a BytesIO objects
@@ -709,7 +696,7 @@ def compileThemeTransform(
 
     if absolutePrefix:
         absolutePrefix = expandAbsolutePrefix(absolutePrefix)
-    params = set(['url', 'base', 'path', 'scheme', 'host'])
+    params = {'url', 'base', 'path', 'scheme', 'host'}
     params.update(parameterExpressions.keys())
     xslParams = {k: '' for k in params}
 

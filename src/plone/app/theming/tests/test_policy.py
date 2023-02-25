@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
 from plone.app.theming.utils import theming_policy
 from plone.registry.interfaces import IRegistry
@@ -31,15 +30,15 @@ class TestFunctional(unittest.TestCase):
         policy = theming_policy(request)
         settings = policy.getSettings()
         self.assertEqual(settings.currentTheme,
-                         u'barceloneta')
+                         'barceloneta')
         self.assertEqual(settings.rules,
-                         u'/++theme++barceloneta/rules.xml')
+                         '/++theme++barceloneta/rules.xml')
 
     def test_getCurrentTheme(self):
         request = self.layer['request']
         policy = theming_policy(request)
         self.assertEqual(policy.getCurrentTheme(),
-                         u'barceloneta')
+                         'barceloneta')
 
     def test_isThemeEnabled(self):
         request = self.layer['request']
@@ -65,7 +64,7 @@ class TestFunctional(unittest.TestCase):
         request = self.layer['request']
         policy = theming_policy(request)
         self.assertEqual(policy.getCacheKey(),
-                         u'http://nohost/plone::barceloneta')
+                         'http://nohost/plone::barceloneta')
 
     def test_getCacheStorage(self):
         request = self.layer['request']
@@ -75,7 +74,7 @@ class TestFunctional(unittest.TestCase):
         storage = policy.getCacheStorage()
         self.assertEqual(
             [(k, v) for (k, v) in storage.items() if k != 'mtime'],
-            [(u'http://nohost/plone::barceloneta', cache)])
+            [('http://nohost/plone::barceloneta', cache)])
 
     def test_caching(self):
         """roundtrip"""
@@ -86,9 +85,9 @@ class TestFunctional(unittest.TestCase):
         storage = policy.getCacheStorage()
         self.assertEqual(
             [(k, v) for (k, v) in storage.items() if k != 'mtime'],
-            [(u'http://nohost/plone::barceloneta', cache)])
+            [('http://nohost/plone::barceloneta', cache)])
         self.assertEqual(cache.themeObj, theme)
-        policy.set_theme(u'barceloneta', 'faketheme')
+        policy.set_theme('barceloneta', 'faketheme')
         self.assertEqual(policy.get_theme(), 'faketheme')
         policy.invalidateCache()
         self.assertEqual(list(policy.getCacheStorage().keys()), ['mtime'])
@@ -104,7 +103,7 @@ class TestFunctional(unittest.TestCase):
         storage = policy.getCacheStorage()
         self.assertEqual(
             [(k, v) for (k, v) in storage.items() if k != 'mtime'],
-            [(u'http://nohost/plone::barceloneta', cache)])
+            [('http://nohost/plone::barceloneta', cache)])
         shared_mtime_1 = policy._get_shared_invalidation()
         policy.invalidateCache()
         shared_mtime_2 = policy._get_shared_invalidation()
@@ -118,7 +117,7 @@ class TestFunctional(unittest.TestCase):
         storage = policy.getCacheStorage()
         self.assertEqual(
             [(k, v) for (k, v) in storage.items() if k != 'mtime'],
-            [(u'http://nohost/plone::barceloneta', cache)])
+            [('http://nohost/plone::barceloneta', cache)])
         shared_mtime_1 = policy._get_shared_invalidation()
 
         def invalidate(registry):

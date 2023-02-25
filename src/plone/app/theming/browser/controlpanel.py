@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
 from datetime import datetime
 from plone.app.theming.interfaces import _
@@ -45,7 +44,7 @@ logger = logging.getLogger('plone.app.theming')
 
 
 def authorize(context, request):
-    authenticator = getMultiAdapter((context, request), name=u"authenticator")
+    authenticator = getMultiAdapter((context, request), name="authenticator")
     if not authenticator.verify():
         raise Unauthorized
 
@@ -127,8 +126,8 @@ class ThemingControlpanel(BrowserView):
         form = self.request.form
 
         if 'form.button.Cancel' in form:
-            IStatusMessage(self.request).add(_(u"Changes cancelled"))
-            self.redirect("{0}/@@overview-controlpanel".format(self.site_url))
+            IStatusMessage(self.request).add(_("Changes cancelled"))
+            self.redirect("{}/@@overview-controlpanel".format(self.site_url))
             return False
 
         if 'form.button.Enable' in form:
@@ -148,8 +147,8 @@ class ThemingControlpanel(BrowserView):
                 self.request
             ).add(
                 _(
-                    u"Theme enabled. Note that this control panel page is "
-                    u"never themed."
+                    "Theme enabled. Note that this control panel page is "
+                    "never themed."
                 )
             )
             self._setup()
@@ -167,7 +166,7 @@ class ThemingControlpanel(BrowserView):
             applyTheme(None)
             self.theme_settings.enabled = False
 
-            IStatusMessage(self.request).add(_(u"Theme disabled."))
+            IStatusMessage(self.request).add(_("Theme disabled."))
             self._setup()
             return True
 
@@ -193,8 +192,8 @@ class ThemingControlpanel(BrowserView):
                 except ValueError:
                     message = _(
                         'error_invalid_parameter_expressions',
-                        default=u"Please ensure you enter one expression per "
-                                u"line, in the format <name> = <expression>."
+                        default="Please ensure you enter one expression per "
+                                "line, in the format <name> = <expression>."
                     )
                     self.errors['parameterExpressions'] = message
 
@@ -230,12 +229,12 @@ class ThemingControlpanel(BrowserView):
                 if extLinksOpenInNewWindow is not None:
                     self.ext_links_open_new_window = extLinksOpenInNewWindow
 
-                IStatusMessage(self.request).add(_(u"Changes saved"))
+                IStatusMessage(self.request).add(_("Changes saved"))
                 self._setup()
                 return True
             else:
                 IStatusMessage(self.request).add(
-                    _(u"There were errors"), 'error'
+                    _("There were errors"), 'error'
                 )
                 self.redirectToFieldset('advanced')
                 return False
@@ -256,7 +255,7 @@ class ThemingControlpanel(BrowserView):
                 logger.exception("Could not read zip file")
                 self.errors['themeArchive'] = _(
                     'error_invalid_zip',
-                    default=u"The uploaded file is not a valid Zip archive"
+                    default="The uploaded file is not a valid Zip archive"
                 )
 
             if themeZip:
@@ -267,8 +266,8 @@ class ThemingControlpanel(BrowserView):
                     logger.warn(str(e))
                     self.errors['themeArchive'] = _(
                         'error_no_rules_file',
-                        u"The uploaded file does not contain a valid theme "
-                        u"archive."
+                        "The uploaded file does not contain a valid theme "
+                        "archive."
                     )
                 else:
 
@@ -279,9 +278,9 @@ class ThemingControlpanel(BrowserView):
                         if not replaceExisting:
                             self.errors['themeArchive'] = _(
                                 'error_already_installed',
-                                u"This theme is already installed. Select "
-                                u"'Replace existing theme' and re-upload to "
-                                u"replace it."
+                                "This theme is already installed. Select "
+                                "'Replace existing theme' and re-upload to "
+                                "replace it."
                             )
                         else:
                             del themeContainer[themeData.__name__]
@@ -298,7 +297,7 @@ class ThemingControlpanel(BrowserView):
                 )
                 if themeDirectory is not None:
                     # If we don't have a rules file, use the template
-                    if themeData.rules == u"/++{0:s}++{1:s}/{2:s}".format(
+                    if themeData.rules == "/++{:s}++{:s}/{:s}".format(
                         THEME_RESOURCE_NAME,
                         themeData.__name__,
                         RULE_FILENAME,
@@ -315,10 +314,10 @@ class ThemingControlpanel(BrowserView):
                         if not themeDirectory.isFile(DEFAULT_THEME_FILENAME):
                             IStatusMessage(self.request).add(
                                 _(
-                                    u"A boilerplate rules.xml was added to "
-                                    u"your theme, but no index.html file "
-                                    u"found. Update rules.xml to reference "
-                                    u"the current theme file."
+                                    "A boilerplate rules.xml was added to "
+                                    "your theme, but no index.html file "
+                                    "found. Update rules.xml to reference "
+                                    "the current theme file."
                                 ),
                                 'warning',
                             )
@@ -339,14 +338,14 @@ class ThemingControlpanel(BrowserView):
 
             if not self.errors:
                 self.redirect(
-                    "{0}/@@theming-controlpanel".format(
+                    "{}/@@theming-controlpanel".format(
                         self.site_url,
                     )
                 )
                 return False
             else:
                 IStatusMessage(self.request).add(
-                    _(u"There were errors"),
+                    _("There were errors"),
                     "error"
                 )
 
@@ -362,7 +361,7 @@ class ThemingControlpanel(BrowserView):
             for theme in toDelete:
                 del themeDirectory[theme]
 
-            IStatusMessage(self.request).add(_(u"Theme deleted"), 'info')
+            IStatusMessage(self.request).add(_("Theme deleted"), 'info')
 
             self._setup()
             return True
@@ -417,7 +416,7 @@ class ThemingControlpanel(BrowserView):
 
             previewUrl = "++resource++plone.app.theming/defaultPreview.png"
             if theme.preview:
-                previewUrl = "++theme++{0:s}/{1:s}".format(
+                previewUrl = "++theme++{:s}/{:s}".format(
                     theme.__name__,
                     theme.preview,
                 )
@@ -428,7 +427,7 @@ class ThemingControlpanel(BrowserView):
                 'description': theme.description,
                 'override': override,
                 'editable': theme.__name__ in zodbNames,
-                'preview': "{0}/{1}".format(self.site_url, previewUrl),
+                'preview': "{}/{}".format(self.site_url, previewUrl),
                 'selected': theme.__name__ == self.selectedTheme,
             }
             if theme.__name__ == self.selectedTheme:
@@ -446,7 +445,7 @@ class ThemingControlpanel(BrowserView):
 
     def redirectToFieldset(self, fieldset):
         self.redirect(
-            "{0}/{1}#fieldsetlegend-{2}".format(
+            "{}/{}#fieldsetlegend-{}".format(
                 self.site_url,
                 self.__name__,
                 fieldset

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from App.config import getConfiguration
 from diazo.compiler import compile_theme
 from lxml import etree
@@ -18,7 +17,7 @@ from plone.testing.z2 import Browser
 from Products.CMFCore.Expression import Expression
 from Products.CMFCore.Expression import getExprContext
 from Products.CMFCore.utils import getToolByName
-from six.moves.urllib.error import HTTPError
+from urllib.error import HTTPError
 from zope.component import getUtility
 
 import os.path
@@ -39,7 +38,7 @@ class TestCase(unittest.TestCase):
         self.settings = getUtility(IRegistry).forInterface(IThemeSettings)
 
         self.settings.enabled = False
-        self.settings.rules = u'python://plone.app.theming/tests/rules.xml'
+        self.settings.rules = 'python://plone.app.theming/tests/rules.xml'
         self.settings.parameterExpressions = {
             'stringParam': 'string:string param value',
             'boolParam': 'python:False',
@@ -130,15 +129,15 @@ class TestCase(unittest.TestCase):
         applyTheme(theme)
         self.assertEqual(
             self.settings.rules,
-            u'/++theme++plone.app.theming.tests/rules.xml'
+            '/++theme++plone.app.theming.tests/rules.xml'
         )
         self.assertEqual(
             self.settings.currentTheme,
-            u"plone.app.theming.tests"
+            "plone.app.theming.tests"
         )
         self.assertEqual(
             self.settings.doctype,
-            u"<!DOCTYPE html>"
+            "<!DOCTYPE html>"
         )
         transaction.commit()
 
@@ -155,7 +154,7 @@ class TestCase(unittest.TestCase):
         self.assertTrue("This is the theme" in browser.contents)
 
         # Doctype
-        self.assertTrue(re.match("<!DOCTYPE html>\s+<html", browser.contents))
+        self.assertTrue(re.match(r"<!DOCTYPE html>\s+<html", browser.contents))
 
     def test_theme_enabled_query_string_off_switch(self):
         app = self.layer['app']
@@ -217,9 +216,9 @@ class TestCase(unittest.TestCase):
         parser = etree.HTMLParser()
         parser.resolvers.add(PythonResolver())
         theme = resolvePythonURL(
-            u'python://plone.app.theming.tests/theme.html'
+            'python://plone.app.theming.tests/theme.html'
         )
-        rules = resolvePythonURL(u'python://plone.app.theming/tests/rules.xml')
+        rules = resolvePythonURL('python://plone.app.theming/tests/rules.xml')
         compile_theme(rules, theme, parser=parser)
 
     def test_theme_stored_in_plone_site(self):
@@ -234,7 +233,7 @@ class TestCase(unittest.TestCase):
             portal.manage_addDTMLMethod('theme.html', file=theme_contents)
 
         # These paths should be relative to the Plone site root
-        self.settings.rules = u'/rules.xml'
+        self.settings.rules = '/rules.xml'
         self.settings.enabled = True
 
         transaction.commit()
@@ -263,7 +262,7 @@ class TestCase(unittest.TestCase):
             portal.manage_addDTMLMethod('theme.html', file=theme_contents)
 
         # These paths should be relative to the Plone site root
-        self.settings.rules = u'/rules.xml'
+        self.settings.rules = '/rules.xml'
         self.settings.enabled = True
 
         from Products.SiteAccess import VirtualHostMonster
@@ -276,7 +275,7 @@ class TestCase(unittest.TestCase):
         suffix = portalURL.split('/')[-1]
 
         vhostURL = (
-            "{0:s}/VirtualHostBase/http/example.org:80/{1:s}/VirtualHostRoot"
+            "{:s}/VirtualHostBase/http/example.org:80/{:s}/VirtualHostRoot"
             "/_vh_fizz/_vh_buzz/_vh_fizzbuzz/".format(prefix, suffix)
         )
 
@@ -311,7 +310,7 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        self.settings.absolutePrefix = u'http://example.com'
+        self.settings.absolutePrefix = 'http://example.com'
 
         transaction.commit()
 
@@ -328,7 +327,7 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        self.settings.absolutePrefix = u'/foo'
+        self.settings.absolutePrefix = '/foo'
 
         transaction.commit()
 
@@ -350,14 +349,14 @@ class TestCase(unittest.TestCase):
         transaction.commit()
 
         self.settings.enabled = True
-        self.settings.absolutePrefix = u'/foo'
+        self.settings.absolutePrefix = '/foo'
 
         portalURL = portal.absolute_url()
         prefix = '/'.join(portalURL.split('/')[:-1])
         suffix = portalURL.split('/')[-1]
 
         vhostURL = (
-            "{0:s}/VirtualHostBase/http/example.org:80/{1:s}/VirtualHostRoot"
+            "{:s}/VirtualHostBase/http/example.org:80/{:s}/VirtualHostRoot"
             "/_vh_fizz/_vh_buzz/_vh_fizzbuzz/".format(prefix, suffix)
         )
 
@@ -377,7 +376,7 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        self.settings.rules = u"invalid"
+        self.settings.rules = "invalid"
 
         transaction.commit()
 
@@ -529,7 +528,7 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         setRoles(portal, TEST_USER_ID, ('Manager',))
-        portal.invokeFactory('Folder', 'news', title=u"News")
+        portal.invokeFactory('Folder', 'news', title="News")
         wftool = getToolByName(portal, "portal_workflow")
         wftool.doActionFor(portal.news, action='publish')
         setRoles(portal, TEST_USER_ID, ('Member',))
@@ -566,7 +565,7 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        self.settings.rules = u'python://plone.app.theming/tests/paramrules.xml'  # noqa
+        self.settings.rules = 'python://plone.app.theming/tests/paramrules.xml'  # noqa
         self.settings.parameterExpressions = {
             'stringParam': 'string:string param value',
             'boolParam': 'python:False',
@@ -623,7 +622,7 @@ class TestCase(unittest.TestCase):
         browser.addHeader('Accept', 'text/html')
         error = None
         try:
-            browser.open('{0:s}/404_page'.format(portal.absolute_url()))
+            browser.open('{:s}/404_page'.format(portal.absolute_url()))
         except HTTPError as e:
             error = e
         self.assertEqual(error.code, 404)
@@ -636,7 +635,7 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        self.settings.rules = u'python://plone.app.theming/tests/paramrules.xml'  # noqa
+        self.settings.rules = 'python://plone.app.theming/tests/paramrules.xml'  # noqa
         self.settings.parameterExpressions = {
             'stringParam': 'string:string param value',
             'boolParam': 'python:False',
@@ -650,7 +649,7 @@ class TestCase(unittest.TestCase):
         browser.addHeader('Accept', 'text/html')
         error = None
         try:
-            browser.open('{0:s}/404_page'.format(portal.absolute_url()))
+            browser.open('{:s}/404_page'.format(portal.absolute_url()))
         except HTTPError as e:
             error = e
         self.assertEqual(error.code, 404)
@@ -699,7 +698,7 @@ class TestCase(unittest.TestCase):
         error = None
         try:
             browser.open(
-                '{0:s}/widget/oauth_login/info.txt'.format(
+                '{:s}/widget/oauth_login/info.txt'.format(
                     portal['subfolder'].absolute_url()
                 )
             )
@@ -783,7 +782,7 @@ class TestCase(unittest.TestCase):
             portal['subfolder'].manage_addDTMLMethod('alpha', file=two)
 
         # Set up transformation
-        self.settings.rules = u'python://plone.app.theming/tests/includes.xml'
+        self.settings.rules = 'python://plone.app.theming/tests/includes.xml'
         self.settings.enabled = True
 
         transaction.commit()
@@ -824,7 +823,7 @@ class TestCase(unittest.TestCase):
             portal.manage_addDTMLMethod('french', file=french)
 
         # Set up transformation
-        self.settings.rules = u'python://plone.app.theming/tests/nonascii.xml'
+        self.settings.rules = 'python://plone.app.theming/tests/nonascii.xml'
         self.settings.enabled = True
 
         transaction.commit()
@@ -837,10 +836,7 @@ class TestCase(unittest.TestCase):
 
         browser.open(portal.absolute_url())
         # browser.contents is always string.  On Py 2 this means bytes, on Py 3 text.
-        if six.PY2:
-            self.assertIn(b'<div id="content">Actualit\xc3\xa9s</div>', browser.contents)
-        else:
-            self.assertIn(u'<div id="content">Actualit\xe9s</div>', browser.contents)
+        self.assertIn('<div id="content">Actualit\xe9s</div>', browser.contents)
 
     def test_css_js_includes(self):
 
@@ -848,7 +844,7 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        self.settings.rules = u'/++theme++plone.app.theming.tests/css-js.xml'
+        self.settings.rules = '/++theme++plone.app.theming.tests/css-js.xml'
         transaction.commit()
 
         browser = Browser(app)
@@ -870,17 +866,14 @@ class TestCase(unittest.TestCase):
         portal = self.layer['portal']
 
         self.settings.enabled = True
-        self.settings.rules = u'/++theme++plone.app.theming.tests/nonascii.xml'
+        self.settings.rules = '/++theme++plone.app.theming.tests/nonascii.xml'
         transaction.commit()
 
         browser = Browser(app)
         browser.open(portal.absolute_url())
 
         # browser.contents is always string.  On Py 2 this means bytes, on Py 3 text.
-        if six.PY2:
-            self.assertIn(b'<div>N\xc3\xbamero uno</div>', browser.contents)
-        else:
-            self.assertIn(u'<div>N\xfamero uno</div>', browser.contents)
+        self.assertIn('<div>N\xfamero uno</div>', browser.contents)
 
 
     def test_theme_enabled_query_string_debug_switch(self):
