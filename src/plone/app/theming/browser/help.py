@@ -16,4 +16,4 @@ class Help(BrowserView):
             writer_name='html'
         )
         html = parts['body_pre_docinfo'] + parts['fragment']
-        return """<div class="content">{:s}</div>""".format(html)
+        return f"""<div class="content">{html:s}</div>"""

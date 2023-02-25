@@ -127,7 +127,7 @@ class ThemingControlpanel(BrowserView):
 
         if 'form.button.Cancel' in form:
             IStatusMessage(self.request).add(_("Changes cancelled"))
-            self.redirect("{}/@@overview-controlpanel".format(self.site_url))
+            self.redirect(f"{self.site_url}/@@overview-controlpanel")
             return False
 
         if 'form.button.Enable' in form:
@@ -427,7 +427,7 @@ class ThemingControlpanel(BrowserView):
                 'description': theme.description,
                 'override': override,
                 'editable': theme.__name__ in zodbNames,
-                'preview': "{}/{}".format(self.site_url, previewUrl),
+                'preview': f"{self.site_url}/{previewUrl}",
                 'selected': theme.__name__ == self.selectedTheme,
             }
             if theme.__name__ == self.selectedTheme:

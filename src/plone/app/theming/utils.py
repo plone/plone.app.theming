@@ -188,7 +188,7 @@ class InternalResolver(etree.Resolver):
 
         response = subrequest(system_url, root=root)
         if response.status != 200:
-            LOGGER.error("Couldn't resolve {:s}".format(system_url))
+            LOGGER.error(f"Couldn't resolve {system_url:s}")
             return None
         result = response.getBody()
         content_type = response.headers.get('content-type')
@@ -354,7 +354,7 @@ def extractThemeInfo(zipfile, checkRules=True):
         if checkRules:
             try:
                 zipfile.getinfo(
-                    "{:s}/{:s}".format(name, RULE_FILENAME)
+                    f"{name:s}/{RULE_FILENAME:s}"
                 )
             except KeyError:
                 raise ValueError("Could not find theme name and rules file")
@@ -390,7 +390,7 @@ def getTheme(name, manifest=None, resources=None):
         )
     prefix = manifest.get('prefix', None)
     if prefix is None:
-        prefix = "/++{:s}++{:s}".format(THEME_RESOURCE_NAME, name)
+        prefix = f"/++{THEME_RESOURCE_NAME:s}++{name:s}"
     params = manifest.get('parameters', None) or {}
     doctype = manifest.get('doctype', None) or ""
     preview = manifest.get('preview', None)
@@ -578,7 +578,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
 
     source = queryResourceDirectory(THEME_RESOURCE_NAME, baseOn)
     if source is None:
-        raise KeyError("Theme {:s} not found".format(baseOn))
+        raise KeyError(f"Theme {baseOn:s} not found")
 
     themeName = getUtility(IURLNormalizer).normalize(title)
     if six.PY2 and isinstance(themeName, str):
@@ -614,7 +614,7 @@ def createThemeFromTemplate(title, description, baseOn='template'):
     manifest.set('theme', 'description', description)
 
     if manifest.has_option('theme', 'prefix'):
-        prefix = "/++{}++{}".format(THEME_RESOURCE_NAME, themeName)
+        prefix = f"/++{THEME_RESOURCE_NAME}++{themeName}"
         manifest.set('theme', 'prefix', prefix)
 
     if manifest.has_option('theme', 'rules'):
@@ -632,10 +632,10 @@ def createThemeFromTemplate(title, description, baseOn='template'):
         val = manifest.get('theme', var_path)
         if not val:
             continue
-        template_prefix = '++{}++{}/'.format(THEME_RESOURCE_NAME, baseOn)
+        template_prefix = f'++{THEME_RESOURCE_NAME}++{baseOn}/'
         if template_prefix in val:
             # okay, fix
-            val = val.replace(template_prefix, '++{}++{}/'.format(THEME_RESOURCE_NAME, themeName))
+            val = val.replace(template_prefix, f'++{THEME_RESOURCE_NAME}++{themeName}/')
             manifest.set('theme', var_path, val)
 
     # plone.resource uses OFS.File which is a BytesIO objects

@@ -622,7 +622,7 @@ class TestCase(unittest.TestCase):
         browser.addHeader('Accept', 'text/html')
         error = None
         try:
-            browser.open('{:s}/404_page'.format(portal.absolute_url()))
+            browser.open(f'{portal.absolute_url():s}/404_page')
         except HTTPError as e:
             error = e
         self.assertEqual(error.code, 404)
@@ -649,7 +649,7 @@ class TestCase(unittest.TestCase):
         browser.addHeader('Accept', 'text/html')
         error = None
         try:
-            browser.open('{:s}/404_page'.format(portal.absolute_url()))
+            browser.open(f'{portal.absolute_url():s}/404_page')
         except HTTPError as e:
             error = e
         self.assertEqual(error.code, 404)

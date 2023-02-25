@@ -114,7 +114,7 @@ class ThemingPolicy:
     def getCacheKey(self, theme=None):
         if not theme:
             theme = self.getCurrentTheme()
-        key = "{}::{}".format(getSite().absolute_url(), theme)
+        key = f"{getSite().absolute_url()}::{theme}"
         return key
 
     def getCacheStorage(self):

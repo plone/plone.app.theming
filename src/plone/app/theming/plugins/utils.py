@@ -51,7 +51,7 @@ def sortDependencies(plugins):
 
     if waiting:
         raise ValueError(
-            "Could not resolve dependencies for: {:s}".format(waiting)
+            f"Could not resolve dependencies for: {waiting:s}"
         )
 
 
@@ -99,7 +99,7 @@ def getPluginSettings(themeDirectory, plugins=None):
     pluginSettings = {}
     for name, plugin in plugins:
         pluginSettings[name] = manifestContents.get(
-            "{:s}:{:s}".format(THEME_RESOURCE_NAME, name),
+            f"{THEME_RESOURCE_NAME:s}:{name:s}",
             {}
         )
     return pluginSettings

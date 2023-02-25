@@ -32,10 +32,10 @@ def importTheme(context):
                 break
 
         if themeInfo is None:
-            raise ValueError("Theme {:s} is not available".format(themeName))
+            raise ValueError(f"Theme {themeName:s} is not available")
 
         applyTheme(themeInfo)
-        logger.info('Theme {:s} applied'.format(themeName))
+        logger.info(f'Theme {themeName:s} applied')
 
     # enable/disable theme
     themeEnabled = tree.find("enabled")
@@ -53,5 +53,5 @@ def importTheme(context):
         logger.info('Theme disabled')
     else:
         raise ValueError(
-            "{:s} is not a valid value for <enabled />".format(themeEnabled)
+            f"{themeEnabled:s} is not a valid value for <enabled />"
         )

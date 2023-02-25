@@ -45,4 +45,4 @@ class Theme:
         self.tinymce_styles_css = tinymce_styles_css
 
     def __repr__(self):
-        return '<Theme "{:s}">'.format(self.__name__)
+        return f'<Theme "{self.__name__:s}">'
