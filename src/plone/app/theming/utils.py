@@ -351,11 +351,6 @@ def extractThemeInfo(zipfile, checkRules=True):
                 )
             except KeyError:
                 raise ValueError("Could not find theme name and rules file")
-        rules = "/++{0:s}++{1:s}/{0:s}".format(
-            THEME_RESOURCE_NAME,
-            name,
-            RULE_FILENAME
-        )
     return getTheme(name, manifest)
 
 
