@@ -142,10 +142,11 @@ class ThemeTransform:
         """
         # Obtain settings. Do nothing if not found
         policy = theming_policy(self.request)
-        settings = policy.getSettings()
-        if settings is None:
-            return None
         if not policy.isThemeEnabled():
+            return None
+        settings = policy.getSettings()
+        if settings is None or not settings.rules:
+            # if there is no rules file given, do not try to transform
             return None
         result = self.parseTree(result)
         if result is None:
