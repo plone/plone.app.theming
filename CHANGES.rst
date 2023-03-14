@@ -9,6 +9,21 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.1 (2023-03-14)
+------------------
+
+Bug fixes:
+
+
+- Import more from plone.base.
+  Removed compatibility code for Python 2 and Zope 4.
+  [maurits] (#1)
+- Bugfix: If there is no rules.xml given in a theme, abort transform early. 
+  Otherwise, given an open file is given as iterable, the read buffer pointer is empty after this function, but None returned. 
+  The new way the read buffer pointer is not touched.
+  [jensens, toalba] (#216)
+
+
 5.0.0 (2022-12-02)
 ------------------
 

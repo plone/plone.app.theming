@@ -1,4 +1,0 @@
-Bugfix: If there is no rules.xml given in a theme, abort transform early. 
-Otherwise, given an open file is given as iterable, the read buffer pointer is empty after this function, but None returned. 
-The new way the read buffer pointer is not touched.
-[jensens, toalba]
