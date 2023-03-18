@@ -11,4 +11,4 @@ def setHeader(object, event):
     request = event.request
 
     if isThemeEnabled(request):
-        request.environ['HTTP_X_THEME_ENABLED'] = True
+        request.environ["HTTP_X_THEME_ENABLED"] = True

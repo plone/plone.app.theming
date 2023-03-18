@@ -4,8 +4,7 @@ from zope.interface import implementer
 
 @implementer(ITheme)
 class Theme:
-    """A theme, loaded from a resource directory
-    """
+    """A theme, loaded from a resource directory"""
 
     def __init__(
         self,
@@ -19,14 +18,13 @@ class Theme:
         preview=None,
         enabled_bundles=[],
         disabled_bundles=[],
-        development_css='',
-        development_js='',
-        production_css='',
-        production_js='',
-        tinymce_content_css='',
-        tinymce_styles_css=''
+        development_css="",
+        development_js="",
+        production_css="",
+        production_js="",
+        tinymce_content_css="",
+        tinymce_styles_css="",
     ):
-
         self.__name__ = name
         self.rules = rules
         self.title = title

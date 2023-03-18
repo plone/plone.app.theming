@@ -12,27 +12,25 @@ class Theming(PloneSandboxLayer):
     def setUpZope(self, app, configurationContext):
         # load ZCML
         import plone.app.theming.tests
+
         xmlconfig.file(
-            'configure.zcml',
-            plone.app.theming.tests,
-            context=configurationContext
+            "configure.zcml", plone.app.theming.tests, context=configurationContext
         )
 
         # Run the startup hook
         from plone.app.theming.plugins.hooks import onStartup
+
         onStartup(None)
 
     def setUpPloneSite(self, portal):
         # install into the Plone site
-        applyProfile(portal, 'plone.app.theming:default')
+        applyProfile(portal, "plone.app.theming:default")
 
 
 THEMING_FIXTURE = Theming()
 THEMING_INTEGRATION_TESTING = IntegrationTesting(
-    bases=(THEMING_FIXTURE,),
-    name="Theming:Integration"
+    bases=(THEMING_FIXTURE,), name="Theming:Integration"
 )
 THEMING_FUNCTIONAL_TESTING = FunctionalTesting(
-    bases=(THEMING_FIXTURE,),
-    name="Theming:Functional"
+    bases=(THEMING_FIXTURE,), name="Theming:Functional"
 )

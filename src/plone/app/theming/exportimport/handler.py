@@ -11,11 +11,11 @@ def importTheme(context):
     and enable the theme.
     """
 
-    data = context.readDataFile('theme.xml')
+    data = context.readDataFile("theme.xml")
     if not data:
         return
 
-    logger = context.getLogger('plone.app.theming.exportimport')
+    logger = context.getLogger("plone.app.theming.exportimport")
 
     tree = etree.fromstring(data)
 
@@ -35,7 +35,7 @@ def importTheme(context):
             raise ValueError(f"Theme {themeName:s} is not available")
 
         applyTheme(themeInfo)
-        logger.info(f'Theme {themeName:s} applied')
+        logger.info(f"Theme {themeName:s} applied")
 
     # enable/disable theme
     themeEnabled = tree.find("enabled")
@@ -45,13 +45,25 @@ def importTheme(context):
     settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
 
     themeEnabled = themeEnabled.text.strip().lower()
-    if themeEnabled in ("y", "yes", "true", "t", "1", "on",):
+    if themeEnabled in (
+        "y",
+        "yes",
+        "true",
+        "t",
+        "1",
+        "on",
+    ):
         settings.enabled = True
-        logger.info('Theme enabled')
-    elif themeEnabled in ("n", "no", "false", "f", "0", "off",):
+        logger.info("Theme enabled")
+    elif themeEnabled in (
+        "n",
+        "no",
+        "false",
+        "f",
+        "0",
+        "off",
+    ):
         settings.enabled = False
-        logger.info('Theme disabled')
+        logger.info("Theme disabled")
     else:
-        raise ValueError(
-            f"{themeEnabled:s} is not a valid value for <enabled />"
-        )
+        raise ValueError(f"{themeEnabled:s} is not a valid value for <enabled />")

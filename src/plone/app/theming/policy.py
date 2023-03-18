@@ -24,7 +24,6 @@ def invalidateCache(settings, event):
 
 @implementer(IThemingPolicy)
 class ThemingPolicy:
-
     def __init__(self, request):
         """Adapt IRequest.
         Do not call this class directly, always use a
@@ -73,13 +72,12 @@ class ThemingPolicy:
         debug_mode = getConfiguration().debug_mode
 
         # Disable theming if the response sets a header
-        if self.request.response.getHeader('X-Theme-Disabled'):
+        if self.request.response.getHeader("X-Theme-Disabled"):
             return False
 
         # Check for diazo.off request parameter
-        true_vals = ('1', 'y', 'yes', 't', 'true')
-        if (debug_mode and self.request.get(
-                'diazo.off', '').lower() in true_vals):
+        true_vals = ("1", "y", "yes", "t", "true")
+        if debug_mode and self.request.get("diazo.off", "").lower() in true_vals:
             return False
 
         if not settings:
@@ -87,13 +85,13 @@ class ThemingPolicy:
         if settings is None or not settings.enabled:
             return False
 
-        server_url = self.request.get('SERVER_URL')
-        proto, host = server_url.split('://', 1)
+        server_url = self.request.get("SERVER_URL")
+        proto, host = server_url.split("://", 1)
         host = host.lower()
-        serverPort = self.request.get('SERVER_PORT')
+        serverPort = self.request.get("SERVER_PORT")
 
         for hostname in settings.hostnameBlacklist or ():
-            if host == hostname or host == ':'.join((hostname, serverPort)):
+            if host == hostname or host == ":".join((hostname, serverPort)):
                 return False
 
         return True
@@ -105,8 +103,9 @@ class ThemingPolicy:
         cache = caches.get(key)
         if cache is None:
             logger.debug(
-                'initializing local cache on thread %s for %s',
-                threading.current_thread().ident, key
+                "initializing local cache on thread %s for %s",
+                threading.current_thread().ident,
+                key,
             )
             cache = caches[key] = ThemeCache()
         return cache
@@ -118,20 +117,19 @@ class ThemingPolicy:
         return key
 
     def getCacheStorage(self):
-        if not hasattr(_local_cache, 'themedata'):
+        if not hasattr(_local_cache, "themedata"):
             self._reset_local_cache()
-        if self._get_shared_invalidation() > _local_cache.themedata['mtime']:
+        if self._get_shared_invalidation() > _local_cache.themedata["mtime"]:
             logger.debug(
-                'shared invalidation requires local cache reset on %s',
-                threading.current_thread().ident
+                "shared invalidation requires local cache reset on %s",
+                threading.current_thread().ident,
             )
             self._reset_local_cache()
         return _local_cache.themedata
 
     def invalidateCache(self):
-        """When our settings are changed, invalidate the cache on all zeo clients
-        """
-        logger.info('invalidating cache across all threads and processes')
+        """When our settings are changed, invalidate the cache on all zeo clients"""
+        logger.info("invalidating cache across all threads and processes")
         self._reset_local_cache()
         self._set_shared_invalidation()
 
@@ -140,23 +138,22 @@ class ThemingPolicy:
         Invalidate only the local thread cache
         Removes actual theme data, leaving only mtime
         """
-        _local_cache.themedata = {'mtime': time.time()}
+        _local_cache.themedata = {"mtime": time.time()}
         logger.debug(
-            'local cache invalidated on thread %s',
-            threading.current_thread().ident
+            "local cache invalidated on thread %s", threading.current_thread().ident
         )
 
     def _set_shared_invalidation(self):
         """Signal to other threads and processes they should invalidate their
         theme caches."""
         registry = queryUtility(IRegistry)
-        setattr(registry, '_theme_cache_mtime', time.time())
+        setattr(registry, "_theme_cache_mtime", time.time())
         registry._p_changed = True
-        logger.debug('shared cache invalidation marker updated')
+        logger.debug("shared cache invalidation marker updated")
 
     def _get_shared_invalidation(self):
         registry = queryUtility(IRegistry)
-        return getattr(registry, '_theme_cache_mtime', 0)
+        return getattr(registry, "_theme_cache_mtime", 0)
 
     def get_theme(self):
         """Managing the theme cache is a plone.app.theming policy
@@ -176,8 +173,7 @@ class ThemingPolicy:
 
 
 class ThemeCache:
-    """Simple cache for the transform and theme
-    """
+    """Simple cache for the transform and theme"""
 
     def __init__(self):
         self.transform = None

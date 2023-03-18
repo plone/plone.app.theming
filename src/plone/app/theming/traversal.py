@@ -22,7 +22,7 @@ class ThemeTraverser(ResourceTraverser):
         return theming_policy(self.request).getCurrentTheme()
 
     def traverse(self, name, remaining):
-        if name == '':
+        if name == "":
             name = self.current_theme()
 
         # Note: also fixes possible unicode problems

@@ -4,7 +4,6 @@ import unittest
 
 
 class TestExportImport(unittest.TestCase):
-
     layer = THEMING_INTEGRATION_TESTING
 
     def test_import_filesystem(self):
@@ -14,30 +13,23 @@ class TestExportImport(unittest.TestCase):
         from zope.component import getUtility
 
         class FauxContext:
-
             def getLogger(self, name):
                 import logging
+
                 return logging.getLogger(name)
 
             def readDataFile(self, name):
-                assert name == 'theme.xml'
+                assert name == "theme.xml"
                 return "<theme><name>plone.app.theming.tests</name></theme>"
 
         importTheme(FauxContext())
 
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
 
+        self.assertEqual(settings.rules, "/++theme++plone.app.theming.tests/rules.xml")
+        self.assertEqual(settings.absolutePrefix, "/++theme++plone.app.theming.tests")
         self.assertEqual(
-            settings.rules,
-            '/++theme++plone.app.theming.tests/rules.xml'
-        )
-        self.assertEqual(
-            settings.absolutePrefix,
-            '/++theme++plone.app.theming.tests'
-        )
-        self.assertEqual(
-            settings.parameterExpressions,
-            {'foo': "python:request.get('bar')"}
+            settings.parameterExpressions, {"foo": "python:request.get('bar')"}
         )
 
     def test_import_no_file(self):
@@ -47,13 +39,13 @@ class TestExportImport(unittest.TestCase):
         from zope.component import getUtility
 
         class FauxContext:
-
             def getLogger(self, name):
                 import logging
+
                 return logging.getLogger(name)
 
             def readDataFile(self, name):
-                assert name == 'theme.xml'
+                assert name == "theme.xml"
                 return None
 
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
@@ -72,13 +64,13 @@ class TestExportImport(unittest.TestCase):
         from plone.app.theming.exportimport.handler import importTheme
 
         class FauxContext:
-
             def getLogger(self, name):
                 import logging
+
                 return logging.getLogger(name)
 
             def readDataFile(self, name):
-                assert name == 'theme.xml'
+                assert name == "theme.xml"
                 return "<theme><name>invalid-theme-name</name></theme>"
 
         self.assertRaises(ValueError, importTheme, FauxContext())
@@ -90,13 +82,13 @@ class TestExportImport(unittest.TestCase):
         from zope.component import getUtility
 
         class FauxContext:
-
             def getLogger(self, name):
                 import logging
+
                 return logging.getLogger(name)
 
             def readDataFile(self, name):
-                assert name == 'theme.xml'
+                assert name == "theme.xml"
                 return "<theme><enabled>true</enabled></theme>"
 
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
@@ -113,13 +105,13 @@ class TestExportImport(unittest.TestCase):
         from zope.component import getUtility
 
         class FauxContext:
-
             def getLogger(self, name):
                 import logging
+
                 return logging.getLogger(name)
 
             def readDataFile(self, name):
-                assert name == 'theme.xml'
+                assert name == "theme.xml"
                 return "<theme><enabled>false</enabled></theme>"
 
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
