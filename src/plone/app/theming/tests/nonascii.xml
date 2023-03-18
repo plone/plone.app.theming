@@ -1,8 +1,13 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<rules xmlns="http://namespaces.plone.org/diazo" xmlns:css="http://namespaces.plone.org/diazo/css">
+<?xml version="1.0" encoding="utf-8"?>
+<rules xmlns="http://namespaces.plone.org/diazo"
+       xmlns:css="http://namespaces.plone.org/diazo/css"
+>
 
-    <theme href="python://plone.app.theming.tests/french.html" />
+  <theme href="python://plone.app.theming.tests/french.html" />
 
-    <replace content='//*[@id="content"]/text()' css:theme-children='#content' href="/french" />
+  <replace content='//*[@id="content"]/text()'
+           css:theme-children="#content"
+           href="/french"
+  />
 
 </rules>

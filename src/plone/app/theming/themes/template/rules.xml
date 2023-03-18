@@ -1,32 +1,42 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<rules
-    xmlns="http://namespaces.plone.org/diazo"
-    xmlns:css="http://namespaces.plone.org/diazo/css"
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<?xml version="1.0" encoding="utf-8"?>
+<rules xmlns="http://namespaces.plone.org/diazo"
+       xmlns:css="http://namespaces.plone.org/diazo/css"
+       xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+>
 
-    <!-- Apply the following rules to standard Plone pages -->
-    <rules css:if-content="#visual-portal-wrapper">
+  <!-- Apply the following rules to standard Plone pages -->
+  <rules css:if-content="#visual-portal-wrapper">
 
-        <theme href="index.html" />
+    <theme href="index.html" />
 
-        <!-- Replace title with Plone's page title  -->
-        <replace css:theme="html head title" css:content="html head title" />
+    <!-- Replace title with Plone's page title  -->
+    <replace css:content="html head title"
+             css:theme="html head title"
+    />
 
-        <!-- Copy base tag from Plone -->
-        <before css:theme-children="html head" css:content="html head base" />
+    <!-- Copy base tag from Plone -->
+    <before css:content="html head base"
+            css:theme-children="html head"
+    />
 
-        <!-- Copy link, style, meta tags from Plone head -->
-        <after css:theme-children="html head"
-               content="/html/head/link | /html/head/style | /html/head/meta" />
+    <!-- Copy link, style, meta tags from Plone head -->
+    <after content="/html/head/link | /html/head/style | /html/head/meta"
+           css:theme-children="html head"
+    />
 
-        <!-- merge classes from Plone body with theme body -->
-        <merge attributes="class" css:theme="body" css:content="body" />
+    <!-- merge classes from Plone body with theme body -->
+    <merge attributes="class"
+           css:content="body"
+           css:theme="body"
+    />
 
-        <!-- Copy script tags from Plone head to end of body -->
-        <after css:theme-children="html body" css:content="html head script" />
+    <!-- Copy script tags from Plone head to end of body -->
+    <after css:content="html head script"
+           css:theme-children="html body"
+    />
 
-        <!-- Insert your own rules here -->
+    <!-- Insert your own rules here -->
 
-    </rules>
+  </rules>
 
 </rules>

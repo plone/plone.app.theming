@@ -1,10 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<rules xmlns="http://namespaces.plone.org/diazo" xmlns:css="http://namespaces.plone.org/diazo/css">
+<?xml version="1.0" encoding="utf-8"?>
+<rules xmlns="http://namespaces.plone.org/diazo"
+       xmlns:css="http://namespaces.plone.org/diazo/css"
+>
 
-    <theme href="othertheme.html" />
+  <theme href="othertheme.html" />
 
-    <replace content='/html/head/title' theme='/html/head/title' />
-    <replace content='//h1[class=documentFirstHeading]' theme='/html/body/h1' />
-    <after content='/html/head/link' theme-children='/html/head' />
+  <replace content="/html/head/title"
+           theme="/html/head/title"
+  />
+  <replace content="//h1[class=documentFirstHeading]"
+           theme="/html/body/h1"
+  />
+  <after content="/html/head/link"
+         theme-children="/html/head"
+  />
 
 </rules>
