@@ -251,7 +251,7 @@ def findPathContext(path):
     while seq:
         try:
             obj = portal.restrictedTraverse("/".join(seq))
-        except:
+        except Exception:
             seq.pop()
         else:
             if IContentish.providedBy(obj):
@@ -428,7 +428,7 @@ def getThemeResources(
                 theme = getManifest(manifest, format, defaults)
                 theme["name"] = name
                 resources.append(theme)
-            except:
+            except Exception:
                 LOGGER.exception("Unable to read manifest for theme directory %s", name)
             finally:
                 manifest.close()

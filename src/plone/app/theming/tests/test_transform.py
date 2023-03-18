@@ -9,7 +9,6 @@ from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
 from plone.app.theming.transform import ThemeTransform
 from plone.app.theming.utils import applyTheme
 from plone.app.theming.utils import getTheme
-from plone.app.theming.utils import InternalResolver
 from plone.app.theming.utils import PythonResolver
 from plone.app.theming.utils import resolvePythonURL
 from plone.registry.interfaces import IRegistry

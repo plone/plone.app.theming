@@ -22,7 +22,7 @@ class FileUploadView(BrowserView):
         try:
             directory.writeFile(name, data)
             self.request.response.setHeader("Content-Type", "application/json")
-        except:
+        except Exception:
             return json.dumps({"failure": "error"})
 
         return json.dumps({"success": "create"})
