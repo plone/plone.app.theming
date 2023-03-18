@@ -417,9 +417,7 @@ class ThemingControlpanel(BrowserView):
         return themes
 
     def redirectToFieldset(self, fieldset):
-        self.redirect(
-            f"{self.site_url}/{self.__name__}#fieldsetlegend-{fieldset}"
-        )
+        self.redirect(f"{self.site_url}/{self.__name__}#fieldsetlegend-{fieldset}")
 
     def renderOverlay(self, overlay):
         self.overlay = overlay
