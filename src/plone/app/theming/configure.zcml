@@ -26,7 +26,7 @@
       title="Diazo theme support"
       description="Installs a control panel to allow on-the-fly theming with Diazo"
       provides="Products.GenericSetup.interfaces.EXTENSION"
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      for="plone.base.interfaces.IPloneSiteRoot"
       directory="profiles/default"
       />
 

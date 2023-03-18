@@ -22,7 +22,7 @@
 
   <browser:page
       name="theming-controlpanel"
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      for="plone.base.interfaces.IPloneSiteRoot"
       class=".controlpanel.ThemingControlpanel"
       template="controlpanel.pt"
       permission="plone.app.controlpanel.Themes"
@@ -30,7 +30,7 @@
 
   <browser:page
       name="theming-controlpanel-help"
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      for="plone.base.interfaces.IPloneSiteRoot"
       class=".help.Help"
       permission="zope2.View"
       />
