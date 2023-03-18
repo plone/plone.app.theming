@@ -572,7 +572,7 @@ def createThemeFromTemplate(title, description, baseOn="template"):
     if manifest.has_option("theme", "rules"):
         rule = manifest.get("theme", "rules")
         rule_file_name = rule.split("/")[-1]  # extract real rules file name
-        rules = "/++{}++{}/{}".format(THEME_RESOURCE_NAME, themeName, rule_file_name)
+        rules = f"/++{THEME_RESOURCE_NAME}++{themeName}/{rule_file_name}"
         manifest.set("theme", "rules", rules)
 
     paths_to_fix = [
