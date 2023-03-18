@@ -157,7 +157,7 @@ Bug fixes:
 
 - Fixes #187: Invalid dependency on plone.app.caching
   [jensens] (#187)
-- Cleanup: Remove meanwhile unused test fixture code refering to ``plone.app.caching``.
+- Cleanup: Remove meanwhile unused test fixture code referring to ``plone.app.caching``.
   Removed class and fixtures: ``ThemingWithCaching``, ``THEMINGWITHCACHING_FIXTURE``, ``THEMINGWITHCACHING_TESTING``.
   Those were nowhere used active in Plone nor outside in Github.
   [jensens] (#188)
@@ -315,7 +315,7 @@ New features:
 
 Bug fixes:
 
-- Explizit load permissions for controlpanel.
+- Explicit load permissions for controlpanel.
   [jensens]
 
 - Fix tests for merged plone.login.
@@ -433,7 +433,7 @@ Fixes:
   [staeff]
 
 - Fix issue where theming control panel errored when a packaged
-  theme was overidden with a global resource directory theme
+  theme was overridden with a global resource directory theme
   [datakurre]
 
 1.3.0 (2016-06-07)
@@ -447,7 +447,7 @@ New:
 
 Fixes:
 
-- Small fixes to documentaion
+- Small fixes to documentation
   [ale-rt]
 
 1.2.19 (2016-03-31)
@@ -486,7 +486,7 @@ Fixes:
 - Rebuild resources so they work with latest mockup/patternslib
   integration changes.  [vangheem]
 
-- Removed github dependancies in thememapper.  [Gagaro]
+- Removed github dependencies in thememapper.  [Gagaro]
 
 
 1.2.16 (2015-11-26)
@@ -615,7 +615,7 @@ Fixes:
 - removed irrelevant theme renaming code
   [schwartz]
 
-- Filesystem themes are now correctly overridden. TTW themes can no longer be overriden
+- Filesystem themes are now correctly overridden. TTW themes can no longer be overridden
   [schwartz]
 
 - re-added manifest check

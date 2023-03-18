@@ -425,7 +425,7 @@ class TestCase(unittest.TestCase):
     #     # The theme
     #     self.assertTrue("This is the other theme" in browser.contents)
     #
-    #     # Now invalide the cache by touching the settings utility
+    #     # Now invalidate the cache by touching the settings utility
     #
     #     self.settings.enabled = False
     #     self.settings.enabled = True

@@ -239,7 +239,7 @@ Advanced settings
 
 The *Theming* control panel also contains a tab named *Advanced settings*.
 
-The *Advanced setings* tab is divided into two areas.
+The *Advanced settings* tab is divided into two areas.
 The first, *Theme details*, contains the underlying settings that are modified when a theme is applied from the *Themes* control panel.
 These are:
 
@@ -350,7 +350,7 @@ You can preview or enable the theme through the *Themes* control panel, and then
 
    Notice the declaration of the ``plone`` namespace at the root ``<configure />`` element.
    Place the theme files and the ``rules.xml`` file into the ``theme`` directory.
-   Your theme is immediately available due to the existance of this ``theme`` type ``plone.resource`` directory,
+   Your theme is immediately available due to the existence of this ``theme`` type ``plone.resource`` directory,
    if it contains a ``manifest.cfg`` (see below) and a ``rules.xml`` file.
 
    If you want your theme automatically enabled upon installation of your Python package,
