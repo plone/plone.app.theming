@@ -12,6 +12,8 @@ from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.plugins.utils import getPlugins
 from plone.app.theming.plugins.utils import getPluginSettings
 from plone.app.theming.theme import Theme
+from plone.base.utils import safe_bytes
+from plone.base.utils import safe_text
 from plone.i18n.normalizer.interfaces import IURLNormalizer
 from plone.resource.interfaces import IResourceDirectory
 from plone.resource.manifest import extractManifestFromZipFile
@@ -25,8 +27,6 @@ from plone.resource.utils import queryResourceDirectory
 from plone.subrequest import subrequest
 from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.interfaces import ISiteRoot
-from plone.base.utils import safe_bytes
-from plone.base.utils import safe_text
 from Products.PageTemplates.Expressions import getEngine
 from urllib.parse import urlsplit
 from zope.component import getUtility
@@ -37,7 +37,6 @@ from zope.interface import implementer
 import logging
 import os
 import pkg_resources
-
 
 
 LOGGER = logging.getLogger('plone.app.theming')

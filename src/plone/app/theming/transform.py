@@ -192,6 +192,7 @@ class ThemeTransform:
 
         if runtrace:
             from diazo.runtrace import generate_debug_html
+
             # Add debug information to end of body
             body = result.tree.xpath('/html/body')[0]
             debug_url = findContext(

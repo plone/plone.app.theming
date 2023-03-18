@@ -8,12 +8,10 @@ class TestExportImport(unittest.TestCase):
     layer = THEMING_INTEGRATION_TESTING
 
     def test_import_filesystem(self):
-        from zope.component import getUtility
-
-        from plone.registry.interfaces import IRegistry
-
-        from plone.app.theming.interfaces import IThemeSettings
         from plone.app.theming.exportimport.handler import importTheme
+        from plone.app.theming.interfaces import IThemeSettings
+        from plone.registry.interfaces import IRegistry
+        from zope.component import getUtility
 
         class FauxContext:
 
@@ -43,12 +41,10 @@ class TestExportImport(unittest.TestCase):
         )
 
     def test_import_no_file(self):
-        from zope.component import getUtility
-
-        from plone.registry.interfaces import IRegistry
-
-        from plone.app.theming.interfaces import IThemeSettings
         from plone.app.theming.exportimport.handler import importTheme
+        from plone.app.theming.interfaces import IThemeSettings
+        from plone.registry.interfaces import IRegistry
+        from zope.component import getUtility
 
         class FauxContext:
 
@@ -88,12 +84,10 @@ class TestExportImport(unittest.TestCase):
         self.assertRaises(ValueError, importTheme, FauxContext())
 
     def test_import_enable(self):
-        from zope.component import getUtility
-
-        from plone.registry.interfaces import IRegistry
-
-        from plone.app.theming.interfaces import IThemeSettings
         from plone.app.theming.exportimport.handler import importTheme
+        from plone.app.theming.interfaces import IThemeSettings
+        from plone.registry.interfaces import IRegistry
+        from zope.component import getUtility
 
         class FauxContext:
 
@@ -113,12 +107,10 @@ class TestExportImport(unittest.TestCase):
         self.assertEqual(settings.enabled, True)
 
     def test_import_disable(self):
-        from zope.component import getUtility
-
-        from plone.registry.interfaces import IRegistry
-
-        from plone.app.theming.interfaces import IThemeSettings
         from plone.app.theming.exportimport.handler import importTheme
+        from plone.app.theming.interfaces import IThemeSettings
+        from plone.registry.interfaces import IRegistry
+        from zope.component import getUtility
 
         class FauxContext:
 

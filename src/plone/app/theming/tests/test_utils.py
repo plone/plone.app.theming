@@ -1,10 +1,10 @@
+from plone.app.testing import SITE_OWNER_NAME
+from plone.app.testing import SITE_OWNER_PASSWORD
 from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
 from plone.app.theming.testing import THEMING_INTEGRATION_TESTING
 from plone.app.theming.utils import applyTheme
 from plone.app.theming.utils import extractThemeInfo
 from plone.app.theming.utils import getTheme
-from plone.app.testing import SITE_OWNER_NAME
-from plone.app.testing import SITE_OWNER_PASSWORD
 from plone.testing.zope import Browser
 
 import os.path
@@ -38,15 +38,19 @@ class TestIntegration(unittest.TestCase):
     layer = THEMING_INTEGRATION_TESTING
 
     def test_getOrCreatePersistentResourceDirectory_new(self):
-        from plone.app.theming.utils import getOrCreatePersistentResourceDirectory  # noqa
+        from plone.app.theming.utils import (  # noqa
+            getOrCreatePersistentResourceDirectory,
+        )
 
         d = getOrCreatePersistentResourceDirectory()
         self.assertEqual(d.__name__, "theme")
 
     def test_getOrCreatePersistentResourceDirectory_exists(self):
-        from zope.component import getUtility
+        from plone.app.theming.utils import (  # noqa
+            getOrCreatePersistentResourceDirectory,
+        )
         from plone.resource.interfaces import IResourceDirectory
-        from plone.app.theming.utils import getOrCreatePersistentResourceDirectory  # noqa
+        from zope.component import getUtility
 
         persistentDirectory = getUtility(IResourceDirectory, name="persistent")
         persistentDirectory.makeDirectory("theme")
@@ -81,10 +85,13 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(theme.doctype, "<!DOCTYPE html>")
 
     def test_getZODBThemes(self):
-        import zipfile
-        import os.path
-        from plone.app.theming.utils import getOrCreatePersistentResourceDirectory  # noqa
+        from plone.app.theming.utils import (  # noqa
+            getOrCreatePersistentResourceDirectory,
+        )
         from plone.app.theming.utils import getZODBThemes
+
+        import os.path
+        import zipfile
         path = os.path.join(
             os.path.dirname(__file__), 'zipfiles', 'default_rules.zip')
         with open(path, 'rb') as fp:
@@ -108,13 +115,11 @@ class TestIntegration(unittest.TestCase):
             )
 
     def test_applyTheme(self):
-        from zope.component import getUtility
-
-        from plone.registry.interfaces import IRegistry
-
         from plone.app.theming.interfaces import IThemeSettings
-        from plone.app.theming.utils import getAvailableThemes
         from plone.app.theming.utils import applyTheme
+        from plone.app.theming.utils import getAvailableThemes
+        from plone.registry.interfaces import IRegistry
+        from zope.component import getUtility
 
         theme = None
         for t in getAvailableThemes():
@@ -135,12 +140,10 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(settings.doctype, theme.doctype)
 
     def test_applyTheme_None(self):
-        from zope.component import getUtility
-
-        from plone.registry.interfaces import IRegistry
-
         from plone.app.theming.interfaces import IThemeSettings
         from plone.app.theming.utils import applyTheme
+        from plone.registry.interfaces import IRegistry
+        from zope.component import getUtility
 
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
 
@@ -155,12 +158,10 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(settings.parameterExpressions, {})
 
     def test_isThemeEnabled(self):
-        from zope.component import getUtility
-
-        from plone.registry.interfaces import IRegistry
-
         from plone.app.theming.interfaces import IThemeSettings
         from plone.app.theming.utils import isThemeEnabled
+        from plone.registry.interfaces import IRegistry
+        from zope.component import getUtility
 
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
         settings.enabled = True
@@ -171,12 +172,10 @@ class TestIntegration(unittest.TestCase):
         self.assertTrue(isThemeEnabled(request, settings))
 
     def test_isThemeEnabled_blacklist(self):
-        from zope.component import getUtility
-
-        from plone.registry.interfaces import IRegistry
-
         from plone.app.theming.interfaces import IThemeSettings
         from plone.app.theming.utils import isThemeEnabled
+        from plone.registry.interfaces import IRegistry
+        from zope.component import getUtility
 
         settings = getUtility(IRegistry).forInterface(IThemeSettings, False)
         settings.enabled = True
@@ -193,11 +192,11 @@ class TestIntegration(unittest.TestCase):
         self.assertFalse(isThemeEnabled(request, settings))
 
     def test_createThemeFromTemplate(self):
+        from plone.app.theming.interfaces import RULE_FILENAME
+        from plone.app.theming.interfaces import THEME_RESOURCE_NAME
         from plone.app.theming.utils import createThemeFromTemplate
         from plone.app.theming.utils import getAvailableThemes
         from plone.app.theming.utils import getTheme
-        from plone.app.theming.interfaces import THEME_RESOURCE_NAME
-        from plone.app.theming.interfaces import RULE_FILENAME
         title = "copy of test theme"
         description = "test theme creation"
         themeName = createThemeFromTemplate(title, description,
@@ -216,11 +215,11 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(theme.rules, expected_rules)
 
     def test_createThemeFromTemplate_custom_prefix(self):
+        from plone.app.theming.interfaces import RULE_FILENAME
+        from plone.app.theming.interfaces import THEME_RESOURCE_NAME
         from plone.app.theming.utils import createThemeFromTemplate
         from plone.app.theming.utils import getAvailableThemes
         from plone.app.theming.utils import getTheme
-        from plone.app.theming.interfaces import THEME_RESOURCE_NAME
-        from plone.app.theming.interfaces import RULE_FILENAME
         title = "copy of test theme with custom prefix"
         description = "test theme creation"
         themeName = createThemeFromTemplate(title, description,
@@ -264,11 +263,11 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(theme.production_js, expected_prod_js)
 
     def test_createThemeFromTemplate_rel_path(self):
+        from plone.app.theming.interfaces import RULE_FILENAME
+        from plone.app.theming.interfaces import THEME_RESOURCE_NAME
         from plone.app.theming.utils import createThemeFromTemplate
         from plone.app.theming.utils import getAvailableThemes
         from plone.app.theming.utils import getTheme
-        from plone.app.theming.interfaces import THEME_RESOURCE_NAME
-        from plone.app.theming.interfaces import RULE_FILENAME
         title = "copy of test theme with custom prefix"
         description = "test theme creation"
         themeName = createThemeFromTemplate(title, description,

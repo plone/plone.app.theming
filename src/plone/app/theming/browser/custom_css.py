@@ -7,6 +7,7 @@ import dateutil
 import time
 import wsgiref
 
+
 class CustomCSSView(BrowserView):
     """
     Renders custom CSS stored in registry

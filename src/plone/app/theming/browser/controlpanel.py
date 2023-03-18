@@ -14,12 +14,12 @@ from plone.app.theming.utils import getAvailableThemes
 from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
 from plone.app.theming.utils import getZODBThemes
 from plone.app.theming.utils import theming_policy
+from plone.base.interfaces import ILinkSchema
+from plone.base.utils import safe_text
 from plone.memoize.instance import memoize
 from plone.registry.interfaces import IRegistry
 from plone.resource.utils import queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
-from plone.base.utils import safe_text
-from plone.base.interfaces import ILinkSchema
 from Products.statusmessages.interfaces import IStatusMessage
 from zope.component import getMultiAdapter
 from zope.component import getUtility
