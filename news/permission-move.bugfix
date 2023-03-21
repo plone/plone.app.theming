@@ -1,3 +1,0 @@
-Fixes circular dependency on ZCML level to `Products.CMFPlone`:
-Move permission id=`plone.app.controlpanel.Themes` title=`Plone Site Setup: Themes` to this package.
-[jensens]

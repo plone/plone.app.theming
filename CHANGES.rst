@@ -9,6 +9,24 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.2 (2023-03-22)
+------------------
+
+Bug fixes:
+
+
+- Fixes circular dependency on ZCML level to `Products.CMFPlone`:
+  Move permission id=`plone.app.controlpanel.Themes` title=`Plone Site Setup: Themes` to this package.
+  [jensens] (permission-move)
+
+
+Internal:
+
+
+- Update configuration files.
+  [plone devs] (80cf330f)
+
+
 5.0.1 (2023-03-14)
 ------------------
 
