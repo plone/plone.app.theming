@@ -15,8 +15,7 @@ def pluginSettingsCacheKey(fun, themeDirectory, plugins=None):
 
 
 def sortDependencies(plugins):
-    """Topological sort
-    """
+    """Topological sort"""
     queue = []
     waiting = {}  # (n,p) -> [remaining deps]
 
@@ -39,19 +38,21 @@ def sortDependencies(plugins):
                 del waiting[(nw, pw)]
 
     if waiting:
-        raise ValueError(
-            f"Could not resolve dependencies for: {waiting:s}"
-        )
+        raise ValueError(f"Could not resolve dependencies for: {waiting:s}")
 
 
 @cache(pluginsCacheKey)
 def getPlugins():
-    """Get all registered plugins topologically sorted
-    """
+    """Get all registered plugins topologically sorted"""
     plugins = []
 
     for name, plugin in getUtilitiesFor(IThemePlugin):
-        plugins.append((name, plugin,))
+        plugins.append(
+            (
+                name,
+                plugin,
+            )
+        )
 
     return list(sortDependencies(plugins))
 
@@ -88,7 +89,6 @@ def getPluginSettings(themeDirectory, plugins=None):
     pluginSettings = {}
     for name, plugin in plugins:
         pluginSettings[name] = manifestContents.get(
-            f"{THEME_RESOURCE_NAME:s}:{name:s}",
-            {}
+            f"{THEME_RESOURCE_NAME:s}:{name:s}", {}
         )
     return pluginSettings

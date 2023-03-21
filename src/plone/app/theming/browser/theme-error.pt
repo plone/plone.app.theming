@@ -1,16 +1,18 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    lang="en"
-    i18n:domain="plone">
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      lang="en"
+      xml:lang="en"
+      i18n:domain="plone"
+>
 
-    <head>
-    </head>
-    <body>
-        <h1 i18n:translate="">Invalid rules</h1>
-        <p i18n:translate="">An error occurred trying to parse the rules file:</p>
-        <pre tal:content="options/error"></pre>
-    </body>
+  <head>
+  </head>
+  <body>
+    <h1 i18n:translate="">Invalid rules</h1>
+    <p i18n:translate="">An error occurred trying to parse the rules file:</p>
+    <pre tal:content="options/error"></pre>
+  </body>
 
 </html>

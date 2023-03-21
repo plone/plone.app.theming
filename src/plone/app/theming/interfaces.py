@@ -8,30 +8,41 @@ from zope.interface import Interface
 
 _ = MessageFactory("plone")
 
-THEME_RESOURCE_NAME = 'theme'
-RULE_FILENAME = 'rules.xml'
-DEFAULT_THEME_FILENAME = 'index.html'
-TEMPLATE_THEME = 'template'
+THEME_RESOURCE_NAME = "theme"
+RULE_FILENAME = "rules.xml"
+DEFAULT_THEME_FILENAME = "index.html"
+TEMPLATE_THEME = "template"
 
 MANIFEST_FORMAT = ManifestFormat(
     THEME_RESOURCE_NAME,
-    keys=['title', 'description', 'rules', 'prefix', 'doctype', 'preview',
-          'enabled-bundles', 'disabled-bundles',
-          'development-css', 'production-css',
-          'tinymce-content-css', 'tinymce-styles-css',
-          'development-js', 'production-js'],
-    parameterSections=['parameters'],
+    keys=[
+        "title",
+        "description",
+        "rules",
+        "prefix",
+        "doctype",
+        "preview",
+        "enabled-bundles",
+        "disabled-bundles",
+        "development-css",
+        "production-css",
+        "tinymce-content-css",
+        "tinymce-styles-css",
+        "development-js",
+        "production-js",
+    ],
+    parameterSections=["parameters"],
 )
 
-THEME_EXTENSIONS = frozenset(['html', 'htm'])
+THEME_EXTENSIONS = frozenset(["html", "htm"])
+
 
 def get_default_custom_css_timestamp():
     return datetime.now()
 
 
 class ITheme(Interface):
-    """A theme, loaded from a resource directory
-    """
+    """A theme, loaded from a resource directory"""
 
     __name__ = schema.TextLine(
         title=_("Name"),
@@ -76,69 +87,65 @@ class ITheme(Interface):
 
 
 class IThemeSettings(Interface):
-    """Transformation settings
-    """
+    """Transformation settings"""
 
     enabled = schema.Bool(
-        title=_('enabled', "Enabled"),
+        title=_("enabled", "Enabled"),
         description=_(
-            'enable_theme_globally',
+            "enable_theme_globally",
             "Use this option to enable or disable the theme globally. "
             "Note that the options will also affect whether the theme "
-            "is used when this option is enabled."
+            "is used when this option is enabled.",
         ),
         required=True,
         default=False,
     )
 
     currentTheme = schema.TextLine(
-        title=_('current_theme', "Current theme"),
+        title=_("current_theme", "Current theme"),
         description=_(
-            'current_theme_description',
-            "The name of the current theme, i.e. the one applied most "
-            "recently."),
+            "current_theme_description",
+            "The name of the current theme, i.e. the one applied most " "recently.",
+        ),
         required=True,
     )
 
     rules = schema.TextLine(
-        title=_('rules_file', "Rules file"),
-        description=_(
-            'rules_file_path',
-            "File path to the rules file"
-        ),
+        title=_("rules_file", "Rules file"),
+        description=_("rules_file_path", "File path to the rules file"),
         required=False,
     )
 
     absolutePrefix = schema.TextLine(
-        title=_('absolute_url_prefix', "Absolute URL prefix"),
+        title=_("absolute_url_prefix", "Absolute URL prefix"),
         description=_(
-            'convert_relative_url',
+            "convert_relative_url",
             "Convert relative URLs in the theme file to absolute paths "
-            "using this prefix."
+            "using this prefix.",
         ),
         required=False,
     )
 
     readNetwork = schema.Bool(
-        title=_('readNetwork', "Read network"),
+        title=_("readNetwork", "Read network"),
         description=_(
-            'network_urls_allowed',
+            "network_urls_allowed",
             "If enabled, network (http, https) urls are allowed in "
-            "the rules file and this config."
+            "the rules file and this config.",
         ),
         required=True,
         default=False,
     )
 
     hostnameBlacklist = schema.List(
-        title=_('hostname_blacklist', "Unthemed host names"),
+        title=_("hostname_blacklist", "Unthemed host names"),
         description=_(
-            'hostname_blacklist_description',
+            "hostname_blacklist_description",
             "If there are hostnames that you do not want to be themed, you "
             "can list them here. This is useful during theme development, "
             "so that you can compare the themed and unthemed sites. In some "
             "cases, you may also want to provided an unthemed host alias for "
-            "content administrators to be able to use 'plain' Plone."
+            "content administrators to be able to use 'plain' Plone.",
         ),
         value_type=schema.TextLine(),
         required=False,
@@ -146,15 +153,15 @@ class IThemeSettings(Interface):
     )
 
     parameterExpressions = schema.Dict(
-        title=_('parameter_expressions', "Parameter expressions"),
+        title=_("parameter_expressions", "Parameter expressions"),
         description=_(
-            'parameter_expressions_description',
+            "parameter_expressions_description",
             "You can define parameters here, which will be passed to the "
             "compiled theme. In your rules file, you can refer to a "
             "parameter by $name. Parameters are defined using TALES "
             "expressions, which should evaluate to a string, a number, a "
             "boolean or None. Available variables are `context`, `request`, "
-            "`portal`, `portal_state`,  and `context_state`."
+            "`portal`, `portal_state`,  and `context_state`.",
         ),
         key_type=schema.ASCIILine(),
         value_type=schema.ASCIILine(),
@@ -163,12 +170,12 @@ class IThemeSettings(Interface):
     )
 
     doctype = schema.ASCIILine(
-        title=_('doctype', "Doctype"),
+        title=_("doctype", "Doctype"),
         description=_(
-            'doctype_description',
-            'You can specify a Doctype string which will be set on the '
+            "doctype_description",
+            "You can specify a Doctype string which will be set on the "
             'for example "<!DOCTYPE html>". If left blank the default XHTML '
-            '1.0 transitional Doctype or that set in the Diazo theme is used.'
+            "1.0 transitional Doctype or that set in the Diazo theme is used.",
         ),
         required=False,
         default="",
@@ -176,18 +183,18 @@ class IThemeSettings(Interface):
 
     custom_css = schema.SourceText(
         title=_(
-            'label_custom_css',
-            'Custom CSS',
+            "label_custom_css",
+            "Custom CSS",
         ),
         description=_(
-            'help_custom_css',
-            'Define your own custom CSS in the field below. This is a good '
-            'place for quick customizations of things like colors and the '
-            'toolbar. Definitions here will override previously defined CSS '
-            'of Plone. Please use this only for small customizations, as it '
-            'is hard to keep track of changes here. For bigger changes you most '
-            'likely want to customize a full theme and make your changes '
-            'there.',
+            "help_custom_css",
+            "Define your own custom CSS in the field below. This is a good "
+            "place for quick customizations of things like colors and the "
+            "toolbar. Definitions here will override previously defined CSS "
+            "of Plone. Please use this only for small customizations, as it "
+            "is hard to keep track of changes here. For bigger changes you most "
+            "likely want to customize a full theme and make your changes "
+            "there.",
         ),
         default="",
         required=False,
@@ -195,11 +202,11 @@ class IThemeSettings(Interface):
 
     custom_css_timestamp = schema.Datetime(
         title=_(
-            'Custom CSS Timestamp',
+            "Custom CSS Timestamp",
         ),
         description=_(
-            'Time stamp when the custom CSS was changed. '
-            'Used to generate custom.css with timestamp in URL.',
+            "Time stamp when the custom CSS was changed. "
+            "Used to generate custom.css with timestamp in URL.",
         ),
         defaultFactory=get_default_custom_css_timestamp,
         required=False,
@@ -207,8 +214,7 @@ class IThemeSettings(Interface):
 
 
 class IThemingLayer(Interface):
-    """Browser layer used to indicate that plone.app.theming is installed
-    """
+    """Browser layer used to indicate that plone.app.theming is installed"""
 
 
 class IThemePlugin(Interface):
@@ -260,12 +266,11 @@ class IThemePlugin(Interface):
         """
 
     def onRequest(request, theme, settings, dependenciesSettings):
-        """Called upon traversal into the site when a theme is enabled
-        """
+        """Called upon traversal into the site when a theme is enabled"""
 
 
 class IThemeAppliedEvent(Interface):
-    theme = Attribute('theme that is getting applied')
+    theme = Attribute("theme that is getting applied")
 
 
 class INoRequest(Interface):
@@ -294,8 +299,7 @@ class IThemingPolicy(Interface):
         """Managing the cache is a policy decision."""
 
     def invalidateCache():
-        """When our settings are changed, invalidate the cache on all zeo clients.
-        """
+        """When our settings are changed, invalidate the cache on all zeo clients."""
 
     def get_theme():
         """Returns the current theme object, cached."""

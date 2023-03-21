@@ -4,26 +4,20 @@ from setuptools import setup
 import os
 
 
-version = '5.0.2.dev0'
+version = "5.0.2.dev0"
 
 longdescription = open("README.rst").read()
 longdescription += "\n\n"
 longdescription += open(
     os.path.join(
-        "src",
-        "plone",
-        "app",
-        "theming",
-        "browser",
-        "resources",
-        "userguide.rst"
+        "src", "plone", "app", "theming", "browser", "resources", "userguide.rst"
     )
 ).read()
 longdescription += "\n\n"
 longdescription += open("CHANGES.rst").read()
 
 setup(
-    name='plone.app.theming',
+    name="plone.app.theming",
     version=version,
     description="Integrates the Diazo theming engine with Plone",
     long_description=longdescription,
@@ -40,37 +34,48 @@ setup(
         "Programming Language :: Python :: 3.11",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    keywords='plone diazo xdv deliverance theme transform xslt',
-    author='Martin Aspeli and Laurence Rowe',
-    author_email='optilude@gmail.com',
-    url='https://pypi.org/project/plone.app.theming',
-    license='GPL',
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
-    namespace_packages=['plone', 'plone.app'],
+    keywords="plone diazo xdv deliverance theme transform xslt",
+    author="Martin Aspeli and Laurence Rowe",
+    author_email="optilude@gmail.com",
+    url="https://pypi.org/project/plone.app.theming",
+    license="GPL",
+    packages=find_packages("src"),
+    package_dir={"": "src"},
+    namespace_packages=["plone", "plone.app"],
     include_package_data=True,
     zip_safe=False,
     python_requires=">=3.8",
     install_requires=[
-        'diazo>=1.0.3',
-        'docutils',
-        'lxml>=2.2.4',
-        'plone.app.registry>=1.0',
-        'plone.resourceeditor>=2.0.0',
-        'plone.staticresources',
-        'plone.subrequest',
-        'plone.transformchain',
-        'python-dateutil',
-        'repoze.xmliter>=0.3',
-        'roman',
-        'setuptools',
-        'zope.traversing',
+        "diazo>=1.0.3",
+        "docutils",
+        "lxml>=2.2.4",
+        "plone.app.registry>=1.0",
+        "plone.base",
+        "plone.i18n",
+        "plone.memoize",
+        "plone.registry",
+        "plone.resource",
+        "plone.resourceeditor>=2.0.0",
+        "plone.staticresources",
+        "plone.subrequest",
+        "plone.transformchain",
+        "python-dateutil",
+        "Products.GenericSetup",
+        "Products.statusmessages",
+        "repoze.xmliter>=0.3",
+        "setuptools",
+        "zope.processlifetime",
+        "zope.traversing",
     ],
     extras_require={
-        'test': ['plone.app.testing'],
+        "test": [
+            "plone.app.testing",
+            "plone.app.contenttypes[test]",
+            "plone.testing",
+        ],
     },
     entry_points="""
     [z3c.autoinclude.plugin]
     target = plone
     """,
-    )
+)

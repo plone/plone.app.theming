@@ -12,6 +12,8 @@ from plone.app.theming.interfaces import THEME_RESOURCE_NAME
 from plone.app.theming.plugins.utils import getPlugins
 from plone.app.theming.plugins.utils import getPluginSettings
 from plone.app.theming.theme import Theme
+from plone.base.utils import safe_bytes
+from plone.base.utils import safe_text
 from plone.i18n.normalizer.interfaces import IURLNormalizer
 from plone.resource.interfaces import IResourceDirectory
 from plone.resource.manifest import extractManifestFromZipFile
@@ -25,8 +27,6 @@ from plone.resource.utils import queryResourceDirectory
 from plone.subrequest import subrequest
 from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.interfaces import ISiteRoot
-from plone.base.utils import safe_bytes
-from plone.base.utils import safe_text
 from Products.PageTemplates.Expressions import getEngine
 from urllib.parse import urlsplit
 from zope.component import getUtility
@@ -39,8 +39,7 @@ import os
 import pkg_resources
 
 
-
-LOGGER = logging.getLogger('plone.app.theming')
+LOGGER = logging.getLogger("plone.app.theming")
 
 
 @implementer(INoRequest)
@@ -65,8 +64,9 @@ class FailingFileProtocolResolver(etree.Resolver):
     Note: an earlier version only checked for "file://", not "file:",
     and did not catch relative paths.
     """
+
     def resolve(self, system_url, public_id, context):
-        if system_url.startswith('file:') and system_url != 'file:///__diazo__':
+        if system_url.startswith("file:") and system_url != "file:///__diazo__":
             # The error will be caught by lxml and we only see this in the traceback:
             # XIncludeError: could not load <system_url>, and no fallback was found
             raise ValueError("File protocol access not allowed: '%s'" % system_url)
@@ -104,6 +104,7 @@ class FailingFileSystemResolver(etree.Resolver):
     our resolver should return nothing.
     Then the InternalResolver or other resolvers can have a go.
     """
+
     def resolve(self, system_url, public_id, context):
         if system_url and os.path.exists(system_url):
             # The error will be caught by lxml and we only see this in the traceback:
@@ -112,19 +113,18 @@ class FailingFileSystemResolver(etree.Resolver):
 
 
 class NetworkResolver(etree.Resolver):
-    """Resolver for network urls
-    """
+    """Resolver for network urls"""
+
     def resolve(self, system_url, public_id, context):
-        if '://' in system_url and system_url != 'file:///__diazo__':
+        if "://" in system_url and system_url != "file:///__diazo__":
             return self.resolve_filename(system_url, context)
 
 
 class PythonResolver(etree.Resolver):
-    """Resolver for python:// paths
-    """
+    """Resolver for python:// paths"""
 
     def resolve(self, system_url, public_id, context):
-        if not system_url.lower().startswith('python://'):
+        if not system_url.lower().startswith("python://"):
             return None
         filename = resolvePythonURL(system_url)
         return self.resolve_filename(filename, context)
@@ -134,9 +134,9 @@ def resolvePythonURL(url):
     """Resolve the python resource url to it's path
     This can resolve python://dotted.package.name/file/path URLs to paths.
     """
-    assert url.lower().startswith('python://')
+    assert url.lower().startswith("python://")
     spec = url[9:]
-    package, resource_name = spec.split('/', 1)
+    package, resource_name = spec.split("/", 1)
     return pkg_resources.resource_filename(package, resource_name)
 
 
@@ -152,89 +152,84 @@ class InternalResolver(etree.Resolver):
             return None
 
         # Ignore URLs with a scheme
-        if '://' in system_url:
+        if "://" in system_url:
             return None
 
         # Ignore the special 'diazo:' resolvers
-        if system_url.startswith('diazo:'):
+        if system_url.startswith("diazo:"):
             return None
 
         context = findContext(request)
-        portalState = queryMultiAdapter(
-            (context, request), name="plone_portal_state")
+        portalState = queryMultiAdapter((context, request), name="plone_portal_state")
 
         if portalState is None:
             root = None
         else:
             root = portalState.navigation_root()
 
-        if not system_url.startswith('/'):  # only for relative urls
+        if not system_url.startswith("/"):  # only for relative urls
             root_path = root.getPhysicalPath()
-            context_path = context.getPhysicalPath()[len(root_path):]
+            context_path = context.getPhysicalPath()[len(root_path) :]
             if len(context_path) == 0:
-                system_url = '/' + system_url
+                system_url = "/" + system_url
             else:
-                system_url = '/{:s}/{:s}'.format(
-                    '/'.join(context_path),
-                    system_url
-                )
+                system_url = "/{:s}/{:s}".format("/".join(context_path), system_url)
 
         response = subrequest(system_url, root=root)
         if response.status != 200:
             LOGGER.error(f"Couldn't resolve {system_url:s}")
             return None
         result = response.getBody()
-        content_type = response.headers.get('content-type')
+        content_type = response.headers.get("content-type")
         encoding = None
-        if content_type is not None and ';' in content_type:
-            content_type, encoding = content_type.split(';', 1)
+        if content_type is not None and ";" in content_type:
+            content_type, encoding = content_type.split(";", 1)
         if encoding is None:
-            encoding = 'utf-8'
+            encoding = "utf-8"
         else:
             # e.g. charset=utf-8
-            encoding = encoding.split('=', 1)[1].strip()
+            encoding = encoding.split("=", 1)[1].strip()
         result = result.decode(encoding)
-        if content_type == 'text/html':
+        if content_type == "text/html":
             # Note: at first the xmlcharrefreplace was only done on Python 2,
             # but Python 3 needs it as well, but only for html.
             # See https://github.com/plone/Products.CMFPlone/issues/3068
-            result = result.encode('ascii', 'xmlcharrefreplace')
+            result = result.encode("ascii", "xmlcharrefreplace")
 
-        if content_type in ('text/javascript', 'application/x-javascript'):
-            result = ''.join([
-                '<html><body><script type="text/javascript">',
-                result,
-                '</script></body></html>',
-                ])
-        elif content_type == 'text/css':
-            result = ''.join([
-                '<html><body><style type="text/css">',
-                result,
-                '</style></body></html>',
-                ])
+        if content_type in ("text/javascript", "application/x-javascript"):
+            result = "".join(
+                [
+                    '<html><body><script type="text/javascript">',
+                    result,
+                    "</script></body></html>",
+                ]
+            )
+        elif content_type == "text/css":
+            result = "".join(
+                [
+                    '<html><body><style type="text/css">',
+                    result,
+                    "</style></body></html>",
+                ]
+            )
 
         return self.resolve_string(result, context)
 
 
 def getPortal():
-    """Return the portal object
-    """
+    """Return the portal object"""
     request = getRequest()
     context = findContext(request)
-    portalState = queryMultiAdapter(
-        (context, request),
-        name="plone_portal_state"
-    )
+    portalState = queryMultiAdapter((context, request), name="plone_portal_state")
     if portalState is None:
         return None
     return portalState.portal()
 
 
 def findContext(request):
-    """Find the context from the request
-    """
-    published = request.get('PUBLISHED', None)
-    context = getattr(published, '__parent__', None)
+    """Find the context from the request"""
+    published = request.get("PUBLISHED", None)
+    context = getattr(published, "__parent__", None)
     if context is not None:
         return context
 
@@ -246,18 +241,17 @@ def findContext(request):
 
 
 def findPathContext(path):
-    """Find context given by physical path
-    """
+    """Find context given by physical path"""
     portal = getPortal()
 
-    if path in (None, '', '/'):
+    if path in (None, "", "/"):
         return portal
 
-    seq = path.strip('/').split('/')
+    seq = path.strip("/").split("/")
     while seq:
         try:
-            obj = portal.restrictedTraverse('/'.join(seq))
-        except:
+            obj = portal.restrictedTraverse("/".join(seq))
+        except Exception:
             seq.pop()
         else:
             if IContentish.providedBy(obj):
@@ -267,15 +261,14 @@ def findPathContext(path):
 
 
 def expandAbsolutePrefix(prefix):
-    """Prepend the Plone site URL to the prefix if it starts with /
-    """
-    if not prefix or not prefix.startswith('/'):
+    """Prepend the Plone site URL to the prefix if it starts with /"""
+    if not prefix or not prefix.startswith("/"):
         return prefix
     portal = getPortal()
     if portal is None:
-        return ''
+        return ""
     path = portal.absolute_url_path()
-    if path and path.endswith('/'):
+    if path and path.endswith("/"):
         path = path[:-1]
     return path + prefix
 
@@ -297,18 +290,16 @@ def createExpressionContext(context, request):
     expressions.
     """
 
-    contextState = queryMultiAdapter(
-        (context, request), name="plone_context_state")
-    portalState = queryMultiAdapter(
-        (context, request), name="plone_portal_state")
+    contextState = queryMultiAdapter((context, request), name="plone_context_state")
+    portalState = queryMultiAdapter((context, request), name="plone_portal_state")
 
     data = {
-        'context': context,
-        'request': request,
-        'portal': portalState.portal(),
-        'context_state': contextState,
-        'portal_state': portalState,
-        'nothing': None,
+        "context": context,
+        "request": request,
+        "portal": portalState.portal(),
+        "context_state": contextState,
+        "portal_state": portalState,
+        "nothing": None,
     }
 
     return getEngine().getContext(data)
@@ -325,8 +316,7 @@ def isValidThemeDirectory(directory):
     """Determine if the given plone.resource directory is a valid theme
     directory
     """
-    return directory.isFile(MANIFEST_FILENAME) \
-        or directory.isFile(RULE_FILENAME)
+    return directory.isFile(MANIFEST_FILENAME) or directory.isFile(RULE_FILENAME)
 
 
 def extractThemeInfo(zipfile, checkRules=True):
@@ -336,19 +326,14 @@ def extractThemeInfo(zipfile, checkRules=True):
     Set checkRules=False to disable the rules check.
     """
 
-    name, manifest = extractManifestFromZipFile(
-        zipfile,
-        MANIFEST_FORMAT
-    )
+    name, manifest = extractManifestFromZipFile(zipfile, MANIFEST_FORMAT)
     if not manifest:
         manifest = {}
-    rules = manifest.get('rules', None)
+    rules = manifest.get("rules", None)
     if rules is None:
         if checkRules:
             try:
-                zipfile.getinfo(
-                    f"{name:s}/{RULE_FILENAME:s}"
-                )
+                zipfile.getinfo(f"{name:s}/{RULE_FILENAME:s}")
             except KeyError:
                 raise ValueError("Could not find theme name and rules file")
     return getTheme(name, manifest)
@@ -357,45 +342,42 @@ def extractThemeInfo(zipfile, checkRules=True):
 def getTheme(name, manifest=None, resources=None):
     if manifest is None:
         if resources is None:
-            resources = getAllResources(
-                MANIFEST_FORMAT,
-                filter=isValidThemeDirectory
-            )
+            resources = getAllResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
         if name not in resources:
             return None
         manifest = resources[name] or {}
 
-    title = manifest.get('title', None)
+    title = manifest.get("title", None)
     if title is None:
-        title = name.capitalize().replace('-', ' ').replace('.', ' ')
-    description = manifest.get('description', None)
-    rules = manifest.get('rules', None)
+        title = name.capitalize().replace("-", " ").replace(".", " ")
+    description = manifest.get("description", None)
+    rules = manifest.get("rules", None)
     if rules is None:
         rules = "/++{:s}++{:s}/{:s}".format(
             THEME_RESOURCE_NAME,
             name,
             RULE_FILENAME,
         )
-    prefix = manifest.get('prefix', None)
+    prefix = manifest.get("prefix", None)
     if prefix is None:
         prefix = f"/++{THEME_RESOURCE_NAME:s}++{name:s}"
-    params = manifest.get('parameters', None) or {}
-    doctype = manifest.get('doctype', None) or ""
-    preview = manifest.get('preview', None)
-    enabled_bundles = manifest.get('enabled-bundles', None) or ''
-    enabled_bundles = enabled_bundles.split(',') if enabled_bundles else []
-    disabled_bundles = manifest.get('disabled-bundles', None) or ''
-    disabled_bundles = disabled_bundles.split(',') if disabled_bundles else []
-    development_css = manifest.get('development-css', None) or ''
-    development_js = manifest.get('development-js', None) or ''
-    production_css = manifest.get('production-css', None) or ''
-    production_js = manifest.get('production-js', None) or ''
-    tinymce_content_css = manifest.get('tinymce-content-css', None) or ''
-    tinymce_styles_css = manifest.get('tinymce-styles-css', None) or ''
+    params = manifest.get("parameters", None) or {}
+    doctype = manifest.get("doctype", None) or ""
+    preview = manifest.get("preview", None)
+    enabled_bundles = manifest.get("enabled-bundles", None) or ""
+    enabled_bundles = enabled_bundles.split(",") if enabled_bundles else []
+    disabled_bundles = manifest.get("disabled-bundles", None) or ""
+    disabled_bundles = disabled_bundles.split(",") if disabled_bundles else []
+    development_css = manifest.get("development-css", None) or ""
+    development_js = manifest.get("development-js", None) or ""
+    production_css = manifest.get("production-css", None) or ""
+    production_js = manifest.get("production-js", None) or ""
+    tinymce_content_css = manifest.get("tinymce-content-css", None) or ""
+    tinymce_styles_css = manifest.get("tinymce-styles-css", None) or ""
     if isinstance(rules, bytes):
-        rules = rules.decode('utf-8')
+        rules = rules.decode("utf-8")
     if isinstance(prefix, bytes):
-        prefix = prefix.decode('utf-8')
+        prefix = prefix.decode("utf-8")
     return Theme(
         name,
         rules,
@@ -412,40 +394,41 @@ def getTheme(name, manifest=None, resources=None):
         production_css=production_css,
         production_js=production_js,
         tinymce_content_css=tinymce_content_css,
-        tinymce_styles_css=tinymce_styles_css
+        tinymce_styles_css=tinymce_styles_css,
     )
 
 
 def getAvailableThemes():
-    """Get a list of all ITheme's available in resource directories.
-    """
+    """Get a list of all ITheme's available in resource directories."""
     resources = getThemeResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
     themes = []
     for theme in resources:
-        themes.append(getTheme(theme['name'], theme))
+        themes.append(getTheme(theme["name"], theme))
 
     themes.sort(key=lambda x: safe_text(x.title))
     return themes
 
-def getThemeResources(format, defaults=None, filter=None, manifestFilename=MANIFEST_FILENAME):
 
+def getThemeResources(
+    format, defaults=None, filter=None, manifestFilename=MANIFEST_FILENAME
+):
     resources = []
 
-    for directory in iterDirectoriesOfType(format.resourceType, filter_duplicates=False):
-
+    for directory in iterDirectoriesOfType(
+        format.resourceType, filter_duplicates=False
+    ):
         if filter is not None and not filter(directory):
             continue
 
         name = directory.__name__
 
         if directory.isFile(manifestFilename):
-
             manifest = directory.openFile(manifestFilename)
             try:
                 theme = getManifest(manifest, format, defaults)
-                theme['name'] = name
+                theme["name"] = name
                 resources.append(theme)
-            except:
+            except Exception:
                 LOGGER.exception("Unable to read manifest for theme directory %s", name)
             finally:
                 manifest.close()
@@ -454,8 +437,7 @@ def getThemeResources(format, defaults=None, filter=None, manifestFilename=MANIF
 
 
 def getThemeFromResourceDirectory(resourceDirectory):
-    """Return a Theme object from a resource directory
-    """
+    """Return a Theme object from a resource directory"""
     name = resourceDirectory.__name__
     if resourceDirectory.isFile(MANIFEST_FILENAME):
         with resourceDirectory.openFile(MANIFEST_FILENAME) as manifest_fp:
@@ -467,8 +449,7 @@ def getThemeFromResourceDirectory(resourceDirectory):
 
 
 def getZODBThemes():
-    """Get a list of ITheme's stored in the ZODB.
-    """
+    """Get a list of ITheme's stored in the ZODB."""
 
     resources = getZODBResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
     themes = []
@@ -480,20 +461,17 @@ def getZODBThemes():
 
 
 def getCurrentTheme():
-    """Get the name of the currently enabled theme
-    """
+    """Get the name of the currently enabled theme"""
     return theming_policy().getCurrentTheme()
 
 
 def isThemeEnabled(request, settings=None):
-    """Determine if a theme is enabled for the given request
-    """
+    """Determine if a theme is enabled for the given request"""
     return theming_policy(request).isThemeEnabled(settings)
 
 
 def applyTheme(theme):
-    """Apply an ITheme
-    """
+    """Apply an ITheme"""
     # on write, force using default policy
     policy = IThemingPolicy(NoRequest())
     settings = policy.getSettings()
@@ -504,14 +482,12 @@ def applyTheme(theme):
     currentTheme = policy.getCurrentTheme()
 
     if currentTheme is not None:
-        themeDirectory = queryResourceDirectory(
-            THEME_RESOURCE_NAME, currentTheme)
+        themeDirectory = queryResourceDirectory(THEME_RESOURCE_NAME, currentTheme)
         if themeDirectory is not None:
             plugins = getPlugins()
             pluginSettings = getPluginSettings(themeDirectory, plugins)
 
     if theme is None:
-
         settings.currentTheme = None
         settings.rules = None
         settings.absolutePrefix = None
@@ -520,19 +496,17 @@ def applyTheme(theme):
 
         if pluginSettings is not None:
             for name, plugin in plugins:
-                plugin.onDisabled(currentTheme, pluginSettings[name],
-                                  pluginSettings)
+                plugin.onDisabled(currentTheme, pluginSettings[name], pluginSettings)
 
     else:
-
         if not isinstance(theme.rules, str):
-            theme.rules = theme.rules.decode('utf-8')
+            theme.rules = theme.rules.decode("utf-8")
 
         if not isinstance(theme.absolutePrefix, str):
-            theme.absolutePrefix = theme.absolutePrefix.decode('utf-8')
+            theme.absolutePrefix = theme.absolutePrefix.decode("utf-8")
 
         if not isinstance(theme.__name__, str):
-            theme.__name__ = theme.__name__.decode('utf-8')
+            theme.__name__ = theme.__name__.decode("utf-8")
 
         settings.currentTheme = theme.__name__
         settings.rules = theme.rules
@@ -542,24 +516,21 @@ def applyTheme(theme):
 
         if pluginSettings is not None:
             for name, plugin in plugins:
-                plugin.onDisabled(currentTheme, pluginSettings[name],
-                                  pluginSettings)
+                plugin.onDisabled(currentTheme, pluginSettings[name], pluginSettings)
 
         currentTheme = settings.currentTheme
-        themeDirectory = queryResourceDirectory(
-            THEME_RESOURCE_NAME, currentTheme)
+        themeDirectory = queryResourceDirectory(THEME_RESOURCE_NAME, currentTheme)
         if themeDirectory is not None:
             plugins = getPlugins()
             pluginSettings = getPluginSettings(themeDirectory, plugins)
 
         if pluginSettings is not None:
             for name, plugin in plugins:
-                plugin.onEnabled(currentTheme, pluginSettings[name],
-                                 pluginSettings)
+                plugin.onEnabled(currentTheme, pluginSettings[name], pluginSettings)
         policy.set_theme(currentTheme, theme)
 
 
-def createThemeFromTemplate(title, description, baseOn='template'):
+def createThemeFromTemplate(title, description, baseOn="template"):
     """Create a new theme from the given title and description based on
     another theme resource directory
     """
@@ -588,36 +559,41 @@ def createThemeFromTemplate(title, description, baseOn='template'):
             fp.close()
         manifest.read_string(safe_text(data))
 
-    if not manifest.has_section('theme'):
-        manifest.add_section('theme')
+    if not manifest.has_section("theme"):
+        manifest.add_section("theme")
 
-    manifest.set('theme', 'title', title)
-    manifest.set('theme', 'description', description)
+    manifest.set("theme", "title", title)
+    manifest.set("theme", "description", description)
 
-    if manifest.has_option('theme', 'prefix'):
+    if manifest.has_option("theme", "prefix"):
         prefix = f"/++{THEME_RESOURCE_NAME}++{themeName}"
-        manifest.set('theme', 'prefix', prefix)
+        manifest.set("theme", "prefix", prefix)
 
-    if manifest.has_option('theme', 'rules'):
-        rule = manifest.get('theme', 'rules')
-        rule_file_name = rule.split('/')[-1]  # extract real rules file name
-        rules = "/++{}++{}/{}".format(THEME_RESOURCE_NAME, themeName,
-                                   rule_file_name)
-        manifest.set('theme', 'rules', rules)
+    if manifest.has_option("theme", "rules"):
+        rule = manifest.get("theme", "rules")
+        rule_file_name = rule.split("/")[-1]  # extract real rules file name
+        rules = f"/++{THEME_RESOURCE_NAME}++{themeName}/{rule_file_name}"
+        manifest.set("theme", "rules", rules)
 
-    paths_to_fix = ['development-css', 'production-css', 'tinymce-content-css',
-                    'tinymce-styles-css', 'development-js', 'production-js']
+    paths_to_fix = [
+        "development-css",
+        "production-css",
+        "tinymce-content-css",
+        "tinymce-styles-css",
+        "development-js",
+        "production-js",
+    ]
     for var_path in paths_to_fix:
-        if not manifest.has_option('theme', var_path):
+        if not manifest.has_option("theme", var_path):
             continue
-        val = manifest.get('theme', var_path)
+        val = manifest.get("theme", var_path)
         if not val:
             continue
-        template_prefix = f'++{THEME_RESOURCE_NAME}++{baseOn}/'
+        template_prefix = f"++{THEME_RESOURCE_NAME}++{baseOn}/"
         if template_prefix in val:
             # okay, fix
-            val = val.replace(template_prefix, f'++{THEME_RESOURCE_NAME}++{themeName}/')
-            manifest.set('theme', var_path, val)
+            val = val.replace(template_prefix, f"++{THEME_RESOURCE_NAME}++{themeName}/")
+            manifest.set("theme", var_path, val)
 
     # plone.resource uses OFS.File which is a BytesIO objects
     # but configparser can only deal with text (StringIO).
@@ -634,14 +610,13 @@ def createThemeFromTemplate(title, description, baseOn='template'):
 
 
 def getParser(type, readNetwork):
-    """Set up a parser for either rules, theme or compiler
-    """
+    """Set up a parser for either rules, theme or compiler"""
 
-    if type == 'rules':
+    if type == "rules":
         parser = etree.XMLParser(recover=False, resolve_entities=False, remove_pis=True)
-    elif type == 'theme':
+    elif type == "theme":
         parser = etree.HTMLParser()
-    elif type == 'compiler':
+    elif type == "compiler":
         parser = etree.XMLParser(resolve_entities=False, remove_pis=True)
     # Note: the order in which resolvers are called, seems random.
     # They end up in a set.
@@ -659,10 +634,9 @@ def compileThemeTransform(
     absolutePrefix=None,
     readNetwork=False,
     parameterExpressions=None,
-    runtrace=False
+    runtrace=False,
 ):
-    """Prepare the theme transform by compiling the rules with the given options
-    """
+    """Prepare the theme transform by compiling the rules with the given options"""
 
     if parameterExpressions is None:
         parameterExpressions = {}
@@ -672,21 +646,21 @@ def compileThemeTransform(
         write_file=False,
         create_dir=False,
         read_network=readNetwork,
-        write_network=False
+        write_network=False,
     )
 
     if absolutePrefix:
         absolutePrefix = expandAbsolutePrefix(absolutePrefix)
-    params = {'url', 'base', 'path', 'scheme', 'host'}
+    params = {"url", "base", "path", "scheme", "host"}
     params.update(parameterExpressions.keys())
-    xslParams = {k: '' for k in params}
+    xslParams = {k: "" for k in params}
 
     compiledTheme = compile_theme(
         rules,
         absolute_prefix=absolutePrefix,
-        parser=getParser('theme', readNetwork),
-        rules_parser=getParser('rules', readNetwork),
-        compiler_parser=getParser('compiler', readNetwork),
+        parser=getParser("theme", readNetwork),
+        rules_parser=getParser("rules", readNetwork),
+        compiler_parser=getParser("compiler", readNetwork),
         read_network=readNetwork,
         access_control=accessControl,
         update=True,
@@ -704,15 +678,14 @@ def compileThemeTransform(
 
 
 def prepareThemeParameters(context, request, parameterExpressions, cache=None):
-    """Prepare and return a dict of parameter expression values.
-    """
+    """Prepare and return a dict of parameter expression values."""
 
     # Find real or virtual path - PATH_INFO has VHM elements in it
-    url = request.get('ACTUAL_URL', '')
+    url = request.get("ACTUAL_URL", "")
 
     # Find the host name
-    base = request.get('BASE1', '')
-    path = url[len(base):]
+    base = request.get("BASE1", "")
+    path = url[len(base) :]
     parts = urlsplit(base.lower())
 
     params = dict(

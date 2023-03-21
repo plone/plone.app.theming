@@ -7,8 +7,7 @@ from plone.resource.utils import queryResourceDirectory
 
 
 def onStartup(event):
-    """Call onDiscovery() on each plugin for each theme on startup
-    """
+    """Call onDiscovery() on each plugin for each theme on startup"""
     plugins = getPlugins()
 
     for themeDirectory in iterDirectoriesOfType(THEME_RESOURCE_NAME):
@@ -16,15 +15,12 @@ def onStartup(event):
 
         for name, plugin in plugins:
             plugin.onDiscovery(
-                themeDirectory.__name__,
-                pluginSettings[name],
-                pluginSettings
+                themeDirectory.__name__, pluginSettings[name], pluginSettings
             )
 
 
 def onRequest(object, event):
-    """Call onRequest() on each plugin for the eanbled theme on each request
-    """
+    """Call onRequest() on each plugin for the eanbled theme on each request"""
 
     request = event.request
     policy = theming_policy(request)

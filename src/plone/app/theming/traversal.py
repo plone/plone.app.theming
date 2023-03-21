@@ -9,7 +9,7 @@ from zExceptions import NotFound
 class ThemeTraverser(ResourceTraverser):
     """The theme traverser.
 
-    Allows traveral to /++theme++<name> using ``plone.resource`` to fetch
+    Allows traversal to /++theme++<name> using ``plone.resource`` to fetch
     things stored either on the filesystem or in the ZODB.
     """
 
@@ -22,7 +22,7 @@ class ThemeTraverser(ResourceTraverser):
         return theming_policy(self.request).getCurrentTheme()
 
     def traverse(self, name, remaining):
-        if name == '':
+        if name == "":
             name = self.current_theme()
 
         # Note: also fixes possible unicode problems

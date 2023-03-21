@@ -14,12 +14,12 @@ from plone.app.theming.utils import getAvailableThemes
 from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
 from plone.app.theming.utils import getZODBThemes
 from plone.app.theming.utils import theming_policy
+from plone.base.interfaces import ILinkSchema
+from plone.base.utils import safe_text
 from plone.memoize.instance import memoize
 from plone.registry.interfaces import IRegistry
 from plone.resource.utils import queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
-from plone.base.utils import safe_text
-from plone.base.interfaces import ILinkSchema
 from Products.statusmessages.interfaces import IStatusMessage
 from zope.component import getMultiAdapter
 from zope.component import getUtility
@@ -31,7 +31,7 @@ import logging
 import zipfile
 
 
-logger = logging.getLogger('plone.app.theming')
+logger = logging.getLogger("plone.app.theming")
 
 
 def authorize(context, request):
@@ -41,7 +41,6 @@ def authorize(context, request):
 
 
 class ThemingControlpanel(BrowserView):
-
     @property
     def site_url(self):
         """Return the absolute URL to the current site, which is likely not
@@ -51,39 +50,36 @@ class ThemingControlpanel(BrowserView):
 
     @property
     def hostname_blacklist(self):
-        hostname_blacklist = self.request.get('hostnameBlacklist', [])
+        hostname_blacklist = self.request.get("hostnameBlacklist", [])
         return [safe_text(host) for host in hostname_blacklist]
 
     def __call__(self):
-        self.pskin = getToolByName(self.context, 'portal_skins')
+        self.pskin = getToolByName(self.context, "portal_skins")
         if self.update():
             return self.index()
-        return ''
+        return ""
 
     def _setup(self):
         registry = getUtility(IRegistry)
         self.theme_settings = registry.forInterface(IThemeSettings, False)
-        self.link_settings = registry.forInterface(ILinkSchema,
-                                                   prefix="plone",
-                                                   check=False)
+        self.link_settings = registry.forInterface(
+            ILinkSchema, prefix="plone", check=False
+        )
         self.zodbThemes = getZODBThemes()
         self.availableThemes = getAvailableThemes()
         self.selectedTheme = self.getSelectedTheme(
             self.availableThemes,
             self.theme_settings.currentTheme,
-            self.theme_settings.rules
+            self.theme_settings.rules,
         )
-        self.overlay = ''
+        self.overlay = ""
 
         self.skinsVocabulary = getUtility(
-            IVocabularyFactory,
-            name='plone.app.vocabularies.Skins'
-        )(
-            self.context
-        )
+            IVocabularyFactory, name="plone.app.vocabularies.Skins"
+        )(self.context)
 
         # Set response header to make sure control panel is never themed
-        self.request.response.setHeader('X-Theme-Disabled', '1')
+        self.request.response.setHeader("X-Theme-Disabled", "1")
 
     def redirect(self, url):
         self.request.response.redirect(url)
@@ -94,8 +90,7 @@ class ThemingControlpanel(BrowserView):
     def set_mark_special_links(self, value):
         self.link_settings.mark_special_links = value
 
-    mark_special_links = property(get_mark_special_links,
-                                  set_mark_special_links)
+    mark_special_links = property(get_mark_special_links, set_mark_special_links)
 
     def get_ext_links_open_new_window(self):
         return self.link_settings.external_links_open_new_window
@@ -103,8 +98,9 @@ class ThemingControlpanel(BrowserView):
     def set_ext_links_open_new_window(self, value):
         self.link_settings.external_links_open_new_window = value
 
-    ext_links_open_new_window = property(get_ext_links_open_new_window,
-                                         set_ext_links_open_new_window)
+    ext_links_open_new_window = property(
+        get_ext_links_open_new_window, set_ext_links_open_new_window
+    )
 
     def update(self):
         # XXX: complexity too high: refactoring needed
@@ -112,27 +108,22 @@ class ThemingControlpanel(BrowserView):
         self.errors = {}
         form = self.request.form
 
-        if 'form.button.Cancel' in form:
+        if "form.button.Cancel" in form:
             IStatusMessage(self.request).add(_("Changes cancelled"))
             self.redirect(f"{self.site_url}/@@overview-controlpanel")
             return False
 
-        if 'form.button.Enable' in form:
+        if "form.button.Enable" in form:
             self.authorize()
 
-            themeSelection = form.get('themeName', None)
+            themeSelection = form.get("themeName", None)
 
             if themeSelection:
-                themeData = self.getThemeData(
-                    self.availableThemes,
-                    themeSelection
-                )
+                themeData = self.getThemeData(self.availableThemes, themeSelection)
                 applyTheme(themeData)
                 self.theme_settings.enabled = True
 
-            IStatusMessage(
-                self.request
-            ).add(
+            IStatusMessage(self.request).add(
                 _(
                     "Theme enabled. Note that this control panel page is "
                     "never themed."
@@ -141,13 +132,13 @@ class ThemingControlpanel(BrowserView):
             self._setup()
             return True
 
-        if 'form.button.InvalidateCache' in form:
+        if "form.button.InvalidateCache" in form:
             self.authorize()
             policy = theming_policy()
             policy.invalidateCache()
             return True
 
-        if 'form.button.Disable' in form:
+        if "form.button.Disable" in form:
             self.authorize()
 
             applyTheme(None)
@@ -157,38 +148,38 @@ class ThemingControlpanel(BrowserView):
             self._setup()
             return True
 
-        if 'form.button.AdvancedSave' in form:
+        if "form.button.AdvancedSave" in form:
             self.authorize()
 
-            self.theme_settings.readNetwork = form.get('readNetwork', False)
+            self.theme_settings.readNetwork = form.get("readNetwork", False)
 
-            themeEnabled = form.get('themeEnabled', False)
-            rules = form.get('rules', None)
-            prefix = form.get('absolutePrefix', None)
-            doctype = str(form.get('doctype', ""))
+            themeEnabled = form.get("themeEnabled", False)
+            rules = form.get("rules", None)
+            prefix = form.get("absolutePrefix", None)
+            doctype = str(form.get("doctype", ""))
 
             parameterExpressions = {}
-            parameterExpressionsList = form.get('parameterExpressions', [])
+            parameterExpressionsList = form.get("parameterExpressions", [])
 
             for line in parameterExpressionsList:
                 try:
-                    name, expression = line.split('=', 1)
+                    name, expression = line.split("=", 1)
                     name = str(name.strip())
                     expression = str(expression.strip())
                     parameterExpressions[name] = expression
                 except ValueError:
                     message = _(
-                        'error_invalid_parameter_expressions',
+                        "error_invalid_parameter_expressions",
                         default="Please ensure you enter one expression per "
-                                "line, in the format <name> = <expression>."
+                        "line, in the format <name> = <expression>.",
                     )
-                    self.errors['parameterExpressions'] = message
+                    self.errors["parameterExpressions"] = message
 
-            themeBase = form.get('themeBase', None)
-            markSpecialLinks = form.get('markSpecialLinks', None)
-            extLinksOpenInNewWindow = form.get('extLinksOpenInNewWindow', None)
+            themeBase = form.get("themeBase", None)
+            markSpecialLinks = form.get("markSpecialLinks", None)
+            extLinksOpenInNewWindow = form.get("extLinksOpenInNewWindow", None)
 
-            custom_css = form.get('custom_css', b'')
+            custom_css = form.get("custom_css", b"")
 
             if not self.errors:
                 # Trigger onDisabled() on plugins if theme was active
@@ -218,18 +209,16 @@ class ThemingControlpanel(BrowserView):
                 self._setup()
                 return True
             else:
-                IStatusMessage(self.request).add(
-                    _("There were errors"), 'error'
-                )
-                self.redirectToFieldset('advanced')
+                IStatusMessage(self.request).add(_("There were errors"), "error")
+                self.redirectToFieldset("advanced")
                 return False
 
-        if 'form.button.Import' in form:
+        if "form.button.Import" in form:
             self.authorize()
 
-            enableNewTheme = form.get('enableNewTheme', False)
-            replaceExisting = form.get('replaceExisting', False)
-            themeArchive = form.get('themeArchive', None)
+            enableNewTheme = form.get("enableNewTheme", False)
+            replaceExisting = form.get("replaceExisting", False)
+            themeArchive = form.get("themeArchive", None)
 
             themeZip = None
             performImport = False
@@ -238,34 +227,31 @@ class ThemingControlpanel(BrowserView):
                 themeZip = zipfile.ZipFile(themeArchive)
             except (zipfile.BadZipfile, zipfile.LargeZipFile):
                 logger.exception("Could not read zip file")
-                self.errors['themeArchive'] = _(
-                    'error_invalid_zip',
-                    default="The uploaded file is not a valid Zip archive"
+                self.errors["themeArchive"] = _(
+                    "error_invalid_zip",
+                    default="The uploaded file is not a valid Zip archive",
                 )
 
             if themeZip:
-
                 try:
                     themeData = extractThemeInfo(themeZip, checkRules=False)
                 except (ValueError, KeyError) as e:
                     logger.warn(str(e))
-                    self.errors['themeArchive'] = _(
-                        'error_no_rules_file',
-                        "The uploaded file does not contain a valid theme "
-                        "archive."
+                    self.errors["themeArchive"] = _(
+                        "error_no_rules_file",
+                        "The uploaded file does not contain a valid theme " "archive.",
                     )
                 else:
-
                     themeContainer = getOrCreatePersistentResourceDirectory()
                     themeExists = themeData.__name__ in themeContainer
 
                     if themeExists:
                         if not replaceExisting:
-                            self.errors['themeArchive'] = _(
-                                'error_already_installed',
+                            self.errors["themeArchive"] = _(
+                                "error_already_installed",
                                 "This theme is already installed. Select "
                                 "'Replace existing theme' and re-upload to "
-                                "replace it."
+                                "replace it.",
                             )
                         else:
                             del themeContainer[themeData.__name__]
@@ -277,8 +263,7 @@ class ThemingControlpanel(BrowserView):
                 themeContainer.importZip(themeZip)
 
                 themeDirectory = queryResourceDirectory(
-                    THEME_RESOURCE_NAME,
-                    themeData.__name__
+                    THEME_RESOURCE_NAME, themeData.__name__
                 )
                 if themeDirectory is not None:
                     # If we don't have a rules file, use the template
@@ -288,12 +273,11 @@ class ThemingControlpanel(BrowserView):
                         RULE_FILENAME,
                     ) and not themeDirectory.isFile(RULE_FILENAME):
                         templateThemeDirectory = queryResourceDirectory(
-                            THEME_RESOURCE_NAME,
-                            TEMPLATE_THEME
+                            THEME_RESOURCE_NAME, TEMPLATE_THEME
                         )
                         themeDirectory.writeFile(
                             RULE_FILENAME,
-                            templateThemeDirectory.readFile(RULE_FILENAME)
+                            templateThemeDirectory.readFile(RULE_FILENAME),
                         )
 
                         if not themeDirectory.isFile(DEFAULT_THEME_FILENAME):
@@ -304,7 +288,7 @@ class ThemingControlpanel(BrowserView):
                                     "found. Update rules.xml to reference "
                                     "the current theme file."
                                 ),
-                                'warning',
+                                "warning",
                             )
 
                     plugins = getPlugins()
@@ -312,9 +296,7 @@ class ThemingControlpanel(BrowserView):
                     if pluginSettings is not None:
                         for name, plugin in plugins:
                             plugin.onCreated(
-                                themeData.__name__,
-                                pluginSettings[name],
-                                pluginSettings
+                                themeData.__name__, pluginSettings[name], pluginSettings
                             )
 
                 if enableNewTheme:
@@ -329,24 +311,21 @@ class ThemingControlpanel(BrowserView):
                 )
                 return False
             else:
-                IStatusMessage(self.request).add(
-                    _("There were errors"),
-                    "error"
-                )
+                IStatusMessage(self.request).add(_("There were errors"), "error")
 
-                self.renderOverlay('upload')
+                self.renderOverlay("upload")
                 return True
 
-        if 'form.button.DeleteSelected' in form:
+        if "form.button.DeleteSelected" in form:
             self.authorize()
 
-            toDelete = form.get('themes', [])
+            toDelete = form.get("themes", [])
             themeDirectory = getOrCreatePersistentResourceDirectory()
 
             for theme in toDelete:
                 del themeDirectory[theme]
 
-            IStatusMessage(self.request).add(_("Theme deleted"), 'info')
+            IStatusMessage(self.request).add(_("Theme deleted"), "info")
 
             self._setup()
             return True
@@ -390,14 +369,23 @@ class ThemingControlpanel(BrowserView):
             override = False
 
             # Is there more than one theme with the same name?
-            if len([x for x in self.availableThemes if x.__name__ == theme.__name__]) > 1:
+            if (
+                len([x for x in self.availableThemes if x.__name__ == theme.__name__])
+                > 1
+            ):
                 # Then we make sure we're using the TTW version, not the filesystem version.
                 try:
-                    theme = list(filter(lambda x: x.__name__ == theme.__name__, self.zodbThemes))[0]
+                    theme = list(
+                        filter(lambda x: x.__name__ == theme.__name__, self.zodbThemes)
+                    )[0]
                     override = True
                 # Or when TTW is not available, the first available filesystem version.
                 except IndexError:
-                    theme = list(filter(lambda x: x.__name__ == theme.__name__, self.availableThemes))[0]
+                    theme = list(
+                        filter(
+                            lambda x: x.__name__ == theme.__name__, self.availableThemes
+                        )
+                    )[0]
 
             previewUrl = "++resource++plone.app.theming/defaultPreview.png"
             if theme.preview:
@@ -407,13 +395,13 @@ class ThemingControlpanel(BrowserView):
                 )
 
             theme_data = {
-                'name': theme.__name__,
-                'title': theme.title,
-                'description': theme.description,
-                'override': override,
-                'editable': theme.__name__ in zodbNames,
-                'preview': f"{self.site_url}/{previewUrl}",
-                'selected': theme.__name__ == self.selectedTheme,
+                "name": theme.__name__,
+                "title": theme.title,
+                "description": theme.description,
+                "override": override,
+                "editable": theme.__name__ in zodbNames,
+                "preview": f"{self.site_url}/{previewUrl}",
+                "selected": theme.__name__ == self.selectedTheme,
             }
             if theme.__name__ == self.selectedTheme:
                 active_theme = theme_data
@@ -422,20 +410,14 @@ class ThemingControlpanel(BrowserView):
 
             complete.append(theme.__name__)
 
-        themes.sort(key=lambda x: x['title'])
+        themes.sort(key=lambda x: x["title"])
         if active_theme:
             themes.insert(0, active_theme)
 
         return themes
 
     def redirectToFieldset(self, fieldset):
-        self.redirect(
-            "{}/{}#fieldsetlegend-{}".format(
-                self.site_url,
-                self.__name__,
-                fieldset
-            )
-        )
+        self.redirect(f"{self.site_url}/{self.__name__}#fieldsetlegend-{fieldset}")
 
     def renderOverlay(self, overlay):
         self.overlay = overlay

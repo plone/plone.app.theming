@@ -281,7 +281,7 @@ Advanced settings
 The *Theming* control panel also contains a tab named *Advanced settings*. Here
 be dragons.
 
-The *Advanced setings* tab is divided into two areas. The first, *Theme
+The *Advanced settings* tab is divided into two areas. The first, *Theme
 details*, contains the underlying settings that are modified when a theme is
 applied from the *Themes* control panel. These are:
 

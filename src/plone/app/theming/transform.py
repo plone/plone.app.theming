@@ -20,7 +20,7 @@ import logging
 # Disable theming of ZMI
 patch_zmi()
 
-LOGGER = logging.getLogger('plone.app.theming')
+LOGGER = logging.getLogger("plone.app.theming")
 
 
 @implementer(ITransform)
@@ -37,24 +37,24 @@ class ThemeTransform:
         self.request = request
 
     def debug_theme(self):
-        ''' Check if the theme should be debugged
+        """Check if the theme should be debugged
         We will debug the theme
         when we have a truish diazo.debug parameter in the request
-        '''
+        """
         if not getConfiguration().debug_mode:
             return False
-        diazo_debug = self.request.get('diazo.debug', '').lower()
-        return diazo_debug in ('1', 'y', 'yes', 't', 'true')
+        diazo_debug = self.request.get("diazo.debug", "").lower()
+        return diazo_debug in ("1", "y", "yes", "t", "true")
 
     def develop_theme(self):
-        ''' Check if the theme should be recompiled
+        """Check if the theme should be recompiled
         every time the transform is applied
-        '''
+        """
         if not getConfiguration().debug_mode:
             return False
         if self.debug_theme():
             return True
-        if environ.get('DIAZO_ALWAYS_CACHE_RULES'):
+        if environ.get("DIAZO_ALWAYS_CACHE_RULES"):
             return False
         return True
 
@@ -93,7 +93,7 @@ class ThemeTransform:
                 absolutePrefix,
                 readNetwork,
                 parameterExpressions,
-                runtrace=runtrace
+                runtrace=runtrace,
             )
             if transform is None:
                 return None
@@ -107,13 +107,16 @@ class ThemeTransform:
         return theming_policy(self.request).getSettings()
 
     def parseTree(self, result):
-        contentType = self.request.response.getHeader('Content-Type')
-        if contentType is None or not contentType.startswith('text/html'):
+        contentType = self.request.response.getHeader("Content-Type")
+        if contentType is None or not contentType.startswith("text/html"):
             return None
 
-        contentEncoding = self.request.response.getHeader('Content-Encoding')
-        if contentEncoding \
-           and contentEncoding in ('zip', 'deflate', 'compress',):
+        contentEncoding = self.request.response.getHeader("Content-Encoding")
+        if contentEncoding and contentEncoding in (
+            "zip",
+            "deflate",
+            "compress",
+        ):
             return None
 
         try:
@@ -138,8 +141,7 @@ class ThemeTransform:
         return self.transformIterable([result], encoding)
 
     def transformIterable(self, result, encoding):
-        """Apply the transform if required
-        """
+        """Apply the transform if required"""
         # Obtain settings. Do nothing if not found
         policy = theming_policy(self.request)
         if not policy.isThemeEnabled():
@@ -160,8 +162,8 @@ class ThemeTransform:
 
             if settings.doctype:
                 result.doctype = settings.doctype
-                if not result.doctype.endswith('\n'):
-                    result.doctype += '\n'
+                if not result.doctype.endswith("\n"):
+                    result.doctype += "\n"
 
             transform = self.setupTransform(runtrace=runtrace)
             if transform is None:
@@ -173,10 +175,7 @@ class ThemeTransform:
 
             parameterExpressions = settings.parameterExpressions or {}
             params = prepareThemeParameters(
-                findContext(self.request),
-                self.request,
-                parameterExpressions,
-                cache
+                findContext(self.request), self.request, parameterExpressions, cache
             )
 
             transformed = transform(result.tree, **params)
@@ -185,25 +184,26 @@ class ThemeTransform:
                 # Transformed worked, swap content with result
                 result.tree = transformed
         except etree.LxmlError as e:
-            if not(debug_mode):
+            if not (debug_mode):
                 raise
             error_log = e.error_log
             runtrace = True
 
         if runtrace:
             from diazo.runtrace import generate_debug_html
+
             # Add debug information to end of body
-            body = result.tree.xpath('/html/body')[0]
-            debug_url = findContext(
-                self.request
-            ).portal_url() + '/++resource++diazo-debug'
+            body = result.tree.xpath("/html/body")[0]
+            debug_url = (
+                findContext(self.request).portal_url() + "/++resource++diazo-debug"
+            )
             body.insert(
                 -1,
                 generate_debug_html(
                     debug_url,
                     rules=settings.rules,
-                    rules_parser=getParser('rules', settings.readNetwork),
+                    rules_parser=getParser("rules", settings.readNetwork),
                     error_log=error_log,
-                )
+                ),
             )
         return result

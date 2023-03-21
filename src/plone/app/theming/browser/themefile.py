@@ -13,16 +13,16 @@ class FileUploadView(BrowserView):
         filedata = self.request.form.get("file", None)
 
         if filedata is None:
-            return json.dumps({'failure':'error'})
-        
+            return json.dumps({"failure": "error"})
+
         directory = PersistentResourceDirectory(self.context)
-        name = filedata.filename.encode('utf-8')
+        name = filedata.filename.encode("utf-8")
         data = filedata.read()
 
         try:
             directory.writeFile(name, data)
-            self.request.response.setHeader('Content-Type', 'application/json')
-        except:
-            return json.dumps({'failure':'error'})
+            self.request.response.setHeader("Content-Type", "application/json")
+        except Exception:
+            return json.dumps({"failure": "error"})
 
-        return json.dumps({'success':'create'})
+        return json.dumps({"success": "create"})

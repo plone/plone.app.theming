@@ -1,6 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <layers>
-    <layer
-        name="plone.app.theming"
-        interface="plone.app.theming.interfaces.IThemingLayer"
-        />
+  <layer interface="plone.app.theming.interfaces.IThemingLayer"
+         name="plone.app.theming"
+  />
 </layers>
