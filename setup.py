@@ -60,7 +60,6 @@ setup(
         "plone.subrequest",
         "plone.transformchain",
         "python-dateutil",
-        "Products.CMFPlone",
         "Products.GenericSetup",
         "Products.statusmessages",
         "repoze.xmliter>=0.3",

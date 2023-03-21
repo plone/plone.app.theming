@@ -5,10 +5,10 @@
     i18n_domain="plone"
     >
 
-  <include
-      package="Products.CMFPlone.controlpanel"
-      file="permissions.zcml"
-      />
+  <permission
+    id="plone.app.controlpanel.Themes"
+    title="Plone Site Setup: Themes"
+    />
 
   <browser:resource
       name="plone.app.theming.gif"
