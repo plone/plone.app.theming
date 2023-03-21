@@ -6,9 +6,9 @@
     >
 
   <permission
-    id="plone.app.controlpanel.Themes"
-    title="Plone Site Setup: Themes"
-    />
+      id="plone.app.controlpanel.Themes"
+      title="Plone Site Setup: Themes"
+      />
 
   <browser:resource
       name="plone.app.theming.gif"
