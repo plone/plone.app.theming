@@ -742,7 +742,7 @@
                                   name="custom_css"
                                   placeholder="Put your plain css..."
                                   rows="40"
-                                  data-pat-code-editor="language: css; theme: tomorrow"
+                                  data-pat-code-editor="language: css; theme: light"
                                   tal:content="custom_css"
                                   i18n:attributes="placeholder"
                         ></textarea>
