@@ -9,6 +9,16 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.3 (2023-04-06)
+------------------
+
+Bug fixes:
+
+
+- Fix theme for `pat-code-editor`.
+  [petschki] (#219)
+
+
 5.0.2 (2023-03-22)
 ------------------
 
