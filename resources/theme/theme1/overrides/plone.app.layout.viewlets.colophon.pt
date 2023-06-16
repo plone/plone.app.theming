@@ -12,7 +12,7 @@
            i18n:attributes="title title_built_with_plone;"
            i18n:translate="label_powered_by_plone"
         >
-          Powered by Plone &amp; Python</a>
+          Powered by Plone</a>
       </li>
       <li>
     and Diazo
