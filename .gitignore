@@ -1,18 +1,51 @@
-*.py?
-*.pyc
-.DS_Store
+# Generated from:
+# https://github.com/plone/meta/tree/master/config/default
+# See the inline comments on how to expand/tweak this configuration file
+# python related
 *.egg-info
-*.graffle
-.installed.cfg
-.mr.developer.cfg
+*.pyc
+*.pyo
+
+# tools related
+build/
+.coverage
+coverage.xml
+dist/
+docs/_build
+__pycache__/
+.tox
+.vscode/
+node_modules/
+
+# venv / buildout related
 bin/
 develop-eggs/
-extras/
+eggs/
+.eggs/
+etc/
+.installed.cfg
+include/
+lib/
+lib64
+.mr.developer.cfg
 parts/
+pyvenv.cfg
 var/
-bower_components/
-build/
-node_modules/
-coverage/
-sauce_connect.log*
-test-results.xml
+
+# mxdev
+/instance/
+/.make-sentinels/
+/*-mxdev.txt
+/reports/
+/sources/
+/venv/
+.installed.txt
+
+
+##
+# Add extra configuration options in .meta.toml:
+#  [gitignore]
+#  extra_lines = """
+#  _your own configuration lines_
+#  """
+##
