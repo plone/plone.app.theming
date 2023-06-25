@@ -1,26 +1,24 @@
+from pathlib import Path
 from setuptools import find_packages
 from setuptools import setup
-
-import os
 
 
 version = "5.0.5.dev0"
 
-longdescription = open("README.rst").read()
-longdescription += "\n\n"
-longdescription += open(
-    os.path.join(
-        "src", "plone", "app", "theming", "browser", "resources", "userguide.rst"
-    )
-).read()
-longdescription += "\n\n"
-longdescription += open("CHANGES.rst").read()
+long_description = (
+    f"{Path('README.rst').read_text()}\n"
+    f"{(Path('src') / 'plone' / 'app' / 'theming' / 'browser' / 'resources' / 'userguide.rst').read_text()}\n"
+    f"{Path('CHANGES.rst').read_text()}"
+)
 
 setup(
     name="plone.app.theming",
     version=version,
     description="Integrates the Diazo theming engine with Plone",
-    long_description=longdescription,
+    long_description=long_description,
+    long_description_content_type="text/x-rst",
+    # Get more strings from
+    # https://pypi.org/classifiers/
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Framework :: Plone",
