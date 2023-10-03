@@ -20,7 +20,7 @@ def onStartup(event):
 
 
 def onRequest(object, event):
-    """Call onRequest() on each plugin for the eanbled theme on each request"""
+    """Call onRequest() on each plugin for the enabled theme on each request"""
 
     request = event.request
     policy = theming_policy(request)
