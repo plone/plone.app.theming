@@ -86,3 +86,27 @@ Content-Type: image/png
             '{"failure": "error"}',  # TODO: Should be {'success':'create'}
             str(self.browser.contents),
         )
+
+    def test_custom_css(self):
+        # By default custom.css is empty.
+        self.browser.handleErrors = False
+        self.browser.open("custom.css")
+        self.assertEqual(self.browser.contents, "")
+        self.assertEqual(
+            self.browser.headers["Content-Type"],
+            "text/css; charset=utf-8",
+        )
+
+        # Go to the control panel and add custom css.
+        self.goto_controlpanel()
+        css = "body {background-color: blue;}"
+        self.browser.getControl(name="custom_css").value = css
+        self.browser.getControl(name="form.button.AdvancedSave").click()
+
+        # Check that the css is available.
+        self.browser.open("custom.css")
+        self.assertEqual(self.browser.contents, css)
+        self.assertEqual(
+            self.browser.headers["Content-Type"],
+            "text/css; charset=utf-8",
+        )
