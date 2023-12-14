@@ -9,6 +9,16 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.6 (2023-12-14)
+------------------
+
+Bug fixes:
+
+
+- Fix AttributeError in ``custom.css``: "module 'wsgiref' has no attribute 'handlers'".
+  [maurits] (#230)
+
+
 5.0.5 (2023-10-07)
 ------------------
 
