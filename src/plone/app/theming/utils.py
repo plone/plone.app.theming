@@ -161,13 +161,10 @@ class InternalResolver(etree.Resolver):
 
         context = findContext(request)
         portalState = queryMultiAdapter((context, request), name="plone_portal_state")
-
-        if portalState is None:
-            root = None
-        else:
-            root = portalState.navigation_root()
+        portal = portalState.portal()
 
         if not system_url.startswith("/"):  # only for relative urls
+            root = portalState.navigation_root()
             root_path = root.getPhysicalPath()
             context_path = context.getPhysicalPath()[len(root_path) :]
             if len(context_path) == 0:
@@ -175,7 +172,7 @@ class InternalResolver(etree.Resolver):
             else:
                 system_url = "/{:s}/{:s}".format("/".join(context_path), system_url)
 
-        response = subrequest(system_url, root=root)
+        response = subrequest(system_url, root=portal)
         if response.status != 200:
             LOGGER.error(f"Couldn't resolve {system_url:s}")
             return None
