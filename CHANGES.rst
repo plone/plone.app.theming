@@ -9,6 +9,16 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.7 (2024-01-18)
+------------------
+
+Bug fixes:
+
+
+- Traverse to theme resources from the portal. Fix broken theme when rendering accessible content contained in an inaccessible navigation-root. Fixes #142
+  [pbauer] (#142)
+
+
 5.0.6 (2023-12-14)
 ------------------
 
