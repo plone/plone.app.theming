@@ -1,11 +1,18 @@
+from plone.app.testing import setRoles
 from plone.app.testing import SITE_OWNER_NAME
 from plone.app.testing import SITE_OWNER_PASSWORD
+from plone.app.testing import TEST_USER_ID
 from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
 from plone.app.theming.testing import THEMING_INTEGRATION_TESTING
 from plone.app.theming.utils import applyTheme
 from plone.app.theming.utils import extractThemeInfo
 from plone.app.theming.utils import getTheme
+from plone.app.theming.utils import InternalResolver
+from plone.base.interfaces import INavigationRoot
 from plone.testing.zope import Browser
+from Products.CMFCore.utils import getToolByName
+from zExceptions import Unauthorized
+from zope.interface import alsoProvides
 
 import os.path
 import tempfile
@@ -31,6 +38,26 @@ MESSAGE = "Hello from a temporary directory."
 HERE = os.path.dirname(__file__)
 PACKAGE_THEME_FILENAME = "package_theme.txt"
 PACKAGE_THEME = os.path.join(HERE, PACKAGE_THEME_FILENAME)
+
+
+class InternalResolverAsString(InternalResolver):
+    """InternalResolver with some simplicifications.
+
+    InternalResolver has this main method:
+
+        def resolve(self, system_url, public_id, context):
+
+    At the end it calls:
+
+        return self.resolve_string(result, context)
+
+    This turns a string into some internal lxml document, and I don't know how
+    to turn that back into a string for easier testing.  So override that
+    method to simply return the original string.
+    """
+
+    def resolve_string(self, result, context):
+        return result
 
 
 class TestIntegration(unittest.TestCase):
@@ -327,6 +354,126 @@ class TestIntegration(unittest.TestCase):
             createThemeFromTemplate(title, description, baseOn="another-theme")
         except UnicodeEncodeError:
             self.fail(msg="Unicode Encode Error")
+
+
+class TestInternalResolverNavigationRoot(unittest.TestCase):
+    """Test how the InternalResolver handles navigation roots."""
+
+    layer = THEMING_INTEGRATION_TESTING
+
+    def setUp(self):
+        self.portal = self.layer["portal"]
+        self.request = self.layer["request"]
+
+    def resolve(self, system_url):
+        """Resolve the system_url.
+
+        The standard resolve method ignores the public_id and the context,
+        so I don't want to pass it in all tests.
+        """
+        resolver = InternalResolverAsString()
+        return resolver.resolve(system_url, public_id=None, context=None)
+
+    def setup_public(self):
+        # Create a public navigation root containing a public page.
+        setRoles(self.portal, TEST_USER_ID, ("Manager",))
+        self.portal.invokeFactory("Folder", "public", title="Public Folder")
+        folder = self.portal.public
+        alsoProvides(folder, INavigationRoot)
+        folder.invokeFactory("Document", "page", title="Public page in public folder")
+        wftool = getToolByName(self.portal, "portal_workflow")
+        wftool.doActionFor(folder, action="publish")
+        wftool.doActionFor(folder.page, action="publish")
+
+        # If we want a page in the site root:
+        # self.portal.invokeFactory("Document", "page", title="Public page")
+        # wftool.doActionFor(self.portal.page, action="publish")
+        setRoles(self.portal, TEST_USER_ID, ("Member",))
+        return folder
+
+    def setup_private(self):
+        # Create a private navigation root containing a public page.
+        setRoles(self.portal, TEST_USER_ID, ("Manager",))
+        self.portal.invokeFactory("Folder", "private", title="Private Folder")
+        folder = self.portal.private
+        alsoProvides(folder, INavigationRoot)
+        folder.invokeFactory("Document", "page", title="Public page in private folder")
+        wftool = getToolByName(self.portal, "portal_workflow")
+        wftool.doActionFor(folder.page, action="publish")
+        setRoles(self.portal, TEST_USER_ID, ("Member",))
+        return folder
+
+    def test_internal_resolver_site_root(self):
+        self.request.traverse("/plone")
+        # absolute
+        self.assertEqual("Plone site", self.resolve("/@@test-title"))
+        self.assertIn(
+            "A CSS file",
+            self.resolve("/++theme++plone.app.theming.tests/resource.css"),
+        )
+        # relative
+        self.assertEqual("Plone site", self.resolve("@@test-title"))
+        self.assertIn(
+            "A CSS file",
+            self.resolve("++theme++plone.app.theming.tests/resource.css"),
+        )
+
+    def test_internal_resolver_navigation_root_public(self):
+        self.setup_public()
+        self.request.traverse("/plone/public")
+        # absolute
+        self.assertEqual("Public Folder", self.resolve("/@@test-title"))
+        self.assertIn(
+            "A CSS file",
+            self.resolve("/++theme++plone.app.theming.tests/resource.css"),
+        )
+        # relative
+        self.assertEqual("Public Folder", self.resolve("@@test-title"))
+        self.assertIn(
+            "A CSS file",
+            self.resolve("++theme++plone.app.theming.tests/resource.css"),
+        )
+
+    def test_internal_resolver_navigation_root_public_page(self):
+        self.setup_public()
+        self.request.traverse("/plone/public/page")
+        # absolute
+        self.assertEqual("Public Folder", self.resolve("/@@test-title"))
+        self.assertIn(
+            "A CSS file",
+            self.resolve("/++theme++plone.app.theming.tests/resource.css"),
+        )
+        # relative
+        self.assertEqual("Public page in public folder", self.resolve("@@test-title"))
+        self.assertIn(
+            "A CSS file",
+            self.resolve("++theme++plone.app.theming.tests/resource.css"),
+        )
+
+    def test_internal_resolver_navigation_root_private(self):
+        self.setup_private()
+        # A traverse to "/plone/private" fails, because we are anonymous and
+        # cannot access this private navigation root:
+        with self.assertRaises(Unauthorized):
+            self.request.traverse("/plone/private")
+        self.request.traverse("/plone/private/page")
+        # An absolute browser view would fail, because we are not authorized
+        # to access this view on the private navigation root.  But we fall back
+        # to accessing it on the site root.
+        self.assertEqual("Plone site", self.resolve("/@@test-title"))
+        # A publicly available version of the same browser view works fine though:
+        self.assertEqual("Private Folder", self.resolve("/@@test-public-title"))
+        # absolute resource
+        self.assertIn(
+            "A CSS file",
+            self.resolve("/++theme++plone.app.theming.tests/resource.css"),
+        )
+        # relative
+        self.assertEqual("Public page in private folder", self.resolve("@@test-title"))
+        self.assertIn(
+            "A CSS file",
+            self.resolve("++theme++plone.app.theming.tests/resource.css"),
+        )
 
 
 class TestUnit(unittest.TestCase):

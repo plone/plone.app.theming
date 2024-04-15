@@ -1,3 +1,4 @@
+from Acquisition import aq_base
 from configparser import ConfigParser
 from diazo.compiler import compile_theme
 from diazo.compiler import quote_param
@@ -161,10 +162,10 @@ class InternalResolver(etree.Resolver):
 
         context = findContext(request)
         portalState = queryMultiAdapter((context, request), name="plone_portal_state")
-        portal = portalState.portal()
+        root = portalState.navigation_root()
 
-        if not system_url.startswith("/"):  # only for relative urls
-            root = portalState.navigation_root()
+        is_absolute_url = system_url.startswith("/")
+        if not is_absolute_url:
             root_path = root.getPhysicalPath()
             context_path = context.getPhysicalPath()[len(root_path) :]
             if len(context_path) == 0:
@@ -172,7 +173,16 @@ class InternalResolver(etree.Resolver):
             else:
                 system_url = "/{:s}/{:s}".format("/".join(context_path), system_url)
 
-        response = subrequest(system_url, root=portal)
+        response = subrequest(system_url, root=root)
+        if is_absolute_url and response.status == 401:
+            # If we tried on the navigation root we can retry on the portal:
+            # the navigation root may be private.  This is especially needed
+            # when requesting theme resources: otherwise accessing a public
+            # page within a private navigation root would show unstyled.
+            # See https://github.com/plone/plone.app.theming/issues/142
+            portal = portalState.portal()
+            if aq_base(portal) is not aq_base(root):
+                response = subrequest(system_url, root=portal)
         if response.status != 200:
             LOGGER.error(f"Couldn't resolve {system_url:s}")
             return None
