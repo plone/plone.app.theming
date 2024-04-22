@@ -28,4 +28,18 @@
       permission="zope.Public"
       />
 
+  <browser:page
+      name="test-title"
+      for="*"
+      class=".browser.Title"
+      permission="zope2.View"
+      />
+
+  <browser:page
+      name="test-public-title"
+      for="*"
+      class=".browser.Title"
+      permission="zope.Public"
+      />
+
 </configure>

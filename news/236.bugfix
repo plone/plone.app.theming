@@ -1,0 +1,4 @@
+Traverse to theme resources from the navigation root again.
+Only when this gives an Unauthorized, try it on the portal as a fall back.
+This fixes other use cases of traversing to absolute urls in a theme.
+[maurits]
