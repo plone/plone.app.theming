@@ -9,6 +9,18 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.8 (2024-04-22)
+------------------
+
+Bug fixes:
+
+
+- Traverse to theme resources from the navigation root again.
+  Only when this gives an Unauthorized, try it on the portal as a fall back.
+  This fixes other use cases of traversing to absolute urls in a theme.
+  [maurits] (#236)
+
+
 5.0.7 (2024-01-18)
 ------------------
 
