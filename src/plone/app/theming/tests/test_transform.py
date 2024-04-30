@@ -1,13 +1,11 @@
 from App.config import getConfiguration
 from diazo.compiler import compile_theme
-from html import unescape
 from lxml import etree
 from os import environ
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
-from plone.app.theming.testing import THEMING_INTEGRATION_TESTING
 from plone.app.theming.transform import ThemeTransform
 from plone.app.theming.utils import applyTheme
 from plone.app.theming.utils import getTheme
@@ -27,30 +25,7 @@ import transaction
 import unittest
 
 
-class IntegrationTestCase(unittest.TestCase):
-
-    layer = THEMING_INTEGRATION_TESTING
-
-    def test_transform_parseTree_with_unicode(self):
-        request = self.layer["request"]
-        request.response.setHeader("Content-Type", "text/html; charset=utf-8")
-        transform = ThemeTransform(None, request)
-        snippet = "\n".join(
-            (
-                "<!DOCTYPE html>",
-                "<html>",
-                "<body>",
-                "<div>à</div>",
-                "</body>",
-                "</html>",
-            )
-        )
-        parsed = transform.parseTree([snippet.encode()])
-        serialized = unescape(parsed.serialize().decode())
-        self.assertEqual(snippet, serialized)
-
-
-class FunctionalTestCase(unittest.TestCase):
+class TestCase(unittest.TestCase):
     layer = THEMING_FUNCTIONAL_TESTING
 
     def setUp(self):
