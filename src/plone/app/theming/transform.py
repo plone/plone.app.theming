@@ -13,6 +13,7 @@ from repoze.xmliter.utils import getHTMLSerializer
 from zope.component import adapter
 from zope.interface import implementer
 from zope.interface import Interface
+from ZPublisher.HTTPRequest import default_encoding
 
 import logging
 
@@ -120,7 +121,9 @@ class ThemeTransform:
             return None
 
         try:
-            return getHTMLSerializer(result, pretty_print=False)
+            return getHTMLSerializer(
+                result, pretty_print=False, encoding=default_encoding
+            )
         except (AttributeError, TypeError, etree.ParseError):
             return None
 

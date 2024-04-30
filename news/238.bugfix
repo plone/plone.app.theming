@@ -1,0 +1,1 @@
+Fix an issue with unicode characters happening with lxml 5 [ale-rt]
