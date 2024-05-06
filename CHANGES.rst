@@ -9,6 +9,15 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.9 (2024-05-06)
+------------------
+
+Bug fixes:
+
+
+- Fix an issue with unicode characters happening with lxml 5 [ale-rt] (#238)
+
+
 5.0.8 (2024-04-22)
 ------------------
 
