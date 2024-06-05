@@ -678,7 +678,7 @@ Fixes:
 1.2.7 (2015-07-18)
 ------------------
 
-- Provide better styling to themeing control panel, less build, finish implementation
+- Provide better styling to theming control panel, less build, finish implementation
   [obct537]
 
 - make sure when copying themes that you try to modify the base urls
