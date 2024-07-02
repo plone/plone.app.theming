@@ -62,8 +62,7 @@ setup(
         "Products.statusmessages",
         "repoze.xmliter>=0.3",
         "setuptools",
-        "zope.processlifetime",
-        "zope.traversing",
+        "Zope",
     ],
     extras_require={
         "test": [

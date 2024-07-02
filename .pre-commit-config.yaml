@@ -1,5 +1,5 @@
 # Generated from:
-# https://github.com/plone/meta/tree/master/config/default
+# https://github.com/plone/meta/tree/main/config/default
 # See the inline comments on how to expand/tweak this configuration file
 ci:
     autofix_prs: false
@@ -7,7 +7,7 @@ ci:
 
 repos:
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.2
+    rev: v3.16.0
     hooks:
     -   id: pyupgrade
         args: [--py38-plus]
@@ -32,7 +32,7 @@ repos:
 #  """
 ##
 -   repo: https://github.com/PyCQA/flake8
-    rev: 7.0.0
+    rev: 7.1.0
     hooks:
     -   id: flake8
 
@@ -44,7 +44,7 @@ repos:
 #  """
 ##
 -   repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
+    rev: v2.3.0
     hooks:
     -   id: codespell
         additional_dependencies:
@@ -74,6 +74,16 @@ repos:
     rev: "6.2.0"
     hooks:
     -   id: i18ndude
+
+
+##
+# Add extra configuration options in .meta.toml:
+#  [pre_commit]
+#  i18ndude_extra_lines = """
+#  _your own configuration lines_
+#  """
+##
+
         exclude: (resources/.*.pt|tests/.*.pt)
 
 ##
