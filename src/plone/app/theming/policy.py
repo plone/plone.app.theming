@@ -67,13 +67,13 @@ class ThemingPolicy:
     def isThemeEnabled(self, settings=None):
         """Whether theming is enabled."""
 
-        # Resolve debug_mode late (i.e. not on import time) since it may
-        # be set during import or test setup time
-        debug_mode = getConfiguration().debug_mode
-
         # Disable theming if the response sets a header
         if self.request.response.getHeader("X-Theme-Disabled"):
             return False
+
+        # Resolve debug_mode late (i.e. not on import time) since it may
+        # be set during import or test setup time
+        debug_mode = getConfiguration().debug_mode
 
         # Check for diazo.off request parameter
         true_vals = ("1", "y", "yes", "t", "true")

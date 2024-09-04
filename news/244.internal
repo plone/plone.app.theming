@@ -1,0 +1,2 @@
+Minor optimization to disable Diazo theming via `X-Theme-Disabled` a tick earlier.
+[thet]
