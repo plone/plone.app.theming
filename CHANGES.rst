@@ -9,6 +9,16 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.10 (2024-09-05)
+-------------------
+
+Internal:
+
+
+- Minor optimization to disable Diazo theming via `X-Theme-Disabled` a tick earlier.
+  [thet] (#244)
+
+
 5.0.9 (2024-05-06)
 ------------------
 
