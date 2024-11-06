@@ -43,6 +43,11 @@ import pkg_resources
 LOGGER = logging.getLogger("plone.app.theming")
 
 
+def is_truthy(value):
+    """Return `true`, if value is truthy."""
+    return value and str(value).lower() in ("1", "y", "yes", "t", "true")
+
+
 @implementer(INoRequest)
 class NoRequest:
     """Fallback to enable querying for the policy adapter

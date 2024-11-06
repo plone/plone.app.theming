@@ -741,7 +741,7 @@ Theme debugging
 ~~~~~~~~~~~~~~~
 
 When Zope is in development mode (e.g. running in the foreground in a console with ``bin/instance fg``),
-the theme will be re-compiled on each request (unless the environment variable ``DIAZO_ALWAYS_CACHE_RULES`` is set).
+the theme will be re-compiled on each request (unless the environment variable ``DIAZO_ALWAYS_CACHE_RULES`` is set to a truthy value).
 
 To set the environment variable ``DIAZO_ALWAYS_CACHE_RULES``,
 you can use buildout::
@@ -754,6 +754,8 @@ you can use buildout::
 
 In non-development mode or when the environment variable ``DIAZO_ALWAYS_CACHE_RULES`` is set,
 the theme is compiled once when first accessed, and then only re-compiled the control panel values are changed.
+
+You can also disable caching without removing the environment variable by setting it to a value which evaluates to ``False``, like ``DIAZO_ALWAYS_CACHE_RULES false``
 
 Also, in development mode (even when the environment variable ``DIAZO_ALWAYS_CACHE_RULES`` is set),
 it is possible to temporarily disable the theme by appending a query string parameter ``diazo.off=1``.
