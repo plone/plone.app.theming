@@ -725,10 +725,10 @@
                             Define your own custom CSS in the field below. This is a good place for quick customizations of things like colors and the toolbar. Definitions here will override previously defined CSS of Plone. Please use this only for small customizations, as it is hard to keep track of changes here. For bigger changes you most likely want to customize a full theme and make your changes there.
                         </div>
                         <div class="theming_doc_link">
-                          <p><a href="https://docs.plone.org/adapt-and-extend/theming"
+                          <p><a href="https://6.docs.plone.org/classic-ui/theming/index.html"
                                target="_blank"
                                i18n:translate="label_theming_doc_link"
-                            >Theming documentation</a></p>
+                            >Theming of Classic UI documentation</a></p>
                         </div>
 
                         <div class="errorMessage"
