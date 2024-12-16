@@ -9,6 +9,15 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.11 (2024-12-16)
+-------------------
+
+Bug fixes:
+
+
+- Update the link and label under Site Setup > Theming > Advanced settings > Custom Styles to Theming of Classic UI at https://6.docs.plone.org/classic-ui/theming/index.html. @stevepiercy (#248)
+
+
 5.0.10 (2024-09-05)
 -------------------
 
