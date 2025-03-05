@@ -2,6 +2,7 @@ from Acquisition import aq_base
 from configparser import ConfigParser
 from diazo.compiler import compile_theme
 from diazo.compiler import quote_param
+from importlib import resources
 from io import BytesIO
 from io import StringIO
 from lxml import etree
@@ -37,7 +38,6 @@ from zope.interface import implementer
 
 import logging
 import os
-import pkg_resources
 
 
 LOGGER = logging.getLogger("plone.app.theming")
@@ -138,7 +138,8 @@ def resolvePythonURL(url):
     assert url.lower().startswith("python://")
     spec = url[9:]
     package, resource_name = spec.split("/", 1)
-    return pkg_resources.resource_filename(package, resource_name)
+    ref = resources.files(package) / resource_name
+    return str(ref)
 
 
 class InternalResolver(etree.Resolver):
