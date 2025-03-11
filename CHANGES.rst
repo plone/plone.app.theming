@@ -9,6 +9,15 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.12 (2025-03-11)
+-------------------
+
+Bug fixes:
+
+
+- Replace `pkg_resources` with `importlib.resources` @gforcada (#4126)
+
+
 5.0.11 (2024-12-16)
 -------------------
 
