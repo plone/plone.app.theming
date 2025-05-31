@@ -43,6 +43,11 @@ import os
 LOGGER = logging.getLogger("plone.app.theming")
 
 
+def yesno(value) -> bool:
+    """Return `true`, if "yes" was meant, `false` otherwise."""
+    return value and str(value).lower() in ("1", "y", "yes", "t", "true", "on")
+
+
 @implementer(INoRequest)
 class NoRequest:
     """Fallback to enable querying for the policy adapter
