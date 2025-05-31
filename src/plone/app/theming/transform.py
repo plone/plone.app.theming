@@ -50,7 +50,7 @@ class ThemeTransform:
             return False
         if self.debug_theme():
             return True
-        if environ.get("DIAZO_ALWAYS_CACHE_RULES"):
+        if utils.yesno(environ.get("DIAZO_ALWAYS_CACHE_RULES", False)):
             return False
         return True
 
