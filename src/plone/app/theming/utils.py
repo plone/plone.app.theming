@@ -43,9 +43,18 @@ import os
 LOGGER = logging.getLogger("plone.app.theming")
 
 
-def yesno(value) -> bool:
-    """Return `true`, if "yes" was meant, `false` otherwise."""
-    return value and str(value).lower() in ("1", "y", "yes", "t", "true", "on")
+def is_affirmative(value) -> bool:
+    """Return `True`, if "yes" was meant, `False` otherwise."""
+    return bool(value) and str(value).lower() in {
+        "1",
+        "y",
+        "yes",
+        "t",
+        "true",
+        "active",
+        "enabled",
+        "on",
+    }
 
 
 @implementer(INoRequest)
