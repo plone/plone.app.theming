@@ -482,32 +482,37 @@ class TestUnit(unittest.TestCase):
         path = os.path.join(os.path.dirname(__file__), "zipfiles", filename)
         return open(path, "rb")
 
-    def test_yesno(self):
-        """Test the `yesno` utility function with different inputs."""
-        from plone.app.theming.utils import yesno
+    def test_is_affirmative(self):
+        """Test the `is_affirmative` utility function with different inputs."""
+        from plone.app.theming.utils import is_affirmative
 
-        self.assertTrue(yesno(True))
-        self.assertTrue(yesno(1))
-        self.assertTrue(yesno("1"))
-        self.assertTrue(yesno("TRUE"))
-        self.assertTrue(yesno("tRUE"))
-        self.assertTrue(yesno("true"))
-        self.assertTrue(yesno("y"))
-        self.assertTrue(yesno("Y"))
-        self.assertTrue(yesno("yEs"))
-        self.assertTrue(yesno("yes"))
-        self.assertTrue(yesno("on"))
+        self.assertTrue(is_affirmative(True))
+        self.assertTrue(is_affirmative(1))
+        self.assertTrue(is_affirmative("1"))
+        self.assertTrue(is_affirmative("TRUE"))
+        self.assertTrue(is_affirmative("tRUE"))
+        self.assertTrue(is_affirmative("true"))
+        self.assertTrue(is_affirmative("y"))
+        self.assertTrue(is_affirmative("Y"))
+        self.assertTrue(is_affirmative("yEs"))
+        self.assertTrue(is_affirmative("yes"))
+        self.assertTrue(is_affirmative("active"))
+        self.assertTrue(is_affirmative("Active"))
+        self.assertTrue(is_affirmative("enAbled"))
+        self.assertTrue(is_affirmative("on"))
 
-        self.assertFalse(yesno(None))
-        self.assertFalse(yesno(False))
-        self.assertFalse(yesno(0))
-        self.assertFalse(yesno("0"))
-        self.assertFalse(yesno("FALSE"))
-        self.assertFalse(yesno("fALSE"))
-        self.assertFalse(yesno("false"))
-        self.assertFalse(yesno("n"))
-        self.assertFalse(yesno("NO"))
-        self.assertFalse(yesno("no"))
+        self.assertFalse(is_affirmative(None))
+        self.assertFalse(is_affirmative(False))
+        self.assertFalse(is_affirmative(0))
+        self.assertFalse(is_affirmative(2))
+        self.assertFalse(is_affirmative("0"))
+        self.assertFalse(is_affirmative("FALSE"))
+        self.assertFalse(is_affirmative("fALSE"))
+        self.assertFalse(is_affirmative("false"))
+        self.assertFalse(is_affirmative("n"))
+        self.assertFalse(is_affirmative("NO"))
+        self.assertFalse(is_affirmative("no"))
+        self.assertFalse(is_affirmative("foo"))
 
     def test_extractThemeInfo_default_rules(self):
         with self._open_zipfile("default_rules.zip") as fp:
