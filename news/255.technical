@@ -1,5 +1,0 @@
-Unify the usage of parsing yes/no alike parameters.
-
-The following are interpreted as true-ish values: True, 1 and these strings in
-any casing: "y", "yes", "t", "true", "on". Everything else is considered False.
-[thet]

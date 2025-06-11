@@ -482,33 +482,6 @@ class TestUnit(unittest.TestCase):
         path = os.path.join(os.path.dirname(__file__), "zipfiles", filename)
         return open(path, "rb")
 
-    def test_yesno(self):
-        """Test the `yesno` utility function with different inputs."""
-        from plone.app.theming.utils import yesno
-
-        self.assertTrue(yesno(True))
-        self.assertTrue(yesno(1))
-        self.assertTrue(yesno("1"))
-        self.assertTrue(yesno("TRUE"))
-        self.assertTrue(yesno("tRUE"))
-        self.assertTrue(yesno("true"))
-        self.assertTrue(yesno("y"))
-        self.assertTrue(yesno("Y"))
-        self.assertTrue(yesno("yEs"))
-        self.assertTrue(yesno("yes"))
-        self.assertTrue(yesno("on"))
-
-        self.assertFalse(yesno(None))
-        self.assertFalse(yesno(False))
-        self.assertFalse(yesno(0))
-        self.assertFalse(yesno("0"))
-        self.assertFalse(yesno("FALSE"))
-        self.assertFalse(yesno("fALSE"))
-        self.assertFalse(yesno("false"))
-        self.assertFalse(yesno("n"))
-        self.assertFalse(yesno("NO"))
-        self.assertFalse(yesno("no"))
-
     def test_extractThemeInfo_default_rules(self):
         with self._open_zipfile("default_rules.zip") as fp:
             zf = zipfile.ZipFile(fp)
