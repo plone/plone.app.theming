@@ -3,6 +3,7 @@ from logging import getLogger
 from plone.app.theming import utils
 from plone.app.theming.interfaces import IThemeSettings
 from plone.app.theming.interfaces import IThemingPolicy
+from plone.base.utils import is_truthy
 from plone.registry.interfaces import IRegistry
 from zope.component import queryUtility
 from zope.component.hooks import getSite
@@ -76,7 +77,7 @@ class ThemingPolicy:
         debug_mode = getConfiguration().debug_mode
 
         # Check for diazo.off request parameter
-        if debug_mode and utils.yesno(self.request.get("diazo.off", False)):
+        if debug_mode and is_truthy(self.request.get("diazo.off", False)):
             return False
 
         if not settings:

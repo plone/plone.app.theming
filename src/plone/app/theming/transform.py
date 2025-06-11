@@ -4,6 +4,7 @@ from os import environ
 from plone.app.theming import utils
 from plone.app.theming.interfaces import IThemingLayer
 from plone.app.theming.zmi import patch_zmi
+from plone.base.utils import is_truthy
 from plone.transformchain.interfaces import ITransform
 from repoze.xmliter.utils import getHTMLSerializer
 from zope.component import adapter
@@ -40,7 +41,7 @@ class ThemeTransform:
         """
         if not getConfiguration().debug_mode:
             return False
-        return utils.yesno(self.request.get("diazo.debug", False))
+        return is_truthy(self.request.get("diazo.debug", False))
 
     def develop_theme(self):
         """Check if the theme should be recompiled
@@ -50,7 +51,7 @@ class ThemeTransform:
             return False
         if self.debug_theme():
             return True
-        if utils.yesno(environ.get("DIAZO_ALWAYS_CACHE_RULES", False)):
+        if is_truthy(environ.get("DIAZO_ALWAYS_CACHE_RULES", False)):
             return False
         return True
 
