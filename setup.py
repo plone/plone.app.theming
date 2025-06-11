@@ -3,7 +3,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-version = "5.0.13.dev0"
+version = "6.0.0.dev0"
 
 long_description = (
     f"{Path('README.rst').read_text()}\n"
@@ -22,7 +22,7 @@ setup(
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Framework :: Plone",
-        "Framework :: Plone :: 6.0",
+        "Framework :: Plone :: 6.1",
         "Framework :: Plone :: Core",
         "License :: OSI Approved :: GNU General Public License (GPL)",
         "Programming Language :: Python",
@@ -48,7 +48,7 @@ setup(
         "docutils",
         "lxml>=2.2.4",
         "plone.app.registry>=1.0",
-        "plone.base",
+        "plone.base>3.0.0",
         "plone.i18n",
         "plone.memoize",
         "plone.registry",
