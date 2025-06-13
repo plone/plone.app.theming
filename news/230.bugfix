@@ -1,0 +1,2 @@
+Fix AttributeError in ``custom.css``: "module 'wsgiref' has no attribute 'handlers'".
+[maurits]
