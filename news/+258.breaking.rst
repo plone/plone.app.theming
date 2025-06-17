@@ -1,0 +1,1 @@
+Drop support for Plone < 6.1 due to a dependency of plone.base > 3.0.0 with the is_truthy utility function.
