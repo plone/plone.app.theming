@@ -43,7 +43,7 @@ import os
 LOGGER = logging.getLogger("plone.app.theming")
 
 
-def is_affirmative(value) -> bool:
+def is_truthy(value) -> bool:
     """Return `True`, if "yes" was meant, `False` otherwise."""
     return bool(value) and str(value).lower() in {
         "1",

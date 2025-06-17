@@ -40,7 +40,7 @@ class ThemeTransform:
         """
         if not getConfiguration().debug_mode:
             return False
-        return utils.is_affirmative(self.request.get("diazo.debug", False))
+        return utils.is_truthy(self.request.get("diazo.debug", False))
 
     def develop_theme(self):
         """Check if the theme should be recompiled
@@ -50,7 +50,7 @@ class ThemeTransform:
             return False
         if self.debug_theme():
             return True
-        if utils.is_affirmative(environ.get("DIAZO_ALWAYS_CACHE_RULES", False)):
+        if utils.is_truthy(environ.get("DIAZO_ALWAYS_CACHE_RULES", False)):
             return False
         return True
 
