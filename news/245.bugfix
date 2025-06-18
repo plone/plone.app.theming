@@ -1,2 +1,0 @@
-Allow to disable rule caching not only by removing but also by setting "DIAZO_ALWAYS_CACHE_RULES" to a value which evaluates to False.
-[thet]

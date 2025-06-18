@@ -9,6 +9,23 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.13 (2025-06-18)
+-------------------
+
+Bug fixes:
+
+
+- Allow to disable rule caching not only by removing but also by setting "DIAZO_ALWAYS_CACHE_RULES" to a value which evaluates to False.
+  [thet] (#245)
+
+
+Internal:
+
+
+- Use is_truthy from plone.base for yes/no alike parameters.
+  [thet] (#257)
+
+
 5.0.12 (2025-03-11)
 -------------------
 
