@@ -1,12 +1,8 @@
 from App.config import getConfiguration
 from lxml import etree
 from os import environ
+from plone.app.theming import utils
 from plone.app.theming.interfaces import IThemingLayer
-from plone.app.theming.utils import compileThemeTransform
-from plone.app.theming.utils import findContext
-from plone.app.theming.utils import getParser
-from plone.app.theming.utils import prepareThemeParameters
-from plone.app.theming.utils import theming_policy
 from plone.app.theming.zmi import patch_zmi
 from plone.transformchain.interfaces import ITransform
 from repoze.xmliter.utils import getHTMLSerializer
@@ -44,8 +40,7 @@ class ThemeTransform:
         """
         if not getConfiguration().debug_mode:
             return False
-        diazo_debug = self.request.get("diazo.debug", "").lower()
-        return diazo_debug in ("1", "y", "yes", "t", "true")
+        return utils.is_truthy(self.request.get("diazo.debug", False))
 
     def develop_theme(self):
         """Check if the theme should be recompiled
@@ -55,13 +50,13 @@ class ThemeTransform:
             return False
         if self.debug_theme():
             return True
-        if environ.get("DIAZO_ALWAYS_CACHE_RULES"):
+        if utils.is_truthy(environ.get("DIAZO_ALWAYS_CACHE_RULES", False)):
             return False
         return True
 
     def setupTransform(self, runtrace=False):
         debug_mode = self.develop_theme()
-        policy = theming_policy(self.request)
+        policy = utils.theming_policy(self.request)
 
         # Obtain settings. Do nothing if not found
         settings = policy.getSettings()
@@ -89,7 +84,7 @@ class ThemeTransform:
             readNetwork = settings.readNetwork
             parameterExpressions = settings.parameterExpressions
 
-            transform = compileThemeTransform(
+            transform = utils.compileThemeTransform(
                 rules,
                 absolutePrefix,
                 readNetwork,
@@ -105,7 +100,7 @@ class ThemeTransform:
         return transform
 
     def getSettings(self):
-        return theming_policy(self.request).getSettings()
+        return utils.theming_policy(self.request).getSettings()
 
     def parseTree(self, result):
         contentType = self.request.response.getHeader("Content-Type")
@@ -146,7 +141,7 @@ class ThemeTransform:
     def transformIterable(self, result, encoding):
         """Apply the transform if required"""
         # Obtain settings. Do nothing if not found
-        policy = theming_policy(self.request)
+        policy = utils.theming_policy(self.request)
         if not policy.isThemeEnabled():
             return None
         settings = policy.getSettings()
@@ -177,8 +172,11 @@ class ThemeTransform:
                 cache = policy.getCache()
 
             parameterExpressions = settings.parameterExpressions or {}
-            params = prepareThemeParameters(
-                findContext(self.request), self.request, parameterExpressions, cache
+            params = utils.prepareThemeParameters(
+                utils.findContext(self.request),
+                self.request,
+                parameterExpressions,
+                cache,
             )
 
             transformed = transform(result.tree, **params)
@@ -198,14 +196,15 @@ class ThemeTransform:
             # Add debug information to end of body
             body = result.tree.xpath("/html/body")[0]
             debug_url = (
-                findContext(self.request).portal_url() + "/++resource++diazo-debug"
+                utils.findContext(self.request).portal_url()
+                + "/++resource++diazo-debug"
             )
             body.insert(
                 -1,
                 generate_debug_html(
                     debug_url,
                     rules=settings.rules,
-                    rules_parser=getParser("rules", settings.readNetwork),
+                    rules_parser=utils.getParser("rules", settings.readNetwork),
                     error_log=error_log,
                 ),
             )

@@ -76,8 +76,7 @@ class ThemingPolicy:
         debug_mode = getConfiguration().debug_mode
 
         # Check for diazo.off request parameter
-        true_vals = ("1", "y", "yes", "t", "true")
-        if debug_mode and self.request.get("diazo.off", "").lower() in true_vals:
+        if debug_mode and utils.is_truthy(self.request.get("diazo.off", False)):
             return False
 
         if not settings:

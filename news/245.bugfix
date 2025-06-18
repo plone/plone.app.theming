@@ -1,0 +1,2 @@
+Only disable the diazo rule cache if "DIAZO_ALWAYS_CACHE_RULES" is a yes-like value.
+[thet]
