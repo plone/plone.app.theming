@@ -333,7 +333,7 @@
                 >
 
                   <div class="pat-autotoc autotabs"
-                       data-pat-autotoc="section:fieldset;levels:legend;"
+                       data-pat-autotoc="section:fieldset;levels:legend;IDPrefix:autotoc-item-autotoc-1-subitem-"
                   >
                     <fieldset>
                       <legend i18n:translate="">Theme details</legend>
