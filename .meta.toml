@@ -1,11 +1,14 @@
 # Generated from:
-# https://github.com/plone/meta/tree/main/config/default
+# https://github.com/plone/meta/tree/main/src/plone/meta/default
 # See the inline comments on how to expand/tweak this configuration file
 [meta]
 template = "default"
-commit-id = "a89af8f2"
+commit-id = "2.0.1.dev0"
 
 [pre_commit]
 extra_lines = """
         exclude: (resources/.*.pt|tests/.*.pt)
 """
+
+[tox]
+test_matrix = {"6.2" = ["3.13", "3.12"], "6.1" = ["3.13", "3.10"]}
