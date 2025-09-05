@@ -9,6 +9,21 @@ Changelog
 
 .. towncrier release notes start
 
+6.0.0 (2025-09-05)
+------------------
+
+Breaking changes:
+
+
+- Require `plone.base` 3.1.0 or higher, as we use its new `is_truthy` function.
+  This drops compatibility with Plone 6.0.
+  Releases 5.0.13 and 5.0.14 already use this new function, but don't specify the minimum requirement.
+  Release 6.0.0 is the same as 5.0.14, but with the new minimum requirement.
+  Meanwhile 5.0.15 has been made from branch 5.x instead of master, and this uses its own version of the `is_truthy` function, instead of requiring the one from `plone.base`.
+  See `issue 263 <https://github.com/plone/plone.app.theming/issues/263>`_.
+  [maurits] (#263)
+
+
 5.0.14 (2025-09-05)
 -------------------
 
