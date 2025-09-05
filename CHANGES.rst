@@ -9,6 +9,29 @@ Changelog
 
 .. towncrier release notes start
 
+5.0.15 (2025-09-05)
+-------------------
+
+Bug fixes:
+
+
+- Only disable the diazo rule cache if "DIAZO_ALWAYS_CACHE_RULES" is a yes-like value.
+  [thet] (#245)
+- Unify the usage of parsing yes/no alike parameters.
+
+  The following are interpreted as true-ish values: True, 1 and these strings in
+  any casing: "y", "yes", "t", "true", "on". Everything else is considered False.
+  [thet] (#255)
+
+
+Internal:
+
+
+- Skip releases 5.0.13 and 5.0.14.
+  These releases were made from the master branch instead of the 5.x branch.
+  [maurits] (#263)
+
+
 5.0.12 (2025-03-11)
 -------------------
 

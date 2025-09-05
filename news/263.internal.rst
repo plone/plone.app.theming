@@ -1,3 +1,0 @@
-Skip releases 5.0.13 and 5.0.14.
-These releases were made from the master branch instead of the 5.x branch.
-[maurits]
