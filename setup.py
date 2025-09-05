@@ -48,7 +48,7 @@ setup(
         "docutils",
         "lxml>=2.2.4",
         "plone.app.registry>=1.0",
-        "plone.base",
+        "plone.base>=3.1.0",
         "plone.i18n",
         "plone.memoize",
         "plone.registry",
