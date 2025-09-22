@@ -14,6 +14,7 @@ from plone.app.theming.utils import getAvailableThemes
 from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
 from plone.app.theming.utils import getZODBThemes
 from plone.app.theming.utils import theming_policy
+from plone.base.interfaces import IClassicUISchema
 from plone.base.interfaces import ILinkSchema
 from plone.base.utils import safe_text
 from plone.memoize.instance import memoize
@@ -65,6 +66,9 @@ class ThemingControlpanel(BrowserView):
         self.link_settings = registry.forInterface(
             ILinkSchema, prefix="plone", check=False
         )
+        self.classicui_settings = registry.forInterface(
+            IClassicUISchema, prefix="plone", check=False
+        )
         self.zodbThemes = getZODBThemes()
         self.availableThemes = getAvailableThemes()
         self.selectedTheme = self.getSelectedTheme(
@@ -100,6 +104,16 @@ class ThemingControlpanel(BrowserView):
 
     ext_links_open_new_window = property(
         get_ext_links_open_new_window, set_ext_links_open_new_window
+    )
+
+    def get_use_ajax_main_template(self):
+        return self.classicui_settings.use_ajax_main_template
+
+    def set_use_ajax_main_template(self, value):
+        self.classicui_settings.use_ajax_main_template = value
+
+    use_ajax_main_template = property(
+        get_use_ajax_main_template, set_use_ajax_main_template
     )
 
     def update(self):
@@ -178,6 +192,7 @@ class ThemingControlpanel(BrowserView):
             themeBase = form.get("themeBase", None)
             markSpecialLinks = form.get("markSpecialLinks", None)
             extLinksOpenInNewWindow = form.get("extLinksOpenInNewWindow", None)
+            use_ajax_main_template = form.get("use_ajax_main_template", None)
 
             custom_css = form.get("custom_css", b"")
 
@@ -204,6 +219,8 @@ class ThemingControlpanel(BrowserView):
                     self.mark_special_links = markSpecialLinks
                 if extLinksOpenInNewWindow is not None:
                     self.ext_links_open_new_window = extLinksOpenInNewWindow
+                if use_ajax_main_template is not None:
+                    self.use_ajax_main_template = use_ajax_main_template
 
                 IStatusMessage(self.request).add(_("Changes saved"))
                 self._setup()
