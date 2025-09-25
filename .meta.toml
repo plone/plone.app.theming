@@ -12,3 +12,7 @@ extra_lines = """
 
 [tox]
 test_matrix = {"6.2" = ["*"]}
+use_mxdev = true
+test_deps_additional = """
+    -esources/Products.CMFPlone
+"""
