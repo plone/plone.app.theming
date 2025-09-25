@@ -702,6 +702,37 @@
 
                       </div>
 
+                      <div class="field"
+                           tal:define="
+                             selected python:request.get('classicuischema', view.use_ajax_main_template);
+                           "
+                      >
+
+                        <input name="use_ajax_main_template:boolean:default"
+                               type="hidden"
+                               value=""
+                        />
+                        <input id="use_ajax_main_template"
+                               name="use_ajax_main_template:boolean"
+                               type="checkbox"
+                               value="1"
+                               tal:attributes="
+                                 checked python:'use_ajax_main_template' if selected else None;
+                               "
+                        />
+                        <label for="use_ajax_main_template"
+                               i18n:translate="label_use_ajax_main_template"
+                        >Use AJAX template on XHR</label>
+                        <div class="formHelp"
+                             i18n:translate="help_use_ajax_main_template"
+                        >
+                            When enabled and if we are in an XHR request Plone uses
+                            the AJAX main template. Note: This setting does not affect the
+                            ajax_load query string parameter, which if set and evaluates
+                            to true, will always trigger the AJAX main template.
+                        </div>
+
+                      </div>
                     </fieldset>
                     <fieldset>
                       <legend i18n:translate="">Custom Styles</legend>
