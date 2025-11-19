@@ -3,7 +3,7 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-version = "7.0.0a1.dev0"
+version = "7.0.0a1"
 
 long_description = (
     f"{Path('README.rst').read_text()}\n"

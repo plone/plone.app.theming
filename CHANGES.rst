@@ -9,6 +9,25 @@ Changelog
 
 .. towncrier release notes start
 
+7.0.0a1 (2025-11-19)
+--------------------
+
+Breaking changes:
+
+
+- Drop compatibility with Plone 6.1.
+
+  The new IClassicUISchema.use_ajax_main_template setting needs latest plone.base
+  4.0.0a1 which is part of CMFPlone 6.2.
+  [thet]
+
+
+New features:
+
+
+- Expose the ``IClassicUISchema`` registry setting ``use_ajax_main_template`` in the theming control panel.
+
+
 6.0.0 (2025-09-05)
 ------------------
 
