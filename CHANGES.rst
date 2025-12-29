@@ -9,6 +9,15 @@ Changelog
 
 .. towncrier release notes start
 
+7.0.0a3 (2025-12-29)
+--------------------
+
+Breaking changes:
+
+
+- Replace ``pkg_resources`` namespace with PEP 420 native namespace in ``plone.app.theming.plugins`` as well.  [maurits] (#3928)
+
+
 7.0.0a2 (2025-11-26)
 --------------------
 
