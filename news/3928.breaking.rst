@@ -1,0 +1,1 @@
+Replace ``pkg_resources`` namespace with PEP 420 native namespace in ``plone.app.theming.plugins`` as well.  [maurits]
