@@ -14,7 +14,6 @@ from ZPublisher.HTTPRequest import default_encoding
 
 import logging
 
-
 # Disable theming of ZMI
 patch_zmi()
 
