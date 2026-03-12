@@ -64,6 +64,7 @@ setup(
             "plone.app.testing",
             "plone.app.contenttypes[test]",
             "plone.testing",
+            "plone.restapi[test]",
         ],
     },
     entry_points="""
