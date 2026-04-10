@@ -39,7 +39,6 @@ from zope.interface import implementer
 import logging
 import os
 
-
 LOGGER = logging.getLogger("plone.app.theming")
 
 

@@ -3,7 +3,6 @@ from zope.globalrequest import getRequest
 
 import logging
 
-
 LOGGER = logging.getLogger("plone.app.theming")
 
 

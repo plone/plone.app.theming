@@ -13,7 +13,6 @@ from zope.publisher.interfaces import IRequest
 import threading
 import time
 
-
 logger = getLogger(__name__)
 _local_cache = threading.local()
 
