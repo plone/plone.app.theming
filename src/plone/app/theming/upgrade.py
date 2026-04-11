@@ -1,6 +1,5 @@
 from Products.CMFCore.utils import getToolByName
 
-
 PROFILE_ID = "profile-plone.app.theming:default"
 
 

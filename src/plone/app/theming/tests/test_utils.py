@@ -20,7 +20,6 @@ import transaction
 import unittest
 import zipfile
 
-
 # We will try to let the rules file point to a theme on the file system.
 # For security reasons, this should not work.
 # This is one of the fixes from PloneHotFix20210518.
