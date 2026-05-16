@@ -1,7 +1,7 @@
 from pathlib import Path
 from setuptools import setup
 
-version = "7.0.0"
+version = "7.0.1.dev0"
 
 long_description = (
     f"{Path('README.rst').read_text()}\n"
