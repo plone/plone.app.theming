@@ -4,7 +4,84 @@
 [build-system]
 requires = ["setuptools>=68.2,<83", "wheel"]
 
+# START-MARKER-MANUAL-CONFIG
+# Anything from here until END-MARKER-MANUAL-CONFIG
+# will be kept by plone.meta
 
+[project]
+name = "plone.app.theming"
+version = "7.0.1.dev0"
+description = "Integrates the Diazo theming engine with Plone"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: Plone",
+    "Framework :: Plone :: 6.2",
+    "Framework :: Plone :: Core",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+license = "GPL-2.0-only"
+dynamic = ["readme"]
+requires-python = ">=3.10"
+authors = [
+    {name = "Martin Aspeli and Laurence Rowe",email = "optilude@gmail.com"},
+]
+maintainers = [
+    {name = "Plone Foundation and contributors",email = "plone-developers@lists.sourceforge.net"},
+]
+dependencies = [
+    "Products.GenericSetup",
+    "Products.statusmessages",
+    "Zope",
+    "diazo>=1.0.3",
+    "docutils",
+    "lxml>=2.2.4",
+    "plone.app.registry>=1.0",
+    "plone.base>=4.0.0a1",
+    "plone.i18n",
+    "plone.memoize",
+    "plone.registry",
+    "plone.resource",
+    "plone.resourceeditor>=2.0.0",
+    "plone.staticresources",
+    "plone.subrequest",
+    "plone.transformchain",
+    "python-dateutil",
+    "repoze.xmliter>=0.3",
+]
+keywords = [
+    "plone",
+    "diazo",
+    "xdv",
+    "deliverance",
+    "theme",
+    "transform",
+    "xslt",
+]
+
+[project.entry-points."plone.autoinclude.plugin"]
+target = "plone"
+
+[project.optional-dependencies]
+test = [
+    "plone.app.contenttypes[test]",
+    "plone.app.testing",
+    "plone.testing",
+]
+
+[project.urls]
+Source = "https://github.com/plone/plone.app.theming"
+Issues = "https://github.com/plone/Products.CMFPlone/issues"
+Changelog = "https://github.com/plone/plone.app.theming/blob/master/CHANGES.rst"
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.rst", "src/plone/app/theming/browser/resources/userguide.rst", "CHANGES.rst"]}
+# END-MARKER-MANUAL-CONFIG
 
 [tool.towncrier]
 directory = "news/"
