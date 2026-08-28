@@ -122,6 +122,7 @@ Zope = [
 ]
 python-dateutil = ['dateutil']
 pytest-plone = ['pytest', 'zope.pytestlayer', 'plone.testing', 'plone.app.testing']
+ignore-packages = ['plone.restapi', 'plone.rest']
 
 ##
 # Add extra configuration options in .meta.toml:

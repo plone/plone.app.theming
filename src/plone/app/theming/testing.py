@@ -5,6 +5,14 @@ from plone.app.testing.layers import FunctionalTesting
 from plone.app.testing.layers import IntegrationTesting
 from zope.configuration import xmlconfig
 
+try:
+    from plone.restapi.testing import PLONE_RESTAPI_DX_FIXTURE
+    from plone.testing import zope
+
+    HAS_RESTAPI = True
+except ImportError:
+    HAS_RESTAPI = False
+
 
 class Theming(PloneSandboxLayer):
     defaultBases = (PLONE_APP_CONTENTTYPES_FIXTURE,)
@@ -34,3 +42,29 @@ THEMING_INTEGRATION_TESTING = IntegrationTesting(
 THEMING_FUNCTIONAL_TESTING = FunctionalTesting(
     bases=(THEMING_FIXTURE,), name="Theming:Functional"
 )
+
+
+if HAS_RESTAPI:
+
+    class ThemingRestAPI(PloneSandboxLayer):
+        defaultBases = (PLONE_RESTAPI_DX_FIXTURE,)
+
+        def setUpZope(self, app, configurationContext):
+            import plone.app.theming
+
+            xmlconfig.file(
+                "configure.zcml", plone.app.theming, context=configurationContext
+            )
+
+            from plone.app.theming.plugins.hooks import onStartup
+
+            onStartup(None)
+
+        def setUpPloneSite(self, portal):
+            applyProfile(portal, "plone.app.theming:default")
+
+    THEMING_RESTAPI_FIXTURE = ThemingRestAPI()
+    THEMING_RESTAPI_FUNCTIONAL_TESTING = FunctionalTesting(
+        bases=(THEMING_RESTAPI_FIXTURE, zope.WSGI_SERVER_FIXTURE),
+        name="Theming:RESTAPIFunctional",
+    )

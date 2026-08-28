@@ -919,3 +919,110 @@ This is a complete example::
         def __call__(self):
             self.request.response.setHeader('X-Theme-Disabled', '1')
             return super(NoDiazoView).__call__()
+
+
+REST API
+========
+
+When ``plone.restapi`` is installed alongside ``plone.app.theming``, a ``@themes``
+endpoint is available on the Plone site root.
+It requires the ``cmf.ManagePortal`` permission and is particularly useful in
+containerized deployments where access to the Plone control panel is unavailable.
+
+Listing themes
+--------------
+
+Send a ``GET`` request to ``@themes`` to retrieve all available themes::
+
+    GET /Plone/@themes HTTP/1.1
+    Accept: application/json
+
+Response::
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+
+    [
+      {
+        "@id": "http://localhost:8080/Plone/@themes/barceloneta",
+        "id": "barceloneta",
+        "title": "Barceloneta Theme",
+        "description": "The default Plone theme",
+        "active": true,
+        "preview": "/++theme++barceloneta/preview.png",
+        "rules": "/++theme++barceloneta/rules.xml"
+      }
+    ]
+
+Each theme object contains:
+
+- ``@id``: hypermedia link to the theme resource
+- ``id``: the theme identifier
+- ``title``: the friendly name of the theme
+- ``description``: description of the theme
+- ``active``: whether this theme is currently active
+- ``preview``: path to the theme preview image (or ``null``)
+- ``rules``: path to the theme rules file
+
+Reading a single theme
+----------------------
+
+Append the theme ID to the endpoint path::
+
+    GET /Plone/@themes/barceloneta HTTP/1.1
+    Accept: application/json
+
+Returns the same object structure as one entry in the list above.
+Returns ``404`` if the theme ID is not found.
+
+Uploading a theme
+-----------------
+
+Send a ``POST`` request with a ZIP archive as ``multipart/form-data``::
+
+    POST /Plone/@themes HTTP/1.1
+    Content-Type: multipart/form-data
+
+    themeArchive=<zip file>
+    enable=true        (optional: activate the theme after upload)
+    replace=true       (optional: overwrite an existing theme with the same ID)
+
+Response on success::
+
+    HTTP/1.1 201 Created
+    Content-Type: application/json
+
+    {
+      "@id": "http://localhost:8080/Plone/@themes/mytheme",
+      "id": "mytheme",
+      "title": "My Theme"
+    }
+
+Returns ``400`` for a missing or invalid archive, ``409`` if the theme already
+exists and ``replace`` was not set to ``true``.
+
+Activating a theme
+------------------
+
+Send a ``PATCH`` request with ``{"active": true}``::
+
+    PATCH /Plone/@themes/barceloneta HTTP/1.1
+    Content-Type: application/json
+
+    {"active": true}
+
+Returns ``204 No Content`` on success.
+Returns ``404`` if the theme is not found.
+
+Deactivating a theme
+--------------------
+
+Send a ``PATCH`` request with ``{"active": false}``::
+
+    PATCH /Plone/@themes/barceloneta HTTP/1.1
+    Content-Type: application/json
+
+    {"active": false}
+
+Returns ``204 No Content`` on success.
+This disables Diazo theming entirely (no theme will be applied).
