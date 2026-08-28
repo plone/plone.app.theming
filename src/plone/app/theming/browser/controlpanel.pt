@@ -4,6 +4,7 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
+      lang="${lang}"
       tal:define="
         portal_state context/@@plone_portal_state;
         plone_view context/@@plone;
@@ -15,9 +16,6 @@
         dummy python: request.set('disable_toolbar', True);
         site_url view/site_url;
       "
-      tal:attributes="
-        lang lang;
-      "
       i18n:domain="plone"
 >
 
@@ -28,17 +26,13 @@
 
     <div tal:replace="structure provider:plone.htmlhead"></div>
     <link tal:replace="structure provider:plone.htmlhead.links" />
-    <link rel="stylesheet"
+    <link href="${context/portal_url}/++theme++barceloneta/css/barceloneta.min.css"
+          rel="stylesheet"
           type="text/css"
-          tal:attributes="
-            href string:${context/portal_url}/++theme++barceloneta/css/barceloneta.min.css;
-          "
     />
-    <link rel="stylesheet"
+    <link href="${context/portal_url}/++resource++plone.app.theming/controlpanel.css"
+          rel="stylesheet"
           type="text/css"
-          tal:attributes="
-            href string:${context/portal_url}/++resource++plone.app.theming/controlpanel.css;
-          "
     />
 
     <tal:comment replace="nothing">
@@ -53,7 +47,9 @@
 
   </head>
 
-  <body id="visual-portal-wrapper"
+  <body class="${body_class}"
+        id="visual-portal-wrapper"
+        dir="${python:isRTL and 'rtl' or 'ltr'}"
         tal:define="
           isRTL portal_state/is_rtl;
           sl python:plone_layout.have_portlets('plone.leftcolumn', view);
@@ -61,8 +57,6 @@
           body_class python:plone_layout.bodyClass(template, view);
         "
         tal:attributes="
-          class body_class;
-          dir python:isRTL and 'rtl' or 'ltr';
           python:plone_view.patterns_settings();
         "
   >
@@ -100,9 +94,7 @@
 
             <a class="link-parent"
                id="setup-link"
-               tal:attributes="
-                 href string:$site_url/@@overview-controlpanel;
-               "
+               href="${site_url}/@@overview-controlpanel"
                i18n:translate=""
             >
               Site Setup
@@ -136,185 +128,152 @@
                   >Upload Zip file</a>
 
                   <a class="btn btn-large btn-primary"
+                     href="${site_url}/test_rendering#top"
                      target="_blank"
-                     tal:attributes="
-                       href string:$site_url/test_rendering#top;
-                     "
                      i18n:translate=""
                   >Test Styles</a>
 
                   <a class="btn btn-large btn-primary pat-plone-modal"
+                     href="${site_url}/@@theming-controlpanel-help"
                      data-pat-plone-modal="
-                    width: 85%;
-                    loadLinksWithinModal: true;
-                    content: .content"
-                     tal:attributes="
-                       href string:$site_url/@@theming-controlpanel-help;
-                     "
+                        width: 85%;
+                        loadLinksWithinModal: true;
+                        content: .content"
                      i18n:translate=""
                   >Help</a>
                 </div>
 
-                <div id="themesList">
+                <div class="row"
+                     id="themesList"
+                >
 
-                  <div class="themeEntry"
+                  <div class="col-md-6 col-xl-3 mb-3"
                        tal:repeat="theme view/themeList"
-                       tal:attributes="
-                         class python:theme['selected'] and 'themeEntry activeThemeEntry' or 'themeEntry';
-                         id string:themeEntry-${theme/name};
-                         data-theme theme/name;
-                         data-theme-title theme/title;
-                       "
                   >
 
-                    <div clas="themeEntryDetail">
+                    <div class="card ${python:'activeThemeEntry' if theme['selected'] else ''}"
+                         id="themeEntry-${theme/name}"
+                         data-theme="${theme/name}"
+                         data-theme-title="${theme/title}"
+                    >
+                      <img class="card-img-top"
+                           src="${theme/preview}"
+                      />
 
-                      <span class="themeEntryTitle">
-                        <span tal:replace="theme/title">Title</span>
-                        <span class="warning"
-                              tal:condition="theme/override"
-                              i18n:translate=""
-                        >(this theme overrides a filesystem theme)</span>
-                        <span class="themeActive"
-                              tal:condition="theme/selected"
-                              i18n:translate=""
-                        >(active)</span>
-                      </span>
+                      <div class="card-body">
+                        <h5 class="card-title">
+                          ${theme/title}
+                          <span class="warning"
+                                tal:condition="theme/override"
+                                i18n:translate=""
+                          >(this theme overrides a filesystem theme)</span>
+                          <span class="themeActive"
+                                tal:condition="theme/selected"
+                                i18n:translate=""
+                          >(active)</span>
+                        </h5>
+                        <p class="card-text text-muted">
+                          ${theme/description}
+                        </p>
+                      </div>
 
-                      <div class="themeEntryWrapper">
+                      <div class="card-footer">
+                        <form class="mb-1"
+                              action="${request/URL}"
+                              method="post"
+                        >
+                          <input tal:replace="structure context/@@authenticator/authenticator" />
+                          <input name="themeName"
+                                 type="hidden"
+                                 value="${theme/name}"
+                          />
+                          <button class="btn btn-outline-primary btn-light btn-sm"
+                                  name="form.button.Enable"
+                                  type="submit"
+                                  tal:condition="not:theme/selected"
+                                  i18n:translate=""
+                          >Activate</button>
+                          <button class="btn btn-outline-primary btn-light btn-sm"
+                                  name="form.button.Enable"
+                                  type="submit"
+                                  tal:condition="theme/selected"
+                                  i18n:translate=""
+                          >Update</button>
+                          <button class="btn btn-outline-primary btn-light btn-sm"
+                                  name="form.button.Disable"
+                                  type="submit"
+                                  tal:condition="theme/selected"
+                                  i18n:translate=""
+                          >Deactivate</button>
+                          <button class="btn btn-outline-primary btn-light btn-sm"
+                                  name="form.button.InvalidateCache"
+                                  type="submit"
+                                  tal:condition="theme/selected"
+                                  i18n:translate=""
+                          >Clear Cache</button>
+                        </form>
 
-                        <div class="previewImageContainer">
-                          <img tal:attributes="
-                                 src theme/preview;
-                               " />
-                        </div>
+                        <a class="btn btn-outline-primary btn-light btn-sm"
+                           href="${context/absolute_url}/++theme++${theme/name}/@@download-zip"
+                           i18n:translate=""
+                        >Download</a>
 
-                        <div class="themeDescription"
-                             tal:content="theme/description"
-                        ></div>
+                        <a class="btn btn-danger pat-plone-modal btn-sm"
+                           href="#modal-delete-${theme/name}"
+                           tal:condition="theme/editable"
+                           i18n:translate=""
+                        >Delete</a>
+                      </div>
 
-                        <div class="themeEntryControls">
+                      <!-- Delete confirmation overlay -->
+                      <div class="plone-modal"
+                           id="modal-delete-${theme/name}"
+                           style="display:none"
+                           tal:condition="theme/editable"
+                      >
+                        <h1 class="documentFirstHeading"
+                            i18n:translate="theming_controlpanel_delete_confirm"
+                        >
+                                Are you sure you want to delete
+                          <span i18n:name="theme_name">${theme/name}</span>
+                        </h1>
 
-                          <form method="post"
-                                tal:attributes="
-                                  action request/URL;
-                                "
-                          >
-                            <input tal:replace="structure context/@@authenticator/authenticator" />
-                            <input name="themeName"
-                                   type="hidden"
-                                   tal:attributes="
-                                     value theme/name;
-                                   "
+                        <p class="documentDescription"
+                           i18n:translate="theming_controlpanel_delete_confirm_description"
+                        >
+                                This operation cannot be undone. Note that filesystem themes
+                                cannot be deleted from within Plone.
+                        </p>
+
+                        <form action="${request/URL}"
+                              method="post"
+                              name="delete"
+                        >
+                          <input tal:replace="structure context/@@authenticator/authenticator" />
+                          <input id="deleteConfirmTheme"
+                                 name="themes:list"
+                                 type="hidden"
+                                 value="${theme/name}"
+                          />
+                          <div class="btn-group">
+                            <input class="btn btn-danger save"
+                                   name="form.button.DeleteSelected"
+                                   type="submit"
+                                   value="Delete"
+                                   i18n:attributes="value"
                             />
-                            <button class="btn btn-outline-primary btn-light btn-sm"
-                                    name="form.button.Enable"
-                                    type="submit"
-                                    tal:condition="not:theme/selected"
-                                    i18n:translate=""
-                            >Activate</button>
-                            <button class="btn btn-outline-primary btn-light btn-sm"
-                                    name="form.button.Enable"
-                                    type="submit"
-                                    tal:condition="theme/selected"
-                                    i18n:translate=""
-                            >Update</button>
-                            <button class="btn btn-outline-primary btn-light btn-sm"
-                                    name="form.button.Disable"
-                                    type="submit"
-                                    tal:condition="theme/selected"
-                                    i18n:translate=""
-                            >Deactivate</button>
-                            <button class="btn btn-outline-primary btn-light btn-sm"
-                                    name="form.button.InvalidateCache"
-                                    type="submit"
-                                    tal:condition="theme/selected"
-                                    i18n:translate=""
-                            >Clear Cache</button>
-                          </form>
-
-                          <form method="get"
-                                target="_blank"
-                                tal:attributes="
-                                  action string:${context/absolute_url}/++theme++${theme/name}/@@download-zip;
-                                "
-                          >
-                            <button class="btn btn-outline-primary btn-light btn-sm"
-                                    i18n:translate=""
-                            >Download</button>
-                          </form>
-
-                          <a class="btn btn-danger pat-plone-modal"
-                             href="#"
-                             tal:condition="theme/editable"
-                             tal:attributes="
-                               href string:#modal-delete-${theme/name};
-                             "
-                             i18n:translate=""
-                          >Delete</a>
-                          <!-- Delete confirmation overlay -->
-                          <div class="plone-modal"
-                               style="display:none"
-                               tal:condition="theme/editable"
-                               tal:attributes="
-                                 id string:modal-delete-${theme/name};
-                               "
-                          >
-                            <h1 class="documentFirstHeading"
-                                i18n:translate="theming_controlpanel_delete_confirm"
-                            >
-                                    Are you sure you want to delete
-                              <span tal:content="string:${theme/name}"
-                                    i18n:name="theme_name"
-                              ></span>
-                            </h1>
-
-                            <p class="documentDescription"
-                               i18n:translate="theming_controlpanel_delete_confirm_description"
-                            >
-                                    This operation cannot be undone. Note that filesystem themes
-                                    cannot be deleted from within Plone.
-                            </p>
-
-                            <form method="post"
-                                  name="delete"
-                                  tal:attributes="
-                                    action request/URL;
-                                  "
-                            >
-                              <input tal:replace="structure context/@@authenticator/authenticator" />
-                              <input id="deleteConfirmTheme"
-                                     name="themes:list"
-                                     type="hidden"
-                                     tal:attributes="
-                                       value string:${theme/name};
-                                     "
-                              />
-                              <div class="btn-group">
-                                <input class="btn btn-danger save"
-                                       name="form.button.DeleteSelected"
-                                       type="submit"
-                                       value="Delete"
-                                       i18n:attributes="value"
-                                />
-                                <input class="btn btn-primary cancel"
-                                       name="form.button.Cancel"
-                                       type="submit"
-                                       value="Cancel"
-                                       i18n:attributes="value"
-                                />
-                              </div>
-                            </form>
+                            <input class="btn btn-primary cancel"
+                                   name="form.button.Cancel"
+                                   type="submit"
+                                   value="Cancel"
+                                   i18n:attributes="value"
+                            />
                           </div>
-
-                        </div>
-
+                        </form>
                       </div>
 
                     </div>
                   </div>
-
-                  <div class="visualClear"><!-- --></div>
 
                 </div>
               </section>
@@ -322,18 +281,16 @@
                 <h2 i18n:translate="">Advanced settings</h2>
 
                 <form class="pat-formunloadalert"
+                      action="${request/URL}"
                       method="post"
                       name="advanced"
                       tal:define="
                         errors view/errors;
                       "
-                      tal:attributes="
-                        action request/URL;
-                      "
                 >
 
                   <div class="pat-autotoc autotabs"
-                       data-pat-autotoc="section:fieldset;levels:legend;"
+                       data-pat-autotoc="section:fieldset;levels:legend;IDPrefix:autotoc-item-autotoc-1-subitem-"
                   >
                     <fieldset>
                       <legend i18n:translate="">Theme details</legend>
@@ -346,7 +303,7 @@
                        tab.
                       </p>
 
-                      <div class="field"
+                      <div class="field form-check"
                            tal:define="
                              selected python:request.get('themeEnabled', view.theme_settings.enabled);
                            "
@@ -356,18 +313,19 @@
                                type="hidden"
                                value=""
                         />
-                        <input id="themeEnabled"
+
+                        <input class="form-check-input"
+                               id="themeEnabled"
+                               checked="${python:'themeEnabled' if selected else None}"
                                name="themeEnabled:boolean"
                                type="checkbox"
                                value="1"
-                               tal:attributes="
-                                 checked python:'themeEnabled' if selected else None;
-                               "
                         />
-                        <label for="themeEnabled"
+                        <label class="form-check-label"
+                               for="themeEnabled"
                                i18n:translate="label_theme_enabled"
                         >Theme enabled</label>
-                        <div class="formHelp"
+                        <div class="form-text"
                              i18n:translate="help_theme_enabled"
                         >
                             If enabled the currently configured Diazo theme (if any)
@@ -379,50 +337,51 @@
                       <div tal:define="
                              error errors/rules | nothing;
                              rules python:request.get('rules', view.theme_settings.rules);
-                           "
-                           tal:attributes="
-                             class python:'field error' if error else 'field';
-                           "
-                      >
+                           ">
 
-                        <label for="rules"
+                        <label class="form-label"
+                               for="rules"
                                i18n:translate="label_rules"
                         >Rules file</label>
-                        <div class="formHelp"
+
+                        <input class="form-control"
+                               id="rules"
+                               name="rules"
+                               size="50"
+                               type="text"
+                               value="${rules}"
+                        />
+
+                        <div class="form-text"
                              i18n:translate="help_rules"
                         >
                             Enter a path or URL for the theme rules file.
                         </div>
-
-                        <div class="errorMessage"
-                             tal:condition="error"
-                             tal:content="error"
-                        ></div>
-
-                        <input id="rules"
-                               name="rules"
-                               size="50"
-                               type="text"
-                               tal:attributes="
-                                 value rules;
-                               "
-                        />
+                        <em class="invalid-feedback"
+                            tal:condition="error"
+                        >${error}</em>
 
                       </div>
 
                       <div tal:define="
                              error errors/absolutePrefix | nothing;
                              absolutePrefix python:request.get('absolutePrefix', view.theme_settings.absolutePrefix);
-                           "
-                           tal:attributes="
-                             class python:'field error' if error else 'field';
-                           "
-                      >
+                           ">
 
-                        <label for="absolutePrefix"
+                        <label class="form-label"
+                               for="absolutePrefix"
                                i18n:translate="label_absolute_prefix"
                         >Absolute path prefix</label>
-                        <div class="formHelp"
+
+                        <input class="form-control"
+                               id="absolutePrefix"
+                               name="absolutePrefix"
+                               size="50"
+                               type="text"
+                               value="${absolutePrefix}"
+                        />
+
+                        <div class="form-text"
                              i18n:translate="help_absolute_prefix"
                         >
                             If your theme uses relative paths for images, stylesheets
@@ -431,35 +390,31 @@
                             Plone is rendering.
                         </div>
 
-                        <div class="errorMessage"
-                             tal:condition="error"
-                             tal:content="error"
-                        ></div>
-
-                        <input id="absolutePrefix"
-                               name="absolutePrefix"
-                               size="50"
-                               type="text"
-                               tal:attributes="
-                                 value absolutePrefix;
-                               "
-                        />
+                        <em class="invalid-feedback"
+                            tal:condition="error"
+                        >${error}</em>
 
                       </div>
 
                       <div tal:define="
                              error errors/doctype | nothing;
                              doctype python:request.get('doctype', view.theme_settings.doctype);
-                           "
-                           tal:attributes="
-                             class python:'field error' if error else 'field';
-                           "
-                      >
+                           ">
 
-                        <label for="doctype"
+                        <label class="form-label"
+                               for="doctype"
                                i18n:translate="label_doctype"
                         >Doctype</label>
-                        <div class="formHelp"
+
+                        <input class="form-control"
+                               id="doctype"
+                               name="doctype"
+                               size="50"
+                               type="text"
+                               value="${doctype}"
+                        />
+
+                        <div class="form-text"
                              i18n:translate="help_doctype"
                         >
                             You can specify a Doctype string which will be set on
@@ -468,23 +423,13 @@
                             that set in the Diazo theme is used.
                         </div>
 
-                        <div class="errorMessage"
-                             tal:condition="error"
-                             tal:content="error"
-                        ></div>
-
-                        <input id="doctype"
-                               name="doctype"
-                               size="50"
-                               type="text"
-                               tal:attributes="
-                                 value doctype;
-                               "
-                        />
+                        <em class="invalid-feedback"
+                            tal:condition="error"
+                        >${error}</em>
 
                       </div>
 
-                      <div class="field"
+                      <div class="field form-check"
                            tal:define="
                              selected python:request.get('readNetwork', view.theme_settings.readNetwork);
                            "
@@ -494,18 +439,19 @@
                                type="hidden"
                                value=""
                         />
-                        <input id="readNetwork"
+                        <input class="form-check-input"
+                               id="readNetwork"
+                               checked="${python:'readNetwork' if selected else None}"
                                name="readNetwork:boolean"
                                type="checkbox"
                                value="1"
-                               tal:attributes="
-                                 checked python:'readNetwork' if selected else None;
-                               "
                         />
-                        <label for="readNetwork"
+                        <label class="form-check-label"
+                               for="readNetwork"
                                i18n:translate="label_read_network"
                         >Read network</label>
-                        <div class="formHelp"
+
+                        <div class="form-text"
                              i18n:translate="help_read_network"
                         >
                             Allow rules and themes to be read from remote servers.
@@ -517,16 +463,20 @@
                              error errors/hostnameBlacklist | nothing;
                              hostnameBlacklist view/theme_settings/hostnameBlacklist | python:[];
                              hostnameBlacklist python: view.hostname_blacklist or hostnameBlacklist;
-                           "
-                           tal:attributes="
-                             class python:'field error' if error else 'field';
-                           "
-                      >
+                           ">
 
                         <label for="hostnameBlacklist"
                                i18n:translate="label_hostname_blacklist"
                         >Unthemed host names</label>
-                        <div class="formHelp"
+
+                        <textarea class="form-control"
+                                  id="hostnameBlacklist"
+                                  cols="50"
+                                  name="hostnameBlacklist:lines"
+                                  rows="5"
+                        >${python: '\n'.join(hostnameBlacklist)}</textarea>
+
+                        <div class="form-text"
                              i18n:translate="help_hostname_blacklist"
                         >
                             If there are hostnames that you do not want to be
@@ -538,17 +488,9 @@
                             Plone.
                         </div>
 
-                        <div class="errorMessage"
-                             tal:condition="error"
-                             tal:content="error"
-                        ></div>
-
-                        <textarea id="hostnameBlacklist"
-                                  cols="50"
-                                  name="hostnameBlacklist:lines"
-                                  rows="5"
-                                  tal:content="python: '\n'.join(hostnameBlacklist)"
-                        ></textarea>
+                        <em class="invalid-feedback"
+                            tal:condition="error"
+                        >${error}</em>
 
                       </div>
 
@@ -557,16 +499,21 @@
                              parameterExpressions python:view.theme_settings.parameterExpressions or {};
                              parameterExpressions python:['%s = %s' % (k,v) for k,v in parameterExpressions.items()];
                              parameterExpressions python:request.get('parameterExpressions', parameterExpressions);
-                           "
-                           tal:attributes="
-                             class python:'field error' if error else 'field';
-                           "
-                      >
+                           ">
 
-                        <label for="parameterExpressions"
+                        <label class="form-label"
+                               for="parameterExpressions"
                                i18n:translate="label_parameter_expressions"
                         >Parameter expressions</label>
-                        <div class="formHelp"
+
+                        <textarea class="form-control"
+                                  id="parameterExpressions"
+                                  cols="50"
+                                  name="parameterExpressions:lines"
+                                  rows="8"
+                        >${python:'\n'.join(parameterExpressions)}</textarea>
+
+                        <div class="form-text"
                              i18n:translate="help_parameter_expressions"
                         >
                             You can define parameters that will be passed
@@ -585,17 +532,10 @@
                           <code>name = expression</code>.
                         </div>
 
-                        <div class="errorMessage"
-                             tal:condition="error"
-                             tal:content="error"
-                        ></div>
+                        <em class="invalid-feedback"
+                            tal:condition="error"
+                        >${error}</em>
 
-                        <textarea id="parameterExpressions"
-                                  cols="50"
-                                  name="parameterExpressions:lines"
-                                  rows="8"
-                                  tal:content="python:'\n'.join(parameterExpressions)"
-                        ></textarea>
                       </div>
 
                     </fieldset>
@@ -616,11 +556,22 @@
                            "
                       >
 
-                        <label for="themeBase"
+                        <label for="form-label"
                                i18n:translate="label_theme_base"
                         >Theme base</label>
 
-                        <div class="formHelp"
+                        <select class="form-select"
+                                id="themeBase"
+                                name="themeBase"
+                                size="1"
+                        >
+                          <option selected="${python:skin.value == selected and 'selected' or None}"
+                                  value="${skin/value}"
+                                  tal:repeat="skin view/skinsVocabulary"
+                          >${skin/title}</option>
+                        </select>
+
+                        <div class="form-text"
                              i18n:translate="help_theme_base"
                         >
                             The theme base defines a collection of templates and other
@@ -629,22 +580,9 @@
                             so only change this if you know what you are doing.
                         </div>
 
-                        <select id="themeBase"
-                                name="themeBase"
-                                size="1"
-                        >
-                          <option tal:repeat="skin view/skinsVocabulary"
-                                  tal:content="skin/title"
-                                  tal:attributes="
-                                    value skin/value;
-                                    selected python:skin.value == selected and 'selected' or None;
-                                  "
-                          ></option>
-                        </select>
-
                       </div>
 
-                      <div class="field"
+                      <div class="field form-check"
                            tal:define="
                              selected python:request.get('markSpecialLinks', view.mark_special_links);
                            "
@@ -654,18 +592,19 @@
                                type="hidden"
                                value=""
                         />
-                        <input id="markSpecialLinks"
+                        <input class="form-check-input"
+                               id="markSpecialLinks"
+                               checked="${python:'markSpecialLinks' if selected else None}"
                                name="markSpecialLinks:boolean"
                                type="checkbox"
                                value="1"
-                               tal:attributes="
-                                 checked python:'markSpecialLinks' if selected else None;
-                               "
                         />
-                        <label for="markSpecialLinks"
+                        <label class="form-check-label"
+                               for="markSpecialLinks"
                                i18n:translate="label_mark_special_links"
                         >Mark special links</label>
-                        <div class="formHelp"
+
+                        <div class="form-text"
                              i18n:translate="help_mark_special_links"
                         >
                             If enabled all external links will be marked with link type specific icons.
@@ -673,7 +612,7 @@
 
                       </div>
 
-                      <div class="field"
+                      <div class="field form-check"
                            tal:define="
                              selected python:request.get('extLinksOpenInNewWindow', view.ext_links_open_new_window);
                            "
@@ -683,18 +622,19 @@
                                type="hidden"
                                value=""
                         />
-                        <input id="extLinksOpenInNewWindow"
+                        <input class="form-check-input"
+                               id="extLinksOpenInNewWindow"
+                               checked="${python:'extLinksOpenInNewWindow' if selected else None}"
                                name="extLinksOpenInNewWindow:boolean"
                                type="checkbox"
                                value="1"
-                               tal:attributes="
-                                 checked python:'extLinksOpenInNewWindow' if selected else None;
-                               "
                         />
-                        <label for="extLinksOpenInNewWindow"
+                        <label class="form-check-label"
+                               for="extLinksOpenInNewWindow"
                                i18n:translate="label_ext_links_open_new_window"
                         >External links open in new window</label>
-                        <div class="formHelp"
+
+                        <div class="form-text"
                              i18n:translate="help_ext_links_open_new_window"
                         >
                             If enabled all external links in the content region open in a new window.
@@ -741,42 +681,38 @@
                              error errors/custom_css | nothing;
                              custom_css view/theme_settings/custom_css | python: '';
                              custom_css python:request.get('custom_css', custom_css);
-                           "
-                           tal:attributes="
-                             class python:'field error' if error else 'field';
-                           "
-                      >
+                           ">
 
-                        <label for="custom_css"
+                        <label class="form-label"
+                               for="custom_css"
                                i18n:translate="label_custom_css"
                         >Custom CSS</label>
-                        <div class="formHelp"
+
+                        <textarea class="pat-code-editor form-control"
+                                  id="custom_css"
+                                  cols="160"
+                                  name="custom_css"
+                                  placeholder="Put your plain css..."
+                                  rows="40"
+                                  data-pat-code-editor="language: css; theme: light; linenumbers: true"
+                                  i18n:attributes="placeholder"
+                        >${custom_css}</textarea>
+
+                        <div class="form-text"
                              i18n:translate="help_custom_css"
                         >
                             Define your own custom CSS in the field below. This is a good place for quick customizations of things like colors and the toolbar. Definitions here will override previously defined CSS of Plone. Please use this only for small customizations, as it is hard to keep track of changes here. For bigger changes you most likely want to customize a full theme and make your changes there.
                         </div>
-                        <div class="theming_doc_link">
+                        <div class="theming_doc_link form-text">
                           <p><a href="https://6.docs.plone.org/classic-ui/theming/index.html"
                                target="_blank"
                                i18n:translate="label_theming_doc_link"
                             >Theming of Classic UI documentation</a></p>
                         </div>
 
-                        <div class="errorMessage"
-                             tal:condition="error"
-                             tal:content="error"
-                        ></div>
-
-                        <textarea class="pat-code-editor"
-                                  id="custom_css"
-                                  cols="160"
-                                  name="custom_css"
-                                  placeholder="Put your plain css..."
-                                  rows="40"
-                                  data-pat-code-editor="language: css; theme: light"
-                                  tal:content="custom_css"
-                                  i18n:attributes="placeholder"
-                        ></textarea>
+                        <em class="invalid-feedback"
+                            tal:condition="error"
+                        >${error}</em>
 
                       </div>
                     </fieldset>
@@ -834,23 +770,18 @@
                 </p>
 
                 <form class="pat-formunloadalert"
+                      action="${request/URL}"
                       enctype="multipart/form-data"
                       method="post"
                       name="import"
                       tal:define="
                         errors view/errors;
                       "
-                      tal:attributes="
-                        action request/URL;
-                      "
                 >
 
                   <div class="field"
                        tal:define="
                          error errors/themeArchive | nothing;
-                       "
-                       tal:attributes="
-                         class python:'field error' if error else 'field';
                        "
                   >
 
@@ -862,8 +793,7 @@
 
                     <div class="errorMessage"
                          tal:condition="error"
-                         tal:content="error"
-                    ></div>
+                    >${error}</div>
 
                     <input id="themeArchive"
                            name="themeArchive"
@@ -882,12 +812,10 @@
                            value=""
                     />
                     <input id="enableNewTheme"
+                           checked="${python:'enableNewTheme' if selected else None}"
                            name="enableNewTheme:boolean"
                            type="checkbox"
                            value="1"
-                           tal:attributes="
-                             checked python:'enableNewTheme' if selected else None;
-                           "
                     />
                     <label for="enableNewTheme"
                            i18n:translate="label_enable_new_theme"
@@ -910,12 +838,10 @@
                            value=""
                     />
                     <input id="replaceExisting"
+                           checked="python:'replaceExisting' if selected else None"
                            name="replaceExisting:boolean"
                            type="checkbox"
                            value="1"
-                           tal:attributes="
-                             checked python:'replaceExisting' if selected else None;
-                           "
                     />
                     <label for="replaceExisting"
                            i18n:translate="label_replace_existing"
