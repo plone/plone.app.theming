@@ -10,7 +10,7 @@ requires = ["setuptools>=68.2,<83", "wheel"]
 
 [project]
 name = "plone.app.theming"
-version = "7.0.1.dev0"
+version = "7.0.1"
 description = "Integrates the Diazo theming engine with Plone"
 classifiers = [
     "Development Status :: 5 - Production/Stable",
