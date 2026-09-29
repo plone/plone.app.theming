@@ -64,9 +64,6 @@ class TestServicesThemes(unittest.TestCase):
 
     def test_post_theme_upload(self):
         zip_path = get_theming_zipfile("manifest_rules.zip")
-        if not os.path.exists(zip_path):
-            self.skipTest("plone.app.theming test zips not available")
-
         with open(zip_path, "rb") as f:
             response = self.api_session.post(
                 "/@themes",
