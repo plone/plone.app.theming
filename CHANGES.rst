@@ -9,6 +9,25 @@ Changelog
 
 .. towncrier release notes start
 
+7.0.1 (2026-09-10)
+------------------
+
+Internal:
+
+
+- Move package metadata from ``setup.py`` to ``pyproject.toml``.
+  [plone devs]
+
+
+7.0.0 (2026-05-16)
+------------------
+
+Internal:
+
+
+- Make final release, no further changes.
+
+
 7.0.0a3 (2025-12-29)
 --------------------
 
