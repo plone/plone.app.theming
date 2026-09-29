@@ -41,11 +41,11 @@ class TestServicesThemes(unittest.TestCase):
         self.assertIsInstance(data, list)
         self.assertGreater(len(data), 0)
         # Each theme should have basic fields
-        theme = data[0]
-        self.assertIn("id", theme)
-        self.assertIn("title", theme)
-        self.assertIn("active", theme)
-        self.assertIn("@id", theme)
+        for theme in data:
+            self.assertIn("id", theme)
+            self.assertIn("title", theme)
+            self.assertIn("active", theme)
+            self.assertIn("@id", theme)
 
     def test_get_theme_by_name(self):
         # First get list to find a valid theme name
