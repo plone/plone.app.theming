@@ -12,7 +12,7 @@
       method="GET"
       factory=".get.ThemesGet"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      permission="cmf.ManagePortal"
+      permission="plone.app.controlpanel.Themes"
       name="@themes"
       />
 
@@ -20,7 +20,7 @@
       method="POST"
       factory=".post.ThemesPost"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      permission="cmf.ManagePortal"
+      permission="plone.app.controlpanel.Themes"
       name="@themes"
       />
 
@@ -28,7 +28,7 @@
       method="PATCH"
       factory=".patch.ThemesPatch"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      permission="cmf.ManagePortal"
+      permission="plone.app.controlpanel.Themes"
       name="@themes"
       />
 

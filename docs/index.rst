@@ -926,7 +926,7 @@ REST API
 
 When ``plone.restapi`` is installed alongside ``plone.app.theming``, a ``@themes``
 endpoint is available on the Plone site root.
-It requires the ``cmf.ManagePortal`` permission and is particularly useful in
+It requires the ``plone.app.controlpanel.Themes`` permission and is particularly useful in
 containerized deployments where access to the Plone control panel is unavailable.
 
 Listing themes
