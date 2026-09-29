@@ -21,8 +21,8 @@ class ThemesPost(Service):
             self.request.response.setStatus(400)
             return {"error": "Missing 'themeArchive' field"}
 
-        enable = self.request.form.get("enable", "false").lower() == "true"
-        replace = self.request.form.get("replace", "false").lower() == "true"
+        enable = boolean_value(self.request.form.get("enable"), False)
+        replace = boolean_value(self.request.form.get("replace"), False)
 
         try:
             theme_zip = zipfile.ZipFile(theme_archive)
