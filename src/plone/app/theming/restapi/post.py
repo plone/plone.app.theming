@@ -3,6 +3,7 @@ from plone.app.theming.plugins.utils import getPlugins
 from plone.app.theming.utils import applyTheme
 from plone.app.theming.utils import extractThemeInfo
 from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
+from plone.base.utils import boolean_value
 from plone.protect.interfaces import IDisableCSRFProtection
 from plone.registry.interfaces import IRegistry
 from plone.restapi.services import Service

@@ -75,6 +75,14 @@ class TestServicesThemes(unittest.TestCase):
         self.assertIn("id", data)
         self.assertIn("title", data)
         self.assertIn("@id", data)
+        self.assertEqual(data["id"], "manifest_rules")
+
+        # The theme is really added: it is listed and can be fetched.
+        response = self.api_session.get("/@themes")
+        self.assertIn("manifest_rules", [t["id"] for t in response.json()])
+        response = self.api_session.get("/@themes/manifest_rules")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["id"], "manifest_rules")
 
     def test_post_theme_missing_archive(self):
         response = self.api_session.post(
@@ -95,8 +103,6 @@ class TestServicesThemes(unittest.TestCase):
 
     def test_post_theme_duplicate_without_replace(self):
         zip_path = get_theming_zipfile("manifest_rules.zip")
-        if not os.path.exists(zip_path):
-            self.skipTest("plone.app.theming test zips not available")
 
         # Upload once
         with open(zip_path, "rb") as f:
@@ -117,8 +123,6 @@ class TestServicesThemes(unittest.TestCase):
 
     def test_post_theme_duplicate_with_replace(self):
         zip_path = get_theming_zipfile("manifest_rules.zip")
-        if not os.path.exists(zip_path):
-            self.skipTest("plone.app.theming test zips not available")
 
         # Upload once
         with open(zip_path, "rb") as f:
