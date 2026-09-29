@@ -45,6 +45,7 @@ dependencies = [
     "plone.base>=4.0.0a1",
     "plone.i18n",
     "plone.memoize",
+    "plone.protect",
     "plone.registry",
     "plone.resource",
     "plone.resourceeditor>=2.0.0",
@@ -71,6 +72,7 @@ target = "plone"
 test = [
     "plone.app.contenttypes[test]",
     "plone.app.testing",
+    "plone.restapi[test]",
     "plone.testing",
 ]
 
@@ -199,6 +201,7 @@ Zope = [
 ]
 python-dateutil = ['dateutil']
 pytest-plone = ['pytest', 'zope.pytestlayer', 'plone.testing', 'plone.app.testing']
+ignore-packages = ['plone.restapi', 'plone.rest']
 
 ##
 # Add extra configuration options in .meta.toml:
