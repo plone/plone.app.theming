@@ -12,3 +12,6 @@ extra_lines = """
 
 [tox]
 test_matrix = {"6.2" = ["*"]}
+
+[pyproject]
+dependencies_ignores = "['plone.restapi', 'plone.rest']"

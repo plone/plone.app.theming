@@ -21,6 +21,11 @@
   <include package=".exportimport" />
   <include package=".plugins" />
 
+  <include
+      package=".restapi"
+      zcml:condition="installed plone.restapi"
+      />
+
   <gs:registerProfile
       name="default"
       title="Diazo theme support"
