@@ -1,0 +1,2 @@
+``getPortal()`` takes the portal from the acquisition chain of the current site instead of the request memoized ``plone_portal_state.portal()``, which can be wrapped in a finished subrequest without virtual host information. The absolute prefix was then expanded to ``/Plone/++theme++...`` and the compiled transform cached with it per thread.
+[petschki]

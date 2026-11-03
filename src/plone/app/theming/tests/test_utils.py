@@ -1,7 +1,10 @@
+from Acquisition import aq_acquire
+from Acquisition import aq_base
 from plone.app.testing import setRoles
 from plone.app.testing import SITE_OWNER_NAME
 from plone.app.testing import SITE_OWNER_PASSWORD
 from plone.app.testing import TEST_USER_ID
+from plone.app.theming import utils
 from plone.app.theming.testing import THEMING_FUNCTIONAL_TESTING
 from plone.app.theming.testing import THEMING_INTEGRATION_TESTING
 from plone.app.theming.utils import applyTheme
@@ -12,7 +15,10 @@ from plone.base.interfaces import INavigationRoot
 from plone.testing.zope import Browser
 from Products.CMFCore.utils import getToolByName
 from zExceptions import Unauthorized
+from zope.component import getMultiAdapter
+from zope.component.hooks import setSite
 from zope.interface import alsoProvides
+from ZPublisher.BaseRequest import RequestContainer
 
 import os.path
 import tempfile
@@ -61,6 +67,36 @@ class InternalResolverAsString(InternalResolver):
 
 class TestIntegration(unittest.TestCase):
     layer = THEMING_INTEGRATION_TESTING
+
+    def test_getPortal_ignores_memoized_portal_of_other_request(self):
+        # The memoized plone_portal_state.portal() may be wrapped in another,
+        # finished request; getPortal() must use the current site's wrapper.
+        app = self.layer["app"]
+        portal = self.layer["portal"]
+        request = self.layer["request"]
+
+        # virtual host the current request on the portal
+        request.other["VirtualRootPhysicalPath"] = portal.getPhysicalPath()
+        self.assertEqual(portal.absolute_url_path(), "/")
+        self.assertEqual(utils.expandAbsolutePrefix("/foo"), "/foo")
+
+        # a portal wrapped in a different, not virtual hosted request
+        other_request = request.clone()
+        other_app = aq_base(app).__of__(RequestContainer(REQUEST=other_request))
+        other_portal = other_app[portal.getId()]
+        self.assertEqual(other_portal.absolute_url_path(), "/plone")
+
+        # memoize it on the current request
+        setSite(other_portal)
+        try:
+            portal_state = getMultiAdapter((portal, request), name="plone_portal_state")
+            self.assertIs(aq_acquire(portal_state.portal(), "REQUEST"), other_request)
+        finally:
+            setSite(portal)
+            other_request.clear()
+
+        self.assertIs(aq_acquire(utils.getPortal(), "REQUEST"), request)
+        self.assertEqual(utils.expandAbsolutePrefix("/foo"), "/foo")
 
     def test_getOrCreatePersistentResourceDirectory_new(self):
         from plone.app.theming.utils import (  # noqa

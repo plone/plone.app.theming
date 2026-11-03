@@ -1,4 +1,5 @@
 from Acquisition import aq_base
+from Acquisition import aq_chain
 from configparser import ConfigParser
 from diazo.compiler import compile_theme
 from diazo.compiler import quote_param
@@ -33,6 +34,7 @@ from Products.PageTemplates.Expressions import getEngine
 from urllib.parse import urlsplit
 from zope.component import getUtility
 from zope.component import queryMultiAdapter
+from zope.component.hooks import getSite
 from zope.globalrequest import getRequest
 from zope.interface import implementer
 
@@ -224,7 +226,18 @@ class InternalResolver(etree.Resolver):
 
 
 def getPortal():
-    """Return the portal object"""
+    """Return the portal object.
+
+    Taken from the acquisition chain of the current site, which the theme
+    transform cache key is built from as well. The request memoized
+    ``plone_portal_state.portal()`` is only a fallback: it may be wrapped in
+    a finished subrequest that has lost its virtual host information.
+    """
+    site = getSite()
+    if site is not None:
+        for obj in aq_chain(site):
+            if ISiteRoot.providedBy(obj):
+                return obj
     request = getRequest()
     context = findContext(request)
     portalState = queryMultiAdapter((context, request), name="plone_portal_state")
