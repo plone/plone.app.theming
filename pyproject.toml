@@ -18,16 +18,16 @@ classifiers = [
     "Framework :: Plone :: 6.2",
     "Framework :: Plone :: Core",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 license = "GPL-2.0-only"
 dynamic = ["readme"]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [
     {name = "Martin Aspeli and Laurence Rowe",email = "optilude@gmail.com"},
 ]
@@ -139,7 +139,7 @@ profile = "plone"
 ##
 
 [tool.black]
-target-version = ["py310"]
+target-version = ["py311"]
 
 ##
 # Add extra configuration options in .meta.toml:
@@ -208,6 +208,11 @@ pytest-plone = ['pytest', 'zope.pytestlayer', 'plone.testing', 'plone.app.testin
 #    "gitpython = ['git']",
 #    "pygithub = ['github']",
 #  ]
+#
+# The Zope and Plone mappings above are included by default. For a package
+# used outside the Zope world they are noise, and can be turned off with:
+#  [pyproject]
+#  plone_mappings = false
 ##
 
 [tool.check-manifest]
